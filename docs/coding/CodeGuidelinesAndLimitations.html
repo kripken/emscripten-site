@@ -7,10 +7,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CodeGuidelinesAndLimitations (wiki-import) &mdash; Emscripten 1.20.0 documentation</title>
+  <title>Code Guidelines And Limitations (wiki-import) &mdash; Emscripten 1.20.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
   
 
   
@@ -68,9 +70,9 @@
         
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten (under-construction)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/FAQ.html">FAQ (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/FAQ.html#general">General</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/FAQ.html#using-emscripten">Using Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#emscripten-toolchain">Emscripten Toolchain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#porting-code-to-use-emscripten">Porting code to use Emscripten</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a><ul>
@@ -81,17 +83,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/bug_reports.html">Bug Reporting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/bug_reports.html#fastcomp-llvm-backend-and-clang-bugs">Fastcomp LLVM-Backend and Clang bugs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/bug_reports.html#site-and-documentation-bugs">Site and documentation bugs</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes (ready-for-review)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#talks">Talks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#books">Books</a></li>
 </ul>
@@ -129,17 +126,26 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/getting_started_with_emscripten_and_vs2010.html">Getting started using Emscripten from the Visual Studio 2010 IDE (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/bug_reports.html#fastcomp-llvm-backend-and-clang-bugs">Fastcomp LLVM-Backend and Clang bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/bug_reports.html#site-and-documentation-bugs">Site and documentation bugs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ (wiki-import)</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Integrating/Porting (under-construction)</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">CodeGuidelinesAndLimitations (wiki-import)</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Code Guidelines And Limitations (wiki-import)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#code-that-cannot-be-compiled">Code that CANNOT be compiled</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#function-pointer-issues">Function pointer issues</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#code-that-does-compile-but-might-be-slower-than-expected">Code that DOES compile, but might be slower than expected</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#code-that-might-be-useful-to-avoid">Code that MIGHT be useful to avoid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#networking">Networking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libraries">Libraries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#networking">Networking</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Emscripten-browser-environment.html">Emscripten browser environment (wiki-import)</a><ul>
@@ -363,7 +369,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#what-you-ll-need">What you&#8217;ll need</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#building-fastcomp">Building Fastcomp</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#branches">Branches</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#additional-compilation-notes">Additional compilation notes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#backend-code-structure">Backend code structure</a></li>
 </ul>
 </li>
@@ -604,18 +609,16 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">Filesystem API (under-construction)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistence">Persistence</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#mount-options">Mount options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#idbfs">IDBFS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#setting-up-standard-i-o-devices">Setting up standard I/O devices</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem">Filesystem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#setting-up-standard-i-o-devices">Setting up standard I/O devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#id1">File system API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-types">File types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#paths">Paths</a></li>
 </ul>
@@ -641,8 +644,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#settings-js">settings.js</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#allocate">allocate()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#preamble-js">preamble.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#module-runtime">Module.Runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#advanced-file-system-api">Advanced File System API</a></li>
 </ul>
 </li>
 </ul>
@@ -764,7 +768,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Integrating/Porting (under-construction)</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;CodeGuidelinesAndLimitations (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Code Guidelines And Limitations (wiki-import)</div>
   </div>
  
 </div>
@@ -782,135 +786,67 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Integrating/Porting (under-construction)</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;CodeGuidelinesAndLimitations (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Code Guidelines And Limitations (wiki-import)</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="codeguidelinesandlimitations-wiki-import">
-<span id="codeguidelinesandlimitations"></span><h1>CodeGuidelinesAndLimitations (wiki-import)<a class="headerlink" href="#codeguidelinesandlimitations-wiki-import" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="code-guidelines-and-limitations-wiki-import">
+<span id="codeguidelinesandlimitations"></span><h1>Code Guidelines And Limitations (wiki-import)<a class="headerlink" href="#code-guidelines-and-limitations-wiki-import" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This article was migrated from the wiki (Fri, 25 Jul 2014 04:21) and is now the &#8220;master copy&#8221; (the version in the wiki will be deleted). It may not be a perfect rendering of the original but we hope to fix that soon!</p>
 </div>
-<p>Emscripten can work with pretty much any C/C++ code. However, it might
-be useful to know what types of code Emscripten compiles better than
-others, if you are rewriting part of the code you will be compiling.</p>
+<p>Emscripten can work with pretty much any C/C++ code. However, it might be useful to know what types of code Emscripten compiles better than others, if you are rewriting part of the code you will be compiling.</p>
 <div class="section" id="code-that-cannot-be-compiled">
 <h2>Code that CANNOT be compiled<a class="headerlink" href="#code-that-cannot-be-compiled" title="Permalink to this headline">¶</a></h2>
-<p>These issues are fundamental difficulties. We can get around them by
-emulation in theory, but it would be very slow.</p>
+<p>These issues are fundamental difficulties. We can get around them by emulation in theory, but it would be very slow.</p>
 <ul class="simple">
-<li>Code that is multithreaded and uses shared state. JS has threads -
-web workers - but they cannot share state, instead they pass
-messages.</li>
-<li>Nonportable code that relies on endianness is problematic. It can
-work with USE_TYPED_ARRAYS=2, but it will not be portable!</li>
-<li>Nonportable code that relies on x86 alignment behavior. X86 allows
-unaligned reads and writes (so you can read a 16-bit value from a
-non-even address, i.e., which is only 8-bit aligned address, for
-example), but other archs do not: ARM will raise SIGILL, and when
-emscripten generates JS you will get undefined behavior in this case.
-(If you build your code with <tt class="docutils literal"><span class="pre">SAFE_HEAP=1</span></tt> then you will get a
-clear runtime exception, see <a class="reference internal" href="debugging/Debugging.html#debugging"><em>Debugging (wiki-import)</em></a>. Note: There is also a
-code generation mode, UNALIGNED_MEMORY, which can support unaligned
-code like this - but it is very slow.)</li>
-<li>Nonportable code that uses low-level features of the native
-environment, like native stack manipulation (e.g. in conjunction with
-setjmp/longjmp. We support normal setjmp/longjmp, but not with stack
-replacing etc.)</li>
-<li>Nonportable code that scans registers or the stack, for example to do
-conservative garbage collection. A variable in a register or on the
-stack may be held in a JavaScript local variable, which cannot be
-scanned. (However, you can do conservative scanning when there is no
-other code on the stack, e.g. from an iteration of the main event
-loop.)</li>
+<li>Code that is multithreaded and uses shared state. JS has threads - web workers - but they cannot share state, instead they pass messages.</li>
+<li>Nonportable code that relies on endianness is problematic. It can work with USE_TYPED_ARRAYS=2, but it will not be portable!</li>
+<li>Nonportable code that relies on x86 alignment behavior. X86 allows unaligned reads and writes (so you can read a 16-bit value from a non-even address, i.e., which is only 8-bit aligned address, for example), but other archs do not: ARM will raise SIGILL, and when Emscripten generates JS you will get undefined behavior in this case. (If you build your code with <tt class="docutils literal"><span class="pre">SAFE_HEAP=1</span></tt> then you will get a clear runtime exception, see <a class="reference internal" href="debugging/Debugging.html#debugging"><em>Debugging (wiki-import)</em></a>. Note: There is also a code generation mode, UNALIGNED_MEMORY, which can support unaligned code like this - but it is very slow.)</li>
+<li>Nonportable code that uses low-level features of the native environment, like native stack manipulation (e.g. in conjunction with setjmp/longjmp. We support normal setjmp/longjmp, but not with stack replacing etc.)</li>
+<li>Nonportable code that scans registers or the stack, for example to do conservative garbage collection. A variable in a register or on the stack may be held in a JavaScript local variable, which cannot be scanned. (However, you can do conservative scanning when there is no other code on the stack, e.g. from an iteration of the main event loop.)</li>
 </ul>
 <div class="section" id="function-pointer-issues">
 <h3>Function pointer issues<a class="headerlink" href="#function-pointer-issues" title="Permalink to this headline">¶</a></h3>
 <p>There are two general issues with function pointers:</p>
 <ol class="arabic simple">
-<li>clang generates different code for C and C++ calls when a structure
-is passed <strong>by value</strong>. The two formats are incompatible in how we
-generate code in emscripten, but each is compatible with itself. You
-should see a warning during compilation about this, and the
-workaround is to either not mix C and C++ in that location (just
-renaming a <tt class="docutils literal"><span class="pre">.c</span></tt> file to <tt class="docutils literal"><span class="pre">.cpp</span></tt> for example) or to pass the
-structure by reference. (More specifically, one convention is
-<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">byval</span></tt> and the other is <tt class="docutils literal"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></tt>.)</li>
-<li>In asm.js mode, there is an additional concern, with function tables.
-Without asm.js, all function pointers use a single table, but in
-asm.js each function pointer type has its own table (this allows the
-JS engine to know the exact type of each function pointer call, and
-optimize those calls much better than normally). As a consequence
-though, if you have a function that is say <tt class="docutils literal"><span class="pre">int</span> <span class="pre">(int)</span></tt> (return int,
-receive int) and you cast it to <tt class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></tt> (no return, receive
-int), then the function pointer call will fail because we are looking
-in the wrong table. This is undefined behavior in C in any case, so
-it is recommended to refactor code to avoid this type of situation.
-You should see compilation warnings about these things. See [[asm
-pointer casts]] for more information.</li>
-<li>A related issue to do with function pointers is that in <tt class="docutils literal"><span class="pre">-O2</span></tt> and
-above we optimize the size of the separate function tables. That
-means that two functions can have the same function pointer so long
-as their type is different, and so potentially comparing function
-pointers of different types can give false positives. Also, it makes
-bugs with incorrect function pointers potentially more misleading,
-since there are fewer &#8220;holes&#8221; in function tables (holes would throw
-an error instead of running the wrong code). To check if this is
-causing issues, you can compile with
-<tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt>.</li>
+<li>clang generates different code for C and C++ calls when a structure is passed <strong>by value</strong>. The two formats are incompatible in how we generate code in Emscripten, but each is compatible with itself. You should see a warning during compilation about this, and the workaround is to either not mix C and C++ in that location (just renaming a <tt class="docutils literal"><span class="pre">.c</span></tt> file to <tt class="docutils literal"><span class="pre">.cpp</span></tt> for example) or to pass the structure by reference. (More specifically, one convention is <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">byval</span></tt> and the other is <tt class="docutils literal"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></tt>.)</li>
+<li>In <strong>asm.js</strong> mode, there is an additional concern, with function tables. Without <strong>asm.js</strong>, all function pointers use a single table, but in <strong>asm.js</strong> each function pointer type has its own table (this allows the JS engine to know the exact type of each function pointer call, and optimize those calls much better than normally). As a consequence though, if you have a function that is say <tt class="docutils literal"><span class="pre">int</span> <span class="pre">(int)</span></tt> (return int, receive int) and you cast it to <tt class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></tt> (no return, receive int), then the function pointer call will fail because we are looking in the wrong table. This is undefined behavior in C in any case, so it is recommended to refactor code to avoid this type of situation. You should see compilation warnings about these things. See <a class="reference internal" href="Asm-pointer-casts.html#asm-pointer-casts"><em>Asm pointer casts (wiki-import)</em></a> for more information.</li>
+<li>A related issue to do with function pointers is that in <tt class="docutils literal"><span class="pre">-O2</span></tt> and above we optimize the size of the separate function tables. That means that two functions can have the same function pointer so long as their type is different, and so potentially comparing function pointers of different types can give false positives. Also, it makes bugs with incorrect function pointers potentially more misleading, since there are fewer &#8220;holes&#8221; in function tables (holes would throw an error instead of running the wrong code). To check if this is causing issues, you can compile with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt>.</li>
 </ol>
 </div>
 </div>
 <div class="section" id="code-that-does-compile-but-might-be-slower-than-expected">
 <h2>Code that DOES compile, but might be slower than expected<a class="headerlink" href="#code-that-does-compile-but-might-be-slower-than-expected" title="Permalink to this headline">¶</a></h2>
-<p>None of the issues here is a showstopper, but they might be slower than
-you expect. You probably don&#8217;t need to worry about this stuff, but it
-might be useful to know about it.</p>
+<p>None of the issues here is a showstopper, but they might be slower than you expect. You probably don&#8217;t need to worry about this stuff, but it might be useful to know about it.</p>
 <ul class="simple">
-<li>64-bit ints. Bitwise operations on these are reasonable, but math (+,
--, *, /) is emulated, very slowly. JavaScript does not have native
-64-bit ints so this is unavoidable.</li>
-<li>32-bit multiplication that needs all 64 bits of precision must be
-emulated like 64-bit integer math (JS doubles work fine up to ~52
-bits). By default precise 32-bit multiplication is off as it makes a
-lot of common 32-bit code very slow, but if you need it you can
-enable it with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">PRECISE_I32_MUL=1</span></tt>, see <tt class="docutils literal"><span class="pre">src/settings.js</span></tt> for
-more.</li>
-<li>32-bit floats will end up as 64-bit doubles in JS engines. That means
-they might be a little slower than expected, depending on your CPU.</li>
-<li>memcpy/memset works, but JS engines don&#8217;t optimize it very well.
-Native code will use SIMD on this, JS engines will not - yet.</li>
-<li>Exceptions and longjmp. In JS such code generally makes the JS engine
-turn off various optimizations. For that reason exceptions are turned
-off by default in <tt class="docutils literal"><span class="pre">-O1</span></tt> and above (to re-enable them, run emcc with
-<tt class="docutils literal"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></tt>). setjmp also prevents relooping
-around it.</li>
+<li>64-bit ints. Bitwise operations on these are reasonable, but math (+, -, *, /) is emulated, very slowly. JavaScript does not have native 64-bit ints so this is unavoidable.</li>
+<li>32-bit multiplication that needs all 64 bits of precision must be emulated like 64-bit integer math (JS doubles work fine up to ~52 bits). By default precise 32-bit multiplication is off as it makes a lot of common 32-bit code very slow, but if you need it you can enable it with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">PRECISE_I32_MUL=1</span></tt>, see <strong>src/settings.js</strong> for more.</li>
+<li>32-bit floats will end up as 64-bit doubles in JS engines. That means they might be a little slower than expected, depending on your CPU.</li>
+<li>memcpy/memset works, but JS engines don&#8217;t optimize it very well. Native code will use SIMD on this, JS engines will not - yet.</li>
+<li>Exceptions and longjmp. In JS such code generally makes the JS engine turn off various optimizations. For that reason exceptions are turned off by default in <tt class="docutils literal"><span class="pre">-O1</span></tt> and above (to re-enable them, run emcc with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></tt>). setjmp also prevents relooping around it.</li>
 </ul>
 </div>
 <div class="section" id="code-that-might-be-useful-to-avoid">
 <h2>Code that MIGHT be useful to avoid<a class="headerlink" href="#code-that-might-be-useful-to-avoid" title="Permalink to this headline">¶</a></h2>
-<p>Avoiding these kinds of code might be nice to do, to prevent warnings
-and to enable additional optimizations. But unless it is very easy for
-you to avoid them, just ignore this section.</p>
+<p>Avoiding these kinds of code might be nice to do, to prevent warnings and to enable additional optimizations. But unless it is very easy for you to avoid them, just ignore this section.</p>
 <ul class="simple">
-<li>Unions. These will trigger SAFE_HEAP warnings (like valgrind), and
-make the QUANTUM_SIZE=1 optimization impossible.</li>
-<li>Bitfields. Also SAFE_HEAP warnings.</li>
-<li>Reusing memory, that is, using the same allocated block of memory
-once for one kind of object, later for another. This prevents the
-QUANTUM_SIZE=1 optimization.</li>
+<li>Unions. These will trigger <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> warnings (like <em>Valgrind</em>), and make the <tt class="docutils literal"><span class="pre">QUANTUM_SIZE=1</span></tt> optimization impossible.</li>
+<li>Bitfields. Also <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> warnings.</li>
+<li>Reusing memory, that is, using the same allocated block of memory once for one kind of object, later for another. This prevents the <tt class="docutils literal"><span class="pre">QUANTUM_SIZE=1</span></tt> optimization.</li>
 </ul>
 </div>
+<div class="section" id="libraries">
+<h2>Libraries<a class="headerlink" href="#libraries" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="networking">
-<h2>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h2>
+<h3>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Emscripten supports libc networking functions, but since JS
-networking is asynchronous, you must limit yourself to asynchronous
-(nonblocking) operations.</li>
+<li>Emscripten supports libc networking functions, but since JS networking is asynchronous, you must limit yourself to asynchronous (nonblocking) operations.</li>
 </ul>
+</div>
 </div>
 </div>
 
@@ -944,7 +880,7 @@ networking is asynchronous, you must limit yourself to asynchronous
      <div class="footer-options">
    
         
-              <a class="footer-navlink-short" title="Report Bug" href="../introducing_emscripten/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../introducing_emscripten/bug_reports.html">Report Bug</a>
+              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
         
               <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
         
@@ -976,7 +912,7 @@ networking is asynchronous, you must limit yourself to asynchronous
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Integrating/Porting (under-construction)</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;CodeGuidelinesAndLimitations (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Code Guidelines And Limitations (wiki-import)</div>
   </div>
  
 </div> -->
@@ -1001,7 +937,7 @@ networking is asynchronous, you must limit yourself to asynchronous
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:CodeGuidelinesAndLimitations%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/coding/CodeGuidelinesAndLimitations&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Code%20Guidelines%20And%20Limitations%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/coding/CodeGuidelinesAndLimitations&labels=bug">Page bug</a>
       </li>
   </ul>
   
