@@ -70,7 +70,7 @@
         
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten (under-construction)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten (ready-for-review)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#emscripten-toolchain">Emscripten Toolchain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#porting-code-to-use-emscripten">Porting code to use Emscripten</a></li>
 </ul>
@@ -83,7 +83,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
 </ul>
 </li>
@@ -417,7 +417,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../contributing/LLVM-Types-in-JavaScript.html">LLVM Types in JavaScript (wiki-import)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS (ready-for-review)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference (under-construction)</a><ul>
@@ -652,7 +652,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference (under-construction)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk) (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#purpose">Purpose</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
@@ -802,7 +802,7 @@
 <h2>Code Generation Modes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>One of the reasons for writing Emscripten itself in JavaScript was to be able to easily test different methods of generating code. As a consequence, Emscripten currently supports various code generation modes, each with different features.</p>
 <div class="section" id="typed-arrays">
-<h3>Typed Arrays<a class="headerlink" href="#typed-arrays" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>Typed Arrays<a class="headerlink" href="#typed-arrays" title="Permalink to this headline">¶</a></h3>
 <p>Typed arrays are currently enabled by default (in mode 2, see below), because that has the greatest support for arbitrary code.</p>
 <p>There are two modes for typed arrays in Emscripten, 1 and 2. To explain them, first recall how Emscripten manages memory <strong>without</strong> typed arrays: It uses <tt class="docutils literal"><span class="pre">HEAP</span></tt> to represent memory, where <tt class="docutils literal"><span class="pre">HEAP</span></tt> is a normal JavaScript array. We write to the first address of  multi-byte values to keep things fast, so writing a 32-bit integer will end up as <tt class="docutils literal"><span class="pre">[value,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></tt> - we do not write anything to the upper 3 bytes. We will also read just from the first location. This is much faster than splitting things up into bytes and vice versa, but requires that we have &#8220;load-store consistency&#8221;, which is that if we read a value, we wrote the same type there. (Otherwise, if we write a 32-bit int and read the second byte, we won&#8217;t get what we expect.) <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> when enabled will check for violations of load-store consistency.</p>
 <p>Disabling typed arrays can be done with <tt class="docutils literal"><span class="pre">USE_TYPED_ARRAYS=0</span></tt>. This is safer in the sense that not all browsers support typed arrays. However, typed arrays can be optimized very well in some cases, and can support code that does not have load-store consistency.</p>
@@ -819,7 +819,7 @@
 <p>This mode is generally much faster than mode 0, but often slower then mode 2.</p>
 </div>
 <div class="section" id="typed-arrays-mode-2">
-<span id="id2"></span><h4>Typed Arrays Mode 2<a class="headerlink" href="#typed-arrays-mode-2" title="Permalink to this headline">¶</a></h4>
+<span id="id3"></span><h4>Typed Arrays Mode 2<a class="headerlink" href="#typed-arrays-mode-2" title="Permalink to this headline">¶</a></h4>
 <p>This is the default mode.</p>
 <p>With <tt class="docutils literal"><span class="pre">USE_TYPED_ARRAYS=2</span></tt>, one typed array buffer will represent memory, while different views into it will allow us to access different types (<a class="reference internal" href="../api_reference/preamble.js.html#HEAPU32" title="HEAPU32"><tt class="xref js js-data docutils literal"><span class="pre">HEAPU32</span></tt></a> for 32-bit unsigned integers, for example). Because of that, it is possible to violate the load-store consistency assumption: The different views show the same data. You can write a 32-bit integer, then read a byte from the middle, and it will work just like in C or C++.</p>
 <p>The main benefit of this mode is that it uses as much memory on the heap as C and C++ normally do. We are literally laying things out in memory as they do. This mode is also quite fast in many cases. Also, you can successfully run code that does not have load-store consistency. There are two downsides though,</p>

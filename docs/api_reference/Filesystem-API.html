@@ -70,7 +70,7 @@
         
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten (under-construction)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten (ready-for-review)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#emscripten-toolchain">Emscripten Toolchain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#porting-code-to-use-emscripten">Porting code to use Emscripten</a></li>
 </ul>
@@ -83,7 +83,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
 </ul>
 </li>
@@ -417,7 +417,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../contributing/LLVM-Types-in-JavaScript.html">LLVM Types in JavaScript (wiki-import)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS (ready-for-review)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference (under-construction)</a><ul class="current">
@@ -652,7 +652,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference (under-construction)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk) (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#purpose">Purpose</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
@@ -834,8 +834,12 @@
 </div>
 <div class="section" id="devices">
 <h2>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten supports registering arbitrary device drivers composed of a device id and a set of unique stream callbacks. Once a driver has been registered with <a class="reference internal" href="#FS.registerDevice" title="FS.registerDevice"><tt class="xref js js-func docutils literal"><span class="pre">FS.registerDevice()</span></tt></a>, a device node (acting as an interface between the device and the file system) can be created to reference it with <a class="reference internal" href="#FS.mkdev" title="FS.mkdev"><tt class="xref js js-func docutils literal"><span class="pre">FS.mkdev()</span></tt></a>.</p>
-<p>Any stream referencing the new node will inherit the stream callbacks registered for the device, making all of the high-level FS operations transparently interact with the device.</p>
+<p>Emscripten supports registering arbitrary device drivers composed of a device id and a set of device-specific stream callbacks. Once a driver has been registered with <a class="reference internal" href="#FS.registerDevice" title="FS.registerDevice"><tt class="xref js js-func docutils literal"><span class="pre">FS.registerDevice()</span></tt></a>, a device node can be created to reference it (using <a class="reference internal" href="#FS.mkdev" title="FS.mkdev"><tt class="xref js js-func docutils literal"><span class="pre">FS.mkdev()</span></tt></a>).</p>
+<p>The device node acts as an interface between the device and the file system. Any stream referencing the new node will inherit the stream callbacks registered for the device, making all of the high-level FS operations transparently interact with the device.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Every devices is different and unique. While common file operations like <tt class="docutils literal"><span class="pre">open</span></tt>, <tt class="docutils literal"><span class="pre">close</span></tt>, <tt class="docutils literal"><span class="pre">read</span></tt>, <tt class="docutils literal"><span class="pre">write</span></tt>, are typically supported (and inherited by file streams to provide a layer of abstraction for the equivalent <em>libc</em> functions to call), each device should implement whatever callbacks it needs based on its unique characteristics.</p>
+</div>
 <dl class="function">
 <dt id="FS.makedev">
 <tt class="descclassname">FS.</tt><tt class="descname">makedev</tt><big>(</big><em>ma</em>, <em>mi</em><big>)</big><a class="headerlink" href="#FS.makedev" title="Permalink to this definition">¶</a></dt>
@@ -857,14 +861,14 @@
 <dl class="function">
 <dt id="FS.registerDevice">
 <tt class="descclassname">FS.</tt><tt class="descname">registerDevice</tt><big>(</big><em>dev</em>, <em>ops</em><big>)</big><a class="headerlink" href="#FS.registerDevice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Registers a device driver for the specified id / callbacks.</p>
+<dd><p>Registers the specified device driver with a set of callbacks.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dev</strong> &#8211; The specific device, created using <tt class="xref js js-func docutils literal"><span class="pre">makedev()</span></tt>.</li>
-<li><strong>ops</strong> (<em>object</em>) &#8211; <strong>HamishW</strong> What values can these take. I believe from above &#8220;a set of unique stream callbacks. What does that mean?</li>
+<li><strong>dev</strong> &#8211; The specific device driver id, created using <tt class="xref js js-func docutils literal"><span class="pre">makedev()</span></tt>.</li>
+<li><strong>ops</strong> (<em>object</em>) &#8211; The set of callbacks required by the device. For an example, see the <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/library_nodefs.js#L213)">NODEFS default callbacks</a>.</li>
 </ul>
 </td>
 </tr>
@@ -919,8 +923,16 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>type</strong> &#8211; The <a class="reference internal" href="#filesystem-api-filesystems"><em>file system type</em></a>: <tt class="docutils literal"><span class="pre">MEMFS</span></tt>, <tt class="docutils literal"><span class="pre">NODEFS</span></tt>, or <tt class="docutils literal"><span class="pre">IDBFS</span></tt>.</li>
-<li><strong>opts</strong> (<em>object</em>) &#8211; <strong>HamishW</strong> What are the options. I can see { root: &#8216;.&#8217; } in the source.</li>
-<li><strong>mountpoint</strong> (<em>string</em>) &#8211; The directory where the file system is to be mounted. <strong>HamishW</strong> What is this relative to? I guess on MEMFS this is virtual file system with root at your current directory at build time? I guess on other systems it is the full path with drive on the local file system?</li>
+<li><strong>opts</strong> (<em>object</em>) &#8211; <p>A generic settings object used by the underlying file system.</p>
+<p><tt class="docutils literal"><span class="pre">NODFES</span></tt> uses the <cite>root</cite> parameter to map the Emscripten directory to physical directory. For example, to mount the current folder as a NODEFS instance:</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre>FS.mkdir(&#39;/working&#39;);
+FS.mount(NODEFS, { root: &#39;.&#39; }, &#39;/working&#39;);
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><strong>mountpoint</strong> (<em>string</em>) &#8211; A path to an existing local Emscripten directory where the file system is to be mounted. It can be either an absolute path, or something relative to the current directory.</li>
 </ul>
 </td>
 </tr>
@@ -978,7 +990,7 @@ function myAppShutdown(callback) {
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>populate</strong> (<em>bool</em>) &#8211; <tt class="docutils literal"><span class="pre">true</span></tt> to initialize Emscripten&#8217;s file system data with the data from the file system&#8217;s persistent source, and <tt class="docutils literal"><span class="pre">false</span></tt> to save Emscripten`s file system data to the file system&#8217;s persistent source.</li>
-<li><strong>callback</strong> &#8211; <strong>HamishW</strong> When is this called - on completion? Is there anything specific the callback needs to do?</li>
+<li><strong>callback</strong> &#8211; A notification callback function that is invoked on completion of the synchronization.</li>
 </ul>
 </td>
 </tr>
@@ -1296,7 +1308,10 @@ FS.chmod(&#39;forbidden&#39;, 0000);
 <dt id="FS.chown">
 <tt class="descclassname">FS.</tt><tt class="descname">chown</tt><big>(</big><em>path</em>, <em>uid</em>, <em>gid</em><big>)</big><a class="headerlink" href="#FS.chown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the ownership of the specified file to the given user or group id.</p>
-<p><strong>HamishW</strong> Should we have note here saying that on broweser ownership is automatically granted to the caller, so that this command is ignored?</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This call exists to provide a more &#8220;complete&#8221; API mapping for ported code. Values set are effectively ignored.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1316,6 +1331,10 @@ FS.chmod(&#39;forbidden&#39;, 0000);
 <dt id="FS.lchown">
 <tt class="descclassname">FS.</tt><tt class="descname">lchown</tt><big>(</big><em>path</em>, <em>uid</em>, <em>gid</em><big>)</big><a class="headerlink" href="#FS.lchown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to Identical to <a class="reference internal" href="#FS.chown" title="FS.chown"><tt class="xref js js-func docutils literal"><span class="pre">FS.chown()</span></tt></a>. However, if path is a symbolic link then the properties will be set on the link itself, not the file that it links to.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This call exists to provide a more &#8220;complete&#8221; API mapping for ported code. Values set are effectively ignored.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1335,6 +1354,10 @@ FS.chmod(&#39;forbidden&#39;, 0000);
 <dt id="FS.fchown">
 <tt class="descclassname">FS.</tt><tt class="descname">fchown</tt><big>(</big><em>fd</em>, <em>uid</em>, <em>gid</em><big>)</big><a class="headerlink" href="#FS.fchown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to <a class="reference internal" href="#FS.chown" title="FS.chown"><tt class="xref js js-func docutils literal"><span class="pre">FS.chown()</span></tt></a>. However, a raw file descriptor is supplied as <tt class="docutils literal"><span class="pre">fd</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This call exists to provide a more &#8220;complete&#8221; API mapping for ported code. Values set are effectively ignored.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
