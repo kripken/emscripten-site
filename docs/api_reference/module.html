@@ -814,7 +814,7 @@
   <div class="section" id="module-object-ready-for-review">
 <span id="module"></span><h1>Module object (ready-for-review)<a class="headerlink" href="#module-object-ready-for-review" title="Permalink to this headline">¶</a></h1>
 <p><tt class="docutils literal"><span class="pre">Module</span></tt> is a global JavaScript object, with attributes that Emscripten-generated code calls at various points in its execution.</p>
-<p>Developers provide an implementation of <tt class="docutils literal"><span class="pre">Module</span></tt> to control the execution of code. For example, to define how notification messages from Emscripten are displayed, developers implement the <a class="reference internal" href="#Module.print" title="Module.print"><tt class="xref js js-attr docutils literal"><span class="pre">Module.print</span></tt></a> attribute.</p>
+<p>Developers can provide an implementation of <tt class="docutils literal"><span class="pre">Module</span></tt> to control the execution of code. For example, to define how notification messages from Emscripten are displayed, developers implement the <a class="reference internal" href="#Module.print" title="Module.print"><tt class="xref js js-attr docutils literal"><span class="pre">Module.print</span></tt></a> attribute.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last"><tt class="docutils literal"><span class="pre">Module</span></tt> is also used to provide access functions (see <a class="reference internal" href="preamble.js.html#ccall" title="ccall"><tt class="xref js js-func docutils literal"><span class="pre">ccall()</span></tt></a>) in a way that avoids issues with function name minification at higher optimisation levels. These functions are documented as part of their own APIs.</p>
@@ -829,19 +829,25 @@
 <div class="section" id="creating-module">
 <span id="module-creating"></span><h2><a class="toc-backref" href="#id1">Creating Module</a><a class="headerlink" href="#creating-module" title="Permalink to this headline">¶</a></h2>
 <p>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-pre-js"><em>emcc&#8217;s</em></a> <tt class="docutils literal"><span class="pre">--pre-js</span></tt> option to add JavaScript code that defines (or extends) the <tt class="docutils literal"><span class="pre">Module</span></tt> object with the behaviour you need.</p>
-<p>When generating only JavaScript, no <tt class="docutils literal"><span class="pre">Module</span></tt> object is created by default, and the behaviour is entirely defined by the developer. For example, creating a <tt class="docutils literal"><span class="pre">Module</span></tt> object with the following code will cause all notifications from the program to be calls to <tt class="docutils literal"><span class="pre">alert()</span></tt>.</p>
+<p>When generating only JavaScript (as opposed to HTML), no <tt class="docutils literal"><span class="pre">Module</span></tt> object is created by default, and the behaviour is entirely defined by the developer. For example, creating a <tt class="docutils literal"><span class="pre">Module</span></tt> object with the following code will cause all notifications from the program to be calls to <tt class="docutils literal"><span class="pre">alert()</span></tt>.</p>
 <blockquote>
 <div><div class="highlight-cpp"><div class="highlight"><pre>var Module = {
-  &#39;print&#39;: function(text) { alert(text) }
+  &#39;print&#39;: function(text) { alert(&#39;stdout: &#39; + text) }
+  &#39;printErr&#39;: function(text) { alert(&#39;stderr: &#39; + text) }
 };
 </pre></div>
 </div>
 </div></blockquote>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
-<p class="last">If you run closure compiler on your code (which is done by default in optimisation level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-02</em></a> and higher), you will need quotation marks around the properties of <tt class="docutils literal"><span class="pre">Module</span></tt> as in the example above (and you need to run closure on the compiled code together with the declaration of <tt class="docutils literal"><span class="pre">Module</span></tt>).</p>
+<p class="last">If you run closure compiler on your code (which is optional, and can be done by <tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>), you will need quotation marks around the properties of <tt class="docutils literal"><span class="pre">Module</span></tt> as in the example above (and you need to run closure on the compiled code together with the declaration of <tt class="docutils literal"><span class="pre">Module</span></tt>, which is done automatically for a <tt class="docutils literal"><span class="pre">-pre-js</span></tt> file).</p>
 </div>
-<p>When generating HTML, Emscripten creates a <tt class="docutils literal"><span class="pre">Module</span></tt> object with default methods (see <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/shell.html#L1220">src/shell.html</a>). In this case you should again use <tt class="docutils literal"><span class="pre">--pre-js</span></tt>, but this time to add properties to the existing <tt class="docutils literal"><span class="pre">Module</span></tt> object.</p>
+<p>When generating HTML, Emscripten creates a <tt class="docutils literal"><span class="pre">Module</span></tt> object with default methods (see <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/shell.html#L1220">src/shell.html</a>). In this case you should again use <tt class="docutils literal"><span class="pre">--pre-js</span></tt>, but this time to add properties to the existing <tt class="docutils literal"><span class="pre">Module</span></tt> object, for example</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre>Module[&#39;print&#39;] = function(text) { alert(&#39;stdout: &#39; + text) };
+</pre></div>
+</div>
+</div></blockquote>
 </div>
 <div class="section" id="affecting-execution">
 <h2><a class="toc-backref" href="#id2">Affecting execution</a><a class="headerlink" href="#affecting-execution" title="Permalink to this headline">¶</a></h2>
@@ -849,7 +855,13 @@
 <dl class="attribute">
 <dt id="Module.print">
 <tt class="descclassname">Module.</tt><tt class="descname">print</tt><a class="headerlink" href="#Module.print" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when something is printed to standard output.</p>
+<dd><p>Called when something is printed to standard output (stdout)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Module.printErr">
+<tt class="descclassname">Module.</tt><tt class="descname">printErr</tt><a class="headerlink" href="#Module.printErr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when something is printed to standard error (stderr)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -883,7 +895,7 @@
 <dl class="attribute">
 <dt id="Module.noExitRuntime">
 <tt class="descclassname">Module.</tt><tt class="descname">noExitRuntime</tt><a class="headerlink" href="#Module.noExitRuntime" title="Permalink to this definition">¶</a></dt>
-<dd><p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, the runtime is not shut down after <tt class="docutils literal"><span class="pre">run</span></tt> completes. Shutting down the runtime calls shutdown callbacks, for example <tt class="docutils literal"><span class="pre">atexit</span></tt> calls. If you want to be able to continue to use the code after <tt class="docutils literal"><span class="pre">run()</span></tt> finishes, it is safer to set this.</p>
+<dd><p>If set to <tt class="docutils literal"><span class="pre">true</span></tt>, the runtime is not shut down after <tt class="docutils literal"><span class="pre">run</span></tt> completes. Shutting down the runtime calls shutdown callbacks, for example <tt class="docutils literal"><span class="pre">atexit</span></tt> calls. If you want to be able to continue to use the code after <tt class="docutils literal"><span class="pre">run()</span></tt> finishes, it is necessary to set this. This is automatically set for you if you use an API command that implies that you want the runtime to not be shut down, for example <tt class="docutils literal"><span class="pre">emscripten_set_main_loop</span></tt>.</p>
 </dd></dl>
 
 </div>
