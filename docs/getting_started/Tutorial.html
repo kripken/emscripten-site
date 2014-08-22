@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Tutorial (ready-for-review) &mdash; Emscripten 1.20.0 documentation</title>
+  <title>Emscripten Tutorial (ready-for-review) &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.20.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.23.0 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started (ready-for-review)" href="index.html"/>
         <link rel="next" title="Getting started using Emscripten from the Visual Studio 2010 IDE (under-construction)" href="getting_started_with_emscripten_and_vs2010.html"/>
         <link rel="prev" title="Download and install (ready-for-review)" href="downloads.html"/> 
@@ -717,11 +717,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#reporting-bugs">Reporting bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#contributing-to-the-site">Contributing to the site</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#building-the-site">Building the site</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../site/about.html#make-html">make html</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#installing-sphinx">Installing Sphinx</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../site/about.html#ubuntu">Ubuntu</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#site-builds">Site builds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#sdk-builds">SDK Builds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#build-version">Build version</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#writing-and-updating-articles">Writing and updating articles</a><ul>
@@ -776,7 +778,7 @@
         
               <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
          
-		      <li style="text-align:right;"><a class="navlink-short" href="https://github.com/kripken/emscripten">Github</a><a class="navlink-long" href="https://github.com/kripken/emscripten">Github Project</a></li>
+		      <li style="text-align:right;"><a class="navlink-short external" href="https://github.com/kripken/emscripten">Github</a><a class="navlink-long external" href="https://github.com/kripken/emscripten">Github Project</a></li>
            	
      </ul>
 	 <!-- <div style="clear:both;"></div> -->
@@ -821,7 +823,7 @@
 <div class="section" id="first-things-first">
 <h2>First things first<a class="headerlink" href="#first-things-first" title="Permalink to this headline">¶</a></h2>
 <p>Make sure you have <a class="reference internal" href="downloads.html#sdk-download-and-install"><em>downloaded and installed</em></a> Emscripten (the exact approach for doing this will depend your operating system: Linux, Windows, or Mac).</p>
-<p>Emscripten is accessed using the <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>Emscripten Compiler Frontend (emcc) (ready-for-review)</em></a>. This script invokes all the other tools needed to build your code, and can act as a drop-in replacement for a standard compiler like <em>gcc</em>. It is called on the command line using <tt class="docutils literal"><span class="pre">./emcc</span></tt> or <tt class="docutils literal"><span class="pre">./em++</span></tt>.</p>
+<p>Emscripten is accessed using the <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>Emscripten Compiler Frontend (emcc) (ready-for-review)</em></a>. This script invokes all the other tools needed to build your code, and can act as a drop-in replacement for a standard compiler like <em>gcc</em> or <em>clang</em>. It is called on the command line using <tt class="docutils literal"><span class="pre">./emcc</span></tt> or <tt class="docutils literal"><span class="pre">./em++</span></tt>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">On Windows the tool is called using the slightly different syntax: <tt class="docutils literal"><span class="pre">emcc</span></tt> or <tt class="docutils literal"><span class="pre">em++</span></tt>. The remainder of this tutorial uses the Linux approach (<tt class="docutils literal"><span class="pre">./emcc</span></tt>).</p>
@@ -848,10 +850,8 @@
 <div class="section" id="running-emscripten">
 <h2>Running Emscripten<a class="headerlink" href="#running-emscripten" title="Permalink to this headline">¶</a></h2>
 <p>You can now compile your first C++ file to JavaScript.</p>
-<p>First, lets have a look at the file to be compiled: <strong>hello_world.cpp</strong>. This is the simplest test code in the SDK, and as you can see, all it does is print &#8220;hello, world!&#8221; to the console and then exit.</p>
+<p>First, lets have a look at the file to be compiled: <strong>hello_world.c</strong>. This is the simplest test code in the SDK, and as you can see, all it does is print &#8220;hello, world!&#8221; to the console and then exit.</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include&lt;stdio.h&gt;</span>
-
-<span class="k">class</span> <span class="nc">Test</span> <span class="p">{};</span> <span class="c1">// This will fail in C mode</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello, world!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
@@ -860,7 +860,7 @@
 </pre></div>
 </div>
 <p>To build the JavaScript version of this code, simply specify the C++ file after <em>emcc</em>:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_world</span><span class="p">.</span><span class="n">cpp</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_world</span><span class="p">.</span><span class="n">c</span>
 </pre></div>
 </div>
 <p>There should now be an <strong>a.out.js</strong> file in the current directory. Run it using <a class="reference internal" href="../site/glossary.html#term-node-js"><em class="xref std std-term">node.js</em></a>:</p>
@@ -876,7 +876,7 @@
 <div class="section" id="generating-html">
 <h2>Generating HTML<a class="headerlink" href="#generating-html" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten can also generate HTML for testing embedded JavaScript. To generate HTML, use the <tt class="docutils literal"><span class="pre">-o</span></tt> (<a class="reference internal" href="../tools_reference/emcc.html#emcc-o-target"><em>output</em></a>) command and specify an html file as the target file:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_world</span><span class="p">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello</span><span class="p">.</span><span class="n">html</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_world</span><span class="p">.</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello</span><span class="p">.</span><span class="n">html</span>
 </pre></div>
 </div>
 <p>Open the web page in a web browser. As you can see, the framework defines a text area for displaying the output of the <tt class="docutils literal"><span class="pre">printf()</span></tt> calls in the native code.</p>
@@ -963,13 +963,13 @@
 <p>Open <tt class="docutils literal"><span class="pre">hello.html</span></tt> in the <em>Firefox web browser</em> to see the data from <strong>hello_world_file.txt</strong> being displayed.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Unfortunately <em>Chrome</em> and <em>Internet Explorer</em> do not support <tt class="docutils literal"><span class="pre">file://</span></tt> <a class="reference internal" href="../site/glossary.html#term-xhr"><em class="xref std std-term">XHR</em></a> requests, and can&#8217;t directly load the local file in which preloaded data is stored. For these browsers you&#8217;ll need to serve the files using a webserver. The easiest way to do this is to use the python <strong>SimpleHTTPServer</strong> (in the current directory do <tt class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">SimpleHTTPServer</span> <span class="pre">8080</span></tt> and then open <tt class="docutils literal"><span class="pre">localhost:8080/hello.html</span></tt>).</p>
+<p class="last">Unfortunately <em>Chrome</em> and <em>Internet Explorer</em> do not support <tt class="docutils literal"><span class="pre">file://</span></tt> <a class="reference internal" href="../site/glossary.html#term-xhr"><em class="xref std std-term">XHR</em></a> requests, and can&#8217;t directly load the local file in which preloaded data is stored. For these browsers you&#8217;ll need to serve the files using a webserver. The easiest way to do this is to use the python <strong>SimpleHTTPServer</strong> (in the current directory do <tt class="docutils literal"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">SimpleHTTPServer</span> <span class="pre">8080</span></tt> and then open <tt class="docutils literal"><span class="pre">http://localhost:8080/hello.html</span></tt>).</p>
 </div>
 <p>For more information about working with the file system see the <a class="reference internal" href="../packaging/Filesystem-Guide.html#filesystem-guide"><em>Filesystem Guide (wiki-import)</em></a>, <a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api"><em>File System API (under-construction)</em></a> and <a class="reference internal" href="../coding/Synchronous-Virtual-XHR-Backed-File-System-Usage.html#synchronous-virtual-xhr-backed-file-system-usage"><em>Synchronous Virtual XHR Backed File System Usage (wiki-import)</em></a>.</p>
 </div>
 <div class="section" id="optimizing-code">
 <h2>Optimizing code<a class="headerlink" href="#optimizing-code" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten, like <em>gcc</em>, generates unoptimized code by default. You can generate <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><em>slightly-optimized</em></a> code with the <tt class="docutils literal"><span class="pre">-O1</span></tt> command line argument (run the test code from the <a class="reference internal" href="../site/glossary.html#term-sdk-root-directory"><em class="xref std std-term">SDK root directory</em></a>):</p>
+<p>Emscripten, like <em>gcc</em> and <em>clang</em>, generates unoptimized code by default. You can generate <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><em>slightly-optimized</em></a> code with the <tt class="docutils literal"><span class="pre">-O1</span></tt> command line argument (run the test code from the <a class="reference internal" href="../site/glossary.html#term-sdk-root-directory"><em class="xref std std-term">SDK root directory</em></a>):</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="o">-</span><span class="n">O1</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_world</span><span class="p">.</span><span class="n">cpp</span>
 </pre></div>
 </div>
@@ -1064,11 +1064,11 @@
         
               <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
          
-		      <a class="footer-navlink-short" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
+		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
          
-		      <a class="footer-navlink-short" href="https://github.com/kripken/emscripten/wiki">Wiki</a><a class="footer-navlink-long" href="https://github.com/kripken/emscripten/wiki">Wiki</a>
+		      <a class="footer-navlink-short external" href="https://github.com/kripken/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/kripken/emscripten/wiki">Wiki</a>
          
-		      <a class="footer-navlink-short" href="https://plus.google.com/100622854474489221138">Google+</a><a class="footer-navlink-long" href="https://plus.google.com/100622854474489221138">Google+</a>
+		      <a class="footer-navlink-short external" href="https://plus.google.com/100622854474489221138">Google+</a><a class="footer-navlink-long external" href="https://plus.google.com/100622854474489221138">Google+</a>
         
               <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
         
@@ -1143,7 +1143,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.20.0',
+            VERSION:'1.23.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
