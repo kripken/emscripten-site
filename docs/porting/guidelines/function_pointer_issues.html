@@ -854,10 +854,7 @@
 <h1>Function Pointer Issues (ready-for-review)<a class="headerlink" href="#function-pointer-issues-ready-for-review" title="Permalink to this headline">¶</a></h1>
 <p>There are three general issues with function pointers:</p>
 <ol class="arabic">
-<li><p class="first"><a class="reference internal" href="../../site/glossary.html#term-clang"><em class="xref std std-term">Clang</em></a> generates different code for C and C++ calls when a structure is passed <strong>by value</strong> (for completeness, one convention is <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">byval</span></tt> and the other is <tt class="docutils literal"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></tt>). The two formats are incompatible with each other, and you may get a runtime warning.</p>
-<p>The workaround is to pass the structure by reference, or simply not mix C and C++ in that location (for example, rename the <strong>.c</strong> file to <strong>.cpp</strong>).</p>
-</li>
-<li id="function-pointer-issues-point-asmjs"><p class="first"><a class="reference internal" href="#asm-pointer-casts"><em>Function pointer casts</em></a> can cause function pointer calls to fail.</p>
+<li><p class="first"><a class="reference internal" href="#asm-pointer-casts"><em>Function pointer casts</em></a> can cause function pointer calls to fail.</p>
 <p>Function pointers are stored in a specific table based on their signature when they are <em>declared</em>. When a function is called the code searches for it in the table associated with its <em>current</em> function pointer signature. If the function pointer used to call the function does not have the same signature as the original type, the calling code will look for it in the wrong table.</p>
 <p>For example, consider a function declared as <tt class="docutils literal"><span class="pre">int</span> <span class="pre">(int)</span></tt> (return <tt class="docutils literal"><span class="pre">int</span></tt>, receive <tt class="docutils literal"><span class="pre">int</span></tt>) and hence added to the table <tt class="docutils literal"><span class="pre">FUNCTION_TABLE_ii</span></tt>. If you cast a function pointer to it to <tt class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></tt> (no return, receive <tt class="docutils literal"><span class="pre">int</span></tt>), then the code will look for the function in <tt class="docutils literal"><span class="pre">FUNCTION_TABLE_vi</span></tt>.</p>
 <p>You may see compilation warnings for this error:</p>
@@ -869,9 +866,9 @@
 <li><p class="first">When using optimisation <a class="reference internal" href="../../tools_reference/emcc.html#emcc-o2"><em>-O2</em></a> and above, comparing function pointers of different types can give false positives, and bugs with incorrect function pointers are potentially more misleading. To check if this is the cause of problems with your code, you can compile with <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js#L201">ALIASING_FUNCTION_POINTERS</a> unset (<tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt>).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>In <strong>asm.js</strong>, function pointers are stored within a function-type specific table.</p>
+<p>In <strong>asm.js</strong>, function pointers are stored within a function-type specific table (as in the <tt class="docutils literal"><span class="pre">FUNCTION_TABLE_ii</span></tt> example from before).</p>
 <p>At lower levels of optimisation each function pointer has a unique index value across all the function-type tables (a function pointer will exist at a specific index in one table only, and there will be an empty slot at that index in all the other tables). As a result, comparing function pointers (indexes) gives an accurate result, and attempting to call a function pointer in the wrong table will throw an error as that index will be empty.</p>
-<p>A optimisation <tt class="docutils literal"><span class="pre">O2</span></tt> and above, the tables are optimised so that all the function pointers are in sequential indexes. This is a useful optimisation because the tables are much more compact without all the empty slots, but it does mean that the  function index is no longer &#8220;globally&#8221; unique. Each function is now uniquely indexed using both its table and its index within that table.</p>
+<p>A optimisation <tt class="docutils literal"><span class="pre">-O2</span></tt> and above, the tables are optimised so that all the function pointers are in sequential indexes. This is a useful optimisation because the tables are much more compact without all the empty slots, but it does mean that the  function index is no longer &#8220;globally&#8221; unique. Each function is now uniquely indexed using both its table and its index within that table.</p>
 <p>As a result, at higher optimisations:</p>
 <blockquote class="last">
 <div><ul class="simple">
@@ -881,9 +878,12 @@
 </div></blockquote>
 </div>
 </li>
+<li><p class="first">Older versions of <a class="reference internal" href="../../site/glossary.html#term-clang"><em class="xref std std-term">clang</em></a> can generate different code for C and C++ calls when a structure is passed <strong>by value</strong> (for completeness, one convention is <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">byval</span></tt> and the other is <tt class="docutils literal"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></tt>). The two formats are incompatible with each other, and you may get a warning.</p>
+<p>The workaround is to pass the structure by reference, or simply not mix C and C++ in that location (for example, rename the <strong>.c</strong> file to <strong>.cpp</strong>).</p>
+</li>
 </ol>
 <div class="section" id="asm-pointer-casts">
-<span id="id1"></span><h2>Asm pointer casts<a class="headerlink" href="#asm-pointer-casts" title="Permalink to this headline">¶</a></h2>
+<span id="function-pointer-issues-point-asmjs"></span><span id="id1"></span><h2>Asm pointer casts<a class="headerlink" href="#asm-pointer-casts" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned <a class="reference internal" href="#function-pointer-issues-point-asmjs"><em>above</em></a>, in <strong>asm.js</strong> mode function pointers must be called using their correct type or the call will fail. This is because each function pointer is stored in a specific table based on its signature when it is declared: casting the pointer to another type will cause calling code to look for the function pointer in the wrong place.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -902,35 +902,35 @@
 <span class="k">typedef</span> <span class="nf">void</span><span class="p">(</span><span class="o">*</span><span class="n">voidReturnType</span><span class="p">)(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">);</span>
 
 <span class="kt">void</span> <span class="nf">voidReturn</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;voidReturn: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">message</span> <span class="p">);</span>
-        <span class="p">}</span>
+  <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;voidReturn: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">message</span> <span class="p">);</span>
+  <span class="p">}</span>
 
 
 <span class="kt">int</span> <span class="nf">intReturn</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;intReturn: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">message</span> <span class="p">);</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;intReturn: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">message</span> <span class="p">);</span>
+  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="kt">void</span> <span class="nf">voidReturnNoParam</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;voidReturnNoParam:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;voidReturnNoParam:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">);</span>
 <span class="p">}</span>
 
 <span class="kt">void</span> <span class="nf">callFunctions</span><span class="p">(</span><span class="k">const</span> <span class="n">voidReturnType</span> <span class="o">*</span> <span class="n">funcs</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kt">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="k">while</span> <span class="p">(</span><span class="n">current</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">funcs</span><span class="p">[</span><span class="n">current</span><span class="p">](</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span>
-                <span class="n">current</span><span class="o">++</span><span class="p">;</span>
-        <span class="p">}</span>
+  <span class="kt">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">current</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">funcs</span><span class="p">[</span><span class="n">current</span><span class="p">](</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span>
+    <span class="n">current</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">voidReturnType</span> <span class="n">functionList</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+  <span class="n">voidReturnType</span> <span class="n">functionList</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
 
-        <span class="n">functionList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">voidReturn</span><span class="p">;</span>
-        <span class="n">functionList</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">voidReturnType</span><span class="p">)</span><span class="n">intReturn</span><span class="p">;</span>         <span class="c1">// Breaks in Emscripten.</span>
-        <span class="n">functionList</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">voidReturnType</span><span class="p">)</span><span class="n">voidReturnNoParam</span><span class="p">;</span> <span class="c1">// Breaks in Emscripten.</span>
+  <span class="n">functionList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">voidReturn</span><span class="p">;</span>
+  <span class="n">functionList</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">voidReturnType</span><span class="p">)</span><span class="n">intReturn</span><span class="p">;</span>         <span class="c1">// Breaks in Emscripten.</span>
+  <span class="n">functionList</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">voidReturnType</span><span class="p">)</span><span class="n">voidReturnNoParam</span><span class="p">;</span> <span class="c1">// Breaks in Emscripten.</span>
 
-        <span class="n">callFunctions</span><span class="p">(</span><span class="n">functionList</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">callFunctions</span><span class="p">(</span><span class="n">functionList</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -960,31 +960,31 @@
 <p>As stated above, there are two solutions to this problem.</p>
 <p>The code fragment below shows how we can cast the function pointer back to its original signature just before calling it, so that it is found in the correct table. This requires the receiver of the table to have special knowledge about what is in the list (you can see this in the special case for index <tt class="docutils literal"><span class="pre">1</span></tt> in the while loop). Additionally, <a class="reference internal" href="../../tools_reference/emcc.html#emccdoc"><em>emcc</em></a> will continue to complain about the original cast taking place in <tt class="docutils literal"><span class="pre">main()</span></tt> when adding the function to <tt class="docutils literal"><span class="pre">functionList[1]</span></tt>.</p>
 <div class="code cpp highlight-cpp"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">callFunctions</span><span class="p">(</span><span class="k">const</span> <span class="n">voidReturnType</span> <span class="o">*</span> <span class="n">funcs</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="k">while</span> <span class="p">(</span><span class="n">current</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span> <span class="n">current</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
-            <span class="p">((</span><span class="n">intReturnType</span><span class="p">)</span><span class="n">funcs</span><span class="p">[</span><span class="n">current</span><span class="p">])(</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span> <span class="c1">// Special-case cast</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="n">funcs</span><span class="p">[</span><span class="n">current</span><span class="p">](</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="n">current</span><span class="o">++</span><span class="p">;</span>
+  <span class="kt">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">current</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">current</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="p">((</span><span class="n">intReturnType</span><span class="p">)</span><span class="n">funcs</span><span class="p">[</span><span class="n">current</span><span class="p">])(</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span> <span class="c1">// Special-case cast</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">funcs</span><span class="p">[</span><span class="n">current</span><span class="p">](</span><span class="s">&quot;hello world&quot;</span><span class="p">);</span>
     <span class="p">}</span>
+    <span class="n">current</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The code fragment below shows how to make and use an adapter function which calls the original function. The adapter is defined with the same signature as it will have when called, and is hence available in the expected function-pointer table.</p>
 <div class="code cpp highlight-cpp"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">voidReturnNoParamAdapter</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">voidReturnNoParam</span><span class="p">();</span>
-                <span class="p">}</span>
+  <span class="n">voidReturnNoParam</span><span class="p">();</span>
+<span class="p">}</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">voidReturnType</span> <span class="n">functionList</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+  <span class="n">voidReturnType</span> <span class="n">functionList</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
 
-        <span class="n">functionList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">voidReturn</span><span class="p">;</span>
-        <span class="n">functionList</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">voidReturnType</span><span class="p">)</span><span class="n">intReturn</span><span class="p">;</span> <span class="c1">// Fixed in callFunctions</span>
-        <span class="n">functionList</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">voidReturnNoParamAdapter</span><span class="p">;</span> <span class="c1">// Fixed by Adapter</span>
+  <span class="n">functionList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">voidReturn</span><span class="p">;</span>
+  <span class="n">functionList</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">voidReturnType</span><span class="p">)</span><span class="n">intReturn</span><span class="p">;</span> <span class="c1">// Fixed in callFunctions</span>
+  <span class="n">functionList</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">voidReturnNoParamAdapter</span><span class="p">;</span> <span class="c1">// Fixed by Adapter</span>
 
-        <span class="n">callFunctions</span><span class="p">(</span><span class="n">functionList</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">callFunctions</span><span class="p">(</span><span class="n">functionList</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
