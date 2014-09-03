@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Code Generation Modes (wiki-import) &mdash; Emscripten 1.23.0 documentation</title>
+  <title>Emscripten Runtime Environment (under-construction) &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -31,9 +31,9 @@
 
   
     <link rel="top" title="Emscripten 1.23.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Compiling and running projects (under-construction)" href="index.html"/>
-        <link rel="next" title="Running html files with emrun (wiki-import)" href="Running-html-files-with-emrun.html"/>
-        <link rel="prev" title="Building Projects (wiki-import)" href="Building-Projects.html"/> 
+        <link rel="up" title="Porting" href="../porting/index.html"/>
+        <link rel="next" title="Connecting C++ and JavaScript" href="../porting/connecting_cpp_and_javascript/index.html"/>
+        <link rel="prev" title="Emscripten browser environment (wiki-import)" href="../porting/Emscripten-browser-environment.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -171,7 +171,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="../porting/index.html">Porting</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html#code-that-cannot-be-compiled">Code that cannot be compiled</a></li>
@@ -197,6 +197,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Emscripten-browser-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Emscripten-browser-environment.html#execution-lifecycle">Execution lifecycle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Emscripten-browser-environment.html#notes">Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Emscripten Runtime Environment (under-construction)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-memory-model">Emscripten Memory Model</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
@@ -238,13 +242,13 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems (under-construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/files/file_systems_overview.html">File System Overview (wiki-import)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/files/file_systems_overview.html#packaging-files">Packaging Files</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/files/file_systems_overview.html#manually-using-the-fs-api">Manually using the FS API</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging files (wiki-import)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging Files (wiki-import)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/files/packaging_files.html#customizing-the-data-url">Customizing the data URL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/files/packaging_files.html#mapping">&#64; Mapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/files/packaging_files.html#monitoring-read-files">Monitoring Read Files</a></li>
@@ -256,7 +260,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics (under-construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten (wiki-import)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html#what-egl-is-not">What EGL is not?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html#how-to-create-a-webgl-context-using-egl">How to create a WebGL context using EGL?</a></li>
@@ -272,19 +276,31 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/debugging/index.html">Debugging (under-construction)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/debugging/Debugging.html">Debugging (wiki-import)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/debugging/Debugging.html#id1">Debugging</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/debugging/Debugging.html#debugging-emscripten-issues">Debugging Emscripten Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging (wiki-import)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#limitation-or-bug">Limitation or Bug?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#optimizations">Optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#useful-compilation-settings">Useful Compilation Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#inspecting-the-generated-code">Inspecting the Generated Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-info">Debug Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#the-autodebugger">The AutoDebugger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#specific-issues">Specific Issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#infinite-loops">Infinite loops</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#additional-tips">Additional Tips</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#useful-links">Useful Links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#additional-help">Additional Help</a></li>
 </ul>
 </li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../optimizing/index.html">Optimization (under-construction)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-the-generated-code">Optimizing the Generated Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/index.html">Optimizing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Generated Code (wiki-import)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#using-emcc">Using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
@@ -307,13 +323,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-slowness">Troubleshooting Slowness</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-the-source-code.html">Optimizing the source code (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-the-source-code.html#id1">Optimizing the source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-the-source-code.html">Optimizing Source Code (wiki-import)</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and running projects (under-construction)</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects (wiki-import)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#id1">Building Projects</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#optimizations">Optimizations</a></li>
@@ -323,17 +336,6 @@
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#dynamic-linking">Dynamic Linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#linking-in-libraries">Linking in libraries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#configure">Configure</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Code Generation Modes (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Code Generation Modes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#typed-arrays">Typed Arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#bit-integer-modes">64-bit Integer Modes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#double-mode">Double Mode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#exceptions">Exceptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#memory-compression-a-k-a-quantum-size-1">Memory Compression (a.k.a QUANTUM_SIZE == 1)</a></li>
 </ul>
 </li>
 </ul>
@@ -441,7 +443,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten (under-construction)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#getting-started">Getting started</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#branches-of-interest">Branches of interest</a></li>
@@ -460,11 +462,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#debugging-tricks">Debugging tricks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/LLVM-Types-in-JavaScript.html">LLVM Types in JavaScript (wiki-import)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference (under-construction)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#inline-assembly-javascript">Inline assembly/JavaScript</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#defines">Defines</a></li>
@@ -700,17 +701,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference (under-construction)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#tools-and-sdk-targets">Tools and SDK targets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-manager-concepts">SDK manager concepts</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-manager-concepts">SDK manager concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&#8220;How to&#8221; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
@@ -816,9 +815,9 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and running projects (under-construction)</a>
+          <a class="breadcrumb-box-item" href="../porting/index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Code Generation Modes (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (under-construction)</div>
   </div>
  
 </div>
@@ -834,78 +833,30 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and running projects (under-construction)</a>
+          <a class="breadcrumb-box-item" href="../porting/index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Code Generation Modes (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (under-construction)</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="code-generation-modes-wiki-import">
-<span id="code-generation-modes"></span><h1>Code Generation Modes (wiki-import)<a class="headerlink" href="#code-generation-modes-wiki-import" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="emscripten-runtime-environment-under-construction">
+<span id="emscripten-runtime-environment"></span><h1>Emscripten Runtime Environment (under-construction)<a class="headerlink" href="#emscripten-runtime-environment-under-construction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="emscripten-memory-model">
+<span id="typed-arrays"></span><span id="code-generation-modes"></span><span id="id1"></span><h2>Emscripten Memory Model<a class="headerlink" href="#emscripten-memory-model" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten&#8217;s memory model is known as <a class="reference internal" href="../site/glossary.html#term-typed-arrays-mode-2"><em class="xref std std-term">Typed Arrays Mode 2</em></a>. It represents memory using a single <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed array</a>, with different <em>views</em> providing access to different types (<a class="reference internal" href="../api_reference/preamble.js.html#HEAPU32" title="HEAPU32"><tt class="xref js js-data docutils literal"><span class="pre">HEAPU32</span></tt></a> for 32-bit unsigned integers, etc.)</p>
+<div class="admonition note" id="typed-arrays-mode-2">
+<p class="first admonition-title">Note</p>
+<p><em>Typed Arrays Mode 2</em> is the <em>only</em> memory model supported by the <a class="reference internal" href="../building_from_source/LLVM-Backend.html#llvm-backend"><em>Fastcomp</em></a> compiler, and it is the <em>default</em> memory model for the <a class="reference internal" href="../building_from_source/LLVM-Backend.html#original-compiler-core"><em>old compiler</em></a>.</p>
+<p class="last">Compared to other models tried by the project, it can be used for a broad range of arbitrary compiled code, and is relatively fast.</p>
+</div>
+<p>The model lays out items in memory in the same way as with normal C and C++, and as a result it uses the same amount of memory.</p>
+<p>We currently align the stack to 4-byte boundaries (this means that reading 8-byte values is slower as they must be read in two parts and then combined).</p>
+<p>This model allows you to use code that violates the load-store consistency assumption. Since the different views show the same data, you can (say) write a 32-bit integer, then read a byte from the middle, and it will work just like in C or C++.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This article was migrated from the wiki (Fri, 25 Jul 2014 04:21) and is now the &#8220;master copy&#8221; (the version in the wiki will be deleted). It may not be a perfect rendering of the original but we hope to fix that soon!</p>
-</div>
-<div class="section" id="id1">
-<h2>Code Generation Modes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>One of the reasons for writing Emscripten itself in JavaScript was to be able to easily test different methods of generating code. As a consequence, Emscripten currently supports various code generation modes, each with different features.</p>
-<div class="section" id="typed-arrays">
-<span id="id2"></span><h3>Typed Arrays<a class="headerlink" href="#typed-arrays" title="Permalink to this headline">¶</a></h3>
-<p>Typed arrays are currently enabled by default (in mode 2, see below), because that has the greatest support for arbitrary code.</p>
-<p>There are two modes for typed arrays in Emscripten, 1 and 2. To explain them, first recall how Emscripten manages memory <strong>without</strong> typed arrays: It uses <tt class="docutils literal"><span class="pre">HEAP</span></tt> to represent memory, where <tt class="docutils literal"><span class="pre">HEAP</span></tt> is a normal JavaScript array. We write to the first address of  multi-byte values to keep things fast, so writing a 32-bit integer will end up as <tt class="docutils literal"><span class="pre">[value,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></tt> - we do not write anything to the upper 3 bytes. We will also read just from the first location. This is much faster than splitting things up into bytes and vice versa, but requires that we have &#8220;load-store consistency&#8221;, which is that if we read a value, we wrote the same type there. (Otherwise, if we write a 32-bit int and read the second byte, we won&#8217;t get what we expect.) <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> when enabled will check for violations of load-store consistency.</p>
-<p>Disabling typed arrays can be done with <tt class="docutils literal"><span class="pre">USE_TYPED_ARRAYS=0</span></tt>. This is safer in the sense that not all browsers support typed arrays. However, typed arrays can be optimized very well in some cases, and can support code that does not have load-store consistency.</p>
-<div class="section" id="typed-arrays-mode-1">
-<h4>Typed Arrays Mode 1<a class="headerlink" href="#typed-arrays-mode-1" title="Permalink to this headline">¶</a></h4>
-<p>With <tt class="docutils literal"><span class="pre">USE_TYPED_ARRAYS=1</span></tt>, two typed arrays will represent memory. One will contain integer values, the other float values. When we write an integer to memory, we write to the first, and when we write a float, we write to the second. (LLVM is typed, so we always know what values we are writing/reading.) Otherwise, this mode is identical to without typed arrays: We still require load-store consistency and so forth.</p>
-<p>The benefit of this mode is that memory is implemented as two typed arrays, which JavaScript engines can often optimize very well. The downsides, though are</p>
-<ul class="simple">
-<li>In things like memcpy, where we don&#8217;t know the types, we must copy <strong>both</strong> arrays.</li>
-<li>We can take more memory than without typed arrays, since we have two arrays now for memory, one of which uses 32 bits for each memory address, and one of which uses 64.</li>
-<li>We cannot dynamically resize these arrays in an easy way. If you try to use more memory than was originally set up, we need to create new typed arrays and copy everything into them, which is slow. Setting the total size of memory (<tt class="docutils literal"><span class="pre">TOTAL_MEMORY</span></tt>) can avoid this, but only if you know in advance the maximum you will need.</li>
-<li>Not all LLVM optimizations are possible, and not all C/C++ code is compatible with this mode.</li>
-</ul>
-<p>This mode is generally much faster than mode 0, but often slower then mode 2.</p>
-</div>
-<div class="section" id="typed-arrays-mode-2">
-<span id="id3"></span><h4>Typed Arrays Mode 2<a class="headerlink" href="#typed-arrays-mode-2" title="Permalink to this headline">¶</a></h4>
-<p>This is the default mode.</p>
-<p>With <tt class="docutils literal"><span class="pre">USE_TYPED_ARRAYS=2</span></tt>, one typed array buffer will represent memory, while different views into it will allow us to access different types (<a class="reference internal" href="../api_reference/preamble.js.html#HEAPU32" title="HEAPU32"><tt class="xref js js-data docutils literal"><span class="pre">HEAPU32</span></tt></a> for 32-bit unsigned integers, for example). Because of that, it is possible to violate the load-store consistency assumption: The different views show the same data. You can write a 32-bit integer, then read a byte from the middle, and it will work just like in C or C++.</p>
-<p>The main benefit of this mode is that it uses as much memory on the heap as C and C++ normally do. We are literally laying things out in memory as they do. This mode is also quite fast in many cases. Also, you can successfully run code that does not have load-store consistency. There are two downsides though,</p>
-<ul class="simple">
-<li>Because of how typed array views work, we must do pointer shifts: To access a 32-bit value at memory location X, we need to read from the 32-bit view at index X divided by 4 (since it looks like an array, whose indexes each represent 4 bytes). So the code ends up filled with <tt class="docutils literal"><span class="pre">&lt;&lt;2</span></tt>, <tt class="docutils literal"><span class="pre">&gt;&gt;2</span></tt> and so forth. We can optimize this some more, but it will remain an overhead. (However, other binary data APIs are coming to JavaScript which can help here.)</li>
-<li>We currently align the stack and so forth to 4-byte boundaries. This means that reading 8-byte values is slower (we must read them in two parts, and combine them, see <tt class="docutils literal"><span class="pre">I64_MODE</span></tt> and <tt class="docutils literal"><span class="pre">DOUBLE_MODE</span></tt>,    below).</li>
-</ul>
-<p>Note that <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt>, in this mode, will ignore load-store consistency violations, since they don&#8217;t matter. Alignment of reads and writes, though, will be checked, which is important since reading unaligned values will fail as mentioned earlier.</p>
-</div>
-</div>
-<div class="section" id="bit-integer-modes">
-<h3>64-bit Integer Modes<a class="headerlink" href="#bit-integer-modes" title="Permalink to this headline">¶</a></h3>
-<p>As mentioned earlier, 64-bit integers cannot be represented directly in JavaScript, whose numbers are doubles, which cannot contain all 64-bit integer values. In typed arrays mode 2, we implement 64-bit integers as pairs of 32-bit values, but we do not emulate addition and multiplication, instead we perform that as doubles - which is faster. Bit operations like and and or, however, are done with full precision.</p>
-<p>Note that in modes other than typed arrays mode 2, we implement 64-bit integers entirely as doubles. If you need 64-bit integers to work, use typed arrays mode 2.</p>
-</div>
-<div class="section" id="double-mode">
-<h3>Double Mode<a class="headerlink" href="#double-mode" title="Permalink to this headline">¶</a></h3>
-<p>In every mode but typed arrays mode 2, doubles work fine in a simple manner. However, in typed arrays mode 2 we cannot read unaligned doubles, because of the typed array API. Therefore the default behavior here is <tt class="docutils literal"><span class="pre">DOUBLE_MODE=1</span></tt>, in which we carefully read doubles as two 32-bit values, to not hit alignment problems. This is slower than mode 0, obviously.</p>
-<p>It should be possible to modify clang to always align doubles to 64-bit boundaries (gcc has <tt class="docutils literal"><span class="pre">-malign-double</span></tt>), this should be investigated - it would mean we no longer need mode 1 here.</p>
-</div>
-<div class="section" id="exceptions">
-<h3>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
-<p>Exceptions can work in code compiled by emscripten, however due to how JS engines work they are typically very slow (all JS engines currently disable most optimizations inside <tt class="docutils literal"><span class="pre">try</span> <span class="pre">{}</span> <span class="pre">catch()</span> <span class="pre">{}</span></tt> blocks...). For that reason, in <tt class="docutils literal"><span class="pre">-O1</span></tt> and above emscripten disables exception catching by default, because often LLVM generates code that can catch exceptions even when it isn&#8217;t needed (in C++, exception catching often has zero cost unless an exception actually happens, so there is little downside there, but in JS there is).</p>
-<p>To get full exception handling support in <tt class="docutils literal"><span class="pre">-O1</span></tt> and above, run emcc with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></tt>. Note that enabling exceptions will make the code larger due to the additional try-catch blocks (which cannot be minified very well).</p>
-</div>
-<div class="section" id="memory-compression-a-k-a-quantum-size-1">
-<span id="code-generation-modes-quantum-size"></span><h3>Memory Compression (a.k.a QUANTUM_SIZE == 1)<a class="headerlink" href="#memory-compression-a-k-a-quantum-size-1" title="Permalink to this headline">¶</a></h3>
-<p>By default, Emscripten sets <tt class="docutils literal"><span class="pre">QUANTUM_SIZE</span></tt> to 4, which means that a &#8216;normal&#8217; element - like an int or a pointer - takes 4 &#8216;bytes&#8217;. That is the normal behavior on 32-bit systems, and allows Emscripten to properly compile a great deal of C/C++ code. However, the downside is that each int or pointer takes 4 places in the HEAP array, which is how Emscripten models the normal C/C++ memory space. This makes HEAP much bigger than it needs to be, which takes more memory, and also slows things down (for example, memset ends up clearing larger areas of memory).</p>
-<p>By setting QUANTUM_SIZE to 1, memory is &#8216;compressed&#8217; - it is not longer isomorphic to normal C/C++ memory. So for example a structure with an int, a double, and a pointer would have a size of 3 (one for each variable), instead of the normal 16 (4 for the int and pointer, 8 for the double). This leads to significantly more optimized code, both in terms of speed and memory use.</p>
-<p>However, this is risky, since with QUANTUM_SIZE of 1, Emscripten rewrites the .ll, trying to fix all the hard-coded places where it assumes the normal memory space. So consider this experimental for now.</p>
-<p>Notes:</p>
-<ul class="simple">
-<li>With QUANTUM_SIZE == 1, Emscripten will warn you about <tt class="docutils literal"><span class="pre">ptrtoint</span></tt> and <tt class="docutils literal"><span class="pre">inttoptr</span></tt> operations (in the generated .js file). You should make sure there are no problems in each of those cases, and perhaps modify the original C/C++ to avoid generating that kind of code (the changes are often simple).</li>
-<li>You can <strong>not</strong> use <tt class="docutils literal"><span class="pre">QUANTUM_SIZE</span> <span class="pre">==</span> <span class="pre">1</span></tt> with typed arrays mode 2. The reason is that typed arrays mode 2 is C-like memory layout, whereas in <tt class="docutils literal"><span class="pre">QUANTUM_SIZE</span> <span class="pre">==</span> <span class="pre">1</span></tt> we radically change the layout (ints take 1 memory address instead of 4, etc.), and the two can&#8217;t be mixed.</li>
-</ul>
-<p>The second version of the Bullet demo in Emscripten uses <tt class="docutils literal"><span class="pre">QUANTUM_SIZE</span> <span class="pre">==</span> <span class="pre">1</span></tt>. It appears to give a speedup of around 25%.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> ignores load-store consistency violations, since they don&#8217;t matter. Alignment of reads and writes will be checked, which is important since reading unaligned values can fail.</p>
 </div>
 </div>
 </div>
@@ -916,10 +867,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Running-html-files-with-emrun.html" class="btn btn-neutral float-right" title="Running html files with emrun (wiki-import)"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../porting/connecting_cpp_and_javascript/index.html" class="btn btn-neutral float-right" title="Connecting C++ and JavaScript"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Building-Projects.html" class="btn btn-neutral" title="Building Projects (wiki-import)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../porting/Emscripten-browser-environment.html" class="btn btn-neutral" title="Emscripten browser environment (wiki-import)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -970,9 +921,9 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and running projects (under-construction)</a>
+          <a class="breadcrumb-box-item" href="../porting/index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Code Generation Modes (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (under-construction)</div>
   </div>
  
 </div> -->
@@ -997,7 +948,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Code%20Generation%20Modes%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/Code-Generation-Modes&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Emscripten%20Runtime%20Environment%20%28under-construction%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/Code-Generation-Modes&labels=bug">Page bug</a>
       </li>
   </ul>
   
