@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten browser environment (wiki-import) &mdash; Emscripten 1.23.0 documentation</title>
+  <title>Emscripten Runtime Environment (wiki-import) &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
     <link rel="top" title="Emscripten 1.23.0 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
-        <link rel="next" title="Emscripten Runtime Environment (under-construction)" href="../compiling/Code-Generation-Modes.html"/>
+        <link rel="next" title="Connecting C++ and JavaScript" href="connecting_cpp_and_javascript/index.html"/>
         <link rel="prev" title="Browser limitations" href="guidelines/browser_limitations.html"/> 
 
   
@@ -192,15 +192,12 @@
 <li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Browser limitations</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Emscripten browser environment (wiki-import)</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Emscripten Runtime Environment (wiki-import)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#browser-main-loop">Browser main loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#execution-lifecycle">Execution lifecycle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../compiling/Code-Generation-Modes.html">Emscripten Runtime Environment (under-construction)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/Code-Generation-Modes.html#emscripten-memory-model">Emscripten Memory Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-memory-model">Emscripten memory model</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
@@ -328,16 +325,21 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#id1">Building Projects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#optimizations">Optimizations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#debug-info">Debug info</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#optimizations">Optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#debug-info">Debug info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#notes">Notes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually Using emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#system-libraries">System Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#issues">Issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build System Self-Execution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic Linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#linking-in-libraries">Linking in libraries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure">Configure</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#alternatives-to-emcc">Alternatives to emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples">Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html">Running html files with emrun (wiki-import)</a><ul>
@@ -457,7 +459,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#running-a-specific-test">Running a specific test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#test-failures">Test failures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#general-compiler-overview">General compiler overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#wiki-pages-you-should-read">Wiki pages you should read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#articles-you-should-read">Articles you should read</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#bisection">Bisection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#debugging-tricks">Debugging tricks</a></li>
 </ul>
@@ -650,10 +652,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#conversion-functions-strings-pointers-and-arrays">Conversion functions — strings, pointers and arrays</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#run-dependencies">Run dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#stack-trace">Stack trace</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#type-accessors-for-typed-arrays-mode-2">Type accessors for Typed Arrays Mode 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#type-accessors-for-the-memory-model">Type accessors for the memory model</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API (under-construction)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
@@ -663,13 +665,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#setting-up-standard-i-o-devices">Setting up standard I/O devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#id1">File system API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#id2">File system API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-types">File types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#paths">Paths</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object (ready-for-review)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#creating-module">Creating Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#affecting-execution">Affecting execution</a></li>
 </ul>
 </li>
@@ -817,7 +819,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten browser environment (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (wiki-import)</div>
   </div>
  
 </div>
@@ -835,18 +837,14 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten browser environment (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (wiki-import)</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="emscripten-browser-environment-wiki-import">
-<span id="emscripten-browser-environment"></span><h1>Emscripten browser environment (wiki-import)<a class="headerlink" href="#emscripten-browser-environment-wiki-import" title="Permalink to this headline">¶</a></h1>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This article was migrated from the wiki (Fri, 25 Jul 2014 04:21) and is now the &#8220;master copy&#8221; (the version in the wiki will be deleted). It may not be a perfect rendering of the original but we hope to fix that soon!</p>
-</div>
+  <div class="section" id="emscripten-runtime-environment-wiki-import">
+<span id="emscripten-runtime-environment"></span><h1>Emscripten Runtime Environment (wiki-import)<a class="headerlink" href="#emscripten-runtime-environment-wiki-import" title="Permalink to this headline">¶</a></h1>
 <p>The browser environment is different than the environment a normal C/C++ application expects. The main differences are how input and output work, and the fact that the main loop must be asynchronous.</p>
 <p>For input and output, if you use <a class="reference internal" href="../site/glossary.html#term-sdl"><em class="xref std std-term">SDL</em></a> etc. then everything should basically be taken care of for you. Emscripten implements the familiar SDL API for the browser environment. Typically you should need to refactor nothing or a very small amount of code for this.</p>
 <p>The main loop being asynchronous, however, is trickier.</p>
@@ -896,6 +894,22 @@
 <li><tt class="docutils literal"><span class="pre">SDL_QUIT</span></tt> is tricky to implement in browsers. The current Emscripten implementation of it will work if you use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a>: As the page is shut, it will force a final direct call to the main loop, giving it a chance to notice the <tt class="docutils literal"><span class="pre">SDL_QUIT</span></tt> event. So if you do not use a main loop, you will not notice it - your app will close before your next event handling. Note also that there are limitations on what you can do as the page shuts (in onunload), some actions like showing alerts are banned by browsers.</li>
 </ul>
 </div>
+<div class="section" id="emscripten-memory-model">
+<span id="id1"></span><h2>Emscripten memory model<a class="headerlink" href="#emscripten-memory-model" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten&#8217;s memory model is known as <a class="reference internal" href="../site/glossary.html#term-typed-arrays-mode-2"><em class="xref std std-term">Typed Arrays Mode 2</em></a>. It represents memory using a single <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed array</a>, with different <em>views</em> providing access to different types (<a class="reference internal" href="../api_reference/preamble.js.html#HEAPU32" title="HEAPU32"><tt class="xref js js-data docutils literal"><span class="pre">HEAPU32</span></tt></a> for 32-bit unsigned integers, etc.)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><em>Typed Arrays Mode 2</em> is the <em>only</em> memory model supported by the <a class="reference internal" href="../building_from_source/LLVM-Backend.html#llvm-backend"><em>Fastcomp</em></a> compiler, and it is the <em>default</em> memory model for the <a class="reference internal" href="../building_from_source/LLVM-Backend.html#original-compiler-core"><em>old compiler</em></a>.</p>
+<p class="last">Compared to other models tried by the project, it can be used for a broad range of arbitrary compiled code, and is relatively fast.</p>
+</div>
+<p>The model lays out items in memory in the same way as with normal C and C++, and as a result it uses the same amount of memory.</p>
+<p>We currently align the stack to 4-byte boundaries (this means that reading 8-byte values is slower as they must be read in two parts and then combined).</p>
+<p>This model allows you to use code that violates the load-store consistency assumption. Since the different views show the same data, you can (say) write a 32-bit integer, then read a byte from the middle, and it will work just like in C or C++.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> ignores load-store consistency violations, since they don&#8217;t matter. Alignment of reads and writes will be checked, which is important since reading unaligned values can fail.</p>
+</div>
+</div>
 </div>
 
 
@@ -904,7 +918,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../compiling/Code-Generation-Modes.html" class="btn btn-neutral float-right" title="Emscripten Runtime Environment (under-construction)"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="connecting_cpp_and_javascript/index.html" class="btn btn-neutral float-right" title="Connecting C++ and JavaScript"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="guidelines/browser_limitations.html" class="btn btn-neutral" title="Browser limitations"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -960,7 +974,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten browser environment (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (wiki-import)</div>
   </div>
  
 </div> -->
@@ -976,7 +990,7 @@
   <ul class="wy-breadcrumbs">
       <li class="wy-breadcrumbs-aside">
         
-          <a href="../../_sources/docs/porting/Emscripten-browser-environment.txt" rel="nofollow"> View page source</a>
+          <a href="../../_sources/docs/porting/emscripten-runtime-environment.txt" rel="nofollow"> View page source</a>
         
       </li>
 
@@ -985,7 +999,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Emscripten%20browser%20environment%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/Emscripten-browser-environment&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Emscripten%20Runtime%20Environment%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/emscripten-runtime-environment&labels=bug">Page bug</a>
       </li>
   </ul>
   
