@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WebIDL Binder (under-construction) &mdash; Emscripten 1.23.0 documentation</title>
+  <title>WebIDL Binder (ready-for-review) &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
     <link rel="top" title="Emscripten 1.23.0 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Files and File Systems" href="../files/index.html"/>
-        <link rel="prev" title="Embind (under-construction)" href="embind.html"/> 
+        <link rel="prev" title="Embind (ready-for-review)" href="embind.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -210,11 +210,10 @@
 <li class="toctree-l4"><a class="reference internal" href="Interacting-with-code.html#access-memory-from-javascript">Access memory from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Interacting-with-code.html#affect-execution-behaviour">Affect execution behaviour</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Interacting-with-code.html#environment-variables">Environment variables</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Interacting-with-code.html#webidl-binder">WebIDL Binder</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Interacting-with-code.html#embind">Embind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Interacting-with-code.html#binding-c-and-javascript-webidl-binder-and-embind">Binding C++ and JavaScript — WebIDL Binder and Embind</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="embind.html">Embind (under-construction)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="embind.html">Embind (ready-for-review)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="embind.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="embind.html#classes">Classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="embind.html#memory-management">Memory management</a></li>
@@ -228,31 +227,43 @@
 <li class="toctree-l4"><a class="reference internal" href="embind.html#performance">Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">WebIDL Binder (under-construction)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#wrapping-a-c-class">Wrapping a C++ class</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#generating-the-bindings-glue-code">Generating the bindings glue code</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">WebIDL Binder (ready-for-review)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#using-c-classes-in-javascript">Using C++ classes in JavaScript</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#extended-properties">Extended properties</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#jsimplementation-subclasses-in-javascript">JSImplementation: Subclasses in JavaScript</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#other-issues">Other Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pointers-references-value-types-ref-and-value">Pointers, References, Value types (Ref and Value)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#const">Const</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#un-deletable-classes-nodelete">Un-deletable classes (NoDelete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#defining-inner-classes-and-classes-inside-namespaces-prefix">Defining inner classes and classes inside namespaces (Prefix)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operators">Operators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enums">enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sub-classing-c-base-classes-in-javascript-jsimplementation">Sub-classing C++ base classes in JavaScript (JSImplementation)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pointers-and-comparisons">Pointers and comparisons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#null">NULL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#void">void*</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#webidl-types">WebIDL types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#test-and-example-code">Test and example code</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../files/index.html">Files and File Systems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../files/file_systems_overview.html">File System Overview (wiki-import)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../files/file_systems_overview.html#packaging-files">Packaging Files</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../files/file_systems_overview.html#manually-using-the-fs-api">Manually using the FS API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../files/file_systems_overview.html">File System Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../files/file_systems_overview.html#emscripten-file-system-runtime-environment">Emscripten file system runtime environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/file_systems_overview.html#emscripten-file-system-architecture">Emscripten file system architecture</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../files/packaging_files.html">Packaging Files (wiki-import)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#customizing-the-data-url">Customizing the data URL</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#mapping">&#64; Mapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#monitoring-read-files">Monitoring Read Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../files/packaging_files.html">Packaging Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#packaging-using-emcc">Packaging using emcc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#packaging-using-the-file-packager-tool">Packaging using the file packager tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#changing-the-data-file-location">Changing the data file location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#valid-character-set">Valid Character Set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#monitoring-file-usage">Monitoring file usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/packaging_files.html#test-code">Test code</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage (wiki-import)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html#instructions-for-use">Instructions for use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html#test-code">Test code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html#instructions">Instructions</a></li>
 </ul>
 </li>
 </ul>
@@ -264,11 +275,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/EGL-Support-in-Emscripten.html#implementation-status-and-notes">Implementation Status and Notes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html">OpenGL support (wiki-import)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#emulation-levels">Emulation levels</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#what-is-the-webgl-friendly-subset-of-opengl">What is the &#8220;WebGL-friendly subset of OpenGL&#8221;?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#writing-for-the-webgl-friendly-subset-of-opengl">Writing for the WebGL-friendly subset of OpenGL</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#what-if-i-need-additional-gl-features-not-supported-yet">What if I need additional GL features not supported yet?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (under-construction)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
 </li>
 </ul>
@@ -324,22 +335,23 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../compiling/index.html">Compiling and Running Projects</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#optimizations">Optimizations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#debug-info">Debug info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually Using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#system-libraries">System Libraries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-libraries">Using Libraries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#issues">Issues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#build-system-self-execution">Build System Self-Execution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#dynamic-linking">Dynamic Linking</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#linking-in-libraries">Linking in libraries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#configure">Configure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#sdl-configuration">SDL Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#build-system-issues">Build system issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#pseudo-dynamic-linking">Pseudo-Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#alternatives-to-emcc">Alternatives to emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html">Running html files with emrun (wiki-import)</a><ul>
@@ -482,7 +494,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/emscripten.h.html#id3">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_reference/emscripten.h.html#emscripten-file-system-api">Emscripten File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/emscripten.h.html#emscripten-asynchronous-file-system-api">Emscripten Asynchronous File System API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/emscripten.h.html#typedefs">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/emscripten.h.html#id4">Functions</a></li>
 </ul>
@@ -644,6 +656,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/html5.h.html#id99">Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/html5.h.html#css">CSS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/html5.h.html#id102">Functions</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/preamble.js.html">preamble.js</a><ul>
@@ -673,6 +689,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/module.html">Module object</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#affecting-execution">Affecting execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#other-methods">Other methods</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/val.h.html">val.h (under-construction)</a></li>
@@ -692,6 +709,28 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/bind.h.html#maps">Maps</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/bind.h.html#enums">Enums</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/bind.h.html#constants">Constants</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/trace.h.html">trace.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/trace.h.html#usage">Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#compiler-interaction">Compiler Interaction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#initialization-and-teardown">Initialization and Teardown</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#contexts">Contexts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#frames">Frames</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#annotating-allocations">Annotating Allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#overall-memory-usage">Overall Memory Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#logging-messages">Logging Messages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#reporting-errors">Reporting Errors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/trace.h.html#running-the-server">Running the Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/trace.h.html#design-notes">Design Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#client-server-design">Client / Server Design</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#data-batching">Data Batching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/trace.h.html#do-not-perturb-the-heap">Do Not Perturb The Heap</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/trace.h.html#functions">Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/advanced-apis.html">Advanced APIs</a><ul>
@@ -821,7 +860,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Connecting C++ and JavaScript</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;WebIDL Binder (under-construction)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;WebIDL Binder (ready-for-review)</div>
   </div>
  
 </div>
@@ -841,27 +880,28 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Connecting C++ and JavaScript</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;WebIDL Binder (under-construction)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;WebIDL Binder (ready-for-review)</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="webidl-binder-under-construction">
-<span id="webidl-binder"></span><h1>WebIDL Binder (under-construction)<a class="headerlink" href="#webidl-binder-under-construction" title="Permalink to this headline">¶</a></h1>
-<p>The <em>WebIDL Binder</em> provides a simple and lightweight approach to binding C++ so that it can be called from JavaScript (when compiled) as if it were a normal JavaScript library.</p>
-<p>The <em>WebIDL Binder</em> uses <a class="reference external" href="http://heycam.github.io/webidl/">WebIDL</a> to define the bindings, an interface language which was <em>specifically designed</em> for gluing together C++ and JavaScript. Not only is this a natural choice for the bindings, but because it is low-level, it is relatively easy to optimize.</p>
-<p>This topic shows how to define an IDL file for a C++ class (and other C++ items), generate the C++ and JavaScript wrapper/glue code, and then compile this as part of your Emscripten project.</p>
-<p>For a complete working example, see <strong>test_webidl</strong> in the <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_core.py">test suite</a> (sources <a class="reference external" href="https://github.com/kripken/emscripten/tree/master/tests/webidl">here</a>). The test suite code is guaranteed to work and covers more material than this article. Another good example is <a class="reference external" href="https://github.com/kripken/ammo.js/tree/master">ammo.js</a>, which uses the <em>WebIDL Binder</em> to port the Bullet Physics engine to the web.</p>
+  <div class="section" id="webidl-binder-ready-for-review">
+<span id="webidl-binder"></span><h1>WebIDL Binder (ready-for-review)<a class="headerlink" href="#webidl-binder-ready-for-review" title="Permalink to this headline">¶</a></h1>
+<p>The <em>WebIDL Binder</em> provides a simple and lightweight approach to binding C++, so that compiled code can be called from JavaScript as if it were a normal JavaScript library.</p>
+<p>The <em>WebIDL Binder</em> uses <a class="reference external" href="http://www.w3.org/TR/WebIDL/">WebIDL</a> to define the bindings, an interface language which was <em>specifically designed</em> for gluing together C++ and JavaScript. Not only is this a natural choice for the bindings, but because it is low-level it is relatively easy to optimize.</p>
+<p>The binder supports the subset of C++ types that can be expressed in WebIDL. This subset is more than sufficient for most use cases — examples of projects that have been ported using the binder include the <a class="reference external" href="https://github.com/kripken/box2d.js/#box2djs">Box2D</a> and <a class="reference external" href="https://github.com/kripken/ammo.js/#ammojs">Bullet</a> physics engines.</p>
+<p>This topic shows how bind and use C++ classes, functions and other types using IDL.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>An alternative to the <em>WebIDL Binder</em> is to use <a class="reference internal" href="embind.html#embind"><em>Embind (under-construction)</em></a>. This tool supports mapping sophisticated C++11 constructs between C++ and JavaScript in both directions.</p>
-<p>Both <em>Embind</em> and the <em>WebIDL Binder</em> require explicit declarations of what to bind together. However the <em>WebIDL Binder</em> is (arguably) easier to use, and does so at a lower-level which is simpler to optimize.</p>
-<p class="last">The <em>WebIDL Binder</em> does not currently support binding in the other direction (calling Web APIs from C++).</p>
+<p class="last">An alternative to the <em>WebIDL Binder</em> is to use <a class="reference internal" href="embind.html#embind"><em>Embind (ready-for-review)</em></a>. For more information see <a class="reference internal" href="Interacting-with-code.html#interacting-with-code-binding-cpp"><em>Binding C++ and JavaScript — WebIDL Binder and Embind</em></a>.</p>
 </div>
-<div class="section" id="wrapping-a-c-class">
-<h2>Wrapping a C++ class<a class="headerlink" href="#wrapping-a-c-class" title="Permalink to this headline">¶</a></h2>
-<p>The first step is to create a WebIDL file that describes the C++ class you are going to wrap. This file duplicates some of the information in the C++ header file, in a format that is explicitly designed both for easy parsing, and to represent code items in a way that is convenient for connecting to JavaScript.</p>
+<div class="section" id="a-quick-example">
+<h2>A quick example<a class="headerlink" href="#a-quick-example" title="Permalink to this headline">¶</a></h2>
+<p>Binding using the <em>WebIDL Binder</em> is a three-stage process: create a WebIDL file that describes the C++ interface, use the binder to generate C++ and JavaScript &#8220;glue&#8221; code, and finally compile this glue code with the Emscripten project.</p>
+<div class="section" id="defining-the-webidl-file">
+<h3>Defining the WebIDL file<a class="headerlink" href="#defining-the-webidl-file" title="Permalink to this headline">¶</a></h3>
+<p>The first step is to create a <em>WebIDL file</em> that describes the C++ types you are going to bind. This file duplicates some of the information in the C++ header file, in a format that is explicitly designed both for easy parsing, and to represent code items in a way that is convenient for connecting to JavaScript.</p>
 <p>For example, consider the following C++ classes:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Foo</span> <span class="p">{</span>
 <span class="nl">public:</span>
@@ -878,158 +918,360 @@
 </div>
 <p>The following IDL file can be used to describe them:</p>
 <div class="highlight-idl"><div class="highlight"><pre>interface Foo {
-  void Foo();
-  <span class="nb">long</span> getVal();
-  void setVal(<span class="nb">long</span> v);
+        void Foo();
+        <span class="nb">long</span> getVal();
+        void setVal(<span class="nb">long</span> v);
 };
 
 interface Bar {
-  void Bar(<span class="nb">long</span> val);
-  void doSomething();
+        void Bar(<span class="nb">long</span> val);
+        void doSomething();
 };
 </pre></div>
 </div>
-<p>The definitions include a constructor that allows you to construct them from JavaScript — this is just a function returning void that has the same name as the interface. Otherwise the definitions are fairly straightforward.</p>
+<p>The mapping between the IDL definition and the C++ is fairly obvious. The main things to notice are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The IDL class definitions include a function returning <tt class="docutils literal"><span class="pre">void</span></tt> that has the same name as the interface. This constructor allows you to create the object from JavaScript, and must be defined in IDL even if the C++ uses the default constructor (see <tt class="docutils literal"><span class="pre">Foo</span></tt> above).</li>
+<li>The type names in WebIDL are not identical to those in C++ (for example, <tt class="docutils literal"><span class="pre">int</span></tt> maps to <tt class="docutils literal"><span class="pre">long</span></tt> above). For more information about the mappings see <a class="reference internal" href="#webidl-binder-type-name"><em>WebIDL types</em></a>.</li>
+</ul>
+</div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The type names in WebIDL are not identical to those in C++. For example IDL <tt class="docutils literal"><span class="pre">long</span></tt> is a 32-bit integer, <tt class="docutils literal"><span class="pre">short</span></tt> is a 16-bit integer, etc. There are also types like <tt class="docutils literal"><span class="pre">DOMString</span></tt> which represent a JavaScript string.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">structs</span></tt> are defined in the same way as the classes above — using the <tt class="docutils literal"><span class="pre">interface</span></tt> keyword.</p>
 </div>
 </div>
 <div class="section" id="generating-the-bindings-glue-code">
-<h2>Generating the bindings glue code<a class="headerlink" href="#generating-the-bindings-glue-code" title="Permalink to this headline">¶</a></h2>
-<p>To generate bindings code, run</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">python</span> <span class="n">tools</span><span class="o">/</span><span class="n">webidl_binder</span><span class="p">.</span><span class="n">py</span> <span class="n">my_classes</span><span class="p">.</span><span class="n">idl</span> <span class="n">glue</span>
+<h3>Generating the bindings glue code<a class="headerlink" href="#generating-the-bindings-glue-code" title="Permalink to this headline">¶</a></h3>
+<p>The <em>bindings generator</em> (<a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tools/webidl_binder.py">tools/webidl_binder.py</a>) takes a Web IDL file name and an output file name as inputs, and creates C++ and JavaScript glue code files.</p>
+<p>For example, to create the glue code files <strong>glue.cpp</strong> and <strong>glue.js</strong> for the IDL file <strong>my_classes.idl</strong>, you would use the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python tools/webidl_binder.py my_classes.idl glue
 </pre></div>
 </div>
-<p>where <tt class="docutils literal"><span class="pre">my_classes.idl</span></tt> is the name of that IDL file, and glue is the name of the output file you want. The bindings generator will emit two files: <tt class="docutils literal"><span class="pre">glue.cpp</span></tt> and <tt class="docutils literal"><span class="pre">glue.js</span></tt>.</p>
-<p>To use those files, you should</p>
-<ol class="arabic simple">
-<li>Add <tt class="docutils literal"><span class="pre">--post-js</span> <span class="pre">glue.js</span></tt> in your final emcc command, so that it is
-included (at the end of your normal output).</li>
-<li>Add a cpp file to that emcc command, which contains something like</li>
+</div>
+<div class="section" id="compiling-the-project-using-the-bindings-glue-code">
+<h3>Compiling the project (using the bindings glue code)<a class="headerlink" href="#compiling-the-project-using-the-bindings-glue-code" title="Permalink to this headline">¶</a></h3>
+<p>To use the glue code files (<tt class="docutils literal"><span class="pre">glue.cpp</span></tt> and <tt class="docutils literal"><span class="pre">glue.js</span></tt>) in a project:</p>
+<ol class="arabic">
+<li><p class="first">Add <tt class="docutils literal"><span class="pre">--post-js</span> <span class="pre">glue.js</span></tt> in your final <em>emcc</em> command. The <a class="reference internal" href="../../tools_reference/emcc.html#emcc-post-js"><em>post-js</em></a> option adds the glue code at the end of the compiled output.</p>
+</li>
+<li><p class="first">Create a file <strong>my_glue_wrapper.cpp</strong> (say) to <tt class="docutils literal"><span class="pre">#include</span></tt> the headers of the classes you are binding and <em>glue.cpp</em>. This might have the following content:</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;...&gt; </span><span class="c1">// Where &quot;...&quot; represents the headers for the classes we are binding.</span>
+<span class="cp">#include &lt;glue.cpp&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The C++ glue code emitted by the <em>bindings generator</em> does not include the headers for the classes it binds because they are not present in the Web IDL file. The step above makes these available to the glue code. Another alternative would be to include the headers at the top of <strong>glue.cpp</strong>, but then they would be overwritten every time the IDL file is recompiled.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Add <strong>my_glue_wrapper.cpp</strong> to the final <em>emcc</em> command.</p>
+</li>
 </ol>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include&lt;..all the stuff the glue code needs, basically headers for the classes you are binding&gt;</span>
-
-<span class="cp">#include&lt;glue.cpp&gt;</span>
+<p>The final <em>emcc</em> command includes both the C++ and JavaScript glue code, which are built to work together:</p>
+<div class="highlight-bash"><div class="highlight"><pre>./emcc my_classes.cpp my_glue_wrapper.cpp --post-js glue.js -o output.js
 </pre></div>
 </div>
-<p>That way your emcc command will include both the C++ glue and the JavaScript glue, which are built to work together. The output should contain everything you need, with the classes now usable through JavaScript.</p>
+<p>The output now contains everything needed to use the C++ classes through JavaScript.</p>
+</div>
 </div>
 <div class="section" id="using-c-classes-in-javascript">
 <h2>Using C++ classes in JavaScript<a class="headerlink" href="#using-c-classes-in-javascript" title="Permalink to this headline">¶</a></h2>
-<p>Continuing the above example, you can write things like</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">var</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Module</span><span class="p">.</span><span class="n">Foo</span><span class="p">();</span>
-<span class="n">f</span><span class="p">.</span><span class="n">setVal</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
-<span class="n">alert</span><span class="p">(</span><span class="n">f</span><span class="p">.</span><span class="n">getVal</span><span class="p">());</span>
+<p>Once binding is complete, C++ objects can be created and used in JavaScript as though they were normal JavaScript objects. For example, continuing the above example, you can create the <tt class="docutils literal"><span class="pre">Foo</span></tt> and <tt class="docutils literal"><span class="pre">Bar</span></tt> objects and call methods on them.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">setVal</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">getVal</span><span class="p">());</span>
 
-<span class="n">var</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Module</span><span class="p">.</span><span class="n">Bar</span><span class="p">(</span><span class="mi">123</span><span class="p">);</span>
-<span class="n">b</span><span class="p">.</span><span class="n">doSomething</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mi">123</span><span class="p">);</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>and so forth.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p>Always access objects through the <a class="reference internal" href="../../api_reference/module.html#module"><em>Module object</em></a> object, as shown above.</p>
+<p class="last">While the objects are also available in the global namespace by default, there are cases where they will not be (for example, if you use the <a class="reference internal" href="../../site/glossary.html#term-closure-compiler"><em class="xref std std-term">closure compiler</em></a> to minify code or wrap compiled code in a function to avoid polluting the global namespace). You can of course use whatever name you like for the module by assigning it to a new variable: <tt class="docutils literal"><span class="pre">var</span> <span class="pre">MyModuleName</span> <span class="pre">=</span> <span class="pre">Module;</span></tt>.</p>
 </div>
-<div class="section" id="extended-properties">
-<h2>Extended properties<a class="headerlink" href="#extended-properties" title="Permalink to this headline">¶</a></h2>
-<p>By default normal-looking IDL can bind a lot of regular C++ to JavaScript. However, you may need to use IDL extended properties to handle various things.</p>
-<div class="section" id="ref-and-value">
-<h3>Ref and Value<a class="headerlink" href="#ref-and-value" title="Permalink to this headline">¶</a></h3>
-<p>For example, the IDL binder assumes when it sees</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">MyClass</span> <span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span> <span class="n">input</span><span class="p">);</span>
+<p>JavaScript will automatically garbage collect any of the wrapped C++ objects when there are no more references. If the C++ object doesn&#8217;t require specific clean up (i.e. it doesn&#8217;t have a destructor) then no other action need be taken.</p>
+<p>If a C++ object does need to be cleaned up, you must explicitly call <a class="reference internal" href="../../api_reference/module.html#Module.destroy" title="Module.destroy"><tt class="xref js js-func docutils literal"><span class="pre">Module.destroy(obj)</span></tt></a> to invoke its destructor. Then drop all references to the object so that it can be garbage collected. For example, if <tt class="docutils literal"><span class="pre">Bar</span></tt> were to allocate memory that requires cleanup:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mi">123</span><span class="p">);</span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span> <span class="c1">// If the C++ object requires clean up</span>
 </pre></div>
 </div>
-<p>in an interface, then both input and output values are pointers, <tt class="docutils literal"><span class="pre">MyClass*</span></tt> in C++. If, instead, they are references <tt class="docutils literal"><span class="pre">MyClass&amp;</span></tt> then you need to write</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">[</span><span class="n">Ref</span><span class="p">]</span> <span class="n">MyClass</span> <span class="n">process</span><span class="p">([</span><span class="n">Ref</span><span class="p">]</span> <span class="n">MyClass</span> <span class="n">input</span><span class="p">);</span>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The C++ constructor is called transparently when a C++ object is created in JavaScript. However there is no way to tell if a JavaScript object is about to be garbage collected, so the binder glue code can&#8217;t automatically call the destructor.</p>
+</div>
+</div>
+<div class="section" id="pointers-references-value-types-ref-and-value">
+<h2>Pointers, References, Value types (Ref and Value)<a class="headerlink" href="#pointers-references-value-types-ref-and-value" title="Permalink to this headline">¶</a></h2>
+<p>C++ arguments and return types can be pointers, references, or value types (allocated on the stack). The IDL file uses different decoration to represent each of these cases.</p>
+<p>Undecorated argument and return values in the IDL are assumed to be <em>pointers</em> in the C++:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">// C++</span>
+<span class="n">MyClass</span><span class="o">*</span> <span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">*</span> <span class="n">input</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>If you don&#8217;t do that, the generated glue C++ will not compile due to an error on failure to convert a pointer to an object.</p>
-<p>If the C++ returns a new object and not a reference <tt class="docutils literal"><span class="pre">MyClass</span> <span class="pre">process(MyClass*</span> <span class="pre">input)</span></tt>, then you should do</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">[</span><span class="n">Value</span><span class="p">]</span> <span class="n">MyClass</span> <span class="n">process</span><span class="p">([</span><span class="n">Ref</span><span class="p">]</span> <span class="n">MyClass</span> <span class="n">input</span><span class="p">);</span>
+<div class="highlight-idl"><div class="highlight"><pre><span class="o">//</span> WebIDL
+MyClass process(MyClass input);
 </pre></div>
 </div>
-<p>This will allocate a static instance of that class and return it. Note that that means there is a single such object, you should use it and immediately forget about it.</p>
+<p>References should be decorated using <tt class="docutils literal"><span class="pre">[Ref]</span></tt>:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">// C++</span>
+<span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">input</span><span class="p">);</span>
+</pre></div>
 </div>
-<div class="section" id="nodelete">
-<h3>NoDelete<a class="headerlink" href="#nodelete" title="Permalink to this headline">¶</a></h3>
-<p>If a class cannot be deleted (because the destructor is private), you can do</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">[</span><span class="n">NoDelete</span><span class="p">]</span>
-<span class="n">interface</span> <span class="n">Foo</span> <span class="p">{</span>
-  <span class="p">..</span>
-<span class="p">};</span>
+<div class="highlight-idl"><div class="highlight"><pre><span class="o">//</span> WebIDL
+[Ref] MyClass process([Ref] MyClass input);
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If <tt class="docutils literal"><span class="pre">[Ref]</span></tt> is omitted on a reference, the generated glue C++ will not compile (it fails when it tries to convert the reference — which it thinks is a pointer — to an object).</p>
+</div>
+<p>If the C++ returns an object (rather than a reference or a pointer) then the return type should be decorated using <tt class="docutils literal"><span class="pre">[Value]</span></tt>. This will allocate a static (singleton) instance of that class and return it. You should use immediately, and drop any references to it after use.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">// C++</span>
+<span class="n">MyClass</span> <span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">input</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-idl"><div class="highlight"><pre><span class="o">//</span> WebIDL
+[Value] MyClass process([Ref] MyClass input);
 </pre></div>
 </div>
 </div>
 <div class="section" id="const">
-<h3>Const<a class="headerlink" href="#const" title="Permalink to this headline">¶</a></h3>
-<p>You may need <tt class="docutils literal"><span class="pre">const</span></tt> to appear in the glue C++ code, so that it matches your main C++ code. You can do that by adding <tt class="docutils literal"><span class="pre">[Const]</span></tt> to an attribute or argument.</p>
-</div>
-<div class="section" id="prefix">
-<h3>Prefix<a class="headerlink" href="#prefix" title="Permalink to this headline">¶</a></h3>
-<p>If you have a C++ class that is inside a namespace or another class, you can still wrap it, by giving a prefix,</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">[</span><span class="n">Prefix</span><span class="o">=</span><span class="s">&quot;Space::&quot;</span><span class="p">]</span>
-<span class="n">interface</span> <span class="n">Inner</span> <span class="p">{</span>
-  <span class="p">..</span>
-<span class="p">};</span>
+<h2>Const<a class="headerlink" href="#const" title="Permalink to this headline">¶</a></h2>
+<p>C++ attributes, arguments or return types that use <tt class="docutils literal"><span class="pre">const</span></tt> can be specified in IDL using <tt class="docutils literal"><span class="pre">[Const]</span></tt>.</p>
+<p>For example, the following code fragments show the C++ and IDL for a function that returns a constant pointer object.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">//C++</span>
+<span class="k">const</span> <span class="n">myObject</span><span class="o">*</span> <span class="nf">getAsConst</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>Everywhere that <tt class="docutils literal"><span class="pre">Inner</span></tt> appears in the C++ glue code, it will show up as <tt class="docutils literal"><span class="pre">Space::Inner</span></tt>, and compilation can succeed.</p>
+<div class="highlight-idl"><div class="highlight"><pre><span class="o">//</span> WebIDL
+[Const] myObject getAsConst();
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">It is possible for an attribute or return type to have multiple specifiers. For, an attribute that is a contant reference would be marked up in the IDL using <tt class="docutils literal"><span class="pre">[Ref,</span> <span class="pre">Const]</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="un-deletable-classes-nodelete">
+<h2>Un-deletable classes (NoDelete)<a class="headerlink" href="#un-deletable-classes-nodelete" title="Permalink to this headline">¶</a></h2>
+<p>If a class cannot be deleted (because the destructor is private), specify <tt class="docutils literal"><span class="pre">[NoDelete]</span></tt> in the IDL file.</p>
+<div class="highlight-idl"><div class="highlight"><pre>[NoDelete]
+interface Foo {
+...
+};
+</pre></div>
+</div>
+</div>
+<div class="section" id="defining-inner-classes-and-classes-inside-namespaces-prefix">
+<h2>Defining inner classes and classes inside namespaces (Prefix)<a class="headerlink" href="#defining-inner-classes-and-classes-inside-namespaces-prefix" title="Permalink to this headline">¶</a></h2>
+<p>C++ classes that are declared inside a namespace (or another class) must use the IDL file <tt class="docutils literal"><span class="pre">Prefix</span></tt> keyword to specify the scope. The prefix is then used whenever the class is referred to in C++ glue code.</p>
+<p>For example, the following IDL definition ensures that <tt class="docutils literal"><span class="pre">Inner</span></tt> class is referred to as <tt class="docutils literal"><span class="pre">MyNameSpace::Inner</span></tt></p>
+<div class="highlight-idl"><div class="highlight"><pre>[Prefix<span class="o">=</span>&quot;MyNameSpace<span class="o">::</span>&quot;]
+interface Inner {
+..
+};
+</pre></div>
+</div>
 </div>
 <div class="section" id="operators">
-<h3>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h3>
-<p>You can bind operators using</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">[</span><span class="n">Operator</span><span class="o">=</span><span class="s">&quot;+=&quot;</span><span class="p">]</span> <span class="n">TYPE1</span> <span class="n">add</span><span class="p">(</span><span class="n">TYPE2</span> <span class="n">x</span><span class="p">);</span>
+<h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
+<p>You can bind to C++ operators using <tt class="docutils literal"><span class="pre">[Operator=]</span></tt>:</p>
+<div class="highlight-idl"><div class="highlight"><pre>[Operator<span class="o">=</span>&quot;<span class="o">+=</span>&quot;] TYPE1 add(TYPE2 x);
 </pre></div>
 </div>
-<p>You can call it anything you want (<tt class="docutils literal"><span class="pre">add</span></tt> is just an example). Note that support is limited to <tt class="docutils literal"><span class="pre">+=,*=</span></tt> etc. for now (with <tt class="docutils literal"><span class="pre">=</span></tt> in them).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>The operator name can be anything (<tt class="docutils literal"><span class="pre">add</span></tt> is just an example).</li>
+<li>Support is currently limited to operators that contain &#8220;=&#8221;: <tt class="docutils literal"><span class="pre">+=</span></tt>, <tt class="docutils literal"><span class="pre">*=</span></tt>, <tt class="docutils literal"><span class="pre">-=</span></tt> etc.</li>
+</ul>
 </div>
 </div>
-<div class="section" id="jsimplementation-subclasses-in-javascript">
-<h2>JSImplementation: Subclasses in JavaScript<a class="headerlink" href="#jsimplementation-subclasses-in-javascript" title="Permalink to this headline">¶</a></h2>
-<p>Imagine you have a class that has a virtual method called from C++, and you want to subclass it and implement it in JavaScript. To do so, you can use the JSImplementation option, for example in this IDL:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="p">[</span><span class="n">JSImplementation</span><span class="o">=</span><span class="s">&quot;Base&quot;</span><span class="p">]</span>
-<span class="n">interface</span> <span class="n">ImplJS</span> <span class="p">{</span>
-  <span class="kt">void</span> <span class="n">ImplJS</span><span class="p">();</span>
-  <span class="kt">void</span> <span class="nf">virtualFunc</span><span class="p">();</span>
-  <span class="kt">void</span> <span class="nf">virtualFunc2</span><span class="p">();</span>
+<div class="section" id="enums">
+<h2>enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<p>Enums are declared very similarly in C++ and IDL:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">// C++</span>
+<span class="k">enum</span> <span class="n">AnEnum</span> <span class="p">{</span>
+  <span class="n">enum_value1</span><span class="p">,</span>
+  <span class="n">enum_value2</span>
+<span class="p">};</span>
+
+<span class="c1">// WebIDL</span>
+<span class="k">enum</span> <span class="n">AnEnum</span> <span class="p">{</span>
+  <span class="s">&quot;enum_value1&quot;</span><span class="p">,</span>
+  <span class="s">&quot;enum_value2&quot;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">Base</span></tt> is the C++ class, and ImplJS does not exist in your C++ code. <tt class="docutils literal"><span class="pre">JSImplementation=&quot;Base&quot;</span></tt> means &#8220;this class will be a JavaScript implementation of Base&#8221;. After running the bindings generator and compiling, you can do this:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">var</span> <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImplJS</span><span class="p">();</span>
-<span class="n">c</span><span class="p">.</span><span class="n">virtualFunc</span> <span class="o">=</span> <span class="n">function</span><span class="p">()</span> <span class="p">{</span> <span class="p">..</span> <span class="p">};</span>
+<p>The syntax is slightly more complicated for enums declared inside a namespace:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">// C++</span>
+<span class="k">namespace</span> <span class="n">EnumNamespace</span> <span class="p">{</span>
+  <span class="k">enum</span> <span class="n">EnumInNamespace</span> <span class="p">{</span>
+        <span class="n">e_namespace_val</span> <span class="o">=</span> <span class="mi">78</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="c1">// WebIDL</span>
+<span class="k">enum</span> <span class="n">EnumNamespace_EnumInNamespace</span> <span class="p">{</span>
+  <span class="s">&quot;EnumNamespace::e_namespace_val&quot;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
-<p>When C++ code has a pointer to a <tt class="docutils literal"><span class="pre">Base</span></tt> instance and calls <tt class="docutils literal"><span class="pre">virtualFunc</span></tt>, that call will reach the JavaScript code written here.</p>
-<p>Note that you <em>must</em> implement all the methods you mentioned in the IDL of the JSImplementation class (ImplJS). If not, then an error will be shown (the technical reason is that C++ implements the virtual method, in a way that calls into JavaScript. If there is nothing in JavaScript to be called, it goes up through the prototype chain and calls that same C++ function once more).</p>
+<p>When the enum is defined inside a class, the IDL definitions for the enum and class interface are separate:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">// C++</span>
+<span class="k">class</span> <span class="nc">EnumClass</span> <span class="p">{</span>
+ <span class="nl">public:</span>
+  <span class="k">enum</span> <span class="n">EnumWithinClass</span> <span class="p">{</span>
+        <span class="n">e_val</span> <span class="o">=</span> <span class="mi">34</span>
+  <span class="p">};</span>
+  <span class="n">EnumWithinClass</span> <span class="nf">GetEnum</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">e_val</span><span class="p">;</span> <span class="p">}</span>
+
+  <span class="n">EnumNamespace</span><span class="o">::</span><span class="n">EnumInNamespace</span> <span class="n">GetEnumFromNameSpace</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">EnumNamespace</span><span class="o">::</span><span class="n">e_namespace_val</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+
+
+
+<span class="c1">// WebIDL</span>
+<span class="k">enum</span> <span class="n">EnumClass_EnumWithinClass</span> <span class="p">{</span>
+  <span class="s">&quot;EnumClass::e_val&quot;</span>
+<span class="p">};</span>
+
+<span class="n">interface</span> <span class="n">EnumClass</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">EnumClass</span><span class="p">();</span>
+
+  <span class="n">EnumClass_EnumWithinClass</span> <span class="nf">GetEnum</span><span class="p">();</span>
+
+  <span class="n">EnumNamespace_EnumInNamespace</span> <span class="nf">GetEnumFromNameSpace</span><span class="p">();</span>
+<span class="p">};</span>
+</pre></div>
 </div>
-<div class="section" id="other-issues">
-<h2>Other Issues<a class="headerlink" href="#other-issues" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="object-cleanup">
-<h3>Object cleanup<a class="headerlink" href="#object-cleanup" title="Permalink to this headline">¶</a></h3>
-<p>If you create a JavaScript object wrapping a C++ object, we call the C++ constructor for you transparently. However, if nothing else holds on to the JavaScript object, it will be GC&#8217;d, but we have no way to know that (due to how JavaScript works) - so we can&#8217;t call the destructor for you.</p>
-<p>Therefore, if a C++ object needs to be cleaned up, you should call <tt class="docutils literal"><span class="pre">Module.destroy(obj)</span></tt> on it. That calls the destructor directly. You should then drop all references to the JavaScript object as well.</p>
 </div>
-<div class="section" id="namespace">
-<h3>Namespace<a class="headerlink" href="#namespace" title="Permalink to this headline">¶</a></h3>
-<p>You should normally access objects on the Module object, <tt class="docutils literal"><span class="pre">Module.MyClass</span></tt> etc. While they are also in the global namespace, if you use closure compiler or wrap the project in a function (to avoid polluting the global namespace), then they won&#8217;t be. You can of course do <tt class="docutils literal"><span class="pre">var</span> <span class="pre">MyModuleName</span> <span class="pre">=</span> <span class="pre">Module;</span></tt> etc. to get whatever name you want (ammo uses <tt class="docutils literal"><span class="pre">Ammo.</span></tt> for example).</p>
+<div class="section" id="sub-classing-c-base-classes-in-javascript-jsimplementation">
+<h2>Sub-classing C++ base classes in JavaScript (JSImplementation)<a class="headerlink" href="#sub-classing-c-base-classes-in-javascript-jsimplementation" title="Permalink to this headline">¶</a></h2>
+<p>The <em>WebIDL Binder</em> allows C++ base classes to be sub-classed in JavaScript. In the IDL fragment below, <tt class="docutils literal"><span class="pre">JSImplementation=&quot;Base&quot;</span></tt> means that the associated interface (<tt class="docutils literal"><span class="pre">ImplJS</span></tt>) will be a JavaScript implementation of the C++ class <tt class="docutils literal"><span class="pre">Base</span></tt>.</p>
+<div class="highlight-idl"><div class="highlight"><pre>[JSImplementation<span class="o">=</span>&quot;Base&quot;]
+interface ImplJS {
+        void ImplJS();
+        void virtualFunc();
+        void virtualFunc2();
+};
+</pre></div>
+</div>
+<p>After running the bindings generator and compiling, you can implement the interface in JavaScript as shown:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ImplJS</span><span class="p">();</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">virtualFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="p">..</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>When C++ code has a pointer to a <tt class="docutils literal"><span class="pre">Base</span></tt> instance and calls <tt class="docutils literal"><span class="pre">virtualFunc()</span></tt>, that call will reach the JavaScript code defined above.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>You <em>must</em> implement all the methods you mentioned in the IDL of the <tt class="docutils literal"><span class="pre">JSImplementation</span></tt> class (<tt class="docutils literal"><span class="pre">ImplJS</span></tt>) or compilation will fail with an error.</li>
+<li>You will also need to provide an interface definition for the <tt class="docutils literal"><span class="pre">Base</span></tt> class in the IDL file.</li>
+</ul>
+</div>
 </div>
 <div class="section" id="pointers-and-comparisons">
-<h3>Pointers and comparisons<a class="headerlink" href="#pointers-and-comparisons" title="Permalink to this headline">¶</a></h3>
-<p>All the bindings functions expect to receive wrapper objects, that contain the raw pointer inside them, and not a raw pointer (which is just a memory address - an integer). You should normally not need to deal with raw pointers, but if you do, the following functions can help:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">wrapPointer(ptr,</span> <span class="pre">Class)</span></tt> - Given a raw pointer (an integer), returns a wrapped object. Note that if you do not pass Class, it will be assumed to be the root class - this is likely not what you want!</li>
-<li><tt class="docutils literal"><span class="pre">getPointer(object)</span></tt> - Returns a raw pointer</li>
-<li><tt class="docutils literal"><span class="pre">castObject(object,</span> <span class="pre">Class)</span></tt> - Returns a wrapping of the same pointer but to another class <tt class="docutils literal"><span class="pre">compare(object1,</span> <span class="pre">object2)</span></tt> - Compares two objects&#8217; pointers</li>
+<h2>Pointers and comparisons<a class="headerlink" href="#pointers-and-comparisons" title="Permalink to this headline">¶</a></h2>
+<p>All the bindings functions expect to receive wrapper objects (which contain a raw pointer) rather than a raw pointer. You should normally not need to deal with raw pointers (these are simply memory addresses/integers). If you do, the following functions in the compiled code can be useful:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">wrapPointer(ptr,</span> <span class="pre">Class)</span></tt> — Given a raw pointer (an integer), returns a wrapped object.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you do not pass the <tt class="docutils literal"><span class="pre">Class</span></tt>, it will be assumed to be the root class — this is likely not what you want!</p>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">getPointer(object)</span></tt> — Returns a raw pointer.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">castObject(object,</span> <span class="pre">Class)</span></tt> — Returns a wrapping of the same pointer but to another class.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">compare(object1,</span> <span class="pre">object2)</span></tt> — Compares two objects&#8217; pointers.</p>
+</li>
 </ul>
-<p>Note that there is always a <em>single</em> wrapped object for a certain pointer for a certain class. This allows you to add data on that object and use it elsewhere, by using normal JavaScript syntax (<tt class="docutils literal"><span class="pre">object.attribute</span> <span class="pre">=</span> <span class="pre">someData</span></tt> etc.). Note that this almost means that <tt class="docutils literal"><span class="pre">compare()</span></tt> is not needed - since you can compare two objects of the same class, and if they have the same pointer they must be the same object - but not quite: The tricky case is where one is a subclass of the other, in which case the wrapped objects are different while the pointer is the same. So, the correct way to compare two objects is to call <tt class="docutils literal"><span class="pre">compare()</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>There is always a <em>single</em> wrapped object for a certain pointer for a certain class. This allows you to add data on that object and use it elsewhere using normal JavaScript syntax (<tt class="docutils literal"><span class="pre">object.attribute</span> <span class="pre">=</span> <span class="pre">someData</span></tt> etc.)</p>
+<p class="last">This <em>almost</em> means that <tt class="docutils literal"><span class="pre">compare()</span></tt> is not needed — since two objects of the same class with the same pointer must be the same object. The problem is that if one is a subclass of the other the wrapped objects are different even though the pointer is the same.</p>
+</div>
 </div>
 <div class="section" id="null">
-<h3>NULL<a class="headerlink" href="#null" title="Permalink to this headline">¶</a></h3>
-<p>All the bindings functions that return pointers/references/objects will return wrapped pointers. The only potentially confusing case is when they are returning a null pointer. In that case, you will get NULL (a global singleton with a wrapped pointer of 0) instead of null (the JavaScript builtin object) or 0. The reason is that by always returning a wrapper, you can always take the output and pass it back to another binding function, without that function needing to check the type of the argument.</p>
+<h2>NULL<a class="headerlink" href="#null" title="Permalink to this headline">¶</a></h2>
+<p>All the bindings functions that return pointers, references, or objects will return wrapped pointers. The reason is that by always returning a wrapper, you can always take the output and pass it to another binding function without that function needing to check the type of the argument.</p>
+<p>One case where this can be confusing is when returning a NULL pointer. When using bindings, the returned pointer will be <tt class="docutils literal"><span class="pre">NULL</span></tt> (a global singleton with a wrapped pointer of 0) rather than <tt class="docutils literal"><span class="pre">null</span></tt> (the JavaScript builtin object) or 0.</p>
 </div>
 <div class="section" id="void">
-<h3>void*<a class="headerlink" href="#void" title="Permalink to this headline">¶</a></h3>
-<p>The <tt class="docutils literal"><span class="pre">void*</span></tt> type is supported through a <tt class="docutils literal"><span class="pre">VoidPtr</span></tt> type which you can use in IDL files. You can also use the <tt class="docutils literal"><span class="pre">any</span></tt> type. The difference between them is that <tt class="docutils literal"><span class="pre">VoidPtr</span></tt> behaves like a pointer type in that you get a wrapper object, while <tt class="docutils literal"><span class="pre">any</span></tt> behaves like a 32-bit integer (which is what raw pointers are, in Emscripten-compiled code).</p>
+<span id="webidl-binder-voidstar"></span><h2>void*<a class="headerlink" href="#void" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">void*</span></tt> type is supported through a <tt class="docutils literal"><span class="pre">VoidPtr</span></tt> type that you can use in IDL files. You can also use the <tt class="docutils literal"><span class="pre">any</span></tt> type.</p>
+<p>The difference between them is that <tt class="docutils literal"><span class="pre">VoidPtr</span></tt> behaves like a pointer type in that you get a wrapper object, while <tt class="docutils literal"><span class="pre">any</span></tt> behaves like a 32-bit integer (which is what raw pointers are in Emscripten-compiled code).</p>
 </div>
+<div class="section" id="webidl-types">
+<span id="webidl-binder-type-name"></span><h2>WebIDL types<a class="headerlink" href="#webidl-types" title="Permalink to this headline">¶</a></h2>
+<p>The type names in WebIDL are not identical to those in C++. This section shows the mapping for some of the the different types.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">C++</th>
+<th class="head">IDL</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">bool</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">boolean</span></tt></td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">float</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">float</span></tt></td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">double</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">double</span></tt></td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">char</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">byte</span></tt></td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">char*</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">DOMString</span></tt> (represents a JavaScript string)</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">char</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">octet</span></tt></td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">short</span> <span class="pre">int</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">short</span></tt></td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">short</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">short</span></tt></td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">long</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">long</span></tt></td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">int</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">long</span></tt></td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">void</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">void</span></tt></td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">void*</span></tt></td>
+<td><tt class="docutils literal"><span class="pre">any</span></tt> or <tt class="docutils literal"><span class="pre">VoidPtr</span></tt> (see <a class="reference internal" href="#webidl-binder-voidstar"><em>void*</em></a>)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The WebIDL types are fully documented in <a class="reference external" href="http://www.w3.org/TR/WebIDL/">this W3C specification</a>.</p>
+</div>
+</div>
+<div class="section" id="test-and-example-code">
+<span id="webidl-binder-test-code"></span><h2>Test and example code<a class="headerlink" href="#test-and-example-code" title="Permalink to this headline">¶</a></h2>
+<p>For a complete working example, see <a class="reference external" href="https://github.com/kripken/emscripten/tree/master/tests/webidl">test_webidl</a> in the <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_core.py">test suite</a>. The test suite code is guaranteed to work and covers more material than this article.</p>
+<p>Another good example is <a class="reference external" href="https://github.com/kripken/ammo.js/tree/master">ammo.js</a>, which uses the <em>WebIDL Binder</em> to port the Bullet Physics engine to the web.</p>
 </div>
 </div>
 
@@ -1042,7 +1284,7 @@ included (at the end of your normal output).</li>
         <a href="../files/index.html" class="btn btn-neutral float-right" title="Files and File Systems"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="embind.html" class="btn btn-neutral" title="Embind (under-construction)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="embind.html" class="btn btn-neutral" title="Embind (ready-for-review)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1097,7 +1339,7 @@ included (at the end of your normal output).</li>
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Connecting C++ and JavaScript</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;WebIDL Binder (under-construction)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;WebIDL Binder (ready-for-review)</div>
   </div>
  
 </div> -->
@@ -1122,7 +1364,7 @@ included (at the end of your normal output).</li>
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:WebIDL%20Binder%20%28under-construction%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../../docs/porting/connecting_cpp_and_javascript/WebIDL-Binder&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:WebIDL%20Binder%20%28ready-for-review%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../../docs/porting/connecting_cpp_and_javascript/WebIDL-Binder&labels=bug">Page bug</a>
       </li>
   </ul>
   
