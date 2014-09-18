@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Generated Code (wiki-import) &mdash; Emscripten 1.23.0 documentation</title>
+  <title>Optimizing Code (ready-for-review) &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -31,9 +31,8 @@
 
   
     <link rel="top" title="Emscripten 1.23.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Optimizing" href="index.html"/>
-        <link rel="next" title="Optimizing Source Code (wiki-import)" href="Optimizing-the-source-code.html"/>
-        <link rel="prev" title="Optimizing" href="index.html"/> 
+        <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
+        <link rel="prev" title="Debugging (ready-for-review)" href="../porting/Debugging.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -189,15 +188,18 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html#asm-pointer-casts">Asm pointer casts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Browser limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#browser-main-loop">Browser main loop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#input-output">Input/output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#file-systems">File Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#browser-main-loop">Browser main loop</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#execution-lifecycle">Execution lifecycle</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-memory-model">Emscripten memory model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-memory-representation">Emscripten memory representation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
@@ -213,7 +215,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#binding-c-and-javascript-webidl-binder-and-embind">Binding C++ and JavaScript — WebIDL Binder and Embind</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#classes">Classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#memory-management">Memory management</a></li>
@@ -227,7 +229,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html#using-c-classes-in-javascript">Using C++ classes in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html#pointers-references-value-types-ref-and-value">Pointers, References, Value types (Ref and Value)</a></li>
@@ -275,63 +277,59 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html#implementation-status-and-notes">Implementation Status and Notes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (under-construction)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (ready-for-review)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/Examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#limitation-or-bug">Limitation or Bug?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#optimizations">Optimizations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#useful-compilation-settings">Useful Compilation Settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#inspecting-the-generated-code">Inspecting the Generated Code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-info">Debug Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#the-autodebugger">The AutoDebugger</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#specific-issues">Specific Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#compiler-settings">Compiler settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#additional-tips">Additional Tips</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#autodebugger">AutoDebugger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#useful-links">Useful Links</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#additional-help">Additional Help</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#need-help">Need help?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Optimizing</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Optimizing Generated Code (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#using-emcc">Using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-to-optimize-code">How to optimize code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#advanced-compiler-settings">Advanced compiler settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#very-large-projects">Very large projects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#memory-initialization">Memory initialization</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#optimization-levels">Optimization levels</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code-size">Code size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#outlining">Outlining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#aggressive-variable-elimination">Aggressive Variable Elimination</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Optimizing Code (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-optimize-code">How to optimize code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-compiler-settings">Advanced compiler settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#very-large-projects">Very large projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#memory-initialization">Memory initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trade-off-code-size-and-performance">Trade off code size and performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-size">Code size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outlining">Outlining</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#other-optimization-issues">Other optimization issues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#exception-catching">Exception Catching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#inlining">Inlining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-optimization-issues">Other optimization issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#c-exceptions">C++ exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inlining">Inlining</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#profiling">Profiling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-slowness">Troubleshooting Slowness</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="Optimizing-the-source-code.html">Optimizing Source Code (wiki-import)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
@@ -856,9 +854,7 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Optimizing</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing Generated Code (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing Code (ready-for-review)</div>
   </div>
  
 </div>
@@ -874,127 +870,143 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Optimizing</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing Generated Code (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing Code (ready-for-review)</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="optimizing-generated-code-wiki-import">
-<span id="optimizing-code"></span><h1>Optimizing Generated Code (wiki-import)<a class="headerlink" href="#optimizing-generated-code-wiki-import" title="Permalink to this headline">¶</a></h1>
-<p>By default Emscripten will compile code in a fairly safe way, and without all the possible optimizations. You should generally try this first, to make sure things work properly (if not, see the <a class="reference internal" href="../porting/Debugging.html#debugging"><em>Debugging (wiki-import)</em></a> page). Afterwards, you may want to compile your code so it runs faster. This page explains how.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You can also optimize the source code you are compiling into JavaScript, see <a class="reference internal" href="Optimizing-the-source-code.html#optimizing-the-source-code"><em>Optimizing Source Code (wiki-import)</em></a>.</p>
-</div>
-<div class="section" id="using-emcc">
-<h2>Using emcc<a class="headerlink" href="#using-emcc" title="Permalink to this headline">¶</a></h2>
-<p>The recommended way to optimize code is with <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>emcc</em></a>. <em>Emcc</em> works like <em>gcc</em>, and basic usage is presented in the Emscripten <a class="reference internal" href="../getting_started/Tutorial.html#tutorial"><em>Emscripten Tutorial</em></a>. As mentioned there, you can use <em>emcc</em> to optimize, for example</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">emcc</span> <span class="o">-</span><span class="n">O2</span> <span class="n">file</span><span class="p">.</span><span class="n">cpp</span>
-</pre></div>
-</div>
-<p>To see what the different optimizations levels do, run</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">emcc</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li>The meaning of <tt class="docutils literal"><span class="pre">-O1,</span> <span class="pre">-O2</span></tt> etc. in <em>emcc</em> are not identical to gcc/clang/other compilers, even though they have been chosen to be as familiar. They can&#8217;t be, because optimizing JavaScript is very different than optimizing native code. See the <tt class="docutils literal"><span class="pre">--help</span></tt> as mentioned before for details.</li>
-<li>If you compile several files into a single JavaScript output, be sure to specify the same optimization flags during all invocations of <em>emcc</em> - both when compiling sources into objects, and objects into JavaScript or HTML. See <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a> for more details.</li>
-<li>Aside from <tt class="docutils literal"><span class="pre">-Ox</span></tt> options, there are <tt class="docutils literal"><span class="pre">--llvm-lto</span></tt> options that you can read about in <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--help</span></tt>.</li>
-</ul>
-</div>
+  <div class="section" id="optimizing-code-ready-for-review">
+<span id="optimizing-code"></span><h1>Optimizing Code (ready-for-review)<a class="headerlink" href="#optimizing-code-ready-for-review" title="Permalink to this headline">¶</a></h1>
+<p>Generally you should first compile and run your code without optimizations (the default). Once you are sure that the code runs correctly, you can use the techniques in this article to make it load and run faster.</p>
 <div class="section" id="how-to-optimize-code">
 <h2>How to optimize code<a class="headerlink" href="#how-to-optimize-code" title="Permalink to this headline">¶</a></h2>
-<p>The following procedure is how you should normally optimize your code. Note that all the flags here are for the link stage (when compiling bitcode to JavaScript), not to optimizing source files.</p>
+<p>Code is optimized by specifying <a class="reference internal" href="../tools_reference/emcc.html#emcc-compiler-optimization-options"><em>optimization flags</em></a> when running <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>emcc</em></a>. The levels include: <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><em>O0</em></a> (no optimization), <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><em>O1</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>O2</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><em>Os</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><em>Oz</em></a>, and <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><em>O3</em></a>.</p>
+<p>For example, to compile with optimization level <tt class="docutils literal"><span class="pre">-O2</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre>emcc -O2 file.cpp
+</pre></div>
+</div>
+<p>The higher optimization levels introduce progressively more aggressive optimization, resulting in improved performance and code size at the cost of increased compilation time. The levels can also highlight different issues related to undefined behavior in code.</p>
+<p>The optimization level you should use depends mostly on the current stage of development:</p>
 <ul class="simple">
-<li>First, run emcc on your code without optimization. The default settings are set to be safe. Check that your code works (if not, see the <a class="reference internal" href="../porting/Debugging.html#debugging"><em>Debugging (wiki-import)</em></a> page) before continuing.</li>
-<li>Build with <tt class="docutils literal"><span class="pre">-O2</span></tt> to get an optimized build.</li>
-<li>Build with <tt class="docutils literal"><span class="pre">-O0</span></tt> or <tt class="docutils literal"><span class="pre">-O1</span></tt> if you want faster iteration times, 0 is the fastest to build but slowest to run, while 1 is in the middle.</li>
-<li>If you want an even more optimized build than <tt class="docutils literal"><span class="pre">-O2</span></tt>, see the rest of this page.</li>
+<li>When first porting code, run <em>emcc</em> on your code using the default settings (without optimization). Check that your code works and <a class="reference internal" href="../porting/Debugging.html#debugging"><em>debug</em></a> and fix any issues before continuing.</li>
+<li>Build with lower optimization levels during development for a shorter compile/test iteration cycle (<tt class="docutils literal"><span class="pre">-O0</span></tt> or <tt class="docutils literal"><span class="pre">-O1</span></tt>).</li>
+<li>Build with <tt class="docutils literal"><span class="pre">-O2</span></tt> when releasing your code — this is a highly optimized but still safe build. <tt class="docutils literal"><span class="pre">-O3</span></tt> provides an even more optimized build, but as it includes newer optimizations, must be more thoroughly tested.</li>
+<li>Other optimizations are discussed in the following sections.</li>
 </ul>
+<p>In addition to the <tt class="docutils literal"><span class="pre">-Ox</span></tt> options, there are separate compiler options that can be used to control the JavaScript optimizer (<a class="reference internal" href="../tools_reference/emcc.html#emcc-js-opts"><em>js-opts</em></a>), LLVM optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-opts"><em>llvm-opts</em></a>) and LLVM link-time optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><em>llvm-lto</em></a>).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>The meanings of the <em>emcc</em> optimization flags (<tt class="docutils literal"><span class="pre">-O1,</span> <span class="pre">-O2</span></tt> etc.) are different to the similarly-named options in <em>gcc</em>, <em>clang</em>, and other compilers, because optimizing JavaScript is very different to optimizing native code. The mapping of the <em>emcc</em> levels to the the LLVM bitcode optimization levels is documented in the reference.</li>
+<li>If you compile several files into a single JavaScript output, be sure to specify the <strong>same</strong> optimization flags when compiling sources into objects, and objects into JavaScript or HTML. See <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a> for more details.</li>
+</ul>
+</div>
 </div>
 <div class="section" id="advanced-compiler-settings">
 <h2>Advanced compiler settings<a class="headerlink" href="#advanced-compiler-settings" title="Permalink to this headline">¶</a></h2>
-<p>There are several flags you can pass to the compiler to affect code generation, many of which can affect performance. Look in <tt class="docutils literal"><span class="pre">src/settings.js</span></tt> for which options are available and what they mean (and if you want to look under the hood, see <tt class="docutils literal"><span class="pre">apply_opt_level</span></tt> in <tt class="docutils literal"><span class="pre">tools/shared.py</span></tt> for how -O1,2,3 affect them), as well as <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--help</span></tt>. A few useful ones are:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">NO_EXIT_RUNTIME</span></tt> - When set, code can run but we never &#8220;shut down&#8221; the runtime environment, in the sense that no global destructors are run, no atexit calls are executed, etc. This is useful if your <tt class="docutils literal"><span class="pre">main()</span></tt> function finishes but you still want to execute code, and in fact necessary otherwise if you depend on a global structure it may have gone away - and for that reason, at runtime if we see that you call something like <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a> then we will never shut down the runtime. However, if you build with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">NO_EXIT_RUNTIME=1</span></tt> then we know at <strong>compile</strong> time that you want that, which lets the compiler statically get rid of atexit calls and global destructors, which can improve code size and startup speed.</li>
+<p>There are several flags you can <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><em>pass to the compiler</em></a> to affect code generation, and which will also affect performance — for example <a class="reference internal" href="#optimizing-code-exception-catching"><em>DISABLE_EXCEPTION_CATCHING</em></a>, <a class="reference internal" href="../site/glossary.html#term-relooping"><em class="xref std std-term">RELOOP</em></a>. These, and others, are documented in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>. Some of these will also be directly affected by the optimization settings (you can find out which ones by searching for <tt class="docutils literal"><span class="pre">apply_opt_level</span></tt> in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tools/shared.py#L906">tools/shared.py</a>).</p>
+<p>A few useful flags are:</p>
+<ul>
+<li><p id="optimizing-code-no-exit-runtime"><tt class="docutils literal"><span class="pre">NO_EXIT_RUNTIME</span></tt>: Building with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">NO_EXIT_RUNTIME=1</span></tt> lets the compiler know that you don&#8217;t want to shut down the runtime environment after the <tt class="docutils literal"><span class="pre">main()</span></tt> function finishes. This allows it to discard the <tt class="docutils literal"><span class="pre">atexit</span></tt> and global destructor calls it would otherwise make, improving code size and startup speed.</p>
+<p>This is useful if your <tt class="docutils literal"><span class="pre">main()</span></tt> function finishes but you still want to execute code, for example in an app that uses a <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-runtime-environment-main-loop"><em>main loop function</em></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Emscripten will not shut down the runtime if it detects <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a>, but it is better to optimise away the unnecessary code.</p>
+</div>
+</li>
 </ul>
 </div>
 <div class="section" id="very-large-projects">
 <h2>Very large projects<a class="headerlink" href="#very-large-projects" title="Permalink to this headline">¶</a></h2>
-<p>Very large projects can hit some issues that smaller ones will never see:</p>
+<p>This section describes optimisations and issues that are only relevant to very large projects.</p>
 <div class="section" id="memory-initialization">
-<h3>Memory initialization<a class="headerlink" href="#memory-initialization" title="Permalink to this headline">¶</a></h3>
-<p>By default Emscripten emits the static memory initialization inside the <strong>.js</strong> file, for simplicity. If it is very large, it can slow down startup, or even cause issues in JavaScript engines with limits on array sizes (you may see <tt class="docutils literal"><span class="pre">Array</span> <span class="pre">initializer</span> <span class="pre">too</span> <span class="pre">large</span></tt> or <tt class="docutils literal"><span class="pre">Too</span> <span class="pre">much</span> <span class="pre">recursion</span></tt> for example), and it also leads to very large JavaScript files. To avoid that, Emscripten can emit a binary file on the side by running emcc with</p>
-<p><tt class="docutils literal"><span class="pre">--memory-init-file</span> <span class="pre">1</span></tt></p>
-<p>This is the default in <tt class="docutils literal"><span class="pre">-O2</span></tt> and above in Emscripten 1.21.1 and above; in earlier versions, you can enable it manually. When utilized, a file with suffix <tt class="docutils literal"><span class="pre">.mem</span></tt> should appear, and it will be loaded by the JavaScript. See <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--help</span></tt> for more details.</p>
+<span id="optimizing-code-memory-initialization"></span><h3>Memory initialization<a class="headerlink" href="#memory-initialization" title="Permalink to this headline">¶</a></h3>
+<p>By default Emscripten emits the static memory initialization code inside the <strong>.js</strong> file. This can cause the JavaScript file to be very large, which will slow down startup. It can also cause problems in JavaScript engines with limits on array sizes, resulting in errors like <tt class="docutils literal"><span class="pre">Array</span> <span class="pre">initializer</span> <span class="pre">too</span> <span class="pre">large</span></tt> or <tt class="docutils literal"><span class="pre">Too</span> <span class="pre">much</span> <span class="pre">recursion</span></tt>.</p>
+<p>The <em>emcc</em> <a class="reference internal" href="../tools_reference/emcc.html#emcc-memory-init-file"><em>memory-init-file 1</em></a> option causes the compiler to emit this code in a separate binary file with suffix <strong>.mem</strong>. The <strong>.mem</strong> file is loaded (asynchronously) by the main <strong>.js</strong> file before <tt class="docutils literal"><span class="pre">main()</span></tt> is called and compiled code is able to run.</p>
 </div>
-<div class="section" id="optimization-levels">
-<h3>Optimization levels<a class="headerlink" href="#optimization-levels" title="Permalink to this headline">¶</a></h3>
-<p>You might want to build some source files in your project with <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt> to reduce code size, and the rest using <tt class="docutils literal"><span class="pre">-O2</span></tt> which gives better performance (but increases code size). This allows you to keep files you know are less performance-sensitive at a minimal size, while keeping the files that need to be fast at maximal speed.</p>
-<p>(Note that this only matters during the source to bitcode phase: during bitcode to JavaScript, <tt class="docutils literal"><span class="pre">-Os</span></tt> and <tt class="docutils literal"><span class="pre">-Oz</span></tt> are the same as <tt class="docutils literal"><span class="pre">-O2</span></tt> as there are currently no JavaScript specific optimization flags for <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>.)</p>
+<div class="section" id="trade-off-code-size-and-performance">
+<span id="optimizing-code-oz-os"></span><h3>Trade off code size and performance<a class="headerlink" href="#trade-off-code-size-and-performance" title="Permalink to this headline">¶</a></h3>
+<p>You may wish to build the less performance-sensitive files in your project using <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><em>Os</em></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><em>Oz</em></a> and the remainder using <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>O2</em></a> (<a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><em>Os</em></a> and <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><em>Oz</em></a> are similar to <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>O2</em></a>, but reduce code size at the expense of performance).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This only matters when compiling the source to bitcode. There are currently no JavaScript specific optimization flags for <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>, and these map to <tt class="docutils literal"><span class="pre">-O2</span></tt> in the bitcode to JavaScript phase.</p>
+</div>
 </div>
 <div class="section" id="code-size">
 <h3>Code size<a class="headerlink" href="#code-size" title="Permalink to this headline">¶</a></h3>
 <p>Tips for reducing code size include:</p>
 <ul class="simple">
-<li>Memory init file as mentioned above.</li>
-<li>Using -Os or -Oz, as also mentioned above.</li>
-<li>Build bitcode to JavaScript with -O3 which runs the expensive variable reuse pass (registerizeHarder)</li>
-<li>Use llvm LTO during bitcode to JavaScript <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span> <span class="pre">--llvm-lto</span> <span class="pre">1</span></tt> (can break some code as the LTO code path is less tested)</li>
-<li>That command also disables inlining. If sources were built with -Os or -Oz, it will avoid inlining anyhow for the most part, and you can try just <tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt></li>
-<li>Use closure on the outside non-asm.js code <tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt> (can break some code)</li>
+<li>Define a separate memory initialization file (as <a class="reference internal" href="#optimizing-code-memory-initialization"><em>mentioned above</em></a>).</li>
+<li>Use <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>  (as <a class="reference internal" href="#optimizing-code-oz-os"><em>mentioned above</em></a>).</li>
+<li>Build bitcode to JavaScript with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><em>O3</em></a>. This runs the expensive variable reuse pass (<tt class="docutils literal"><span class="pre">registerizeHarder</span></tt>). It is slower to compile and uses newer (less tested) optimizations than <tt class="docutils literal"><span class="pre">-O2</span></tt>.</li>
+<li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><em>llvm-lto</em></a> when compiling from bitcode to JavaScript: <tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt>. This can break some code as the LTO code path is less tested.</li>
+<li>Disable <a class="reference internal" href="#optimizing-code-inlining"><em>Inlining</em></a>: <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></tt>. Compiling with -Os or -Oz generally avoids inlining too.</li>
+<li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><em>closure</em></a> on the outside non-asm.js code: <tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>. This can break some code.</li>
 </ul>
 </div>
 <div class="section" id="outlining">
-<h3>Outlining<a class="headerlink" href="#outlining" title="Permalink to this headline">¶</a></h3>
-<p><tt class="docutils literal"><span class="pre">OUTLINING_LIMIT</span></tt> breaks up large functions into smaller ones, by &#8220;outlining&#8221; code. This helps startup speed as well as runtime speed in some cases, particularly when a codebase has huge functions, which confuse JavaScript engines. For more details see <a class="reference external" href="http://mozakai.blogspot.com/2013/08/outlining-workaround-for-jits-and-big.html">this blog post</a>.</p>
+<span id="optimizing-code-outlining"></span><h3>Outlining<a class="headerlink" href="#outlining" title="Permalink to this headline">¶</a></h3>
+<p>JavaScript engines will often compile very large functions slowly (relative to their size), and fail to optimize them effectively (or at all). One approach to this problem is to use &#8220;outlining&#8221;, breaking them into smaller functions that can be compiled and optimized more effectively.</p>
+<p>Outlining increases overall code size, and can itself make some code less optimised. Despite this, outlining can sometimes improve both startup and runtime speed. For more information see <a class="reference external" href="http://mozakai.blogspot.com/2013/08/outlining-workaround-for-jits-and-big.html">this blog post</a>.</p>
+<p>The setting <tt class="docutils literal"><span class="pre">OUTLINING_LIMIT</span></tt> defines the function size at which Emscripten will try to break large functions into smaller ones. Search for this setting in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">settings.js</a> for information on how to determine what functions may need to be outlined and how to choose an appropriate function size.</p>
 </div>
 <div class="section" id="aggressive-variable-elimination">
-<h3>Aggressive Variable Elimination<a class="headerlink" href="#aggressive-variable-elimination" title="Permalink to this headline">¶</a></h3>
-<p>You can enable aggressive variable elimination with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">AGGRESSIVE_VARIABLE_ELIMINATION=1</span></tt>. This will then attempt to remove variables whenever possible, even at the cost of increasing code size by duplicating expressions. This can improve speed in some cases where you have extremely large functions, for example it can make sqlite 7% faster (which has a huge interpreter loop with thousands of lines in it). However it can also he harmful in some cases, so test before using it.</p>
+<span id="optimizing-code-aggressive-variable-elimination"></span><h3>Aggressive variable elimination<a class="headerlink" href="#aggressive-variable-elimination" title="Permalink to this headline">¶</a></h3>
+<p>Aggressive variable elimination attempts to remove variables whenever possible, even at the cost of increasing code size by duplicating expressions. This can improve speed in cases where you have extremely large functions. For example it can make sqlite 7% faster (which has a huge interpreter loop with thousands of lines in it).</p>
+<p>You can enable aggressive variable elimination with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">AGGRESSIVE_VARIABLE_ELIMINATION=1</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This setting can be harmful in some cases. Test before using it.</p>
+</div>
 </div>
 </div>
 <div class="section" id="other-optimization-issues">
 <h2>Other optimization issues<a class="headerlink" href="#other-optimization-issues" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="exception-catching">
-<h3>Exception Catching<a class="headerlink" href="#exception-catching" title="Permalink to this headline">¶</a></h3>
-<p>In <tt class="docutils literal"><span class="pre">-O1</span></tt> and above exception catching is disabled. This prevents the generation of try-catch blocks, which lets the code run much faster, and also makes the code smaller. To re-enable them, run emcc with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></tt>.</p>
+<div class="section" id="c-exceptions">
+<span id="optimizing-code-exception-catching"></span><h3>C++ exceptions<a class="headerlink" href="#c-exceptions" title="Permalink to this headline">¶</a></h3>
+<p>C++ exceptions are turned off by default in <tt class="docutils literal"><span class="pre">-O1</span></tt> (and above). This prevents the generation of <tt class="docutils literal"><span class="pre">try-catch</span></tt> blocks, which lets the code run much faster, and also makes the code smaller.</p>
+<p>To re-enable exceptions in optimized code, run <em>emcc</em> with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></tt> (see <cite>src/settings.js &lt;https://github.com/kripken/emscripten/blob/master/src/settings.js&gt;</cite>).</p>
 </div>
 <div class="section" id="viewing-code-optimization-passes">
 <h3>Viewing code optimization passes<a class="headerlink" href="#viewing-code-optimization-passes" title="Permalink to this headline">¶</a></h3>
-<p>If you run emcc with <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span></tt> (so, something like <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span> <span class="pre">emcc</span></tt>), then it will output all the intermediate steps after each optimization pass. The output will be in <tt class="docutils literal"><span class="pre">TEMP_DIR/emscripten_temp</span></tt>, where <tt class="docutils literal"><span class="pre">TEMP_DIR</span></tt> is by default <tt class="docutils literal"><span class="pre">/tmp</span></tt> (and can be modified in <tt class="docutils literal"><span class="pre">~/.emscripten</span></tt>). <tt class="docutils literal"><span class="pre">EMCC_DEBUG=2</span></tt> will output even more information, a separate file will be saved for each JavaScript optimization pass.</p>
+<p>Enable <a class="reference internal" href="../porting/Debugging.html#debugging-emcc-debug"><em>Debug mode (EMCC_DEBUG)</em></a> to output files for each JavaScript optimization pass.</p>
 </div>
 <div class="section" id="inlining">
-<h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this headline">¶</a></h3>
-<p>Inlining often generates large functions. These allow the compiler&#8217;s optimizations to be more effective, but have downsides for JavaScript engines: They often do not try to optimize big functions for fear or long JIT times, or they do JIT them and it causes noticeable pauses. So ironically (or paradoxically) using -O1 or -O2, which inline by default, can actually decrease performance in some cases.</p>
-<p>You can try to avoid this issue by disabling inlining (in specific files or everywhere), or by using the outliner feature, see <a class="reference external" href="http://mozakai.blogspot.com/2013/08/outlining-workaround-for-jits-and-big.html">this blog post</a>.</p>
+<span id="optimizing-code-inlining"></span><h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this headline">¶</a></h3>
+<p>Inlining often generates large functions, as these allow the compiler&#8217;s optimizations to be more effective. Unfortunately large functions can be relatively far slower at runtime because JavaScript engines often do not optimize big functions (for fear of long JIT times), or they do optimize them and it causes noticeable pauses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">-O1</span></tt> and <tt class="docutils literal"><span class="pre">-O2</span></tt> inline functions by default. Ironically, this can actually decrease performance in some cases!</p>
+</div>
+<p>You can try to avoid this issue by disabling inlining (in specific files or everywhere), or by using <a class="reference internal" href="#optimizing-code-outlining"><em>Outlining</em></a>.</p>
+</div>
 </div>
 <div class="section" id="unsafe-optimizations">
-<h3>Unsafe optimizations<a class="headerlink" href="#unsafe-optimizations" title="Permalink to this headline">¶</a></h3>
+<span id="optimizing-code-unsafe-optimisations"></span><h2>Unsafe optimizations<a class="headerlink" href="#unsafe-optimizations" title="Permalink to this headline">¶</a></h2>
 <p>A few <strong>UNSAFE</strong> optimizations you might want to try are:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">FORCE_ALIGNED_MEMORY=1</span></tt>: Makes all memory accesses fully aligned. This can break on code that actually requires unaligned accesses.</li>
 <li><tt class="docutils literal"><span class="pre">-s</span> <span class="pre">PRECISE_I64_MATH=1</span></tt>: When disabled, does shortcuts when implementing 64-bit addition etc., using doubles instead of full emulation. This will break on code that uses the full range of 64-bit numbers.</li>
-<li><tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt>: This enables LLVM&#8217;s link-time opts, which can help in some cases but there are known issues with them as well, so use at your own risk. (There are btw a few modes aside from <tt class="docutils literal"><span class="pre">1</span></tt>, see <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--help</span></tt>.)</li>
-<li><tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>: This can help with reducing the size of the non-generated (support/glue) code, and with startup. However it can break if you do not do proper closure compiler annotations and exports.</li>
+<li><tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt>: This enables LLVM&#8217;s link-time optimizations, which can help in some cases. However there are known issues with these optimizations, so code must need to be extensively tested. See <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><em>llvm-lto</em></a> for information about the other modes.</li>
+<li><tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>: This can help with reducing the size of the non-generated (support/glue) code, and with startup. However it can break if you do not do proper <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><em class="xref std std-term">Closure Compiler</em></a> annotations and exports.</li>
 </ul>
 </div>
-</div>
 <div class="section" id="profiling">
-<h2>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h2>
-<p>Modern browsers have JavaScript profilers, which can help find the slower parts in your code. You should build your project with <tt class="docutils literal"><span class="pre">--profiling</span></tt> for this, that flag will leave the code in a readable-enough state for profiling purposes (<tt class="docutils literal"><span class="pre">--profiling</span></tt> should be added in addition to your other optimization flags like <tt class="docutils literal"><span class="pre">-O1</span></tt>, <tt class="docutils literal"><span class="pre">-O2</span></tt> or <tt class="docutils literal"><span class="pre">-O3</span></tt>).</p>
-<p>As each browser&#8217;s profiler has limitations, it is highly recommended to profile in multiple browsers in order to get the best information. Also, in Firefox it is a good idea to profile both with and without asm.js optimizations enabled (can remove the <tt class="docutils literal"><span class="pre">'use</span> <span class="pre">asm'</span></tt> string to disable).</p>
+<span id="optimizing-code-profiling"></span><h2>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h2>
+<p>Modern browsers have JavaScript profilers that can help find the slower parts in your code. As each browser&#8217;s profiler has limitations, it is highly recommended to profile in multiple browsers in order to get the best information.</p>
+<p>To ensure that compiled code contains enough information for profiling, build your project with <a class="reference internal" href="../tools_reference/emcc.html#emcc-profiling"><em>profiling</em></a> as well as optimization and other flags:</p>
+<div class="highlight-bash"><div class="highlight"><pre>emcc -O2 --profiling file.cpp
+</pre></div>
 </div>
-<div class="section" id="troubleshooting-slowness">
-<h2>Troubleshooting Slowness<a class="headerlink" href="#troubleshooting-slowness" title="Permalink to this headline">¶</a></h2>
-<p>If you get worse performance than you expect - you should get about 1/2 the speed of a native build - then aside from the tips above, here is a list of things to check:</p>
+</div>
+<div class="section" id="troubleshooting-poor-performance">
+<h2>Troubleshooting poor performance<a class="headerlink" href="#troubleshooting-poor-performance" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten-compiled code can currently achieve approximately half the speed of a native build. If the performance is significantly poorer than expected then, in addition to the tips above, here is a list of things to check:</p>
 <ul class="simple">
-<li>Did you build with -O2 or -O3, <strong>both</strong> when compiling source code files <strong>and</strong> when generating JavaScript? The first is needed for LLVM optimizations, the latter for JavaScript optimizations, all of which are crucial (see <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a>).</li>
-<li>Is performance ok on one browser, but not in another? Testing on multiple browsers is always good to understand where a bug or performance issue lies. Please file a bug on the browser where things are slow.</li>
-<li>In firefox, does the code validate? Look for &#8220;Successfully compiled asm.js code in the web console. If instead you see a validation error, make sure you are running an up-to-date version of Firefox, and are building using an up-to-date version of Emscripten. If the problem exists with those, please file a bug on Emscripten.</li>
+<li><a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a> is a two-stage process: compiling source code files to LLVM <strong>and</strong> generating JavaScript from LLVM. Did you build using the same optimization values in <strong>both</strong> steps (<tt class="docutils literal"><span class="pre">-O2</span></tt> or <tt class="docutils literal"><span class="pre">-O3</span></tt>)?</li>
+<li>Test on multiple browsers. If performance is acceptable on one browser and significantly poorer on another, then <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><em>file a bug</em></a> (noting the problem browser).</li>
+<li>Does the code <em>validate</em> in Firefox (look for &#8220;Successfully compiled asm.js code&#8221; in the web console). If you see a validation error when using an up-to-date version of Firefox and Emscripten then please file a bug report</li>
 </ul>
 </div>
 </div>
@@ -1005,10 +1017,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Optimizing-the-source-code.html" class="btn btn-neutral float-right" title="Optimizing Source Code (wiki-import)"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../compiling/index.html" class="btn btn-neutral float-right" title="Compiling and Running Projects"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Optimizing"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../porting/Debugging.html" class="btn btn-neutral" title="Debugging (ready-for-review)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1059,9 +1071,7 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Optimizing</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing Generated Code (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing Code (ready-for-review)</div>
   </div>
  
 </div> -->
@@ -1086,7 +1096,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Optimizing%20Generated%20Code%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/optimizing/Optimizing-Code&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Optimizing%20Code%20%28ready-for-review%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/optimizing/Optimizing-Code&labels=bug">Page bug</a>
       </li>
   </ul>
   

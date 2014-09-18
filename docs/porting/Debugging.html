@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging (wiki-import) &mdash; Emscripten 1.23.0 documentation</title>
+  <title>Debugging (ready-for-review) &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="Emscripten 1.23.0 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
-        <link rel="next" title="Optimizing" href="../optimizing/index.html"/>
-        <link rel="prev" title="OpenGL support in Emscripten (under-construction)" href="multimedia_and_graphics/OpenGL-support.html"/> 
+        <link rel="next" title="Optimizing Code (ready-for-review)" href="../optimizing/Optimizing-Code.html"/>
+        <link rel="prev" title="OpenGL support in Emscripten (ready-for-review)" href="multimedia_and_graphics/OpenGL-support.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -189,15 +189,18 @@
 <li class="toctree-l4"><a class="reference internal" href="guidelines/function_pointer_issues.html#asm-pointer-casts">Asm pointer casts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Browser limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="emscripten-runtime-environment.html">Emscripten Runtime Environment (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#browser-main-loop">Browser main loop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="emscripten-runtime-environment.html">Emscripten Runtime Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#input-output">Input/output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#file-systems">File Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#browser-main-loop">Browser main loop</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emscripten-runtime-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#execution-lifecycle">Execution lifecycle</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#emscripten-memory-model">Emscripten memory model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#emscripten-memory-representation">Emscripten memory representation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
@@ -213,7 +216,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#binding-c-and-javascript-webidl-binder-and-embind">Binding C++ and JavaScript — WebIDL Binder and Embind</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html">Embind (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html">Embind</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#classes">Classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-management">Memory management</a></li>
@@ -227,7 +230,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#using-c-classes-in-javascript">Using C++ classes in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#pointers-references-value-types-ref-and-value">Pointers, References, Value types (Ref and Value)</a></li>
@@ -275,63 +278,59 @@
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#implementation-status-and-notes">Implementation Status and Notes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (under-construction)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (ready-for-review)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/Examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Debugging (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#limitation-or-bug">Limitation or Bug?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#optimizations">Optimizations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#useful-compilation-settings">Useful Compilation Settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#inspecting-the-generated-code">Inspecting the Generated Code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#debug-info">Debug Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-autodebugger">The AutoDebugger</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#specific-issues">Specific Issues</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Debugging (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiler-settings">Compiler settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emcc-verbose-output">emcc verbose output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disabling-optimizations">Disabling optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#function-pointer-issues">Function Pointer Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#additional-tips">Additional Tips</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#autodebugger">AutoDebugger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#useful-links">Useful Links</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#additional-help">Additional Help</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#need-help">Need help?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../optimizing/index.html">Optimizing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Generated Code (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#using-emcc">Using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-projects">Very large projects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-initialization">Memory initialization</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#optimization-levels">Optimization levels</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive Variable Elimination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-projects">Very large projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-initialization">Memory initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#trade-off-code-size-and-performance">Trade off code size and performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#exception-catching">Exception Catching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#inlining">Inlining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-exceptions">C++ exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#inlining">Inlining</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#profiling">Profiling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-slowness">Troubleshooting Slowness</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-the-source-code.html">Optimizing Source Code (wiki-import)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
@@ -858,7 +857,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging (ready-for-review)</div>
   </div>
  
 </div>
@@ -876,109 +875,217 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging (ready-for-review)</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="debugging-wiki-import">
-<span id="debugging"></span><h1>Debugging (wiki-import)<a class="headerlink" href="#debugging-wiki-import" title="Permalink to this headline">¶</a></h1>
-<p>For a quick overview of debugging Emscripten-generated code, see <a class="reference external" href="http://people.mozilla.org/~lwagner/gdc-pres/gdc-2014.html#/20">these slides</a>.</p>
-<div class="section" id="limitation-or-bug">
-<h2>Limitation or Bug?<a class="headerlink" href="#limitation-or-bug" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten can compile almost but not all C/C++ code out there. Some limitations exist, see <a class="reference internal" href="guidelines/portability_guidelines.html#code-portability-guidelines"><em>Portability Guidelines</em></a>.</p>
-<p>Aside from these limitations, it&#8217;s possible you ran into a bug in Emscripten, such as:</p>
+  <div class="section" id="debugging-ready-for-review">
+<span id="debugging"></span><h1>Debugging (ready-for-review)<a class="headerlink" href="#debugging-ready-for-review" title="Permalink to this headline">¶</a></h1>
+<p>One of the main advantages of debugging cross platform Emscripten code is that the same cross-platform source code can be debugged on either the native platform or using the Web browser&#8217;s increasingly-powerful debugger, profiler and other tools.</p>
+<p>Emscripten provides a lot of functionality and tools to aid debugging:</p>
 <ul class="simple">
-<li>Missing functionality. For example, a library function which hasn&#8217;t yet been implemented in Emscripten. Possible solutions here are to implement the function (see <tt class="docutils literal"><span class="pre">library.js</span></tt>) or to compile it from C++.</li>
-<li>An actual mistake in Emscripten. Please report it!</li>
+<li><a class="reference internal" href="#debugging-debug-information-g"><em>Compiler debug information flags</em></a> that allow you to preserve debug information in compiled code and even create source maps so that you can step through the native C++ source when debugging in the browser.</li>
+<li><a class="reference internal" href="#debugging-emcc-debug"><em>Debug mode</em></a> emits debug logs and stores intermediate build files for analysis.</li>
+<li><a class="reference internal" href="#debugging-compilation-settings"><em>Compiler settings</em></a> that enable runtime checking of memory accesses and common allocation errors.</li>
+<li><a class="reference internal" href="#debugging-manual-debugging"><em>Manual print debugging</em></a> of Emscripten-generated code is also supported, and is in some ways even better than on native platforms.</li>
+<li><a class="reference internal" href="#debugging-autodebugger"><em>AutoDebugger</em></a> automatically instruments LLVM bitcode to write out each store to memory.</li>
 </ul>
+<p>This article describes the main tools and settings provided by Emscripten for debugging, along with a section explaining how to debug a number of <a class="reference internal" href="#debugging-emscripten-specific-issues"><em>Emscripten-specific issues</em></a>.</p>
+<div class="section" id="debug-information">
+<span id="debugging-debug-information-g"></span><h2>Debug information<a class="headerlink" href="#debug-information" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>Emcc</em></a> strips out most debug information from <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><em>optimized builds</em></a>. Optimisation level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><em>-01</em></a> and above remove LLVM debug information, and also disable runtime <a class="reference internal" href="#debugging-assertions"><em>ASSERTIONS</em></a> checks. From optimization level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-02</em></a> the code is minified by the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><em class="xref std std-term">Closure Compiler</em></a> and becomes virtually unreadable.</p>
+<p>The <em>emcc</em> <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><em>-g flag</em></a> can be used to preserve debug information in the compiled output. By default, this option preserves white-space, function names and variable names.</p>
+<p>The flag can also be specified with one of five levels: <a class="reference internal" href="../tools_reference/emcc.html#emcc-g0"><em>-g0</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g1"><em>-g1</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g2"><em>-g2</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g3"><em>-g3</em></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g4"><em>-g4</em></a>. Each level builds on the previous level to provide progressively more debug information in the compiled output. The <a class="reference internal" href="../tools_reference/emcc.html#emcc-g3"><em>-g3 flag</em></a> provides the same level of debug information as the <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><em>-g flag</em></a>.</p>
+<p>The <a class="reference internal" href="../tools_reference/emcc.html#emcc-g4"><em>-g4</em></a> option provides the most debug information — it generates source maps that allow you to view and debug the <em>C/C++ source code</em> in your browser&#8217;s debugger on Firefox, Chrome or Safari!</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Some optimizations may be disabled when used in conjunction with the debug flags. For example, if you compile with <tt class="docutils literal"><span class="pre">-O3</span> <span class="pre">-g4</span></tt> some of the normal <tt class="docutils literal"><span class="pre">-O3</span></tt> optimizations will be disabled in order to provide the requested debugging information.</p>
 </div>
-<div class="section" id="optimizations">
-<h2>Optimizations<a class="headerlink" href="#optimizations" title="Permalink to this headline">¶</a></h2>
-<p>Try to build without optimizations (no <tt class="docutils literal"><span class="pre">-O1</span></tt> etc.). If that has an effect, you can try to disable LLVM optimizations specifically using <tt class="docutils literal"><span class="pre">--llvm-opts</span> <span class="pre">0</span></tt>, see <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--help</span></tt>.</p>
-<p>Build with <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span></tt> to get intermediate files for the compiler&#8217;s various stages (output to <tt class="docutils literal"><span class="pre">/tmp/emscripten_temp</span></tt>). <tt class="docutils literal"><span class="pre">EMCC_DEBUG=2</span></tt> will emit more intermediate files (one for each JavaScript optimizer pass).</p>
 </div>
-<div class="section" id="useful-compilation-settings">
-<h2>Useful Compilation Settings<a class="headerlink" href="#useful-compilation-settings" title="Permalink to this headline">¶</a></h2>
-<p>As already mentioned, some useful settings appear in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>. Change the settings there and then recompile the code to have them take effect. When code isn&#8217;t running properly, you should compile with <tt class="docutils literal"><span class="pre">ASSERTIONS</span></tt>, and if that doesn&#8217;t clear things up, then <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt>. <tt class="docutils literal"><span class="pre">ASSERTIONS</span></tt> adds various runtime checks, and <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> adds even more (slow) memory access checks like dereferencing 0 and memory alignment issues.</p>
-</div>
-<div class="section" id="inspecting-the-generated-code">
-<h2>Inspecting the Generated Code<a class="headerlink" href="#inspecting-the-generated-code" title="Permalink to this headline">¶</a></h2>
-<p>See the slides linked to before for the <tt class="docutils literal"><span class="pre">-g</span></tt> options.</p>
-<p>Another thing you might find useful is to not run JavaScript optimizations, to leave inline source code hints. You can try something like</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="o">/</span><span class="n">emcc</span> <span class="o">-</span><span class="n">O2</span> <span class="o">--</span><span class="n">js</span><span class="o">-</span><span class="n">opts</span> <span class="mi">0</span> <span class="o">-</span><span class="n">g4</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_world_loop</span><span class="p">.</span><span class="n">cpp</span>
+<div class="section" id="debug-mode-emcc-debug">
+<span id="debugging-emcc-debug"></span><h2>Debug mode (EMCC_DEBUG)<a class="headerlink" href="#debug-mode-emcc-debug" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">EMCC_DEBUG</span></tt> environment variable can be set to enable Emscripten&#8217;s debug mode:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Linux or Mac OS X</span>
+<span class="nv">EMCC_DEBUG</span><span class="o">=</span>1 ./emcc tests/hello_world.cpp -o hello.html
+
+<span class="c"># Windows</span>
+<span class="nb">set </span><span class="nv">EMCC_DEBUG</span><span class="o">=</span>1
+emcc tests/hello_world.cpp -o hello.html
+<span class="nb">set </span><span class="nv">EMCC_DEBUG</span><span class="o">=</span>0
 </pre></div>
 </div>
-<p>which applies only LLVM opts, and basic JavaScript opts but not the JavaScript optimizer, which retains debug info, giving</p>
-<div class="highlight-cpp"><div class="highlight"><pre>function _main() {
- var label = 0;
- var $puts=_puts(((8)|0)); //@line 4 &quot;tests/hello_world.c&quot;
- return 1; //@line 5 &quot;tests/hello_world.c&quot;
+<p>With <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span></tt> set, <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>emcc</em></a> emits debug output and generates intermediate files for the compiler&#8217;s various stages. <tt class="docutils literal"><span class="pre">EMCC_DEBUG=2</span></tt> additionally generates intermediate files for each JavaScript optimizer pass.</p>
+<p>The debug logs and intermediate files are output to <strong>TEMP_DIR/emscripten_temp</strong>, where <tt class="docutils literal"><span class="pre">TEMP_DIR</span></tt> is by default <strong>/tmp</strong> (it is defined in the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><em>.emscripten</em></a>).</p>
+<p>The debug logs can be analysed to profile and review the changes that were made in each step.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The debug mode can also be enabled using by specifying the <a class="reference internal" href="#debugging-emcc-v"><em>verbose output</em></a> compiler flag (<tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">-v</span></tt>).</p>
+</div>
+</div>
+<div class="section" id="compiler-settings">
+<span id="debugging-compilation-settings"></span><h2>Compiler settings<a class="headerlink" href="#compiler-settings" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten has a number of compiler settings that can be useful for debugging. These are set using the <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><em>emcc -s</em></a> option, and will override any optimization flags. For example:</p>
+<div class="highlight-bash"><div class="highlight"><pre>./emcc -01 -s <span class="nv">ASSERTIONS</span><span class="o">=</span>1 tests/hello_world
+</pre></div>
+</div>
+<p>The most important settings are:</p>
+<blockquote>
+<div><ul>
+<li><p id="debugging-assertions"><tt class="docutils literal"><span class="pre">ASSERTIONS=1</span></tt> is used to enable runtime checks for common memory allocation errors (e.g. writing more memory than was allocated). It also defines how Emscripten should handle errors in program flow. The value can be set to <tt class="docutils literal"><span class="pre">ASSERTIONS=2</span></tt> in order to run additional tests.</p>
+<p><tt class="docutils literal"><span class="pre">ASSERTIONS=1</span></tt> is enabled by default. Assertions are turned off for optimized code (<a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><em>-01</em></a> and above).</p>
+</li>
+<li><p id="debugging-safe-heap"><tt class="docutils literal"><span class="pre">SAFE_HEAP=1</span></tt> adds additional memory access checks, and will give clear errors for problems like dereferencing 0 and memory alignment issues. Use  <tt class="docutils literal"><span class="pre">SAFE_HEAP=2</span></tt> in order to check only specific lines listed in <tt class="docutils literal"><span class="pre">SAFE_HEAP_LINES</span></tt>, and use <tt class="docutils literal"><span class="pre">SAFE_HEAP=3</span></tt> to check all the lines except those specified. This last option is the most common operation.</p>
+<p>You can also set <tt class="docutils literal"><span class="pre">SAFE_HEAP_LOG</span></tt> to log <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> operations.</p>
+</li>
+</ul>
+</div></blockquote>
+<p>A number of other useful debug settings are defined in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>. For more information, search that file for the keywords &#8220;check&#8221; and &#8220;debug&#8221;.</p>
+</div>
+<div class="section" id="emcc-verbose-output">
+<span id="debugging-emcc-v"></span><h2>emcc verbose output<a class="headerlink" href="#emcc-verbose-output" title="Permalink to this headline">¶</a></h2>
+<p>Compiling with the <a class="reference internal" href="../tools_reference/emcc.html#emcc-verbose"><em>emcc -v</em></a> option passes <tt class="docutils literal"><span class="pre">-v</span></tt> to LLVM and runs Emscripten&#8217;s internal sanity checks on the toolchain.</p>
+<p>The verbose mode also enables Emscripten&#8217;s <a class="reference internal" href="#debugging-emcc-debug"><em>debug mode</em></a> (with <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span></tt>) to generate intermediate files for the compiler’s various stages.</p>
+</div>
+<div class="section" id="manual-print-debugging">
+<span id="debugging-manual-debugging"></span><h2>Manual print debugging<a class="headerlink" href="#manual-print-debugging" title="Permalink to this headline">¶</a></h2>
+<p>You can also manually instrument the source code with <tt class="docutils literal"><span class="pre">printf()</span></tt> statements, then compile and run the code to investigate issues.</p>
+<p>If you have a good idea of the problem line you can add add <tt class="docutils literal"><span class="pre">print(new</span> <span class="pre">Error().stack)</span></tt> to the JavaScript to get a stack trace at that point. There is also <a class="reference internal" href="../api_reference/preamble.js.html#stackTrace" title="stackTrace"><tt class="xref js js-func docutils literal"><span class="pre">stackTrace()</span></tt></a> which emits a stack trace and also tries to demangle C++ function names. Debug printouts can even execute arbitrary JavaScript.</p>
+<p>For example:</p>
+<div class="highlight-cpp"><div class="highlight"><pre>function _addAndPrint($left, $right) {
+        $left = $left | 0;
+        $right = $right | 0;
+        //---
+        if ($left &lt; $right) console.log(&#39;l&lt;r at &#39; + stackTrace());
+        //---
+        _printAnInteger($left + $right | 0);
 }
 </pre></div>
 </div>
 </div>
-<div class="section" id="debug-info">
-<h2>Debug Info<a class="headerlink" href="#debug-info" title="Permalink to this headline">¶</a></h2>
-<p>It can be very useful to compile the C/C++ files with <tt class="docutils literal"><span class="pre">-g</span></tt> flag to get debugging into - Emscripten will add source file and line number to each line in the generated code. Note, however, that attempting to interpret code compiled with <tt class="docutils literal"><span class="pre">-g</span></tt> using <tt class="docutils literal"><span class="pre">lli</span></tt> may cause crashes. So you may need to build once without <tt class="docutils literal"><span class="pre">-g</span></tt> for <tt class="docutils literal"><span class="pre">lli</span></tt>, then build again with <tt class="docutils literal"><span class="pre">-g</span></tt>. Or, use <tt class="docutils literal"><span class="pre">tools/exec_llvm.py</span></tt> in Emscripten, which will run lli after cleaning out debug info.</p>
+<div class="section" id="disabling-optimizations">
+<h2>Disabling optimizations<a class="headerlink" href="#disabling-optimizations" title="Permalink to this headline">¶</a></h2>
+<p>It can sometimes be useful to compile with either <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-opts"><em>LLVM</em></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-js-opts"><em>JavaScript</em></a> optimizations (only) disabled.</p>
+<p>For example, the following command enables <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-02</em></a> optimization for both LLVM and JavaScript and <a class="reference internal" href="#debugging-debug-information-g"><em>Debug information</em></a>, but then explicitly turns off the JavaScript optimizer.</p>
+<div class="highlight-bash"><div class="highlight"><pre>./emcc -O2 --js-opts 0 -g4 tests/hello_world_loop.cpp
+</pre></div>
 </div>
-<div class="section" id="the-autodebugger">
-<h2>The AutoDebugger<a class="headerlink" href="#the-autodebugger" title="Permalink to this headline">¶</a></h2>
-<p>The &#8216;nuclear option&#8217; when debugging is to use the <strong>autodebugger tool</strong>.</p>
-<p>The autodebugger will rewrite the LLVM bitcode so it prints out each store to memory. You can then run the exact same LLVM bitcode in the LLVM interpreter (lli) and JavaScript, and compare the output (<tt class="docutils literal"><span class="pre">diff</span></tt> is useful if the output is large). For how to use the autodebugger tool, see the <tt class="docutils literal"><span class="pre">autodebug</span></tt> test.</p>
-<p>The autodebugger can potentially find <strong>any</strong> problem in the generated code, so it is strictly more powerful than the <tt class="docutils literal"><span class="pre">CHECK_*</span></tt> settings and <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt>. However, it has some limitations:</p>
-<ul class="simple">
-<li>The autodebugger generates a lot of output. Using <tt class="docutils literal"><span class="pre">diff</span></tt> can be very helpful here.</li>
-<li>The autodebugger doesn&#8217;t print out pointer values, just simple numerical values. The reason is that pointer values change from run to run, so you can&#8217;t compare them. However, on the one hand this may miss potential problems, and on the other, a pointer may be converted into an integer and stored, in which case it would be shown but it should be ignored. (You can modify this, look in <tt class="docutils literal"><span class="pre">tools/autodebugger.py</span></tt>.)</li>
-</ul>
-<p>One use of the autodebugger is to quickly emit lots of logging output. You can then take a look and see if something weird pops up. Another use is for regressions, see below.</p>
-<div class="section" id="autodebugger-regression-workflow">
-<h3>AutoDebugger Regression Workflow<a class="headerlink" href="#autodebugger-regression-workflow" title="Permalink to this headline">¶</a></h3>
-<p>Fixing regressions is pretty easy with the autodebugger, using the following workflow:</p>
-<ul class="simple">
-<li>Compile the code using <tt class="docutils literal"><span class="pre">EMCC_AUTODEBUG=1</span></tt> in the environment.</li>
-<li>Compile the code using <tt class="docutils literal"><span class="pre">EMCC_AUTODEBUG=1</span></tt> in the environment, again, but with a difference emcc setting etc., so that you now have one build before the regression and one after.</li>
-<li>Run both versions, saving their output, then do a diff and investigate that. Any difference is likely the bug (other false positives could be things like the time, if something like <tt class="docutils literal"><span class="pre">clock()</span></tt> is called, which differs slightly between runs).</li>
-</ul>
-<p>(You can also make the second build a native one using the llvm nativizer tool mentioned above - run it on the autodebugged .ll file, which EMCC_DEBUG=1 will emit in <tt class="docutils literal"><span class="pre">/tmp/emscripten_temp</span></tt>. This helps find bugs in general and not just regressions, but has the same issues with the nativizer tool mentioned earlier.)</p>
+<p>The result is code that can be more useful for debugging issues related to LLVM optimized code:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">function</span> <span class="nx">_main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">label</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">$puts</span><span class="o">=</span><span class="nx">_puts</span><span class="p">(((</span><span class="mi">8</span><span class="p">)</span><span class="o">|</span><span class="mi">0</span><span class="p">));</span> <span class="c1">//@line 4 &quot;tests/hello_world.c&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">//@line 5 &quot;tests/hello_world.c&quot;</span>
+<span class="p">}</span>
+</pre></div>
 </div>
 </div>
-<div class="section" id="specific-issues">
-<h2>Specific Issues<a class="headerlink" href="#specific-issues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="emscripten-specific-issues">
+<span id="debugging-emscripten-specific-issues"></span><h2>Emscripten-specific issues<a class="headerlink" href="#emscripten-specific-issues" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="memory-alignment-issues">
 <h3>Memory Alignment Issues<a class="headerlink" href="#memory-alignment-issues" title="Permalink to this headline">¶</a></h3>
-<p><tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> will reveal memory alignment issues - where your code is assuming a higher alignment than appears in practice. Unaligned reads and writes can lead to incorrect results, as our typed array model of memory does not support them.</p>
-<p>The best solution is to avoid unaligned reads and writes. Generally they occur as the result of undefined behavior.</p>
-<p>In some cases, however, you may need unaligned reads and writes, for example to read an int from a packed structure in some pre-existing data format. To force an unaligned read or write (which will be slower, but work properly), you can either manually read individual bytes and reconstruct the full value, or use the <tt class="docutils literal"><span class="pre">emscripten_align*</span></tt> typedefs in <tt class="docutils literal"><span class="pre">emscripten.h</span></tt>, which define unaligned versions of the basic types (short, int, float, double). All operations on those types are not fully aligned (use the <tt class="docutils literal"><span class="pre">1</span></tt> variants in most cases, which mean no alignment whatsoever). They are slower due to lack of alignment, though, so be sure to only use them when absolutely necessary.</p>
+<p>The <a class="reference internal" href="emscripten-runtime-environment.html#emscripten-memory-model"><em>Emscripten memory representation</em></a> assumes loads and stores are aligned. Performing a normal load or store on an unaligned address can fail.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last"><a class="reference internal" href="#debugging-safe-heap"><em>SAFE_HEAP</em></a> can be used to reveal memory alignment issues.</p>
+</div>
+<p>Generally it is best to avoid unaligned reads and writes — often they occur as the result of undefined behavior. In some cases, however, they are unavoidable. For example if the code to be ported reads an <tt class="docutils literal"><span class="pre">int</span></tt> from a packed structure in some pre-existing data format.</p>
+<p>Emscripten supports unaligned reads and writes, but they will be much slower, and should be used only when absolutely necessary.  To force an unaligned read or write you can:</p>
+<ul class="simple">
+<li>Manually read individual bytes and reconstruct the full value</li>
+<li>Use the <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_align1_short" title="emscripten_align1_short"><tt class="xref c c-type docutils literal"><span class="pre">emscripten_align*</span></tt></a> typedefs, which define unaligned versions of the basic types (<tt class="docutils literal"><span class="pre">short</span></tt>, <tt class="docutils literal"><span class="pre">int</span></tt>, <tt class="docutils literal"><span class="pre">float</span></tt>, <tt class="docutils literal"><span class="pre">double</span></tt>). All operations on those types are not fully aligned (use the <tt class="docutils literal"><span class="pre">1</span></tt> variants in most cases, which mean no alignment whatsoever).</li>
+</ul>
 </div>
 <div class="section" id="function-pointer-issues">
 <h3>Function Pointer Issues<a class="headerlink" href="#function-pointer-issues" title="Permalink to this headline">¶</a></h3>
-<p>If you get an <tt class="docutils literal"><span class="pre">abort()</span></tt> from a function pointer call (<tt class="docutils literal"><span class="pre">nullFunc</span></tt> or <tt class="docutils literal"><span class="pre">b0</span></tt> or <tt class="docutils literal"><span class="pre">b1</span></tt> or such, possibly with an error message saying &#8220;incorrect function pointer&#8221;), the issue is that a function pointer was called but it is invalid in that type.</p>
-<p>It is undefined behavior to cast a function pointer to another type and call that (e.g., cast away the last parameter), but this does happen in real-world code, and is one possible cause for this error. In optimized Emscripten output, each function pointer type has a different table of entries, so you must call with the correct type to get the right behavior.</p>
-<p>Another possible cause is a dereference of 0, like calling a method on a NULL pointer or such. That can be a bug in the code caused by any reason, but shows itself as a function pointer error (as just reading or writing to a NULL pointer will work, unlike in native builds - it is just function pointers that will always fail when NULL).</p>
-<p>Building with <tt class="docutils literal"><span class="pre">-Werror</span></tt> (turn warnings into errors) can help here, as some cases of undefined behavior show warnings. If you can get your codebase to build with <tt class="docutils literal"><span class="pre">-Werror</span></tt> that might help.</p>
-<p>Use <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ASSERTIONS=2</span></tt> to get some useful information about the function pointer being called, and its type. Also useful is to look at the stack trace (may want to disable asm.js optimizations in Mozilla Firefox to see the best trace information) to see where in your code the error happens, then see which function should be called but isn&#8217;t.</p>
-<p>SAFE_HEAP is also useful when debugging issues like this, as is disabling function pointer aliasing using <tt class="docutils literal"><span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt>. When you build with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span> <span class="pre">-s</span> <span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt> then it should be impossible for a function pointer to be called with the wrong type without an error showing up.</p>
-<p>Another possible problem with function pointers is that what appears to be the wrong function is called. Again, <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> can help with this as it detects some possible errors with function table accesses.</p>
+<p>If you get an <tt class="docutils literal"><span class="pre">abort()</span></tt> from a function pointer call to <tt class="docutils literal"><span class="pre">nullFunc</span></tt> or <tt class="docutils literal"><span class="pre">b0</span></tt> or <tt class="docutils literal"><span class="pre">b1</span></tt> (possibly with an error message saying &#8220;incorrect function pointer&#8221;), the problem is that the function pointer was not found in the expected function pointer table when called.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">nullFunc</span></tt> is the function used to populate empty index entries in the function pointer tables (<tt class="docutils literal"><span class="pre">b0</span></tt>, <tt class="docutils literal"><span class="pre">b1</span></tt> are shorter names used for <tt class="docutils literal"><span class="pre">nullFunc</span></tt> in more optimized builds).  A function pointer to an invalid index will call this function, which simply calls <tt class="docutils literal"><span class="pre">abort()</span></tt>.</p>
+</div>
+<p>There are several possible causes:</p>
+<ul class="simple">
+<li>Code is calling a function pointer that has been cast from another type (this is undefined behavior but it does happen in real-world code). In optimized Emscripten output, each function pointer type is stored in a separate table based on its original signature, so you <em>must</em> call a function pointer with that same signature to get the right behavior (see <a class="reference internal" href="guidelines/function_pointer_issues.html#portability-function-pointer-issues"><em>Function Pointer Issues</em></a> in the code portability section for more information).</li>
+<li>Code calls a method on a NULL pointer or dereferences 0. This sort of bug can be caused by any sort of coding error, but manifests as a function pointer error because the function can&#8217;t be found in the expected table at runtime.</li>
+</ul>
+<p>In order to debug these sorts of issues:</p>
+<ul class="simple">
+<li>Compile with <tt class="docutils literal"><span class="pre">-Werror</span></tt>. This turns warnings into errors, which can be useful as some cases of undefined behavior would otherwise show warnings.</li>
+<li>Use <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ASSERTIONS=2</span></tt> to get some useful information about the function pointer being called, and its type.</li>
+<li>Look at the browser stack trace to see where the error occurs and which function should have been called.</li>
+<li>Build with <a class="reference internal" href="#debugging-safe-heap"><em>SAFE_HEAP=1</em></a> and function pointer aliasing disabled (<tt class="docutils literal"><span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt>). This should make it impossible for a function pointer to be called with the wrong type without raising an error: <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span> <span class="pre">-s</span> <span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt></li>
+</ul>
+<p>Another function pointer issue is when the wrong function is called. <a class="reference internal" href="#debugging-safe-heap"><em>SAFE_HEAP=1</em></a> can help with this as it detects some possible errors with function table accesses. <tt class="docutils literal"><span class="pre">ALIASING_FUNCTION_POINTERS=0</span></tt> is also useful as it ensures that every function pointer is a globally unique number (forcing a function call on the wrong table to call a missing function rather than potentially the wrong function).</p>
 </div>
 <div class="section" id="infinite-loops">
 <h3>Infinite loops<a class="headerlink" href="#infinite-loops" title="Permalink to this headline">¶</a></h3>
-<p>If your code hits an infinite loop, one easy way to see where that happens is to use a JavaScript profiler. In the Firefox profiler for example it is easy to see which code ran at what time, so if the code enters an infinite loop for a while (before the browser shows the slow script dialog and you quit it), you will see a block of code doing the same thing near the end of the profile.</p>
+<p>Infinite loops cause your page to hang. After a period the browser will notify the user that the page is stuck and offer to halt or close it.</p>
+<p>If your code hits an infinite loop, one easy way to find the problem code is to use a <em>JavaScript profiler</em>. In the Firefox profiler, if the code enters an infinite loop you will see a block of code doing the same thing near the end of the profile.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <a class="reference internal" href="emscripten-runtime-environment.html#emscripten-runtime-environment-main-loop"><em>Browser main loop</em></a> may need to be re-coded if your application uses an infinite main loop.</p>
 </div>
 </div>
-<div class="section" id="additional-tips">
-<h2>Additional Tips<a class="headerlink" href="#additional-tips" title="Permalink to this headline">¶</a></h2>
-<p>You can also do something similar to what the autodebugger does, manually - modify the original source code with some <tt class="docutils literal"><span class="pre">printf()</span></tt>s, then compile and run that, to investigate issues.</p>
-<p>Another useful tip is if you have a good idea of what line is problematic in generated .js, you can add <tt class="docutils literal"><span class="pre">print(new</span> <span class="pre">Error().stack)</span></tt> to get a stack trace there. There is also <a class="reference internal" href="../api_reference/preamble.js.html#stackTrace" title="stackTrace"><tt class="xref js js-func docutils literal"><span class="pre">stackTrace()</span></tt></a> which emits a stack trace and also tries to demangle C++ function names.</p>
+</div>
+<div class="section" id="autodebugger">
+<span id="debugging-autodebugger"></span><h2>AutoDebugger<a class="headerlink" href="#autodebugger" title="Permalink to this headline">¶</a></h2>
+<p>The <em>AutoDebugger</em> is the &#8216;nuclear option&#8217; for debugging Emscripten code.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This option is primarily intended for Emscripten core developers.</p>
+</div>
+<p>The <em>AutoDebugger</em> will rewrite the LLVM bitcode so it prints out each store to memory. You can then run the exact same LLVM bitcode compiled using <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tools/nativize_llvm.py">tools/nativize_llvm.py</a> (or in the <a class="reference internal" href="../site/glossary.html#term-llvm-interpreter"><em class="xref std std-term">LLVM interpreter</em></a>) and JavaScript, and compare the output.</p>
+<p>The <em>AutoDebugger</em> can potentially find <strong>any</strong> problem in the generated code, so it is strictly more powerful than the <tt class="docutils literal"><span class="pre">CHECK_*</span></tt> settings and <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt>. One use of the <em>AutoDebugger</em> is to quickly emit lots of logging output, which can then be reviewed for odd behavior. The <em>AutoDebugger</em> is also particularly useful for <a class="reference internal" href="#debugging-autodebugger-regressions"><em>debugging regressions</em></a>.</p>
+<p>The <em>AutoDebugger</em> has some limitations:</p>
+<ul class="simple">
+<li>It generates a lot of output. Using <em>diff</em> can be very helpful for identifying changes.</li>
+<li>It prints out simple numerical values rather than pointer addresses (because pointer addresses change between runs, and hence can&#8217;t be compared). This is a limitation because sometimes inspection of addresses can show errors where the pointer address is 0 or impossibly large. It is possible to modify the tool to print out addresses as integers in <tt class="docutils literal"><span class="pre">tools/autodebugger.py</span></tt>.</li>
+</ul>
+<p>To run the <em>AutoDebugger</em>, compile with the environment variable <tt class="docutils literal"><span class="pre">EMCC_AUTODEBUG=1</span></tt> set. For example:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Linux or Mac OS X</span>
+<span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span>1 ./emcc tests/hello_world.cpp -o hello.html
+
+<span class="c"># Windows</span>
+<span class="nb">set </span><span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span>1
+emcc tests/hello_world.cpp -o hello.html
+<span class="nb">set </span><span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span>0
+</pre></div>
+</div>
+<div class="section" id="autodebugger-regression-workflow">
+<span id="debugging-autodebugger-regressions"></span><h3>AutoDebugger Regression Workflow<a class="headerlink" href="#autodebugger-regression-workflow" title="Permalink to this headline">¶</a></h3>
+<p>Use the following workflow to find regressions with the <em>AutoDebugger</em>:</p>
+<ul class="simple">
+<li>Compile the working code with <tt class="docutils literal"><span class="pre">EMCC_AUTODEBUG=1</span></tt> set in the environment.</li>
+<li>Compile the code using <tt class="docutils literal"><span class="pre">EMCC_AUTODEBUG=1</span></tt> in the environment again, but this time with the settings that cause the regression. Following this step we have one build before the regression and one after.</li>
+<li>Run both versions of the compiled code and save their output.</li>
+<li>Compare the output using a <em>diff</em> tool.</li>
+</ul>
+<p>Any difference between the outputs is likely to be caused by the bug.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">False positives can be caused by calls to <tt class="docutils literal"><span class="pre">clock()</span></tt>, which will differ slightly between runs.</p>
+</div>
+<p>You can also make native builds using the <a class="reference internal" href="../site/glossary.html#term-llvm-nativizer"><em class="xref std std-term">LLVM Nativizer</em></a> tool. This can be run on the autodebugged <strong>.ll</strong> file, which will be emitted in <tt class="docutils literal"><span class="pre">/tmp/emscripten_temp</span></tt> when <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span></tt> is set.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>The native build created using the <a class="reference internal" href="../site/glossary.html#term-llvm-nativizer"><em class="xref std std-term">LLVM Nativizer</em></a> will use native system libraries. Direct comparisons of output with Emscripten-compiled code can therefore be misleading.</li>
+<li>Attempting to interpret code compiled with <tt class="docutils literal"><span class="pre">-g</span></tt> using the <em>LLVM Nativizer</em> or <a class="reference internal" href="../site/glossary.html#term-lli"><em class="xref std std-term">lli</em></a> may crash. So you may need to build once without <tt class="docutils literal"><span class="pre">-g</span></tt> for these tools, then build again with <tt class="docutils literal"><span class="pre">-g</span></tt>. Or, use <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tools/exec_llvm.py">tools/exec_llvm.py</a> in Emscripten, which will run <em>lli</em> after cleaning out debug info.</li>
+</ul>
+</div>
+</div>
 </div>
 <div class="section" id="useful-links">
 <h2>Useful Links<a class="headerlink" href="#useful-links" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="http://mozakai.blogspot.com/2014/06/looking-through-emscripten-output.html">Blogpost about reading compiler output</a>.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://mozakai.blogspot.com/2014/06/looking-through-emscripten-output.html">Blogpost about reading compiler output</a>.</li>
+<li><a class="reference external" href="http://people.mozilla.org/~lwagner/gdc-pres/gdc-2014.html#/20">GDC 2014: Getting started with asm.js and Emscripten</a> (Debugging slides).</li>
+</ul>
 </div>
-<div class="section" id="additional-help">
-<h2>Additional Help<a class="headerlink" href="#additional-help" title="Permalink to this headline">¶</a></h2>
-<p>Of course, you can also ask the Emscripten devs for help. :) See links to IRC and the Google Group on the main project page.</p>
+<div class="section" id="need-help">
+<h2>Need help?<a class="headerlink" href="#need-help" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../getting_started/Tutorial.html#running-emscripten-tests"><em>Emscripten Test Suite</em></a> contains known-good examples of almost all functionality offered by Emscripten. If you have a problem, it is therefore a good idea to search the suite to determine whether test code with similar behavior is able to run.</p>
+<p>If you&#8217;ve tried the ideas here and you need more help, then please <a class="reference internal" href="../introducing_emscripten/community.html#contact"><em>Get in touch</em></a>.</p>
 </div>
 </div>
 
@@ -988,10 +1095,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../optimizing/index.html" class="btn btn-neutral float-right" title="Optimizing"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../optimizing/Optimizing-Code.html" class="btn btn-neutral float-right" title="Optimizing Code (ready-for-review)"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="multimedia_and_graphics/OpenGL-support.html" class="btn btn-neutral" title="OpenGL support in Emscripten (under-construction)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="multimedia_and_graphics/OpenGL-support.html" class="btn btn-neutral" title="OpenGL support in Emscripten (ready-for-review)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1044,7 +1151,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging (ready-for-review)</div>
   </div>
  
 </div> -->
@@ -1069,7 +1176,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Debugging%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/Debugging&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Debugging%20%28ready-for-review%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/Debugging&labels=bug">Page bug</a>
       </li>
   </ul>
   

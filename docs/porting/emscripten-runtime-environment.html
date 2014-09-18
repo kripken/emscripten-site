@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Runtime Environment (wiki-import) &mdash; Emscripten 1.23.0 documentation</title>
+  <title>Emscripten Runtime Environment &mdash; Emscripten 1.23.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
     <link rel="top" title="Emscripten 1.23.0 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Connecting C++ and JavaScript" href="connecting_cpp_and_javascript/index.html"/>
-        <link rel="prev" title="Browser limitations" href="guidelines/browser_limitations.html"/> 
+        <link rel="prev" title="Specific Browser Limitations" href="guidelines/browser_limitations.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -189,15 +189,18 @@
 <li class="toctree-l4"><a class="reference internal" href="guidelines/function_pointer_issues.html#asm-pointer-casts">Asm pointer casts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Browser limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Emscripten Runtime Environment (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#browser-main-loop">Browser main loop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Emscripten Runtime Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input-output">Input/output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#file-systems">File Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#browser-main-loop">Browser main loop</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#execution-lifecycle">Execution lifecycle</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#emscripten-memory-model">Emscripten memory model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-memory-representation">Emscripten memory representation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
@@ -213,7 +216,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#binding-c-and-javascript-webidl-binder-and-embind">Binding C++ and JavaScript — WebIDL Binder and Embind</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html">Embind (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html">Embind</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#classes">Classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-management">Memory management</a></li>
@@ -227,7 +230,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#a-quick-example">A quick example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#using-c-classes-in-javascript">Using C++ classes in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#pointers-references-value-types-ref-and-value">Pointers, References, Value types (Ref and Value)</a></li>
@@ -275,63 +278,59 @@
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#implementation-status-and-notes">Implementation Status and Notes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (under-construction)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten (ready-for-review)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/Examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#limitation-or-bug">Limitation or Bug?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#optimizations">Optimizations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#useful-compilation-settings">Useful Compilation Settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#inspecting-the-generated-code">Inspecting the Generated Code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-info">Debug Info</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#the-autodebugger">The AutoDebugger</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#specific-issues">Specific Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging (ready-for-review)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#compiler-settings">Compiler settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#additional-tips">Additional Tips</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#autodebugger">AutoDebugger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#useful-links">Useful Links</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#additional-help">Additional Help</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#need-help">Need help?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../optimizing/index.html">Optimizing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Generated Code (wiki-import)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#using-emcc">Using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-projects">Very large projects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-initialization">Memory initialization</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#optimization-levels">Optimization levels</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive Variable Elimination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code (ready-for-review)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-projects">Very large projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-initialization">Memory initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#trade-off-code-size-and-performance">Trade off code size and performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#exception-catching">Exception Catching</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#inlining">Inlining</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-exceptions">C++ exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#inlining">Inlining</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#profiling">Profiling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-slowness">Troubleshooting Slowness</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-the-source-code.html">Optimizing Source Code (wiki-import)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
@@ -858,7 +857,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment</div>
   </div>
  
 </div>
@@ -876,65 +875,102 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="emscripten-runtime-environment-wiki-import">
-<span id="emscripten-runtime-environment"></span><h1>Emscripten Runtime Environment (wiki-import)<a class="headerlink" href="#emscripten-runtime-environment-wiki-import" title="Permalink to this headline">¶</a></h1>
-<p>The browser environment is different than the environment a normal C/C++ application expects. The main differences are how input and output work, and the fact that the main loop must be asynchronous.</p>
-<p>For input and output, if you use <a class="reference internal" href="../site/glossary.html#term-sdl"><em class="xref std std-term">SDL</em></a> etc. then everything should basically be taken care of for you. Emscripten implements the familiar SDL API for the browser environment. Typically you should need to refactor nothing or a very small amount of code for this.</p>
-<p>The main loop being asynchronous, however, is trickier.</p>
-<div class="section" id="browser-main-loop">
-<h2>Browser main loop<a class="headerlink" href="#browser-main-loop" title="Permalink to this headline">¶</a></h2>
-<p>Graphical C++ apps typically have a main loop that is an infinite loop, in which event handling is done, processing and rendering, then a wait (<tt class="docutils literal"><span class="pre">SDL_Delay</span></tt>, for example) to keep the frame rate right. However, in JavaScript there is no way for something like SDL_Delay to actually return control to the browser event loop, and returning control is important because the browser event model is asynchronous — your JavaScript must finish its &#8220;turn&#8221;, by completing execution and returning control to the browser itself. The browser will then asynchronously call your JavaScript later according to how you asked it to do that.</p>
-<p>This is inherent in how browsers work. If you do not finish your turn, the page will &#8216;hang&#8217; and the browser will eventually tell the user the page is stuck and offer to halt it or close it. Also, that things like WebGL will only actually render when your JavaScript &#8220;turn&#8221; is over - so while a normal C++ GL app would swap buffers manually, in JavaScript you just finish your turn and the browser renders and swaps.</p>
+  <div class="section" id="emscripten-runtime-environment">
+<span id="id1"></span><h1>Emscripten Runtime Environment<a class="headerlink" href="#emscripten-runtime-environment" title="Permalink to this headline">¶</a></h1>
+<p>The Emscripten runtime environment is different to that expected by most C/C++ applications. Emscripten works hard to abstract and mitigate these differences, so that in general code can be compiled with little or no change.</p>
+<p>This article expands on some of the differences and the resulting <a class="reference internal" href="guidelines/api_limitations.html#api-limitations"><em>API Limitations</em></a>, and outlines the few changes you may need to make to your C/C++ code.</p>
+<div class="section" id="input-output">
+<h2>Input/output<a class="headerlink" href="#input-output" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten implements the Simple DirectMedia Layer API (<a class="reference internal" href="../site/glossary.html#term-sdl"><em class="xref std std-term">SDL</em></a>) for the browser environment, which provides low level access to audio, keyboard, mouse, joystick, and graphics hardware. Applications that use <em>SDL</em> typically require no input/output changes to run in the browser.</p>
+<p>In addition, we have more limited support for <em>glut</em>, <em>glfw</em>, <em>glew</em> and <em>xlib</em>.</p>
+<p>Applications that do not use <em>SDL</em> or the other APIs can use the Emscripten-specific APIs for input and output:</p>
+<ul class="simple">
+<li><a class="reference internal" href="../api_reference/html5.h.html#html5-h"><em>html5.h</em></a>, which defines the Emscripten low-level glue bindings to interact with HTML5 events from native code, including access to keys, mouse, wheel, device orientation, battery levels, vibration, etc.</li>
+<li><a class="reference internal" href="multimedia_and_graphics/index.html#multimedia-and-graphics-index"><em>Multimedia and Graphics</em></a> APIs, including <a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-support"><em>OpenGL</em></a> and <a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#egl-support-in-emscripten"><em>EGL</em></a>.</li>
+</ul>
 </div>
+<div class="section" id="file-systems">
+<h2>File Systems<a class="headerlink" href="#file-systems" title="Permalink to this headline">¶</a></h2>
+<p>A lot of C/C++ code uses the synchronous file system APIs in <em>libc</em> and <em>libcxx</em> to access code in the local file system. This is problematic because the browser prevents code from directly accessing files on the host system, and because JavaScript only supports asynchronous file access outside of web workers.</p>
+<p>Emscripten provides an implementation of <em>libc</em> and <em>libcxx</em> and a <em>virtual file system</em> so that normal C/C++ code can be compiled and run without change. Most developers need only specify the set of files to be <a class="reference internal" href="files/packaging_files.html#packaging-files"><em>packaged</em></a> for preloading into the virtual file system at runtime.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Using a virtual file system bypasses the limitations listed above. The file data is packaged at compile time and downloaded into the file system using <em>asynchronous</em> JavaScript APIs before the compiled code is allowed to run. The compiled code then makes &#8220;file&#8221; calls that are really just calls into program memory.</p>
+</div>
+<p>The default file system (<a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-memfs"><em>MEMFS</em></a>) stores files in-memory, so that any changes are lost when the page is reloaded. If file changes need to be stored more permanently then developers can mount the <a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs"><em>IDBFS</em></a> file system, which allows data to be persisted in the browser. When running code in <em>node.js</em>, developers can mount <a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-nodefs"><em>NODEFS</em></a> to give code direct access to the local file system.</p>
+<p>Emscripten also has an API to support <a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-h-asynchronous-file-system-api"><em>asynchronous file access</em></a>.</p>
+<p>For more information and examples see <a class="reference internal" href="files/index.html#packaging-code-index"><em>Files and File Systems</em></a>.</p>
+</div>
+<div class="section" id="browser-main-loop">
+<span id="emscripten-runtime-environment-main-loop"></span><h2>Browser main loop<a class="headerlink" href="#browser-main-loop" title="Permalink to this headline">¶</a></h2>
+<p>The browser event model uses co-operative multitasking — each event has a “turn” to run, and must then return control to the browser so that other events can be processed. A common cause of HTML pages hanging is JavaScript that does not complete and return control to the browser.</p>
+<p>Graphical C++ apps typically run in an infinite loop. Within each iteration of the loop the app performs event handling, processing and rendering, followed by a delay (&#8220;wait&#8221;) to keep the frame rate constant. This infinite loop is a problem in the browser environment because there is no way for control to return to the browser so other code can run. After a period the browser will notify the user that the page is stuck and offer to halt or close it.</p>
+<p>Similarly, JavaScript APIs like WebGL can only run when the current &#8220;turn&#8221; is over, and will automatically render and swap buffers at that point. This contrasts with OpenGL C++ apps where you would need to swap the buffers manually.</p>
 <div class="section" id="implementing-an-asynchronous-main-loop-in-c-c">
-<h2>Implementing an asynchronous main loop in C/C++<a class="headerlink" href="#implementing-an-asynchronous-main-loop-in-c-c" title="Permalink to this headline">¶</a></h2>
-<p>The standard way to do this is make a C function that runs one iteration of your main loop. Then call it from JavaScript at the proper frequency. This is very simple to do manually (just call it from JavaScript, all you need is an underscore at the beginning of the name), but you can also use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a> for something a little more convenient. For a regular native build, you can just call that function in an infinite loop (likely with <tt class="docutils literal"><span class="pre">SDL_Delay</span></tt> etc.), so typically you will have a small section with <tt class="docutils literal"><span class="pre">#ifdef</span> <span class="pre">EMSCRIPTEN</span></tt> for the two cases, for example:</p>
+<span id="emscripten-runtime-environment-howto-main-loop"></span><h3>Implementing an asynchronous main loop in C/C++<a class="headerlink" href="#implementing-an-asynchronous-main-loop-in-c-c" title="Permalink to this headline">¶</a></h3>
+<p>The standard solution for this problem is to define a C function that performs one iteration of your main loop (not including the &#8220;delay&#8221;). For a native build this function can be called in an infinite loop, leaving the behaviour effectively unchanged.</p>
+<p>Within Emscripten compiled code we use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a> to get the environment to call this same function at a specified frequency. The iteration is still run &#8220;infinitely&#8221; but now other code can run between iterations and the browser does not hang.</p>
+<p>Typically you will have a small section with <tt class="docutils literal"><span class="pre">#ifdef</span> <span class="pre">EMSCRIPTEN</span></tt> for the two cases. For example:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="p">...</span>
+<span class="p">...</span>
 <span class="cp">#ifdef EMSCRIPTEN</span>
-  <span class="c1">// void emscripten_set_main_loop(void (*func)(), int fps, int simulate_infinite_loop);</span>
+  <span class="c1">// void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);</span>
   <span class="n">emscripten_set_main_loop</span><span class="p">(</span><span class="n">one_iter</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 <span class="cp">#else</span>
   <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">one_iter</span><span class="p">();</span>
+    <span class="c1">// Delay to keep frame rate constant (using SDL)</span>
     <span class="n">SDL_Delay</span><span class="p">(</span><span class="n">time_to_next_frame</span><span class="p">());</span>
   <span class="p">}</span>
 <span class="cp">#endif</span>
 <span class="p">}</span>
 
+<span class="c1">// The &quot;main loop&quot; function.</span>
 <span class="kt">void</span> <span class="nf">one_iter</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">// process input</span>
   <span class="c1">// render to screen</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>There are also several other useful functions in <a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-h"><em>emscripten.h</em></a>. As mentioned above, we use existing familiar APIs when present, like SDL, so the things in the additional Emscripten API are capabilities specific to the JavaScript or the browser environment, that we couldn&#8217;t find an existing API for. Below is a general overview of some important parts.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>When using SDL you will probably need to set the main loop. You should also note:</p>
+<ul class="last simple">
+<li>The current Emscripten implementation of <tt class="docutils literal"><span class="pre">SDL_QUIT</span></tt> will work if you use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a>. As the page is shut, it will force a final direct call to the main loop, giving it a chance to notice the <tt class="docutils literal"><span class="pre">SDL_QUIT</span></tt> event. If you do not use a main loop, your app will close before you have had an opportunity to notice this event.</li>
+<li>There are limitations to what you can do as the page shuts (in <tt class="docutils literal"><span class="pre">onunload</span></tt>). Some actions like showing alerts are banned by browsers at this point.</li>
+</ul>
+</div>
+</div>
 </div>
 <div class="section" id="execution-lifecycle">
 <h2>Execution lifecycle<a class="headerlink" href="#execution-lifecycle" title="Permalink to this headline">¶</a></h2>
-<p>When an emscripten-compiled application is loaded, it starts by with preparing data in the <tt class="docutils literal"><span class="pre">preloading</span></tt> phase. Files you marked for preloading (<tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--preload-file</span></tt>, or manually from JavaScript using createPreloadedFile) are set up at this stage. You can add additional operations with <a class="reference internal" href="../api_reference/preamble.js.html#addRunDependency" title="addRunDependency"><tt class="xref js js-func docutils literal"><span class="pre">addRunDependency()</span></tt></a> (remember to call <a class="reference internal" href="../api_reference/preamble.js.html#removeRunDependency" title="removeRunDependency"><tt class="xref js js-func docutils literal"><span class="pre">removeRunDependency()</span></tt></a>), which is a counter of all dependencies preventing run. When all dependencies are met, we will call <tt class="docutils literal"><span class="pre">run</span></tt>, which proceeds to call your <tt class="docutils literal"><span class="pre">main()</span></tt> function.</p>
-<p>After the application runs, as mentioned above you will typically want to define a main loop. You can affect how the main loop works in several ways:</p>
-<ul class="simple">
-<li><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_pause_main_loop" title="emscripten_pause_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_pause_main_loop()</span></tt></a> pauses the main loop, and <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_resume_main_loop" title="emscripten_resume_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_resume_main_loop()</span></tt></a> resumes it. This might be useful if you want to manually freeze the application for some reason. This is fairly low-level, there are more convenient alternatives below for common tasks.</li>
-<li><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_push_main_loop_blocker" title="emscripten_push_main_loop_blocker"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_push_main_loop_blocker()</span></tt></a> adds a function that <strong>blocks</strong> the main loop: The main loop will not run until the blocker completes. For example, if when the user finishes a level in your game you want to load the next one, you can push blockers for each action involved in that (unpack the file, generate the data structures, etc.), and when they are done the main loop will resume (and if things are set up properly, it will run the new level). The blockers are a simple FIFO queue. Basically, blockers are a small simplification of manually pausing and resuming the main loop. They also are useful for marking progress: If you all <tt class="docutils literal"><span class="pre">emscripten_set_main_loop_expected_blockers(10)</span></tt> and then push 10 blockers, progress will be shown to the user as the blockers execute.</li>
-<li><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_async_call" title="emscripten_async_call"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_call()</span></tt></a> lets you call a function after some specific interval (basically a wrapper around <tt class="docutils literal"><span class="pre">setTimout/requestAnimationFrame</span></tt>).</li>
-<li><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_async_wget" title="emscripten_async_wget"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget()</span></tt></a> asynchronously loads a file from the network. Synchronous XHRs cannot load binary data, so an asynchronous function is necessary. It will call a callback that you give it when the file arrives. You can use this to fetch the next level in your game, for example (note that it will do the same operation we do on preloaded files, setting them up as image or audio elements as necessary for execution later).</li>
-</ul>
+<p>When an Emscripten-compiled application is loaded, it starts by preparing data in the <tt class="docutils literal"><span class="pre">preloading</span></tt> phase. Files you marked for <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><em>preloading</em></a> (using <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--preload-file</span></tt>, or manually from JavaScript with <a class="reference internal" href="../api_reference/Filesystem-API.html#FS.createPreloadedFile" title="FS.createPreloadedFile"><tt class="xref js js-func docutils literal"><span class="pre">FS.createPreloadedFile()</span></tt></a>) are set up at this stage.</p>
+<p>You can add additional operations with <a class="reference internal" href="../api_reference/preamble.js.html#addRunDependency" title="addRunDependency"><tt class="xref js js-func docutils literal"><span class="pre">addRunDependency()</span></tt></a>, which is a counter of all dependencies to be executed before compiled code can run. As these are completed you can call <a class="reference internal" href="../api_reference/preamble.js.html#removeRunDependency" title="removeRunDependency"><tt class="xref js js-func docutils literal"><span class="pre">removeRunDependency()</span></tt></a> to remove the completed dependencies.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Generally it is not necessary to add additional operations — preloading is suitable for almost all use cases.</p>
 </div>
-<div class="section" id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">SDL_QUIT</span></tt> is tricky to implement in browsers. The current Emscripten implementation of it will work if you use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a>: As the page is shut, it will force a final direct call to the main loop, giving it a chance to notice the <tt class="docutils literal"><span class="pre">SDL_QUIT</span></tt> event. So if you do not use a main loop, you will not notice it - your app will close before your next event handling. Note also that there are limitations on what you can do as the page shuts (in onunload), some actions like showing alerts are banned by browsers.</li>
+<p>When all dependencies are met, Emscripten will call <tt class="docutils literal"><span class="pre">run()</span></tt>, which proceeds to call your <tt class="docutils literal"><span class="pre">main()</span></tt> function. The <tt class="docutils literal"><span class="pre">main()</span></tt> function should be used to perform initialization tasks, and will often call <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></tt></a> (as <a class="reference internal" href="#emscripten-runtime-environment-howto-main-loop"><em>described above</em></a>). The main loop function will be then be called at the requested frequency.</p>
+<p>You can affect the operation of the main loop in several ways:</p>
+<ul>
+<li><p class="first"><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_push_main_loop_blocker" title="emscripten_push_main_loop_blocker"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_push_main_loop_blocker()</span></tt></a> adds a function that <strong>blocks</strong> the main loop until the blocker completes.</p>
+<p>This is useful, for example, to manage loading new game levels. After a level completes, you can push blockers for each action involved (unpacking the file, generate the data structures, etc.) When all the blockers have completed the main loop will resume and the game should run the new level. You can also use this function in conjunction with <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop_expected_blockers" title="emscripten_set_main_loop_expected_blockers"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop_expected_blockers()</span></tt></a> to keep the user informed of progress.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_pause_main_loop" title="emscripten_pause_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_pause_main_loop()</span></tt></a> pauses the main loop, and <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_resume_main_loop" title="emscripten_resume_main_loop"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_resume_main_loop()</span></tt></a> resumes it. These are low level (less recommended) alternatives to the blocker functions.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_async_call" title="emscripten_async_call"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_call()</span></tt></a> lets you call a function after some specific interval. This will use <tt class="docutils literal"><span class="pre">requestAnimationFrame</span></tt> (by default) or <tt class="docutils literal"><span class="pre">setTimeout</span></tt> if a specific interval was requested.</p>
+</li>
 </ul>
+<p>The <a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-h-browser-execution-environment"><em>browser execution environment reference (emscripten.h)</em></a> describes a number of other methods for controlling execution.</p>
 </div>
-<div class="section" id="emscripten-memory-model">
-<span id="id1"></span><h2>Emscripten memory model<a class="headerlink" href="#emscripten-memory-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="emscripten-memory-representation">
+<span id="emscripten-memory-model"></span><h2>Emscripten memory representation<a class="headerlink" href="#emscripten-memory-representation" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten&#8217;s memory model is known as <a class="reference internal" href="../site/glossary.html#term-typed-arrays-mode-2"><em class="xref std std-term">Typed Arrays Mode 2</em></a>. It represents memory using a single <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed array</a>, with different <em>views</em> providing access to different types (<a class="reference internal" href="../api_reference/preamble.js.html#HEAPU32" title="HEAPU32"><tt class="xref js js-data docutils literal"><span class="pre">HEAPU32</span></tt></a> for 32-bit unsigned integers, etc.)</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -942,12 +978,7 @@
 <p class="last">Compared to other models tried by the project, it can be used for a broad range of arbitrary compiled code, and is relatively fast.</p>
 </div>
 <p>The model lays out items in memory in the same way as with normal C and C++, and as a result it uses the same amount of memory.</p>
-<p>We currently align the stack to 4-byte boundaries (this means that reading 8-byte values is slower as they must be read in two parts and then combined).</p>
-<p>This model allows you to use code that violates the load-store consistency assumption. Since the different views show the same data, you can (say) write a 32-bit integer, then read a byte from the middle, and it will work just like in C or C++.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> ignores load-store consistency violations, since they don&#8217;t matter. Alignment of reads and writes will be checked, which is important since reading unaligned values can fail.</p>
-</div>
+<p>This model allows you to use code that violates the <a class="reference internal" href="../site/glossary.html#term-load-store-consistency"><em class="xref std std-term">load-store consistency</em></a> assumption. Since the different views show the same data, you can (say) write a 32-bit integer, then read a byte from the middle, and it will work just like in a native build of C or C++ on most platforms.</p>
 </div>
 </div>
 
@@ -960,7 +991,7 @@
         <a href="connecting_cpp_and_javascript/index.html" class="btn btn-neutral float-right" title="Connecting C++ and JavaScript"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="guidelines/browser_limitations.html" class="btn btn-neutral" title="Browser limitations"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="guidelines/browser_limitations.html" class="btn btn-neutral" title="Specific Browser Limitations"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1013,7 +1044,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment (wiki-import)</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Runtime Environment</div>
   </div>
  
 </div> -->
@@ -1038,7 +1069,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Emscripten%20Runtime%20Environment%20%28wiki-import%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/emscripten-runtime-environment&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Emscripten%20Runtime%20Environment%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/emscripten-runtime-environment&labels=bug">Page bug</a>
       </li>
   </ul>
   
