@@ -1017,6 +1017,7 @@
 </div>
 <div class="section" id="how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions">
 <span id="faq-when-safe-to-call-compiled-functions"></span><h2>How can I tell when the page is fully loaded and it is safe to call compiled functions?<a class="headerlink" href="#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions" title="Permalink to this headline">¶</a></h2>
+<p>(You may need this answer if you see an error saying something like <tt class="docutils literal"><span class="pre">you</span> <span class="pre">need</span> <span class="pre">to</span> <span class="pre">wait</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">runtime</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">ready</span> <span class="pre">(e.g.</span> <span class="pre">wait</span> <span class="pre">for</span> <span class="pre">main()</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">called)</span></tt>.)</p>
 <p>Calling a compiled function before a page has fully loaded can result in an error, if the function relies on files that may not be present (for example the <a class="reference internal" href="../tools_reference/emcc.html#emcc-memory-init-file"><em>.mem</em></a> file and <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><em>preloaded</em></a> files are loaded asynchronously).</p>
 <p>The easiest way to find out when loading is complete is to add a <tt class="docutils literal"><span class="pre">main()</span></tt> function, and within it call a JavaScript function to notify your code that loading is complete.</p>
 <div class="admonition note">
@@ -1027,10 +1028,19 @@
 <div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;emscripten.h&gt;</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">EM_ASM</span><span class="p">(</span> <span class="n">allReady</span><span class="p">()</span> <span class="p">);</span>
-        <span class="p">}</span>
+  <span class="n">EM_ASM</span><span class="p">(</span> <span class="n">allReady</span><span class="p">()</span> <span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
+<p>You can also define a <tt class="docutils literal"><span class="pre">main()</span></tt> function in JavaScript:</p>
+<div class="highlight-cpp"><div class="highlight"><pre>Module[&#39;_main&#39;] = function() { ... };
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-cpp"><div class="highlight"><pre>Module[&#39;_main&#39;] = allReady;
+</pre></div>
+</div>
+<p>What happens in practice is that when code is ready to be run, we check for <tt class="docutils literal"><span class="pre">Module._main</span></tt>. If present, we call it. If a <tt class="docutils literal"><span class="pre">main()</span></tt> function was compiled from C, it will be there (and it will be a JavaScript function). But, you can also just define a JavaScript function there, either will work.</p>
 </div>
 <div class="section" id="why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process">
 <span id="faq-dead-code-elimination"></span><h2>Why do functions in my C/C++ source code vanish when I compile to JavaScript, and/or I get <tt class="docutils literal"><span class="pre">No</span> <span class="pre">functions</span> <span class="pre">to</span> <span class="pre">process</span></tt>?<a class="headerlink" href="#why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process" title="Permalink to this headline">¶</a></h2>
