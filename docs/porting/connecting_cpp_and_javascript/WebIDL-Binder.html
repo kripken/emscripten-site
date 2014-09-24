@@ -362,10 +362,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html">Running html files with emrun (wiki-import)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#features">Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#quick-how-to">Quick how-to</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#choosing-the-browser-to-run">Choosing the browser to run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#security-implications">Security implications</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#controlling-web-server-operation">Controlling web server operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#controlling-log-output">Controlling log output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
@@ -1052,7 +1053,7 @@ MyClass process(MyClass input);
 </div>
 <div class="section" id="const">
 <h2>Const<a class="headerlink" href="#const" title="Permalink to this headline">¶</a></h2>
-<p>C++ attributes, arguments or return types that use <tt class="docutils literal"><span class="pre">const</span></tt> can be specified in IDL using <tt class="docutils literal"><span class="pre">[Const]</span></tt>.</p>
+<p>C++ arguments or return types that use <tt class="docutils literal"><span class="pre">const</span></tt> can be specified in IDL using <tt class="docutils literal"><span class="pre">[Const]</span></tt>.</p>
 <p>For example, the following code fragments show the C++ and IDL for a function that returns a constant pointer object.</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="c1">//C++</span>
 <span class="k">const</span> <span class="n">myObject</span><span class="o">*</span> <span class="nf">getAsConst</span><span class="p">();</span>
@@ -1062,9 +1063,19 @@ MyClass process(MyClass input);
 [Const] myObject getAsConst();
 </pre></div>
 </div>
+<p>Attributes that correspond to const data members must be specified with the <tt class="docutils literal"><span class="pre">readonly</span></tt> keyword, not with <tt class="docutils literal"><span class="pre">[Const]</span></tt>. For example:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="c1">//C++</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">numericalConstant</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-idl"><div class="highlight"><pre><span class="o">//</span> WebIDL
+readonly attribute <span class="nb">long</span> numericalConstant;
+</pre></div>
+</div>
+<p>This will generate a <tt class="docutils literal"><span class="pre">get_numericalConstant()</span></tt> method in the bindings, but not a corresponding setter.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">It is possible for an attribute or return type to have multiple specifiers. For, an attribute that is a contant reference would be marked up in the IDL using <tt class="docutils literal"><span class="pre">[Ref,</span> <span class="pre">Const]</span></tt>.</p>
+<p class="last">It is possible for a return type to have multiple specifiers. For example, an method that returns a contant reference would be marked up in the IDL using <tt class="docutils literal"><span class="pre">[Ref,</span> <span class="pre">Const]</span></tt>.</p>
 </div>
 </div>
 <div class="section" id="un-deletable-classes-nodelete">
