@@ -930,6 +930,12 @@
 <span id="optimizing-code-memory-initialization"></span><h3>Memory initialization<a class="headerlink" href="#memory-initialization" title="Permalink to this headline">¶</a></h3>
 <p>By default Emscripten emits the static memory initialization code inside the <strong>.js</strong> file. This can cause the JavaScript file to be very large, which will slow down startup. It can also cause problems in JavaScript engines with limits on array sizes, resulting in errors like <tt class="docutils literal"><span class="pre">Array</span> <span class="pre">initializer</span> <span class="pre">too</span> <span class="pre">large</span></tt> or <tt class="docutils literal"><span class="pre">Too</span> <span class="pre">much</span> <span class="pre">recursion</span></tt>.</p>
 <p>The <tt class="docutils literal"><span class="pre">--memory-init-file</span> <span class="pre">1</span></tt> <a class="reference internal" href="../tools_reference/emcc.html#emcc-memory-init-file"><em>emcc option</em></a> causes the compiler to emit this code in a separate binary file with suffix <strong>.mem</strong>. The <strong>.mem</strong> file is loaded (asynchronously) by the main <strong>.js</strong> file before <tt class="docutils literal"><span class="pre">main()</span></tt> is called and compiled code is able to run.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">From Emscripten 1.21.1 this setting is enabled by default for fully optimized builds, that is, <tt class="docutils literal"><span class="pre">-O2</span></tt> and above.</p>
+</div>
+</div></blockquote>
 </div>
 <div class="section" id="trading-off-code-size-and-performance">
 <span id="optimizing-code-oz-os"></span><h3>Trading off code size and performance<a class="headerlink" href="#trading-off-code-size-and-performance" title="Permalink to this headline">¶</a></h3>
@@ -947,7 +953,7 @@
 <li>Use <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>  (as <a class="reference internal" href="#optimizing-code-oz-os"><em>mentioned above</em></a>).</li>
 <li>Build bitcode to JavaScript with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><em>-O3</em></a>. This runs the expensive variable reuse pass (<tt class="docutils literal"><span class="pre">registerizeHarder</span></tt>). It is even more effective than <tt class="docutils literal"><span class="pre">-O2</span></tt> but slower to compile.</li>
 <li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><em>llvm-lto</em></a> when compiling from bitcode to JavaScript: <tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt>. This can break some code as the LTO code path is less tested.</li>
-<li>Disable <a class="reference internal" href="#optimizing-code-inlining"><em>Memory Growth</em></a>: <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></tt>. Compiling with -Os or -Oz generally avoids inlining too.</li>
+<li>Disable <a class="reference internal" href="#optimizing-code-inlining"><em>Inlining</em></a>: <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></tt>. Compiling with -Os or -Oz generally avoids inlining too.</li>
 <li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><em>closure</em></a> on the outside non-asm.js code: <tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>. This can break code that doesn&#8217;t use <a class="reference external" href="https://developers.google.com/closure/compiler/docs/api-tutorial3">closure annotations properly</a>.</li>
 </ul>
 </div>
@@ -975,11 +981,11 @@
 <p>To re-enable exceptions in optimized code, run <em>emcc</em> with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></tt> (see <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>).</p>
 </div>
 <div class="section" id="memory-growth">
-<span id="optimizing-code-inlining"></span><h3>Memory Growth<a class="headerlink" href="#memory-growth" title="Permalink to this headline">¶</a></h3>
+<h3>Memory Growth<a class="headerlink" href="#memory-growth" title="Permalink to this headline">¶</a></h3>
 <p>Building with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ALLOW_MEMORY_GROWTH=1</span></tt> allows the total amount of memory used to change depending on the demands of the application. This is useful for apps that don&#8217;t know ahead of time how much they will need, but it disables some optimizations. (Work is ongoing to improve this.)</p>
 </div>
 <div class="section" id="inlining">
-<h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this headline">¶</a></h3>
+<span id="optimizing-code-inlining"></span><h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="http://en.wikipedia.org/wiki/Inline_expansion">Inlining</a> often generates large functions, as these allow the compiler&#8217;s optimizations to be more effective. Unfortunately large functions can be slower at runtime than multiple smaller functions because JavaScript engines often either don&#8217;t optimize big functions (for fear of long JIT times), or they do optimize them resulting in noticeable pauses.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
