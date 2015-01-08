@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 1.27.1 documentation</title>
+  <title>FAQ &mdash; Emscripten 1.29.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.27.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.29.1 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Porting" href="../porting/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -153,9 +153,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-do-i-get-multiple-errors-building-basic-code-and-the-tests">Why do I get multiple errors building basic code and the tests?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#i-tried-something-why-doesnt-it-work">I tried something: why doesn’t it work?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#do-i-need-to-change-my-build-system-to-use-emscripten">Do I need to change my build system to use Emscripten?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#why-is-code-compilation-so-slow">Why is code compilation so slow?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-is-code-compilation-slow">Why is code compilation slow?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-code-run-slowly">Why does my code run slowly?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#why-is-my-compiled-code-so-big">Why is my compiled code so big?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-is-my-compiled-code-big">Why is my compiled code big?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-compiling-code-that-works-on-another-machine-gives-me-errors">Why does compiling code that works on another machine gives me errors?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <tt class="docutils literal"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></tt>)?</a></li>
@@ -163,6 +163,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-run-an-event-loop">How do I run an event loop?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-doesn-t-my-sdl-app-work">Why doesn&#8217;t my SDL app work?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-link-against-system-libraries-like-sdl-boost-etc">How do I link against system libraries like SDL, boost, etc.?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-are-my-options-for-audio-playback">What are my options for audio playback?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-can-my-compiled-program-access-files">How can my compiled program access files?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-can-t-my-code-access-a-file-in-the-same-directory">Why can&#8217;t my code access a file in the same directory?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions">How can I tell when the page is fully loaded and it is safe to call compiled functions?</a></li>
@@ -909,8 +910,8 @@
 <h2>Do I need to change my build system to use Emscripten?<a class="headerlink" href="#do-i-need-to-change-my-build-system-to-use-emscripten" title="Permalink to this headline">¶</a></h2>
 <p>In most cases you will be able to use your project&#8217;s current build system with Emscripten. See <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a>.</p>
 </div>
-<div class="section" id="why-is-code-compilation-so-slow">
-<h2>Why is code compilation so slow?<a class="headerlink" href="#why-is-code-compilation-so-slow" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="why-is-code-compilation-slow">
+<h2>Why is code compilation slow?<a class="headerlink" href="#why-is-code-compilation-slow" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten makes some trade-offs that make the generated code faster and smaller, at the cost of longer compilation times. For example, we build parts of the standard library along with your code, which enables some additional optimizations, but takes a little longer to compile.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -941,14 +942,16 @@
 </ul>
 </div></blockquote>
 </li>
+<li><p class="first">Make sure that the native optimizer is being used, which greatly speeds up optimized builds as of 1.28.2. <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span></tt> output should not report errors about the native optimizer failing to build or not being used because of a previous failed build (if it previously failed, do <tt class="docutils literal"><span class="pre">emcc</span> <span class="pre">--clear-cache</span></tt> then compile your file again, and the optimizer will be automatically rebuilt).</p>
+</li>
 </ul>
 </div>
 <div class="section" id="why-does-my-code-run-slowly">
 <h2>Why does my code run slowly?<a class="headerlink" href="#why-does-my-code-run-slowly" title="Permalink to this headline">¶</a></h2>
 <p>Make sure you optimize code by building with <tt class="docutils literal"><span class="pre">-O2</span></tt> (even more <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><em>aggressive optimization</em></a> is available, at the cost of significantly increased compilation time).</p>
 </div>
-<div class="section" id="why-is-my-compiled-code-so-big">
-<h2>Why is my compiled code so big?<a class="headerlink" href="#why-is-my-compiled-code-so-big" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="why-is-my-compiled-code-big">
+<h2>Why is my compiled code big?<a class="headerlink" href="#why-is-my-compiled-code-big" title="Permalink to this headline">¶</a></h2>
 <p>Make sure you build with <tt class="docutils literal"><span class="pre">-O2</span></tt> so code is optimized and minified. You should also set up gzip compression on your webserver, which all browsers now support.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -997,7 +1000,8 @@
 <div class="section" id="how-do-i-link-against-system-libraries-like-sdl-boost-etc">
 <h2>How do I link against system libraries like SDL, boost, etc.?<a class="headerlink" href="#how-do-i-link-against-system-libraries-like-sdl-boost-etc" title="Permalink to this headline">¶</a></h2>
 <p>System libraries that are included with Emscripten are automatically linked when you compile (just the necessary parts). This includes <em>libc</em>, <em>libc++</em> (C++ standard library) and <a class="reference internal" href="../site/glossary.html#term-sdl"><em class="xref std std-term">SDL</em></a>.</p>
-<p>Libraries not included with Emscripten (like Boost) must be compiled and linked with the program just as if they were a module in the project. For example, see how <a class="reference external" href="https://github.com/kripken/BananaBread/blob/master/cube2/src/web/Makefile">BananaBread links in libz</a>.</p>
+<p>Libraries not included with Emscripten (like Boost) must be compiled and linked with the program just as if they were a module in the project.</p>
+<p>There is a set of libraries ported to Emscripten for convenient use, Emscripten Ports. See <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a></p>
 <p>Another option is to implement needed C APIs as JavaScript librarys (see <tt class="docutils literal"><span class="pre">--js-library</span></tt> in <a class="reference internal" href="../tools_reference/emcc.html#emcc-js-library"><em>emcc</em></a> and <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-c-in-javascript"><em>Implement a C API in JavaScript</em></a>). Emscripten itself does this for <em>libc</em> (not including <em>malloc</em>) and <a class="reference internal" href="../site/glossary.html#term-sdl"><em class="xref std std-term">SDL</em></a> (but not <em>libc++</em> or <em>malloc</em>).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1006,6 +1010,11 @@
 <li>In the specific case of <em>Boost</em>, if you only need the boost headers then you don&#8217;t need to compile anything.</li>
 </ul>
 </div>
+</div>
+<div class="section" id="what-are-my-options-for-audio-playback">
+<h2>What are my options for audio playback?<a class="headerlink" href="#what-are-my-options-for-audio-playback" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten has partial support for SDL (1, not 2) audio, and OpenAL.</p>
+<p>To use SDL audio, include it as <tt class="docutils literal"><span class="pre">#include</span> <span class="pre">&lt;SDL/SDL_mixer.h&gt;</span></tt>. You can use it that way alongside SDL1, SDL2, or another library for platform integration.</p>
 </div>
 <div class="section" id="how-can-my-compiled-program-access-files">
 <h2>How can my compiled program access files?<a class="headerlink" href="#how-can-my-compiled-program-access-files" title="Permalink to this headline">¶</a></h2>
@@ -1042,6 +1051,10 @@
 </pre></div>
 </div>
 <p>What happens in practice is that when code is ready to be run, we check for <tt class="docutils literal"><span class="pre">Module._main</span></tt>. If present, we call it. If a <tt class="docutils literal"><span class="pre">main()</span></tt> function was compiled from C, it will be there (and it will be a JavaScript function). But, you can also just define a JavaScript function there, either will work.</p>
+<p>Another option is to define an <tt class="docutils literal"><span class="pre">onRuntimeInitialized</span></tt> function,</p>
+<blockquote>
+<div>Module[&#8216;onRuntimeInitialized&#8217;] = function() { ... };</div></blockquote>
+<p>That method will be called when the runtime is ready and it is ok for you to call compiled code. In practice, that is exactly the same time at which <tt class="docutils literal"><span class="pre">main()</span></tt> would be called, so <tt class="docutils literal"><span class="pre">onRuntimeInitialized</span></tt> doesn&#8217;t let you do anything new, but it can be convenient in some cases - for example, if you use <tt class="docutils literal"><span class="pre">onRuntimeInitialized</span></tt> and don&#8217;t define a <tt class="docutils literal"><span class="pre">main()</span></tt> function, then the runtime will not be shut down after <tt class="docutils literal"><span class="pre">main()</span></tt> exits, and you can keep calling compiled methods (you can also have a <tt class="docutils literal"><span class="pre">main()</span></tt> and build with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">NO_EXIT_RUNTIME=1</span></tt> to keep the runtime from being shut down). Thus, for libraries, <tt class="docutils literal"><span class="pre">onRuntimeInitialized</span></tt> can be convenient.</p>
 </div>
 <div class="section" id="why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process">
 <span id="faq-dead-code-elimination"></span><h2>Why do functions in my C/C++ source code vanish when I compile to JavaScript, and/or I get <tt class="docutils literal"><span class="pre">No</span> <span class="pre">functions</span> <span class="pre">to</span> <span class="pre">process</span></tt>?<a class="headerlink" href="#why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process" title="Permalink to this headline">¶</a></h2>
@@ -1239,7 +1252,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.27.1',
+            VERSION:'1.29.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
