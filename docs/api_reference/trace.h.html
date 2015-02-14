@@ -534,12 +534,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="emscripten.h.html#emterpreter-async-functions">Emterpreter-Async functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id17">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#sleeping">Sleeping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#network">Network</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#indexeddb">IndexedDB</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="emscripten.h.html#asyncify-functions">Asyncify functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id18">Typedefs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id19">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id17">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id18">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -901,6 +903,10 @@
 what is going on inside of your application, in particular with respect to
 memory usage (which is otherwise not available to traditional browser
 performance tools).</p>
+<p>The tracing API can talk to a custom collection server (see <a class="reference internal" href="#running-the-server">Running the Server</a>
+for more details) or it can talk with the <a class="reference external" href="http://google.github.io/tracing-framework/">Google Web Tracing Framework</a>.
+When talking with the <a class="reference external" href="http://google.github.io/tracing-framework/">Google Web Tracing Framework</a>, a subset of the data
+available is collected.</p>
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title first">table of contents</p>
 <ul class="simple">
@@ -951,6 +957,12 @@ with this <tt class="docutils literal"><span class="pre">emcc</span></tt> comman
 <h3><a class="toc-backref" href="#id4">Initialization and Teardown</a><a class="headerlink" href="#initialization-and-teardown" title="Permalink to this headline">¶</a></h3>
 <p>To initialize the tracing API, you call <a class="reference internal" href="#c.emscripten_trace_configure" title="emscripten_trace_configure"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_trace_configure()</span></tt></a>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="n">emscripten_trace_configure</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:5000/&quot;</span><span class="p">,</span> <span class="s">&quot;MyApplication&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If you are simply going to use the tracing API with the <a class="reference external" href="http://google.github.io/tracing-framework/">Google Web Tracing
+Framework</a>, then you can just call <tt class="xref c c-func docutils literal"><span class="pre">emscripten_trace_configure_for_google_wtf()</span></tt>
+instead:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">emscripten_trace_configure_for_google_wtf</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>If you have the concept of a username or have some other way to identify
@@ -1159,6 +1171,22 @@ application has started.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="c.emscripten_configure_for_google_wtf">
+void <tt class="descname">emscripten_configure_for_google_wtf</tt><big>(</big>void<big>)</big><a class="headerlink" href="#c.emscripten_configure_for_google_wtf" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">void</td>
+</tr>
+</tbody>
+</table>
+<p>Configure tracing to communicate with the <a class="reference external" href="http://google.github.io/tracing-framework/">Google Web Tracing Framework</a>.</p>
+<p>Not all features of the tracing are available within the Google WTF
+tools. (Currently, only contexts, log messages and marks.)</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="c.emscripten_trace_set_enabled">
 void <tt class="descname">emscripten_trace_set_enabled</tt><big>(</big>bool<em>&nbsp;enabled</em><big>)</big><a class="headerlink" href="#c.emscripten_trace_set_enabled" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -1264,6 +1292,28 @@ against memory usage or changes in frame rate.</p>
 <p>The current timestamp is associated with this data.</p>
 <p><em>The server doesn&#8217;t yet do enough with this data. This will improve
 in the future.</em></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_trace_mark">
+void <tt class="descname">emscripten_trace_mark</tt><big>(</big>const char<em>&nbsp;*message</em><big>)</big><a class="headerlink" href="#c.emscripten_trace_mark" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>const char *</em>) &#8211; The name of the mark begin emitted.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Record a mark in the timeline. This is primary for use with the
+<a class="reference external" href="http://google.github.io/tracing-framework/">Google Web Tracing Framework</a>.</p>
+<p>The current timestamp is associated with this data.</p>
 </dd></dl>
 
 <dl class="function">
