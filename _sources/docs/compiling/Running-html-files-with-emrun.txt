@@ -119,9 +119,48 @@ Cleaning up after the run
 These command line flags allow you to clean up open browser processes before starting a new run — this is important for automated testing on build servers:
 
 -  ``--kill_start``: Terminate all instances of the target browser process before starting the run. Pass this flag to ensure that no old (hung) instances of the target browser process exist that could interfere with the current run. This is disabled by default.
--  ``--kill_exit``: Terminate all instances of the target browser process when *emrun* quits. Pass this flag to ensure that browser pages closed when the run is over. This is disabled by default.
+-  ``--kill_exit``: Terminate all instances of the target browser process when *emrun* quits. Pass this flag to ensure that browser pages closed when the run is over. This is disabled by default. Note that it may be necessary to explicitly use the ``--browser=/path/to/browser`` command line option when using ``--kill_exit``, or otherwise the termination might not function properly.
 
 .. warning:: These operations cause the browser process to be forcibly terminated.  Any windows or tabs you have open will be closed, including any that might contain unsaved data. 
+
+
+Running web pages in Firefox
+============================
+
+When running web pages via ``emrun`` using Firefox, you may want to set one or more of the following browser prefs: ::
+
+  ; Make sure to unblock popups being spawned from http://localhost/.
+  browser.popups.showPopupBlocker;false
+
+  ; Don't ask the user to change the default browser when spawning the browser.
+  browser.shell.checkDefaultBrowser;false
+
+  ; Don't autorestore previous tabs, just open the one from the command line.
+  browser.sessionstore.resume_from_crash;false
+  services.sync.prefs.sync.browser.sessionstore.restore_on_demand;false
+  browser.sessionstore.restore_on_demand;false
+
+  ; Don't bring up the modal "Start in Safe Mode" dialog after browser is killed, since
+  ; that is an expected path for --kill_start and --kill_exit options.
+  browser.sessionstore.max_resumed_crashes;-1
+  toolkip.startup.max_resumed_crashes;-1
+
+  ; Don't fail on long-running scripts, but have emrun instead control execution termination.
+  dom.max_script_run_time;0
+  dom.max_chrome_script_run_time;0
+
+  ; Accelerate browser update background timer tick so that autoupdates take place as quickly as possible.
+  ; This is useful for continous integration servers wanting to always test the latest browser version.
+  app.update.download.backgroundInterval;1
+
+  ; Always run in private browsing mode to avoid caching any pages (but also disables IndexedDB persistency!).
+  browser.privatebrowsing.autostart;true
+
+  ; When switching between multiple Firefox browser versions/channels, suppress showing the first time welcome page.
+  startup.homepage_override_url;about:blank
+  startup.homepage_welcome_url;about:blank
+
+To set a Firefox browser pref, navigate to the page ``about:config`` in the browser navigation bar.
 
 Running web pages on an Android device
 ======================================

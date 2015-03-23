@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Running HTML files with emrun &mdash; Emscripten 1.29.10 documentation</title>
+  <title>Running HTML files with emrun &mdash; Emscripten 1.29.12 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="Building Projects" href="Building-Projects.html"/> 
@@ -129,7 +129,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-the-whole-test-suite">Running the whole test suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-specific-test">Running a specific test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#test-modes">Test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#core-test-modes">Core test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#non-core-test-modes">Non-core test modes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmark-tests">Benchmark tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#common-tests">Common tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#debugging-test-failures">Debugging test failures</a></li>
@@ -377,6 +378,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#controlling-web-server-operation">Controlling web server operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#controlling-log-output">Controlling log output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cleaning-up-after-the-run">Cleaning up after the run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
 </ul>
 </li>
@@ -1004,12 +1006,49 @@ emrun has automatically found the following browsers in the default install loca
 <p>These command line flags allow you to clean up open browser processes before starting a new run — this is important for automated testing on build servers:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">--kill_start</span></tt>: Terminate all instances of the target browser process before starting the run. Pass this flag to ensure that no old (hung) instances of the target browser process exist that could interfere with the current run. This is disabled by default.</li>
-<li><tt class="docutils literal"><span class="pre">--kill_exit</span></tt>: Terminate all instances of the target browser process when <em>emrun</em> quits. Pass this flag to ensure that browser pages closed when the run is over. This is disabled by default.</li>
+<li><tt class="docutils literal"><span class="pre">--kill_exit</span></tt>: Terminate all instances of the target browser process when <em>emrun</em> quits. Pass this flag to ensure that browser pages closed when the run is over. This is disabled by default. Note that it may be necessary to explicitly use the <tt class="docutils literal"><span class="pre">--browser=/path/to/browser</span></tt> command line option when using <tt class="docutils literal"><span class="pre">--kill_exit</span></tt>, or otherwise the termination might not function properly.</li>
 </ul>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">These operations cause the browser process to be forcibly terminated.  Any windows or tabs you have open will be closed, including any that might contain unsaved data.</p>
 </div>
+</div>
+<div class="section" id="running-web-pages-in-firefox">
+<h2>Running web pages in Firefox<a class="headerlink" href="#running-web-pages-in-firefox" title="Permalink to this headline">¶</a></h2>
+<p>When running web pages via <tt class="docutils literal"><span class="pre">emrun</span></tt> using Firefox, you may want to set one or more of the following browser prefs:</p>
+<div class="highlight-cpp"><div class="highlight"><pre>; Make sure to unblock popups being spawned from http://localhost/.
+browser.popups.showPopupBlocker;false
+
+; Don&#39;t ask the user to change the default browser when spawning the browser.
+browser.shell.checkDefaultBrowser;false
+
+; Don&#39;t autorestore previous tabs, just open the one from the command line.
+browser.sessionstore.resume_from_crash;false
+services.sync.prefs.sync.browser.sessionstore.restore_on_demand;false
+browser.sessionstore.restore_on_demand;false
+
+; Don&#39;t bring up the modal &quot;Start in Safe Mode&quot; dialog after browser is killed, since
+; that is an expected path for --kill_start and --kill_exit options.
+browser.sessionstore.max_resumed_crashes;-1
+toolkip.startup.max_resumed_crashes;-1
+
+; Don&#39;t fail on long-running scripts, but have emrun instead control execution termination.
+dom.max_script_run_time;0
+dom.max_chrome_script_run_time;0
+
+; Accelerate browser update background timer tick so that autoupdates take place as quickly as possible.
+; This is useful for continous integration servers wanting to always test the latest browser version.
+app.update.download.backgroundInterval;1
+
+; Always run in private browsing mode to avoid caching any pages (but also disables IndexedDB persistency!).
+browser.privatebrowsing.autostart;true
+
+; When switching between multiple Firefox browser versions/channels, suppress showing the first time welcome page.
+startup.homepage_override_url;about:blank
+startup.homepage_welcome_url;about:blank
+</pre></div>
+</div>
+<p>To set a Firefox browser pref, navigate to the page <tt class="docutils literal"><span class="pre">about:config</span></tt> in the browser navigation bar.</p>
 </div>
 <div class="section" id="running-web-pages-on-an-android-device">
 <h2>Running web pages on an Android device<a class="headerlink" href="#running-web-pages-on-an-android-device" title="Permalink to this headline">¶</a></h2>
@@ -1149,7 +1188,7 @@ emrun has automatically found the following browsers in the default install loca
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.10',
+            VERSION:'1.29.12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

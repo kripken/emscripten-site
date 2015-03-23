@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 1.29.10 documentation</title>
+  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 1.29.12 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.10 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../../index.html"/>
         <link rel="up" title="Files and File Systems" href="index.html"/>
         <link rel="next" title="Multimedia and Graphics" href="../multimedia_and_graphics/index.html"/>
         <link rel="prev" title="Packaging Files" href="packaging_files.html"/> 
@@ -129,7 +129,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#running-the-whole-test-suite">Running the whole test suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#running-a-specific-test">Running a specific test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#test-modes">Test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#core-test-modes">Core test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#non-core-test-modes">Non-core test modes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#benchmark-tests">Benchmark tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#common-tests">Common tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/test-suite.html#debugging-test-failures">Debugging test failures</a></li>
@@ -377,6 +378,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#controlling-web-server-operation">Controlling web server operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#controlling-log-output">Controlling log output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
 </ul>
 </li>
@@ -915,7 +917,7 @@
 </div>
 <div class="section" id="test-code">
 <h2>Test code<a class="headerlink" href="#test-code" title="Permalink to this headline">¶</a></h2>
-<p>An example of how to implement a synchronous virtual XHR backed file system is provided in the test code at <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_browser.py#L1266">tests/test_browser.py</a> (see <tt class="docutils literal"><span class="pre">test_chunked_synchronous_xhr</span></tt>). The test case also contains an HTTP server (see <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_browser.py#L14">test_chunked_synchronous_xhr_server</a>) showing CORS headers that might need to be set (if the resources are hosted from the same domain Emscripten runs from, there is no issue).</p>
+<p>An example of how to implement a synchronous virtual XHR backed file system is provided in the test code at <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_browser.py#L1313">tests/test_browser.py</a> (see <tt class="docutils literal"><span class="pre">test_chunked_synchronous_xhr</span></tt>). The test case also contains an HTTP server (see <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_browser.py#L14">test_chunked_synchronous_xhr_server</a>) showing CORS headers that might need to be set (if the resources are hosted from the same domain Emscripten runs from, there is no issue).</p>
 <p>The tests use <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/checksummer.c">checksummer.c</a> as the Emscripten-compiled program. This is simply a vanilla C program using synchronous <em>libc</em> file system calls like <tt class="docutils literal"><span class="pre">fopen()</span></tt>, <tt class="docutils literal"><span class="pre">fread()</span></tt>, <tt class="docutils literal"><span class="pre">fclose()</span></tt> etc.</p>
 <p>JavaScript code is added (using <em>emcc</em>&#8216;s <a class="reference internal" href="../../tools_reference/emcc.html#emcc-pre-js"><em>pre-js</em></a> option) to map the file system calls in <strong>checksummer.c</strong> to a file in the virtual file system. This file is <em>created</em> early in Emscripten initialisation using <a class="reference internal" href="../../api_reference/Filesystem-API.html#FS.createLazyFile" title="FS.createLazyFile"><tt class="xref js js-func docutils literal"><span class="pre">FS.createLazyFile()</span></tt></a>, but only loaded with content from the server when the file is first accessed by compiled code. The added JavaScript code also sets up communication between the web worker and the main thread.</p>
 </div>
@@ -954,7 +956,7 @@
 </div>
 </li>
 <li><p class="first">You will need a page that spawns the web worker.</p>
-<p>The <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_browser.py#L1266">test code</a> that does this is shown below:</p>
+<p>The <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_browser.py#L1286">test code</a> that does this is shown below:</p>
 <div class="highlight-cpp"><div class="highlight"><pre>      &lt;!doctype html&gt;
       &lt;html&gt;
       &lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;Chunked XHR&lt;/title&gt;&lt;/head&gt;
@@ -1112,7 +1114,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.29.10',
+            VERSION:'1.29.12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

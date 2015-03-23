@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Test Suite &mdash; Emscripten 1.29.10 documentation</title>
+  <title>Emscripten Test Suite &mdash; Emscripten 1.29.12 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Getting started using Emscripten from Visual Studio" href="getting_started_with_emscripten_and_vs2010.html"/>
         <link rel="prev" title="Emscripten Tutorial" href="Tutorial.html"/> 
@@ -129,7 +129,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#running-the-whole-test-suite">Running the whole test suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-a-specific-test">Running a specific test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#test-modes">Test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-test-modes">Core test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#non-core-test-modes">Non-core test modes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#benchmark-tests">Benchmark tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#common-tests">Common tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#debugging-test-failures">Debugging test failures</a></li>
@@ -377,6 +378,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#controlling-web-server-operation">Controlling web server operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#controlling-log-output">Controlling log output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
 </ul>
 </li>
@@ -910,6 +912,7 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
+<li>The core test suite is not the entire test suite, see <em class="xref std std-ref">emscripten-test-suite-modes</em></li>
 <li>This may take several hours.</li>
 <li><a class="reference internal" href="../site/glossary.html#term-node-js"><em class="xref std std-term">Node.js</em></a> cannot run all of the tests in the suite; if you need to run them all, you should get a recent trunk version of the <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Introduction_to_the_JavaScript_shell">SpiderMonkey</a> shell. On Windows you can install and activate <em>SpiderMonkey</em> using the <a class="reference internal" href="../tools_reference/emsdk.html#emsdk"><em>Emscripten SDK Manager (emsdk)</em></a>.</li>
 </ul>
@@ -931,26 +934,30 @@
 </div>
 <p>Replace <tt class="docutils literal"><span class="pre">100</span></tt> with another number as you prefer. This will run that number of random tests, and tell you the statistical likelihood of almost all the test suite passing assuming those tests do. This works just like election surveys do - given a small sample, we can predict fairly well that so-and-so percent of the public will vote for candidate A. In our case, the &#8220;candidates&#8221; are pass or fail, and we can predict how much of the test suite will pass given that sample. Assuming the sample tests all pass, we can say with high likelihood that most of the test suite will in fact pass. (Of course, this is no guarantee, and even a single test failure is serious, however, this gives a quick estimate that your patch does not cause significant and obvious breakage.)</p>
 </div>
-<div class="section" id="test-modes">
-<h2>Test modes<a class="headerlink" href="#test-modes" title="Permalink to this headline">¶</a></h2>
-<p>By default tests are run without optimizations. You can specify a <em>mode</em> prefix (e.g. <tt class="docutils literal"><span class="pre">asm1.</span></tt>) to compile a test with optimisations:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Run test in asm1 mode (-O1 optimizations).</span>
+<div class="section" id="core-test-modes">
+<h2>Core test modes<a class="headerlink" href="#core-test-modes" title="Permalink to this headline">¶</a></h2>
+<p>By default, calling the test runner without arguments will run the core test suite</p>
+<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py
+</pre></div>
+</div>
+<p>The core test suite includes <tt class="docutils literal"><span class="pre">default</span></tt> (no optimizations), <tt class="docutils literal"><span class="pre">asm1</span></tt> (<tt class="docutils literal"><span class="pre">-O1</span></tt> optimizations), and a bunch of other optimization and compiler flags, each of which is a different &#8220;mode&#8221;. The core test suite is the bulk of the entire test suite, and it runs each test in each of those modes.</p>
+<p>You can also run a specific mode or test in a mode, or a specific test across all modes:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># Run all tests in asm1 mode    (-O1 optimizations).</span>
+python tests/runner.py asm1
+
+<span class="c"># Run one test in asm1 mode     (-O1 optimizations).</span>
 python tests/runner.py asm1.test_hello_world
 
-<span class="c"># Run test in all modes.</span>
+<span class="c"># Run one test in all modes.</span>
 python tests/runner.py ALL.test_hello_world
 </pre></div>
 </div>
-<p>Some of the main modes are:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">ALL</span></tt>: Run test in all modes.</li>
-<li><tt class="docutils literal"><span class="pre">asm1</span></tt>: Compile test with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><em>-O1</em></a> optimizations.</li>
-<li><tt class="docutils literal"><span class="pre">asm2</span></tt>: Compile test with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-O2</em></a> optimizations.</li>
-<li><tt class="docutils literal"><span class="pre">asm3</span></tt>: Compile test with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><em>-O3</em></a> optimizations.</li>
-<li><tt class="docutils literal"><span class="pre">asm2f</span></tt>: Compile test with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-O2</em></a> and <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">PRECISE_F32=1</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">asm2g</span></tt>: Compile test with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-O2</em></a>  optimizations, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><em>-g</em></a>, <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ASSERTIONS=1</span></tt> and <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span></tt>.</li>
-</ul>
-<p>Modes are documented at the end of <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_core.py#L7099">/tests/test_core.py</a>.</p>
+<p>The core test modes are documented at the end of <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_core.py#L7421">/tests/test_core.py</a>.</p>
+<p id="emscripten-test-suite-modes">The core tests are the bulk of the entire test suite, in both number and time to run. To speed them up, you can run them in parallel using <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/parallel_test_core.py">/tests/parallel_test_core.py</a>. That runs the test modes using a python process pool, emitting their outputs and stderrs to <tt class="docutils literal"><span class="pre">*.out,</span> <span class="pre">*.err</span></tt> for each mode.</p>
+</div>
+<div class="section" id="non-core-test-modes">
+<h2>Non-core test modes<a class="headerlink" href="#non-core-test-modes" title="Permalink to this headline">¶</a></h2>
+<p>The main non-core test modes are <tt class="docutils literal"><span class="pre">other,</span> <span class="pre">browser,</span> <span class="pre">sockets,</span> <span class="pre">interactive,</span> <span class="pre">sanity</span></tt>. See <a class="reference internal" href="#emscripten-test-suite-list-of-tests"><em>Common tests</em></a> for how to run them.</p>
 </div>
 <div class="section" id="benchmark-tests">
 <span id="emscripten-benchmark-tests"></span><h2>Benchmark tests<a class="headerlink" href="#benchmark-tests" title="Permalink to this headline">¶</a></h2>
@@ -1134,7 +1141,7 @@ python tests/runner.py test_hello_world
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.10',
+            VERSION:'1.29.12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

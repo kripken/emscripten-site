@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 1.29.10 documentation</title>
+  <title>File System API &mdash; Emscripten 1.29.12 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -129,7 +129,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-the-whole-test-suite">Running the whole test suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-specific-test">Running a specific test</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#test-modes">Test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#core-test-modes">Core test modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#non-core-test-modes">Non-core test modes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmark-tests">Benchmark tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#common-tests">Common tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#debugging-test-failures">Debugging test failures</a></li>
@@ -377,6 +378,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#controlling-web-server-operation">Controlling web server operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#controlling-log-output">Controlling log output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
 </ul>
 </li>
@@ -907,7 +909,7 @@
 </div>
 <p>Emscripten predominantly compiles code that uses synchronous file I/O, so the majority of the <tt class="docutils literal"><span class="pre">FS</span></tt> member functions offer a synchronous interface (with errors being reported by raising exceptions of type <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/system/include/libc/bits/errno.h">FS.ErrnoError</a>).</p>
 <p>File data in Emscripten is partitioned by mounted file systems. Several file systems are provided. An instance of <a class="reference internal" href="#filesystem-api-memfs"><em>MEMFS</em></a> is mounted to <tt class="docutils literal"><span class="pre">/</span></tt> by default. Instances of <a class="reference internal" href="#filesystem-api-nodefs"><em>NODEFS</em></a> and <a class="reference internal" href="#filesystem-api-idbfs"><em>IDBFS</em></a> can be mounted to other directories if your application needs to <a class="reference internal" href="#filesystem-api-persist-data"><em>persist data</em></a>.</p>
-<p>The automatic tests in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_core.py#L4110">tests/test_core.py</a> (search for <tt class="docutils literal"><span class="pre">test_files</span></tt>) contain many examples of how to use this API. The <a class="reference internal" href="../getting_started/Tutorial.html#tutorial-files"><em>tutorial</em></a> also shows how to pre-load a file so that it can be read from compiled C/C++.</p>
+<p>The automatic tests in <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_core.py#L4285">tests/test_core.py</a> (search for <tt class="docutils literal"><span class="pre">test_files</span></tt>) contain many examples of how to use this API. The <a class="reference internal" href="../getting_started/Tutorial.html#tutorial-files"><em>tutorial</em></a> also shows how to pre-load a file so that it can be read from compiled C/C++.</p>
 <p>A high level overview of the way File Systems work in Emscripten-ported code is provided in the <a class="reference internal" href="../porting/files/file_systems_overview.html#file-system-overview"><em>File System Overview</em></a>.</p>
 <div class="section" id="persistent-data">
 <span id="filesystem-api-persist-data"></span><h2>Persistent data<a class="headerlink" href="#persistent-data" title="Permalink to this headline">¶</a></h2>
@@ -975,7 +977,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>dev</strong> &#8211; The specific device driver id, created using <tt class="xref js js-func docutils literal"><span class="pre">makedev()</span></tt>.</li>
-<li><strong>ops</strong> (<em>object</em>) &#8211; The set of callbacks required by the device. For an example, see the <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/library_nodefs.js#L213)">NODEFS default callbacks</a>.</li>
+<li><strong>ops</strong> (<em>object</em>) &#8211; The set of callbacks required by the device. For an example, see the <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/src/library_nodefs.js#L213">NODEFS default callbacks</a>.</li>
 </ul>
 </td>
 </tr>
@@ -2143,7 +2145,7 @@ For example, consider a symlink <tt class="docutils literal"><span class="pre">/
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.10',
+            VERSION:'1.29.12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
