@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.29.12 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.31.3 documentation</title>
   
 
   
@@ -30,10 +30,10 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.31.3 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
-        <link rel="prev" title="Emscripten SDK Manager (emsdk)" href="emsdk.html"/> 
+        <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -295,6 +295,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-extensions">OpenGL extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
@@ -761,13 +762,13 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tools Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="emsdk.html">Emscripten SDK (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="emsdk.html#arguments">Arguments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="emsdk.html#tools-and-sdk-targets">Tools and SDK targets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="emsdk.html#sdk-manager-concepts">SDK manager concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="emsdk.html#how-to-guides">&#8220;How to&#8221; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
@@ -1267,7 +1268,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
 <dl class="docutils" id="emcc-clear-cache">
 <dt><tt class="docutils literal"><span class="pre">--clear-cache</span></tt></dt>
 <dd><p class="first">Manually clears the cache of compiled Emscripten system libraries (libc++, libc++abi, libc).</p>
-<p class="last">This is normally handled automatically, but if you update LLVM in-place (instead of having a different directory for a new version), the caching mechanism can get confused. Clearing the cache can fix weird problems related to cache incompatibilities, like <em>Clang</em> failing to link with library files. This also clears other cached data like the jcache and the bootstrapped relooper. After the cache is cleared, this process will exit.</p>
+<p class="last">This is normally handled automatically, but if you update LLVM in-place (instead of having a different directory for a new version), the caching mechanism can get confused. Clearing the cache can fix weird problems related to cache incompatibilities, like <em>Clang</em> failing to link with library files. This also clears other cached data. After the cache is cleared, this process will exit.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-clear-ports">
@@ -1325,7 +1326,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
 </pre></div>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--valid_abspath</span> <span class="pre">path</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--valid-abspath</span> <span class="pre">path</span></tt></dt>
 <dd>Whitelist an absolute path to prevent warnings about absolute include paths.</dd>
 </dl>
 <dl class="docutils" id="emcc-o-target">
@@ -1365,7 +1366,6 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
 <li><tt class="docutils literal"><span class="pre">EMMAKEN_COMPILER</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">EMMAKEN_CFLAGS</span></tt></li>
 <li><tt class="docutils literal"><span class="pre">EMCC_DEBUG</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">EMCC_FAST_COMPILER</span></tt></li>
 </ul>
 </div></blockquote>
 <p>Search for &#8216;os.environ&#8217; in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/emcc">emcc</a> to see how these are used. The most interesting is possibly <tt class="docutils literal"><span class="pre">EMCC_DEBUG</span></tt>, which forces the compiler to dump its build and temporary files to a temporary directory where they can be reviewed.</p>
@@ -1381,7 +1381,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
         <a href="emcmdprompt.html" class="btn btn-neutral float-right" title="Emscripten Windows Command Prompt (emcmdprompt.bat)"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="emsdk.html" class="btn btn-neutral" title="Emscripten SDK Manager (emsdk)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="emsdk.html" class="btn btn-neutral" title="Emscripten SDK (emsdk)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1463,7 +1463,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
   
     <p>
         <!-- &copy; Copyright 2014, . -->
-		&copy; Copyright 2014,  <a href="../../docs\contributing\AUTHORS.html">Emscripten Contributors</a>.
+		&copy; Copyright 2014,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
 		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
     </p>
 	
@@ -1485,7 +1485,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.12',
+            VERSION:'1.31.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

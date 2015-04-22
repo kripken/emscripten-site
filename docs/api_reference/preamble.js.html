@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 1.29.12 documentation</title>
+  <title>preamble.js &mdash; Emscripten 1.31.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.31.3 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -295,6 +295,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-extensions">OpenGL extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
@@ -761,13 +762,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#tools-and-sdk-targets">Tools and SDK targets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-manager-concepts">SDK manager concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&#8220;How to&#8221; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
@@ -921,7 +922,7 @@
 <h2><a class="toc-backref" href="#id3">Calling compiled C functions from JavaScript</a><a class="headerlink" href="#calling-compiled-c-functions-from-javascript" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="ccall">
-<tt class="descname">ccall</tt><big>(</big><em>ident</em>, <em>returnType</em>, <em>argTypes</em>, <em>args</em><big>)</big><a class="headerlink" href="#ccall" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">ccall</tt><big>(</big><em>ident</em>, <em>returnType</em>, <em>argTypes</em>, <em>args</em>, <em>opts</em><big>)</big><a class="headerlink" href="#ccall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call a compiled C function from JavaScript.</p>
 <p>The function executes a compiled C function from JavaScript and returns the result. C++ name mangling means that &#8220;normal&#8221; C++ functions cannot be called; the function must either be defined in a <strong>.c</strong> file or be a C++ function defined with <tt class="docutils literal"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></tt>.</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="c1">// Call C from JavaScript</span>
@@ -979,7 +980,13 @@
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The result of the function call as a native JavaScript value (as in <tt class="docutils literal"><span class="pre">returnType</span></tt>).</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result of the function call as a native JavaScript value (as in <tt class="docutils literal"><span class="pre">returnType</span></tt>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Opts:</th><td class="field-body"><p class="first">An optional options object. It can contain the following properties:</p>
+<ul class="last simple">
+<li><tt class="docutils literal"><span class="pre">async</span></tt>: Implies that the ccall will perform an async operation. This assumes you are using the Emterpreter-Async option for your code. When using this option, the ccalled function cannot return a value (it can&#8217;t be received synchronously anyhow).</li>
+</ul>
 </td>
 </tr>
 </tbody>
@@ -1533,7 +1540,7 @@ my_func(12)
   
     <p>
         <!-- &copy; Copyright 2014, . -->
-		&copy; Copyright 2014,  <a href="../../docs\contributing\AUTHORS.html">Emscripten Contributors</a>.
+		&copy; Copyright 2014,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
 		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
     </p>
 	
@@ -1555,7 +1562,7 @@ my_func(12)
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.12',
+            VERSION:'1.31.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

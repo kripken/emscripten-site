@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Emscripten from Source using the SDK &mdash; Emscripten 1.29.12 documentation</title>
+  <title>Building Emscripten from Source using the SDK &mdash; Emscripten 1.31.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.31.3 documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Manually Building Emscripten on Linux" href="building_emscripten_from_source_on_linux.html"/>
         <link rel="prev" title="Emscripten Toolchain Requirements" href="toolchain_what_is_needed.html"/> 
@@ -295,6 +295,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-extensions">OpenGL extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
@@ -761,13 +762,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#tools-and-sdk-targets">Tools and SDK targets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-manager-concepts">SDK manager concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&#8220;How to&#8221; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
@@ -916,7 +917,7 @@
 </div>
 <div class="section" id="building-emscripten-from-the-main-repositories">
 <span id="building-emscripten-from-the-main-repositories-using-the-sdk"></span><h2>Building Emscripten from the main repositories<a class="headerlink" href="#building-emscripten-from-the-main-repositories" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference internal" href="../tools_reference/emsdk.html#emsdk"><em>Emscripten SDK Manager (emsdk)</em></a> controls which tool and SDK &#8220;targets&#8221; are installed and activated. To start using the latest upstream git development branch (<tt class="docutils literal"><span class="pre">incoming</span></tt>), run the following commands:</p>
+<p>The <a class="reference internal" href="../tools_reference/emsdk.html#emsdk"><em>Emscripten SDK (emsdk)</em></a> controls which tool and SDK &#8220;targets&#8221; are installed and activated. To start using the latest upstream git development branch (<tt class="docutils literal"><span class="pre">incoming</span></tt>), run the following commands:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="cp"># Clone, pull, and build the latest &quot;sdk&quot; Emscripten environment</span>
 <span class="p">.</span><span class="o">/</span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">sdk</span><span class="o">-</span><span class="n">incoming</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span>
 
@@ -925,13 +926,6 @@
 </pre></div>
 </div>
 <p>If you want to use the upstream stable branch <tt class="docutils literal"><span class="pre">master</span></tt>, replace <tt class="docutils literal"><span class="pre">-incoming-</span></tt> with <tt class="docutils literal"><span class="pre">-master-</span></tt> in the commands above.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p>On Windows there is <a class="reference external" href="https://github.com/juj/emsdk/issues/13">currently a bug</a> with the git package. Instead of using <tt class="docutils literal"><span class="pre">sdk-incoming-64bit</span></tt>, you may need to enter:</p>
-<div class="last highlight-cpp"><div class="highlight"><pre><span class="n">emsdk</span> <span class="n">install</span> <span class="n">clang</span><span class="o">-</span><span class="n">incoming</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">node</span><span class="o">-</span><span class="mf">0.10.17</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">python</span><span class="o">-</span><span class="mf">2.7.5.3</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">java</span><span class="o">-</span><span class="mf">7.45</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">emscripten</span><span class="o">-</span><span class="n">incoming</span>
-</pre></div>
-</div>
-</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>The SDK supplies a number of other &#8220;repository&#8221; targets. These targets are viewed by entering <tt class="docutils literal"><span class="pre">./emsdk</span> <span class="pre">list</span></tt> on the command prompt:</p>
@@ -1014,7 +1008,7 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">On Windows add the <tt class="docutils literal"><span class="pre">-G</span> <span class="pre">&quot;Visual</span> <span class="pre">Studio</span> <span class="pre">10</span> <span class="pre">Win64&quot;</span></tt> directive to build using Visual Studio (Visual Studio 2011 and 2012 do NOT work).</p>
+<p class="last">On Windows you will need Visual Studio 2012 or newer to build.</p>
 </div>
 </div></blockquote>
 </li>
@@ -1155,7 +1149,7 @@
   
     <p>
         <!-- &copy; Copyright 2014, . -->
-		&copy; Copyright 2014,  <a href="../../docs\contributing\AUTHORS.html">Emscripten Contributors</a>.
+		&copy; Copyright 2014,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
 		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
     </p>
 	
@@ -1177,7 +1171,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.12',
+            VERSION:'1.31.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

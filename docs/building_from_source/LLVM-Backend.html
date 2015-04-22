@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>LLVM Backend (“Fastcomp”) &mdash; Emscripten 1.29.12 documentation</title>
+  <title>LLVM Backend (“Fastcomp”) &mdash; Emscripten 1.31.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.29.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.31.3 documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Manually building Fastcomp from source" href="building_fastcomp_manually_from_source.html"/>
         <link rel="prev" title="Manually Building Emscripten on Mac OS X" href="building_emscripten_from_source_on_mac_os_x.html"/> 
@@ -295,6 +295,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-extensions">OpenGL extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
 </ul>
@@ -761,13 +762,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK Manager (emsdk)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#tools-and-sdk-targets">Tools and SDK targets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-manager-concepts">SDK manager concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&#8220;How to&#8221; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
@@ -973,33 +974,7 @@
 </div>
 <div class="section" id="how-to-disable-fastcomp">
 <h3>How to disable Fastcomp<a class="headerlink" href="#how-to-disable-fastcomp" title="Permalink to this headline">¶</a></h3>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p>You should <strong>NOT</strong> disable Fastcomp. If you &#8220;really must&#8221;, then:</p>
-<ul class="last simple">
-<li>The build will be slower, consume more memory, and result in sub-optimal code.</li>
-<li>There are more likely to be bugs, because the old compiler is less tested.</li>
-</ul>
-</div>
-<p>The original compiler is still present, and you may want to use it if you need a feature that is not yet present in <em>Fastcomp</em>. There should be very few such features, as almost everything that is not deprecated or planned to be rewritten has already been ported.</p>
-<p>However, if you do need to, you can use the old compiler by turning off <em>Fastcomp</em>; you do this by setting <tt class="docutils literal"><span class="pre">EMCC_FAST_COMPILER=0</span></tt> when you build:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">EMCC_FAST_COMPILER</span><span class="o">=</span><span class="mi">0</span> <span class="n">emcc</span> <span class="p">[..]</span>
-</pre></div>
-</div>
-<p>When you disable <em>Fastcomp</em> you can use <strong>either</strong> a build from the <em>Fastcomp</em> repositories, <strong>or</strong> a stock LLVM build. The latter is less tested, but should work in principle: Disabling <em>Fastcomp</em> does not use anything new in the <em>Fastcomp</em> repo (neither the new backend, nor the new target triple).</p>
-<p>You can check whether <em>Fastcomp</em> is enabled by looking at the debug output. For example, run <tt class="docutils literal"><span class="pre">EMCC_DEBUG=1</span> <span class="pre">emcc</span> <span class="pre">tests/hello_world.c</span></tt> — if <em>Fastcomp</em> is on, then among the output will be:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">DEBUG</span>    <span class="n">root</span><span class="o">:</span> <span class="n">emscript</span><span class="o">:</span> <span class="n">llvm</span> <span class="n">backend</span><span class="o">:</span> <span class="p">...</span>
-<span class="n">DEBUG</span>    <span class="n">root</span><span class="o">:</span>   <span class="n">emscript</span><span class="o">:</span> <span class="n">llvm</span> <span class="n">backend</span> <span class="n">took</span>
-</pre></div>
-</div>
-<p>This debug output shows both the command used to run the backend, and how much time it took. If <em>Fastcomp</em> is off on the other hand, the old compiler is used, and you will instead see:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="n">DEBUG</span>    <span class="n">root</span><span class="o">:</span> <span class="n">emscript</span><span class="o">:</span> <span class="n">ll</span><span class="o">=&gt;</span><span class="n">js</span>
-<span class="n">DEBUG</span>    <span class="n">root</span><span class="o">:</span>   <span class="n">emscript</span><span class="o">:</span> <span class="n">scan</span> <span class="n">took</span> <span class="p">...</span>
-<span class="p">...</span>
-<span class="n">DEBUG</span>    <span class="n">root</span><span class="o">:</span> <span class="n">emcc</span> <span class="n">step</span> <span class="s">&quot;emscript (llvm=&gt;js)&quot;</span> <span class="n">took</span> <span class="p">...</span>
-</pre></div>
-</div>
-<p>This shows that the old compiler (<tt class="docutils literal"><span class="pre">ll=&gt;js</span></tt>) is called, as well as how much time each step takes, and the total time. Again, this is the output for the <strong>old</strong> compiler, so hopefully you will never see it!</p>
+<p>Fastcomp is now the only supported compiler and the old compiler has been removed from emscripten.</p>
 </div>
 </div>
 <div class="section" id="faq">
@@ -1102,7 +1077,7 @@
   
     <p>
         <!-- &copy; Copyright 2014, . -->
-		&copy; Copyright 2014,  <a href="../../docs\contributing\AUTHORS.html">Emscripten Contributors</a>.
+		&copy; Copyright 2014,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
 		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
     </p>
 	
@@ -1124,7 +1099,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.29.12',
+            VERSION:'1.31.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
