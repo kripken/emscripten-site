@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.31.3 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.32.4 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.31.3 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.32.4 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -1140,6 +1140,8 @@
 <div class="last admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
+<li>Consider using <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span></tt> when using closure, as it minifies globals to names that might conflict with others in the global scope. <tt class="docutils literal"><span class="pre">MODULARIZE</span></tt> puts all the output into a function (see <tt class="docutils literal"><span class="pre">src/settings.js</span></tt>).</li>
+<li>Closure will minify the name of <cite>Module</cite> itself, by default! Using <tt class="docutils literal"><span class="pre">MODULARIZE</span></tt> will solve that as well. Another solution is to make sure a global variable called <cite>Module</cite> already exists before the closure-compiled code runs, because then it will reuse that variable.</li>
 <li>If closure compiler hits an out-of-memory, try adjusting <tt class="docutils literal"><span class="pre">JAVA_HEAP_SIZE</span></tt> in the environment (for example, to 4096m for 4GB).</li>
 <li>Closure is only run if JavaScript opts are being done (<tt class="docutils literal"><span class="pre">-O2</span></tt> or above, or <tt class="docutils literal"><span class="pre">--js-opts</span> <span class="pre">1</span></tt>).</li>
 </ul>
@@ -1216,20 +1218,6 @@
 <dd><p class="first">Specifies a <tt class="docutils literal"><span class="pre">&lt;cmd&gt;</span></tt> to be called on the generated code before it is optimized. This lets you modify the JavaScript, for example adding or removing some code, in a way that those modifications will be optimized together with the generated code.</p>
 <p><tt class="docutils literal"><span class="pre">&lt;cmd&gt;</span></tt> will be called with the file name of the generated code as a parameter. To modify the code, you can read the original data and then append to it or overwrite it with the modified data.</p>
 <p class="last"><tt class="docutils literal"><span class="pre">&lt;cmd&gt;</span></tt> is interpreted as a space-separated list of arguments, for example, <tt class="docutils literal"><span class="pre">&lt;cmd&gt;</span></tt> of <strong>python processor.py</strong> will cause a Python script to be run.</p>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--split</span> <span class="pre">&lt;size&gt;</span></tt></dt>
-<dd><p class="first">Splits the resulting JavaScript file into pieces to ease debugging.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This option is deprecated (modern JavaScript debuggers should work even on large files).</p>
-</div>
-<p>This option only works if JavaScript is generated (<tt class="docutils literal"><span class="pre">target</span> <span class="pre">-o</span> <span class="pre">&lt;name&gt;.js</span></tt>). Files with function declarations must be loaded before main file upon execution.</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li>Without the <tt class="docutils literal"><span class="pre">-g</span></tt> option this creates files with function declarations up to the given size with the suffix <strong>_functions.partxxx.js</strong> and a main file with the suffix <strong>.js</strong>.</li>
-<li>With the <tt class="docutils literal"><span class="pre">-g</span></tt> option this recreates the directory structure of the C source files and stores function declarations in their respective C files with the suffix &#8221;.js&#8221;. If such a file exceeds the given size, files with the suffix &#8221;.partxxx.js&#8221; are created. The main file resides in the base directory and has the suffix &#8221;.js&#8221;.</li>
-</ul>
-</div></blockquote>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-bind">
@@ -1485,7 +1473,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.31.3',
+            VERSION:'1.32.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
