@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 1.33.2 documentation</title>
+  <title>Building Projects &mdash; Emscripten 1.34.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.33.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.1 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -368,7 +368,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#build-system-issues">Build system issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#build-system-self-execution">Build system self-execution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dynamic-linking">Dynamic linking</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pseudo-dynamic-linking">Pseudo-Dynamic linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
 </ul>
 </li>
@@ -1071,22 +1070,9 @@ emcc allproject.bc -o final.html
 </div>
 <div class="section" id="dynamic-linking">
 <h3>Dynamic linking<a class="headerlink" href="#dynamic-linking" title="Permalink to this headline">¶</a></h3>
-<p>Emscripten&#8217;s goal is to generate the fastest and smallest possible code, and for that reason it focuses on generating a single JavaScript file for an entire project.</p>
-<p>Dynamic linking at runtime is not supported when using <a class="reference internal" href="../building_from_source/LLVM-Backend.html#llvm-backend"><em>Fastcomp</em></a> (it won&#8217;t link in code from an arbitrary location when an app is loaded).</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Dynamic linking would be an excellent <a class="reference internal" href="../contributing/contributing.html#contributing"><em>contribution</em></a> to Emscripten.</p>
-</div>
-<p>Dynamic linking is supported when using the <a class="reference internal" href="../building_from_source/LLVM-Backend.html#original-compiler-core"><em>original compiler</em></a> but is <strong>not</strong> recommended.</p>
-</div>
-<div class="section" id="pseudo-dynamic-linking">
-<span id="building-projects-dynamic-linking-workaround"></span><h3>Pseudo-Dynamic linking<a class="headerlink" href="#pseudo-dynamic-linking" title="Permalink to this headline">¶</a></h3>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This section applies to the <a class="reference internal" href="../building_from_source/LLVM-Backend.html#llvm-backend"><em>current compiler</em></a> only. It is a workaround because <em>Fastcomp</em> does not support true dynamic linking.</p>
-</div>
-<p>Dynamic libraries that you specify in the final build stage (when generating JavaScript or HTML) are linked in as static libraries.</p>
-<p><em>Emcc</em> ignores commands to dynamically link libraries when linking together bitcode. This is to ensure that the same dynamic library is not linked multiple times in intermediate build stages, which would result in duplicate symbol errors.</p>
+<p>Emscripten&#8217;s goal is to generate the fastest and smallest possible code, and for that reason it focuses on generating a single JavaScript file for an entire project. For that reason, dynamic linking should be avoided when possible.</p>
+<p>By default, Emscripten <tt class="docutils literal"><span class="pre">.so</span></tt> files are the same as <tt class="docutils literal"><span class="pre">.bc</span></tt> or <tt class="docutils literal"><span class="pre">.o</span></tt> files, that is, they contain LLVM bitcode. Dynamic libraries that you specify in the final build stage (when generating JavaScript or HTML) are linked in as static libraries. <em>Emcc</em> ignores commands to dynamically link libraries when linking together bitcode (i.e., not in the final build stage). This is to ensure that the same dynamic library is not linked multiple times in intermediate build stages, which would result in duplicate symbol errors.</p>
+<p>There is <a class="reference external" href="https://github.com/kripken/emscripten/wiki/Linking">experimental support</a> for true dynamic libraries, loaded as runtime, either via dlopen or as a shared library. See that link for the details and limitations.</p>
 </div>
 <div class="section" id="configure-may-run-checks-that-appear-to-fail">
 <h3>Configure may run checks that appear to fail<a class="headerlink" href="#configure-may-run-checks-that-appear-to-fail" title="Permalink to this headline">¶</a></h3>
@@ -1159,7 +1145,7 @@ emcc allproject.bc -o final.html
 <p class="first admonition-title">Note</p>
 <p class="last">You can use <tt class="docutils literal"><span class="pre">llvm-nm</span></tt> to see which symbols are defined in each bitcode file.</p>
 </div>
-<p>One solution is to use the <a class="reference internal" href="#building-projects-dynamic-linking-workaround"><em>Pseudo-Dynamic linking</em></a> approach described above. This ensures that libraries are linked only once, in the final build stage.</p>
+<p>One solution is to use the <em class="xref std std-ref">building-projects-dynamic-linking-workaround</em> approach described above. This ensures that libraries are linked only once, in the final build stage.</p>
 </li>
 </ul>
 </div>
@@ -1278,7 +1264,7 @@ emcc allproject.bc -o final.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.33.2',
+            VERSION:'1.34.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
