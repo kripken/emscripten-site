@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 1.34.1 documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 1.34.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.3 documentation" href="../../index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Pthreads support" href="../porting/pthreads.html"/> 
 
@@ -335,10 +335,13 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="">Optimizing Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-compiler-settings">Advanced compiler settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#very-large-projects">Very large projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-size">Code size</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#memory-initialization">Memory initialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#trading-off-code-size-and-performance">Trading off code size and performance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#code-size">Code size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#miscellaneous-code-size-tips">Miscellaneous code size tips</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -943,9 +946,9 @@
 </li>
 </ul>
 </div>
-<div class="section" id="very-large-projects">
-<h2>Very large projects<a class="headerlink" href="#very-large-projects" title="Permalink to this headline">¶</a></h2>
-<p>This section describes optimisations and issues that are only relevant to very large projects.</p>
+<div class="section" id="code-size">
+<h2>Code size<a class="headerlink" href="#code-size" title="Permalink to this headline">¶</a></h2>
+<p>This section describes optimisations and issues that are relevant to code size. They are useful both for small projects or libraries where you want the smallest footprint you can achieve, and in large projects where the sheer size may cause issues (like slow startup speed) that you want to avoid.</p>
 <div class="section" id="memory-initialization">
 <span id="optimizing-code-memory-initialization"></span><h3>Memory initialization<a class="headerlink" href="#memory-initialization" title="Permalink to this headline">¶</a></h3>
 <p>By default Emscripten emits the static memory initialization code inside the <strong>.js</strong> file. This can cause the JavaScript file to be very large, which will slow down startup. It can also cause problems in JavaScript engines with limits on array sizes, resulting in errors like <tt class="docutils literal"><span class="pre">Array</span> <span class="pre">initializer</span> <span class="pre">too</span> <span class="pre">large</span></tt> or <tt class="docutils literal"><span class="pre">Too</span> <span class="pre">much</span> <span class="pre">recursion</span></tt>.</p>
@@ -965,18 +968,21 @@
 <p class="last">This only matters when compiling the source to bitcode. There are currently no JavaScript-specific optimization flags for <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>, and these map to <tt class="docutils literal"><span class="pre">-O2</span></tt> in the bitcode-to-JavaScript phase.</p>
 </div>
 </div>
-<div class="section" id="code-size">
-<h3>Code size<a class="headerlink" href="#code-size" title="Permalink to this headline">¶</a></h3>
-<p>Tips for reducing code size include:</p>
+<div class="section" id="miscellaneous-code-size-tips">
+<h3>Miscellaneous code size tips<a class="headerlink" href="#miscellaneous-code-size-tips" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the above (defining a separate memory initialization file as <a class="reference internal" href="#optimizing-code-memory-initialization"><em>mentioned above</em></a>, and using <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>  as <a class="reference internal" href="#optimizing-code-oz-os"><em>mentioned above</em></a>), the following tips can help to reduce code size:</p>
 <ul class="simple">
-<li>Define a separate memory initialization file (as <a class="reference internal" href="#optimizing-code-memory-initialization"><em>mentioned above</em></a>).</li>
-<li>Use <tt class="docutils literal"><span class="pre">-Os</span></tt> or <tt class="docutils literal"><span class="pre">-Oz</span></tt>  (as <a class="reference internal" href="#optimizing-code-oz-os"><em>mentioned above</em></a>).</li>
-<li>Build bitcode to JavaScript with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><em>-O3</em></a>. This runs the expensive variable reuse pass (<tt class="docutils literal"><span class="pre">registerizeHarder</span></tt>). It is even more effective than <tt class="docutils literal"><span class="pre">-O2</span></tt> but slower to compile.</li>
 <li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><em>llvm-lto</em></a> when compiling from bitcode to JavaScript: <tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt>. This can break some code as the LTO code path is less tested.</li>
 <li>Disable <a class="reference internal" href="#optimizing-code-inlining"><em>Inlining</em></a>: <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></tt>. Compiling with -Os or -Oz generally avoids inlining too.</li>
 <li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><em>closure</em></a> on the outside non-asm.js code: <tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>. This can break code that doesn&#8217;t use <a class="reference external" href="https://developers.google.com/closure/compiler/docs/api-tutorial3">closure annotations properly</a>.</li>
+<li>You can use the <tt class="docutils literal"><span class="pre">NO_FILESYSTEM</span></tt> and <tt class="docutils literal"><span class="pre">NO_BROWSER</span></tt> options to disable bundling of filesystem and browser support code, which by default are included. This can be useful if you are building a pure computational library, for example. See <tt class="docutils literal"><span class="pre">settings.js</span></tt> for more detals.</li>
+<li>You can use <tt class="docutils literal"><span class="pre">EXPORTED_RUNTIME_METHODS</span></tt> to define which runtime methods are exported. By default a bunch of useful methods are exported, which you may not need. In conjunction with the closure compiler, this can be very effective (as exporting prevents closure from eliminating code). See <tt class="docutils literal"><span class="pre">settings.js</span></tt> for more detals. See <tt class="docutils literal"><span class="pre">test_no_nuthin</span></tt> in <tt class="docutils literal"><span class="pre">tests/test_other.py</span></tt> for an example usage in the test suite.</li>
 </ul>
 </div>
+</div>
+<div class="section" id="very-large-codebases">
+<h2>Very large codebases<a class="headerlink" href="#very-large-codebases" title="Permalink to this headline">¶</a></h2>
+<p>The previous section on reducing code size can be helpful on very large codebases. In addition, here are some other topics that might be useful.</p>
 <div class="section" id="outlining">
 <span id="optimizing-code-outlining"></span><h3>Outlining<a class="headerlink" href="#outlining" title="Permalink to this headline">¶</a></h3>
 <p>JavaScript engines will often compile very large functions slowly (relative to their size), and fail to optimize them effectively (or at all). One approach to this problem is to use &#8220;outlining&#8221;: breaking them into smaller functions that can be compiled and optimized more effectively.</p>
@@ -1157,7 +1163,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.1',
+            VERSION:'1.34.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
