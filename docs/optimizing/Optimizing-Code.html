@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 1.34.4 documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 1.34.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.4 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.6 documentation" href="../../index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Pthreads support" href="../porting/pthreads.html"/> 
 
@@ -238,6 +238,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <tt class="docutils literal"><span class="pre">val</span></tt> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
@@ -342,6 +343,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#very-large-codebases">Very large codebases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -704,6 +706,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
@@ -928,7 +931,6 @@
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
 <li>The meanings of the <em>emcc</em> optimization flags (<tt class="docutils literal"><span class="pre">-O1,</span> <span class="pre">-O2</span></tt> etc.) are different to the similarly-named options in <em>gcc</em>, <em>clang</em>, and other compilers, because optimizing JavaScript is very different to optimizing native code. The mapping of the <em>emcc</em> levels to the LLVM bitcode optimization levels is documented in the reference.</li>
-<li>If you compile several files into a single JavaScript output, be sure to specify the <strong>same</strong> optimization flags when compiling sources into objects, and objects into JavaScript or HTML. See <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><em>Building Projects</em></a> for more details.</li>
 </ul>
 </div>
 </div>
@@ -979,6 +981,31 @@
 <div class="section" id="very-large-codebases">
 <h2>Very large codebases<a class="headerlink" href="#very-large-codebases" title="Permalink to this headline">¶</a></h2>
 <p>The previous section on reducing code size can be helpful on very large codebases. In addition, here are some other topics that might be useful.</p>
+<div class="section" id="avoid-memory-spikes-by-separating-out-asm-js">
+<h3>Avoid memory spikes by separating out asm.js<a class="headerlink" href="#avoid-memory-spikes-by-separating-out-asm-js" title="Permalink to this headline">¶</a></h3>
+<p>By default Emscripten emits one JS file, containing the entire codebase: Both the asm.js code that was compiled, and the general code that sets up the environment, connects to browser APIs, etc. in a very large codebase, this can be inefficient in terms of memory usage, as having all of that in one script means the JS engine might use some memory to parse and compile the asm.js, and might not free it before starting to run the codebase. And in a large game, starting to run the code might allocate a large typed array for memory, so you might see a &#8220;spike&#8221; of memory, after which temporary compilation memory will be freed. And if big enough, that spike can cause the browser to run out of memory and fail to load the application. This is a known problem on <a class="reference external" href="https://code.google.com/p/v8/issues/detail?id=4392">Chrome</a> (other browsers do not seem to have this issue).</p>
+<p>A workaround is to separate out the asm.js into another file, and to make sure that the browser has a turn of the event loop between compiling the asm.js module and starting to run the application. This can be achieved as follows:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Run <tt class="docutils literal"><span class="pre">tools/separate_asm.py</span></tt>. This receives as inputs the filename of the full project, and two filenames to emit: the asm.js file and a file for everything else.</p>
+</li>
+<li><p class="first">Load the asm.js script first, then after a turn of the event loop, the other one, for example using code like this in your HTML file:</p>
+<div class="highlight-cpp"><div class="highlight"><pre>var script = document.createElement(&#39;script&#39;);
+script.src = &quot;the_asm.js&quot;;
+script.onload = function() {
+  setTimeout(function() {
+    var script = document.createElement(&#39;script&#39;);
+    script.src = &quot;the_rest.js&quot;;
+    document.body.appendChild(script);
+  }, 1); // delaying even 1ms is enough
+};
+document.body.appendChild(script);
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="outlining">
 <span id="optimizing-code-outlining"></span><h3>Outlining<a class="headerlink" href="#outlining" title="Permalink to this headline">¶</a></h3>
 <p>JavaScript engines will often compile very large functions slowly (relative to their size), and fail to optimize them effectively (or at all). One approach to this problem is to use &#8220;outlining&#8221;: breaking them into smaller functions that can be compiled and optimized more effectively.</p>
@@ -1159,7 +1186,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.4',
+            VERSION:'1.34.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

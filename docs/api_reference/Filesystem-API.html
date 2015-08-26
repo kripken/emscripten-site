@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 1.34.4 documentation</title>
+  <title>File System API &mdash; Emscripten 1.34.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.4 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.6 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -239,6 +239,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <tt class="docutils literal"><span class="pre">val</span></tt> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
@@ -705,6 +706,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#memfs">MEMFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#nodefs">NODEFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#filesystem-api-idbfs">IDBFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#workerfs">WORKERFS</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#devices">Devices</a></li>
@@ -951,6 +953,14 @@
 <p>The <em>IDBFS</em> file system implements the <a class="reference internal" href="#FS.syncfs" title="FS.syncfs"><tt class="xref js js-func docutils literal"><span class="pre">FS.syncfs()</span></tt></a> interface, which when called will persist any operations to an <tt class="docutils literal"><span class="pre">IndexedDB</span></tt> instance.</p>
 <p>This is provided to overcome the limitation that browsers do not offer synchronous APIs for persistent storage, and so (by default) all writes exist only temporarily in-memory.</p>
 </div>
+<div class="section" id="workerfs">
+<span id="filesystem-api-workerfs"></span><h3>WORKERFS<a class="headerlink" href="#workerfs" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This file system is only for use when running code inside a worker.</p>
+</div>
+<p>This file system provides read-only access to <tt class="docutils literal"><span class="pre">File</span></tt> and <tt class="docutils literal"><span class="pre">Blob</span></tt> objects inside a worker without copying the entire data into memory and can potentially be used for huge files.</p>
+</div>
 </div>
 <div class="section" id="devices">
 <h2>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h2>
@@ -1052,6 +1062,38 @@ FS.mount(NODEFS, { root: &#39;.&#39; }, &#39;/working&#39;);
 </div>
 </div></blockquote>
 </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><tt class="docutils literal"><span class="pre">WORKERFS</span></tt> accepts <cite>files</cite> and <cite>blobs</cite> parameters to map a provided flat list of files into the <tt class="docutils literal"><span class="pre">mountpoint</span></tt> directory:</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre>var blob = new Blob([&#39;blob data&#39;]);
+FS.mkdir(&#39;/working&#39;);
+FS.mount(WORKERFS, {
+  blobs: [{ name: &#39;blob.txt&#39;, data: blob }],
+  files: files, // Array of File objects or FileList
+}, &#39;/working&#39;);
+</pre></div>
+</div>
+</div></blockquote>
+<p>You can also pass in a package of files, created by <tt class="docutils literal"><span class="pre">tools/file_packager.py</span></tt> with <tt class="docutils literal"><span class="pre">--separate-metadata</span></tt>. You must
+provide the metadata as a JSON object, and the data as a blob:</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre>// load metadata and blob using XMLHttpRequests, or IndexedDB, or from someplace else
+FS.mkdir(&#39;/working&#39;);
+FS.mount(WORKERFS, {
+  packages: [{ metadata: meta, blob: blob }]
+}, &#39;/working&#39;);
+</pre></div>
+</div>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>mountpoint</strong> (<em>string</em>) &#8211; A path to an existing local Emscripten directory where the file system is to be mounted. It can be either an absolute path, or something relative to the current directory.</li>
 </ul>
 </td>
@@ -2156,7 +2198,7 @@ For example, consider a symlink <tt class="docutils literal"><span class="pre">/
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.4',
+            VERSION:'1.34.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
