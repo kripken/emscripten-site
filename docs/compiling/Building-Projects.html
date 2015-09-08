@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 1.34.6 documentation</title>
+  <title>Building Projects &mdash; Emscripten 1.34.7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.7 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -344,6 +344,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -374,6 +375,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#build-system-self-execution">Build system self-execution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dynamic-linking">Dynamic linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#archive-a-files">Archive (.a) files</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#manually-using-emcc">Manually using emcc</a></li>
@@ -944,8 +946,7 @@ make
 <p><em>Make</em> generates linked LLVM bitcode. It does not automatically generate JavaScript during linking because all the files must be compiled using the <a class="reference internal" href="#building-projects-optimizations"><em>same optimizations and compiler options</em></a> — and it makes sense to do this in the final conversion from bitcode to JavaScript.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>The file output from <em>make</em> might have a different suffix: <strong>.a</strong> for a static library archive, <strong>.so</strong> for a shared library, <strong>.o</strong> or <strong>.bc</strong> for object files (these file extensions are the same as <em>gcc</em> would use for the different types). Irrespective of the file extension, these files contain linked LLVM bitcode that <em>emcc</em> can compile into JavaScript in the final step.</p>
-<p class="last">Where possible it is better to generate shared library files (<strong>.so</strong>) rather than archives (<strong>.a</strong>) — this is generally a simple change in your project&#8217;s build system. Shared libraries are simpler, and are more predictable with respect to linking and elimination of unneeded code.</p>
+<p class="last">The file output from <em>make</em> might have a different suffix: <strong>.a</strong> for a static library archive, <strong>.so</strong> for a shared library, <strong>.o</strong> or <strong>.bc</strong> for object files (these file extensions are the same as <em>gcc</em> would use for the different types). Irrespective of the file extension, these files contain linked LLVM bitcode that <em>emcc</em> can compile into JavaScript in the final step.</p>
 </div>
 <p>The last step is to compile the linked bitcode into JavaScript. We do this by calling <em>emcc</em> again, specifying the linked LLVM bitcode file as an input, and a JavaScript file as the output.</p>
 </div>
@@ -1091,6 +1092,12 @@ emcc allproject.bc -o final.html
 <p class="first admonition-title">Note</p>
 <p class="last">In general <em>configure</em> is not a good match for a cross-compiler like Emscripten. <em>configure</em> is designed to build natively for the local setup, and works hard to find the native build system and the local system headers. With a cross-compiler, you are targeting a different system, and ignoring these headers etc.</p>
 </div>
+</div>
+<div class="section" id="archive-a-files">
+<h3>Archive (.a) files<a class="headerlink" href="#archive-a-files" title="Permalink to this headline">¶</a></h3>
+<p>Emscripten supports <strong>.a</strong> archive files, which are bundles of object files. This is an old format for libraries, and it has special semantics - for example, the order of linking matters with <strong>.a</strong> files, but not with plain object files (in <strong>.bc</strong>, <strong>.o</strong> or <strong>.so</strong>). For the most part those special semantics should work in Emscripten, however, we support <strong>.a</strong> files using llvm&#8217;s tools, which have a few limitations.</p>
+<p>The main limitation is that if you have multiple files in a single <strong>.a</strong> archive that have the same basename (for example, <tt class="docutils literal"><span class="pre">dir1/a.o,</span> <span class="pre">dir2/a.o</span></tt>), then llvm-ar cannot access both of those files. Emscripten will attempt to work around this by adding a hash to the basename, but collisions are still possible in principle.</p>
+<p>Where possible it is better to generate shared library files (<strong>.so</strong>) rather than archives (<strong>.a</strong>) — this is generally a simple change in your project&#8217;s build system. Shared libraries are simpler, and are more predictable with respect to linking.</p>
 </div>
 </div>
 <div class="section" id="manually-using-emcc">
@@ -1270,7 +1277,7 @@ emcc allproject.bc -o final.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.6',
+            VERSION:'1.34.7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

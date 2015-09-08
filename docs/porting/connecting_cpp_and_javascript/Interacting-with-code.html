@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 1.34.6 documentation</title>
+  <title>Interacting with code &mdash; Emscripten 1.34.7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.7 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -344,6 +344,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -374,6 +375,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
@@ -1115,9 +1117,15 @@ as if they appeared directly in the generated code. The result would be
 an alert, followed by an exception. (Note, however, that under the hood
 Emscripten still does a function call even in this case, which has some
 amount of overhead.)</p>
-<p>You can also send values from C into JavaScript inside <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_" title="EM_ASM_"><tt class="xref c c-macro docutils literal"><span class="pre">EM_ASM_</span></tt></a>,
-as well as receive values back (see the <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_" title="EM_ASM_"><tt class="xref c c-macro docutils literal"><span class="pre">linked</span> <span class="pre">macro</span></tt></a>
-for details. The following example will print out <tt class="docutils literal"><span class="pre">I</span> <span class="pre">received:</span> <span class="pre">100</span></tt>
+<p>You can also send values from C into JavaScript inside <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_" title="EM_ASM_"><tt class="xref c c-macro docutils literal"><span class="pre">EM_ASM_</span></tt></a>
+(note the extra &#8220;_&#8221; at the end), for example</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_ASM_({
+  Module.print(&#39;I received: &#39; + $0);
+}, 100);
+</pre></div>
+</div>
+<p>This will show <tt class="docutils literal"><span class="pre">I</span> <span class="pre">received:</span> <span class="pre">100</span></tt>.</p>
+<p>You can also receive values back, for example the following will print out <tt class="docutils literal"><span class="pre">I</span> <span class="pre">received:</span> <span class="pre">100</span></tt>
 and then <tt class="docutils literal"><span class="pre">101</span></tt>.</p>
 <div class="highlight-cpp"><div class="highlight"><pre>int x = EM_ASM_INT({
   Module.print(&#39;I received: &#39; + $0);
@@ -1126,6 +1134,7 @@ and then <tt class="docutils literal"><span class="pre">101</span></tt>.</p>
 printf(&quot;%d\n&quot;, x);
 </pre></div>
 </div>
+<p>See the <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_" title="EM_ASM_"><tt class="xref c c-macro docutils literal"><span class="pre">emscripten.h</span> <span class="pre">docs</span></tt></a> for more details.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
@@ -1444,7 +1453,7 @@ natural fit for the project and its build system.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.34.6',
+            VERSION:'1.34.7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

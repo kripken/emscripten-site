@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.34.6 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.34.7 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.34.7 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -344,6 +344,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -374,6 +375,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
@@ -1266,7 +1268,7 @@ int <tt class="descname">emscripten_set_main_loop_timing</tt><big>(</big>int<em>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mode</strong> (<em>int</em>) &#8211; <p>The timing mode to use. Allowed values are EM_TIMING_SETTIMEOUT, EM_TIMING_RAF.</p>
+<li><strong>mode</strong> (<em>int</em>) &#8211; <p>The timing mode to use. Allowed values are EM_TIMING_SETTIMEOUT, EM_TIMING_RAF and EM_TIMING_SETIMMEDIATE.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1275,6 +1277,7 @@ int <tt class="descname">emscripten_set_main_loop_timing</tt><big>(</big>int<em>
 <tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The timing value to activate for the main loop. This value interpreted differently according to the <tt class="docutils literal"><span class="pre">mode</span></tt> parameter:<ul>
 <li>If <tt class="docutils literal"><span class="pre">mode</span></tt> is EM_TIMING_SETTIMEOUT, then <tt class="docutils literal"><span class="pre">value</span></tt> specifies the number of milliseconds to wait between subsequent ticks to the main loop and updates occur independent of the vsync rate of the display (vsync off). This method uses the JavaScript <tt class="docutils literal"><span class="pre">setTimeout</span></tt> function to drive the animation.</li>
 <li>If <tt class="docutils literal"><span class="pre">mode</span></tt> is EM_TIMING_RAF, then updates are performed using the <tt class="docutils literal"><span class="pre">requestAnimationFrame</span></tt> function (with vsync enabled), and this value is interpreted as a &#8220;swap interval&#8221; rate for the main loop. The value of <tt class="docutils literal"><span class="pre">1</span></tt> specifies the runtime that it should render at every vsync (typically 60fps), whereas the value <tt class="docutils literal"><span class="pre">2</span></tt> means that the main loop callback should be called only every second vsync (30fps). As a general formula, the value <tt class="docutils literal"><span class="pre">n</span></tt> means that the main loop is updated at every n&#8217;th vsync, or at a rate of <tt class="docutils literal"><span class="pre">60/n</span></tt> for 60Hz displays, and <tt class="docutils literal"><span class="pre">120/n</span></tt> for 120Hz displays.</li>
+<li>If <tt class="docutils literal"><span class="pre">mode</span></tt> is EM_TIMING_SETIMMEDIATE, then updates are performed using the <tt class="docutils literal"><span class="pre">setImmediate</span></tt> function, or if not available, emulated via <tt class="docutils literal"><span class="pre">postMessage</span></tt>. See <cite>setImmediate on MDN &lt;https://developer.mozilla.org/en-US/docs/Web/API/Window/setImmediate&gt;</cite> for more information. Note that this mode is <strong>strongly not recommended</strong> to be used when deploying Emscripten output to the web, since it depends on an unstable web extension that is in draft status, browsers other than IE do not currently support it, and its implementation has been considered controversial in review.</li>
 </ul>
 </td>
 </tr>
@@ -1286,7 +1289,7 @@ int <tt class="descname">emscripten_set_main_loop_timing</tt><big>(</big>int<em>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Browsers heavily optimize towards using <tt class="docutils literal"><span class="pre">requestAnimationFrame</span></tt> for animation instead of <tt class="docutils literal"><span class="pre">setTimeout</span></tt>. Because of that, for best experience across browsers, calling this function with <tt class="docutils literal"><span class="pre">mode=EM_TIMING_RAF</span></tt> and <tt class="docutils literal"><span class="pre">value=1</span></tt> will yield best results. Using the JavaScript <tt class="docutils literal"><span class="pre">setTimeout</span></tt> function is known to cause stutter and generally worse experience than using the <tt class="docutils literal"><span class="pre">requestAnimationFrame</span></tt> function.</p>
+<p class="last">Browsers heavily optimize towards using <tt class="docutils literal"><span class="pre">requestAnimationFrame</span></tt> for animation instead of the other provided modes. Because of that, for best experience across browsers, calling this function with <tt class="docutils literal"><span class="pre">mode=EM_TIMING_RAF</span></tt> and <tt class="docutils literal"><span class="pre">value=1</span></tt> will yield best results. Using the JavaScript <tt class="docutils literal"><span class="pre">setTimeout</span></tt> function is known to cause stutter and generally worse experience than using the <tt class="docutils literal"><span class="pre">requestAnimationFrame</span></tt> function.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -2777,7 +2780,7 @@ Even so, you should use this method carefully: the order of execution is potenti
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.6',
+            VERSION:'1.34.7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
