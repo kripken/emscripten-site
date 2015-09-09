@@ -981,6 +981,13 @@ home directory:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="p">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="p">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s">&quot;[&#39;_int_sqrt&#39;]&quot;</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><cite>EXPORTED_FUNCTIONS</cite> affects compilation to JavaScript. If you first compile to an object file,
+then compile the object to JavaScript, you need that option on the second command. If you do
+it all together as in the example here (source straight to JavaScript) then this just works,
+of course.</p>
+</div>
 <p>After compiling, you can call this function with <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><tt class="xref js js-func docutils literal"><span class="pre">cwrap()</span></tt></a> using the
 following JavaScript:</p>
 <div class="highlight-cpp"><div class="highlight"><pre>int_sqrt = Module.cwrap(&#39;int_sqrt&#39;, &#39;number&#39;, [&#39;number&#39;])
@@ -989,7 +996,7 @@ int_sqrt(28)
 </pre></div>
 </div>
 <p>The first parameter is the name of the function to be wrapped, the second is
-the return type of the function, and the third is an array of parameter
+the return type of the function (or a JavaScript <cite>null</cite> value if there isn&#8217;t one), and the third is an array of parameter
 types (which may be omitted if there are no parameters). The types are
 native JavaScript types, &#8220;number&#8221; (for a C integer, float, or general
 pointer) or &#8220;string&#8221; (for a C <tt class="docutils literal"><span class="pre">char*</span></tt> that represents a string).</p>
