@@ -983,9 +983,10 @@
 <h2>Very large codebases<a class="headerlink" href="#very-large-codebases" title="Permalink to this headline">¶</a></h2>
 <p>The previous section on reducing code size can be helpful on very large codebases. In addition, here are some other topics that might be useful.</p>
 <div class="section" id="avoid-memory-spikes-by-separating-out-asm-js">
-<h3>Avoid memory spikes by separating out asm.js<a class="headerlink" href="#avoid-memory-spikes-by-separating-out-asm-js" title="Permalink to this headline">¶</a></h3>
+<span id="optimizing-code-separating-asm"></span><h3>Avoid memory spikes by separating out asm.js<a class="headerlink" href="#avoid-memory-spikes-by-separating-out-asm-js" title="Permalink to this headline">¶</a></h3>
 <p>By default Emscripten emits one JS file, containing the entire codebase: Both the asm.js code that was compiled, and the general code that sets up the environment, connects to browser APIs, etc. in a very large codebase, this can be inefficient in terms of memory usage, as having all of that in one script means the JS engine might use some memory to parse and compile the asm.js, and might not free it before starting to run the codebase. And in a large game, starting to run the code might allocate a large typed array for memory, so you might see a &#8220;spike&#8221; of memory, after which temporary compilation memory will be freed. And if big enough, that spike can cause the browser to run out of memory and fail to load the application. This is a known problem on <a class="reference external" href="https://code.google.com/p/v8/issues/detail?id=4392">Chrome</a> (other browsers do not seem to have this issue).</p>
-<p>A workaround is to separate out the asm.js into another file, and to make sure that the browser has a turn of the event loop between compiling the asm.js module and starting to run the application. This can be achieved as follows:</p>
+<p>A workaround is to separate out the asm.js into another file, and to make sure that the browser has a turn of the event loop between compiling the asm.js module and starting to run the application. This can be achieved by running <strong>emcc</strong> with <tt class="docutils literal"><span class="pre">--separate-asm</span></tt>.</p>
+<p>You can also do this manually, as follows:</p>
 <blockquote>
 <div><ul>
 <li><p class="first">Run <tt class="docutils literal"><span class="pre">tools/separate_asm.py</span></tt>. This receives as inputs the filename of the full project, and two filenames to emit: the asm.js file and a file for everything else.</p>
