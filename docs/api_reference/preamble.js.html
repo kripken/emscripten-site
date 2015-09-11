@@ -345,6 +345,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -1148,6 +1149,45 @@ my_func(12)
 </dd></dl>
 
 <dl class="function">
+<dt id="UTF8ToString">
+<tt class="descname">UTF8ToString</tt><big>(</big><em>ptr</em><big>)</big><a class="headerlink" href="#UTF8ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a pointer <tt class="docutils literal"><span class="pre">ptr</span></tt> to a null-terminated UTF8-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>ptr</strong> &#8211; A pointer to a null-terminated UTF8-encoded string in the Emscripten HEAP.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="stringToUTF8">
+<tt class="descname">stringToUTF8</tt><big>(</big><em>str</em>, <em>outPtr</em><span class="optional">[</span>, <em>maxBytesToWrite</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#stringToUTF8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the given JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object <tt class="docutils literal"><span class="pre">str</span></tt> to the Emscripten HEAP at address <tt class="docutils literal"><span class="pre">outPtr</span></tt>, null-terminated and encoded in UTF8 form.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>str</strong> (<em>String</em>) &#8211; A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</li>
+<li><strong>outPtr</strong> &#8211; Pointer to data copied from <tt class="docutils literal"><span class="pre">str</span></tt>, encoded in UTF8 format and null-terminated.</li>
+<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes to write out.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="UTF16ToString">
 <tt class="descname">UTF16ToString</tt><big>(</big><em>ptr</em><big>)</big><a class="headerlink" href="#UTF16ToString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a pointer <tt class="docutils literal"><span class="pre">ptr</span></tt> to a null-terminated UTF16LE-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</p>
@@ -1169,7 +1209,7 @@ my_func(12)
 
 <dl class="function">
 <dt id="stringToUTF16">
-<tt class="descname">stringToUTF16</tt><big>(</big><em>str</em>, <em>outPtr</em><big>)</big><a class="headerlink" href="#stringToUTF16" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">stringToUTF16</tt><big>(</big><em>str</em>, <em>outPtr</em><span class="optional">[</span>, <em>maxBytesToWrite</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#stringToUTF16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the given JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object <tt class="docutils literal"><span class="pre">str</span></tt> to the Emscripten HEAP at address <tt class="docutils literal"><span class="pre">outPtr</span></tt>, null-terminated and encoded in UTF16LE form.</p>
 <p>The copy will require at most <tt class="docutils literal"><span class="pre">(str.length*2+1)*2</span></tt> bytes of space in the HEAP.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1179,6 +1219,7 @@ my_func(12)
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>str</strong> (<em>String</em>) &#8211; A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</li>
 <li><strong>outPtr</strong> &#8211; Pointer to data copied from <tt class="docutils literal"><span class="pre">str</span></tt>, encoded in UTF16LE format and null-terminated.</li>
+<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes to write out.</li>
 </ul>
 </td>
 </tr>
@@ -1208,7 +1249,7 @@ my_func(12)
 
 <dl class="function">
 <dt id="stringToUTF32">
-<tt class="descname">stringToUTF32</tt><big>(</big><em>str</em>, <em>outPtr</em><big>)</big><a class="headerlink" href="#stringToUTF32" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">stringToUTF32</tt><big>(</big><em>str</em>, <em>outPtr</em><span class="optional">[</span>, <em>maxBytesToWrite</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#stringToUTF32" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the given JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object <tt class="docutils literal"><span class="pre">str</span></tt> to the Emscripten HEAP at address <tt class="docutils literal"><span class="pre">outPtr</span></tt>, null-terminated and encoded in UTF32LE form.</p>
 <p>The copy will require at most <tt class="docutils literal"><span class="pre">(str.length+1)*4</span></tt> bytes of space in the HEAP, but can use less, since <tt class="docutils literal"><span class="pre">str.length</span></tt> does not return the number of characters in the string, but the number of UTF-16 code units in the string.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1218,6 +1259,7 @@ my_func(12)
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>str</strong> (<em>String</em>) &#8211; A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</li>
 <li><strong>outPtr</strong> &#8211; Pointer to data copied from <tt class="docutils literal"><span class="pre">str</span></tt>, encoded in encoded in UTF32LE format and null-terminated.</li>
+<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes to write out.</li>
 </ul>
 </td>
 </tr>
