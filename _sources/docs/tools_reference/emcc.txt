@@ -282,6 +282,9 @@ Options that are modified or new in *emcc* are listed below:
 ``--exclude-file <name>``
 	Files and directories to be excluded from :ref:`--embed-file <emcc-embed-file>` and :ref:`--preload-file <emcc-preload-file>`. Wildcards (*) are supported.
 
+``--use-preload-plugins``
+	Tells the file packager to run preload plugins on the files as they are loaded. This performs tasks like decoding images and audio using the browser's codecs.
+
 .. _emcc-shell-file:
 	
 ``--shell-file <path>``
@@ -291,20 +294,6 @@ Options that are modified or new in *emcc* are listed below:
 	
 		- See `src/shell.html <https://github.com/kripken/emscripten/blob/master/src/shell.html>`_ and `src/shell_minimal.html <https://github.com/kripken/emscripten/blob/master/src/shell_minimal.html>`_ for examples.                  
 		- This argument is ignored if a target other than HTML is specified using the ``-o`` option.
-	
-``--compression <codec>``
-	Compress both the compiled code and embedded/ preloaded files. 
-	
-	.. warning:: This option is deprecated.
-
-	``<codec>`` should be a triple: ``<native_encoder>,<js_decoder>,<js_name>``, where:
-
-		- ``native_encoder`` is a native executable that compresses ``stdin`` to ``stdout`` (the simplest possible interface).
-		- ``js_decoder`` is a JavaScript file that implements a decoder.
-		- ``js_name`` is the name of the function to call in the decoder file (which should receive an array/typed array and return an array/typed array. 
-		
-	Compression only works when generating HTML. When compression is on, all files specified to be preloaded are compressed in one big archive, which is given the same name as the output HTML but with suffix **.data.compress**.
-
 	
 .. _emcc-minify:
 						   
@@ -392,8 +381,8 @@ Options that are modified or new in *emcc* are listed below:
 			.. note:: If you assign a network request to ``Module.memoryInitializerRequest`` (before the script runs), then it will use that request instead of automatically starting a download for you. This is beneficial in that you can, in your HTML, fire off a request for the memory init file before the script actually arrives. For this to work, the network request should be an XMLHttpRequest with responseType set to ``'arraybuffer'``. (You can also put any other object here, all it must provide is a ``.response`` property containing an ArrayBuffer.) 
 
 	
-``-Wno-warn-absolute-paths``
-	Suppress warnings about the use of absolute paths in ``-I`` and ``-L`` command line directives. This is used to hide the warnings and acknowledge that the explicit use of absolute paths is intentional.
+``-Wwarn-absolute-paths``
+  Enables warnings about the use of absolute paths in ``-I`` and ``-L`` command line directives. This is used to warn against unintentional use of absolute paths, which is sometimes dangerous when referring to nonportable local system headers.
 	 
 ``--proxy-to-worker``
 	Runs the main application code in a worker, proxying events to it and output from it. If emitting HTML, this emits a **.html** file, and a separate **.js** file containing the JavaScript to be run in a worker. If emitting JavaScript, the target file name contains the part to be run on the main thread, while a second **.js** file with suffix ".worker.js" will contain the worker portion.
@@ -402,6 +391,12 @@ Options that are modified or new in *emcc* are listed below:
 	
 ``--emrun``
 	Enables the generated output to be aware of the :ref:`emrun <Running-html-files-with-emrun>` command line tool. This allows ``stdout``, ``stderr`` and ``exit(returncode)`` capture when running the generated application through *emrun*.     
+
+``--cpuprofiler``
+	Embeds a simple CPU profiler onto the generated page. Use this to perform cursory interactive performance profiling.
+
+``--memoryprofiler``
+	Embeds a memory allocation tracker onto the generated page. Use this to profile the application usage of the Emscripten HEAP.
 
 .. _emcc-config:
 	

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.34.8 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.35.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.8 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.35.2 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -1541,11 +1541,11 @@ float <tt class="descname">emscripten_random</tt><big>(</big>void<big>)</big><a 
 </dd></dl>
 
 <dl class="type">
-<dt id="c.em_async_prepare_data_onload_func">
-<tt class="descname">em_async_prepare_data_onload_func</tt><a class="headerlink" href="#c.em_async_prepare_data_onload_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function pointer type for the <tt class="docutils literal"><span class="pre">onload</span></tt> callback of <a class="reference internal" href="#c.emscripten_async_prepare_data" title="emscripten_async_prepare_data"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_prepare_data()</span></tt></a> (specific values of the parameters documented in that method).</p>
+<dt id="c.em_run_preload_plugins_data_onload_func">
+<tt class="descname">em_run_preload_plugins_data_onload_func</tt><a class="headerlink" href="#c.em_run_preload_plugins_data_onload_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function pointer type for the <tt class="docutils literal"><span class="pre">onload</span></tt> callback of <a class="reference internal" href="#c.emscripten_run_preload_plugins_data" title="emscripten_run_preload_plugins_data"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_run_preload_plugins_data()</span></tt></a> (specific values of the parameters documented in that method).</p>
 <p>Defined as:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_prepare_data_onload_func</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_run_preload_plugins_data_onload_func</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1557,7 +1557,7 @@ float <tt class="descname">emscripten_random</tt><big>(</big>void<big>)</big><a 
 <dt id="c.emscripten_wget">
 void <tt class="descname">emscripten_wget</tt><big>(</big>const char*<em>&nbsp;url</em>, const char*<em>&nbsp;file</em><big>)</big><a class="headerlink" href="#c.emscripten_wget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load file from url in <em>synchronously</em>. For the asynchronous version, see the <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget()</span></tt></a>.</p>
-<p>In addition to fetching the URL from the network, the contents are prepared so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we synchronously do the work to make the browser decode the image or audio etc.).</p>
+<p>In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we synchronously do the work to make the browser decode the image or audio etc.).</p>
 <p>This function is blocking; it won&#8217;t return until all operations are finished. You can then open and read the file if it succeeded.</p>
 <p>To use this function, you will need to compile your application with the linker flag <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">ASYNCIFY=1</span></tt></p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1578,7 +1578,7 @@ void <tt class="descname">emscripten_wget</tt><big>(</big>const char*<em>&nbsp;u
 <dt id="c.emscripten_async_wget">
 void <tt class="descname">emscripten_async_wget</tt><big>(</big>const char*<em>&nbsp;url</em>, const char*<em>&nbsp;file</em>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func">em_str_callback_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func">em_str_callback_func</a><em>&nbsp;onerror</em><big>)</big><a class="headerlink" href="#c.emscripten_async_wget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a file from a URL asynchronously.</p>
-<p>In addition to fetching the URL from the network, the contents are prepared so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we asynchronously do the work to make the browser decode the image or audio etc.).</p>
+<p>In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we asynchronously do the work to make the browser decode the image or audio etc.).</p>
 <p>When the file is ready the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called. If any error occurs <tt class="docutils literal"><span class="pre">onerror</span></tt> will be called. The callbacks are called with the file as their argument.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1609,7 +1609,7 @@ void <tt class="descname">emscripten_async_wget</tt><big>(</big>const char*<em>&
 void <tt class="descname">emscripten_async_wget_data</tt><big>(</big>const char*<em>&nbsp;url</em>, void<em>&nbsp;*arg</em>, <a class="reference internal" href="#c.em_async_wget_onload_func" title="em_async_wget_onload_func">em_async_wget_onload_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func">em_arg_callback_func</a><em>&nbsp;onerror</em><big>)</big><a class="headerlink" href="#c.emscripten_async_wget_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a buffer from a URL asynchronously.</p>
 <p>This is the &#8220;data&#8221; version of <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget()</span></tt></a>.</p>
-<p>Instead of writing to a file, this function writes to a buffer directly in memory. This avoids the overhead of using the emulated file system; note however that since files are not used, it cannot do the &#8216;prepare&#8217; stage to set things up for <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (<tt class="docutils literal"><span class="pre">IMG_Load</span></tt> etc. work on files).</p>
+<p>Instead of writing to a file, this function writes to a buffer directly in memory. This avoids the overhead of using the emulated file system; note however that since files are not used, it cannot run preload plugins to set things up for <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (<tt class="docutils literal"><span class="pre">IMG_Load</span></tt> etc. work on files).</p>
 <p>When the file is ready then the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called. If any error occurred <tt class="docutils literal"><span class="pre">onerror</span></tt> will be called.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1642,7 +1642,7 @@ void <tt class="descname">emscripten_async_wget_data</tt><big>(</big>const char*
 int <tt class="descname">emscripten_async_wget2</tt><big>(</big>const char*<em>&nbsp;url</em>, const char*<em>&nbsp;file</em>, const char*<em>&nbsp;requesttype</em>, const char*<em>&nbsp;param</em>, void<em>&nbsp;*arg</em>, <a class="reference internal" href="#c.em_async_wget2_onload_func" title="em_async_wget2_onload_func">em_async_wget2_onload_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_async_wget2_onstatus_func" title="em_async_wget2_onstatus_func">em_async_wget2_onstatus_func</a><em>&nbsp;onerror</em>, <a class="reference internal" href="#c.em_async_wget2_onstatus_func" title="em_async_wget2_onstatus_func">em_async_wget2_onstatus_func</a><em>&nbsp;onprogress</em><big>)</big><a class="headerlink" href="#c.emscripten_async_wget2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a file from a URL asynchronously.</p>
 <p>This is an <strong>experimental</strong> &#8220;more feature-complete&#8221; version of <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget()</span></tt></a>.</p>
-<p>In addition to fetching the URL from the network, the contents are prepared so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we asynchronously do the work to make the browser decode the image, audio, etc.).</p>
+<p>In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we asynchronously do the work to make the browser decode the image, audio, etc.).</p>
 <p>When the file is ready the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called with the object pointers given in <tt class="docutils literal"><span class="pre">arg</span></tt> and <tt class="docutils literal"><span class="pre">file</span></tt>. During the download the <tt class="docutils literal"><span class="pre">onprogress</span></tt> callback is called.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1687,8 +1687,7 @@ int <tt class="descname">emscripten_async_wget2</tt><big>(</big>const char*<em>&
 int <tt class="descname">emscripten_async_wget2_data</tt><big>(</big>const char*<em>&nbsp;url</em>, const char*<em>&nbsp;requesttype</em>, const char*<em>&nbsp;param</em>, void<em>&nbsp;*arg</em>, int<em>&nbsp;free</em>, <a class="reference internal" href="#c.em_async_wget2_data_onload_func" title="em_async_wget2_data_onload_func">em_async_wget2_data_onload_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_async_wget2_data_onerror_func" title="em_async_wget2_data_onerror_func">em_async_wget2_data_onerror_func</a><em>&nbsp;onerror</em>, <a class="reference internal" href="#c.em_async_wget2_data_onprogress_func" title="em_async_wget2_data_onprogress_func">em_async_wget2_data_onprogress_func</a><em>&nbsp;onprogress</em><big>)</big><a class="headerlink" href="#c.emscripten_async_wget2_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a buffer from a URL asynchronously.</p>
 <p>This is the &#8220;data&#8221; version of <a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget2()</span></tt></a>. It is an <strong>experimental</strong> &#8220;more feature complete&#8221; version of <a class="reference internal" href="#c.emscripten_async_wget_data" title="emscripten_async_wget_data"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget_data()</span></tt></a>.</p>
-<p>Instead of writing to a file, this function writes to a buffer directly in memory. This avoids the overhead of using the emulated file system; note however that since files are not used, it cannot do the &#8216;prepare&#8217; stage to set things up for <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (<tt class="docutils literal"><span class="pre">IMG_Load</span></tt> etc. work on files).</p>
-<p>In addition to fetching the URL from the network, the contents are prepared so that the data is usable in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (we asynchronously do the work to make the browser decode the image or audio etc.).</p>
+<p>Instead of writing to a file, this function writes to a buffer directly in memory. This avoids the overhead of using the emulated file system; note however that since files are not used, it cannot run preload plugins to set things up for <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> and so forth (<tt class="docutils literal"><span class="pre">IMG_Load</span></tt> etc. work on files).</p>
 <p>When the file is ready the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called with the object pointers given in <tt class="docutils literal"><span class="pre">arg</span></tt>, a pointer to the buffer in memory, and an unsigned integer containing the size of the buffer. During the download the <tt class="docutils literal"><span class="pre">onprogress</span></tt> callback is called with progress information. If an error occurs, <tt class="docutils literal"><span class="pre">onerror</span></tt> will be called with the HTTP status code and a string containing the status description.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1749,9 +1748,9 @@ int <tt class="descname">emscripten_async_wget2_data</tt><big>(</big>const char*
 </dd></dl>
 
 <dl class="function">
-<dt id="c.emscripten_async_prepare_data">
-void <tt class="descname">emscripten_async_prepare_data</tt><big>(</big>char*<em>&nbsp;data</em>, int<em>&nbsp;size</em>, const char<em>&nbsp;*suffix</em>, void<em>&nbsp;*arg</em>, <a class="reference internal" href="#c.em_async_prepare_data_onload_func" title="em_async_prepare_data_onload_func">em_async_prepare_data_onload_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func">em_arg_callback_func</a><em>&nbsp;onerror</em><big>)</big><a class="headerlink" href="#c.emscripten_async_prepare_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepares a buffer of data asynchronously. This is a &#8220;data&#8221; version of <a class="reference internal" href="#c.emscripten_async_prepare" title="emscripten_async_prepare"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_prepare()</span></tt></a>, which receives raw data as input instead of a filename (this can prevent the need to write data to a file first).</p>
+<dt id="c.emscripten_run_preload_plugins_data">
+void <tt class="descname">emscripten_run_preload_plugins_data</tt><big>(</big>char*<em>&nbsp;data</em>, int<em>&nbsp;size</em>, const char<em>&nbsp;*suffix</em>, void<em>&nbsp;*arg</em>, <a class="reference internal" href="#c.em_run_preload_plugins_data_onload_func" title="em_run_preload_plugins_data_onload_func">em_run_preload_plugins_data_onload_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func">em_arg_callback_func</a><em>&nbsp;onerror</em><big>)</big><a class="headerlink" href="#c.emscripten_run_preload_plugins_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs preload plugins on a buffer of data asynchronously. This is a &#8220;data&#8221; version of <a class="reference internal" href="#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_run_preload_plugins()</span></tt></a>, which receives raw data as input instead of a filename (this can prevent the need to write data to a file first).</p>
 <p>When file is loaded then the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called. If any error occurs <tt class="docutils literal"><span class="pre">onerror</span></tt> will be called.</p>
 <p><tt class="docutils literal"><span class="pre">onload</span></tt> also receives a second parameter, which is a &#8216;fake&#8217; filename which you can pass into <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> (it is not an actual file, but it identifies this image for <tt class="docutils literal"><span class="pre">IMG_Load</span></tt> to be able to process it). Note that the user of this API is responsible for <tt class="docutils literal"><span class="pre">free()</span></tt> ing the memory allocated for the fake filename.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1759,10 +1758,10 @@ void <tt class="descname">emscripten_async_prepare_data</tt><big>(</big>char*<em
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>char*</em>) &#8211; The buffer of data to prepare.</li>
+<li><strong>data</strong> (<em>char*</em>) &#8211; The buffer of data to process.</li>
 <li><strong>suffix</strong> (<em>const char*</em>) &#8211; The file suffix, e.g. &#8216;png&#8217; or &#8216;jpg&#8217;.</li>
 <li><strong>arg</strong> (<em>void*</em>) &#8211; User-defined data that is passed to the callbacks, untouched by the API itself. This may be used by a callback to identify the associated call.</li>
-<li><strong>onload</strong> (<a class="reference internal" href="#c.em_async_prepare_data_onload_func" title="em_async_prepare_data_onload_func"><em>em_async_prepare_data_onload_func</em></a>) &#8211; <p>Callback on successful preparation of the file. The callback function parameter values are:</p>
+<li><strong>onload</strong> (<a class="reference internal" href="#c.em_run_preload_plugins_data_onload_func" title="em_run_preload_plugins_data_onload_func"><em>em_run_preload_plugins_data_onload_func</em></a>) &#8211; <p>Callback on successful processing of the data. The callback function parameter values are:</p>
 <ul>
 <li><em>(void</em>)* : Equal to <tt class="docutils literal"><span class="pre">arg</span></tt> (user defined data).</li>
 <li><em>(const char</em>)* : A &#8216;fake&#8217; filename which you can pass into <tt class="docutils literal"><span class="pre">IMG_Load</span></tt>. See above for more information.</li>
@@ -1912,25 +1911,24 @@ void <tt class="descname">emscripten_idb_async_exists</tt><big>(</big>const char
 </dd></dl>
 
 <dl class="function">
-<dt id="c.emscripten_async_prepare">
-int <tt class="descname">emscripten_async_prepare</tt><big>(</big>const char*<em>&nbsp;file</em>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func">em_str_callback_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func">em_str_callback_func</a><em>&nbsp;onerror</em><big>)</big><a class="headerlink" href="#c.emscripten_async_prepare" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepares a file asynchronously.</p>
-<p>This does just the preparation part of <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><tt class="xref c c-func docutils literal"><span class="pre">emscripten_async_wget()</span></tt></a>. That is, it works on file data already present and performs any required asynchronous operations (for example, decoding images for use in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt>, decoding audio for use in <tt class="docutils literal"><span class="pre">Mix_LoadWAV</span></tt>, etc.).</p>
-<p>Once the operations are complete (the file is prepared), the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called. If any error occurs <tt class="docutils literal"><span class="pre">onerror</span></tt> will be called. The callbacks are called with the file as their argument.</p>
+<dt id="c.emscripten_run_preload_plugins">
+int <tt class="descname">emscripten_run_preload_plugins</tt><big>(</big>const char*<em>&nbsp;file</em>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func">em_str_callback_func</a><em>&nbsp;onload</em>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func">em_str_callback_func</a><em>&nbsp;onerror</em><big>)</big><a class="headerlink" href="#c.emscripten_run_preload_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs preload plugins on a file asynchronously. It works on file data already present and performs any required asynchronous operations available as preload plugins, such as decoding images for use in <tt class="docutils literal"><span class="pre">IMG_Load</span></tt>, or decoding audio for use in <tt class="docutils literal"><span class="pre">Mix_LoadWAV</span></tt>.</p>
+<p>Once the operations are complete, the <tt class="docutils literal"><span class="pre">onload</span></tt> callback will be called. If any error occurs <tt class="docutils literal"><span class="pre">onerror</span></tt> will be called. The callbacks are called with the file as their argument.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file</strong> (<em>const char*</em>) &#8211; The name of the file to prepare.</li>
-<li><strong>onload</strong> (<a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><em>em_str_callback_func</em></a>) &#8211; <p>Callback on successful preparation of the file. The callback function parameter value is:</p>
+<li><strong>file</strong> (<em>const char*</em>) &#8211; The name of the file to process.</li>
+<li><strong>onload</strong> (<a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><em>em_str_callback_func</em></a>) &#8211; <p>Callback on successful processing of the file. The callback function parameter value is:</p>
 <ul>
-<li><em>(const char</em>)* : The name of the <tt class="docutils literal"><span class="pre">file</span></tt> that was prepared.</li>
+<li><em>(const char</em>)* : The name of the <tt class="docutils literal"><span class="pre">file</span></tt> that was processed.</li>
 </ul>
 </li>
 <li><strong>onerror</strong> (<a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><em>em_str_callback_func</em></a>) &#8211; <p>Callback in the event of failure. The callback function parameter value is:</p>
 <ul>
-<li><em>(const char</em>)* : The name of the <tt class="docutils literal"><span class="pre">file</span></tt> for which the prepare failed.</li>
+<li><em>(const char</em>)* : The name of the <tt class="docutils literal"><span class="pre">file</span></tt> for which the operation failed.</li>
 </ul>
 </li>
 </ul>
@@ -2297,6 +2295,28 @@ char *<tt class="descname">emscripten_get_preloaded_image_data_from_FILE</tt><bi
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">char*</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_print_double">
+int <tt class="descname">emscripten_print_double</tt><big>(</big>double<em>&nbsp;x</em>, char<em>&nbsp;*to</em>, signed<em>&nbsp;max</em><big>)</big><a class="headerlink" href="#c.emscripten_print_double" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a double as a string, including a null terminator. This is useful because JS engines have good support for printing out a double in a way that takes the least possible size, but preserves all the information in the double, i.e., it can then be parsed back in a perfectly reversible manner (snprintf etc. do not do so, sadly).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>double</em>) &#8211; The double.</li>
+<li><strong>to</strong> (<em>char*</em>) &#8211; A pre-allocated buffer of sufficient size, or NULL if no output is requested (useful to get the necessary size).</li>
+<li><strong>max</strong> (<em>signed</em>) &#8211; The maximum number of characters to write</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The number of necessary bytes, not including the null terminator (actually written, if <tt class="docutils literal"><span class="pre">to</span></tt> is not NULL).</p>
 </td>
 </tr>
 </tbody>
@@ -2781,7 +2801,7 @@ Even so, you should use this method carefully: the order of execution is potenti
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.8',
+            VERSION:'1.35.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

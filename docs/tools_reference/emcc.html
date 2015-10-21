@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.34.8 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.35.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.34.8 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.35.2 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -345,6 +345,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#outlining">Outlining</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
@@ -1196,6 +1197,8 @@
 <dl class="docutils" id="emcc-exclude-file">
 <dt><tt class="docutils literal"><span class="pre">--exclude-file</span> <span class="pre">&lt;name&gt;</span></tt></dt>
 <dd>Files and directories to be excluded from <a class="reference internal" href="#emcc-embed-file"><em>&#8211;embed-file</em></a> and <a class="reference internal" href="#emcc-preload-file"><em>&#8211;preload-file</em></a>. Wildcards (*) are supported.</dd>
+<dt><tt class="docutils literal"><span class="pre">--use-preload-plugins</span></tt></dt>
+<dd>Tells the file packager to run preload plugins on the files as they are loaded. This performs tasks like decoding images and audio using the browser&#8217;s codecs.</dd>
 </dl>
 <dl class="docutils" id="emcc-shell-file">
 <dt><tt class="docutils literal"><span class="pre">--shell-file</span> <span class="pre">&lt;path&gt;</span></tt></dt>
@@ -1207,22 +1210,6 @@
 <li>This argument is ignored if a target other than HTML is specified using the <tt class="docutils literal"><span class="pre">-o</span></tt> option.</li>
 </ul>
 </div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--compression</span> <span class="pre">&lt;codec&gt;</span></tt></dt>
-<dd><p class="first">Compress both the compiled code and embedded/ preloaded files.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This option is deprecated.</p>
-</div>
-<p><tt class="docutils literal"><span class="pre">&lt;codec&gt;</span></tt> should be a triple: <tt class="docutils literal"><span class="pre">&lt;native_encoder&gt;,&lt;js_decoder&gt;,&lt;js_name&gt;</span></tt>, where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">native_encoder</span></tt> is a native executable that compresses <tt class="docutils literal"><span class="pre">stdin</span></tt> to <tt class="docutils literal"><span class="pre">stdout</span></tt> (the simplest possible interface).</li>
-<li><tt class="docutils literal"><span class="pre">js_decoder</span></tt> is a JavaScript file that implements a decoder.</li>
-<li><tt class="docutils literal"><span class="pre">js_name</span></tt> is the name of the function to call in the decoder file (which should receive an array/typed array and return an array/typed array.</li>
-</ul>
-</div></blockquote>
-<p class="last">Compression only works when generating HTML. When compression is on, all files specified to be preloaded are compressed in one big archive, which is given the same name as the output HTML but with suffix <strong>.data.compress</strong>.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-minify">
@@ -1309,14 +1296,18 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
 </ul>
 </div></blockquote>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">-Wno-warn-absolute-paths</span></tt></dt>
-<dd>Suppress warnings about the use of absolute paths in <tt class="docutils literal"><span class="pre">-I</span></tt> and <tt class="docutils literal"><span class="pre">-L</span></tt> command line directives. This is used to hide the warnings and acknowledge that the explicit use of absolute paths is intentional.</dd>
+<dt><tt class="docutils literal"><span class="pre">-Wwarn-absolute-paths</span></tt></dt>
+<dd>Enables warnings about the use of absolute paths in <tt class="docutils literal"><span class="pre">-I</span></tt> and <tt class="docutils literal"><span class="pre">-L</span></tt> command line directives. This is used to warn against unintentional use of absolute paths, which is sometimes dangerous when referring to nonportable local system headers.</dd>
 <dt><tt class="docutils literal"><span class="pre">--proxy-to-worker</span></tt></dt>
 <dd>Runs the main application code in a worker, proxying events to it and output from it. If emitting HTML, this emits a <strong>.html</strong> file, and a separate <strong>.js</strong> file containing the JavaScript to be run in a worker. If emitting JavaScript, the target file name contains the part to be run on the main thread, while a second <strong>.js</strong> file with suffix &#8221;.worker.js&#8221; will contain the worker portion.</dd>
 </dl>
 <dl class="docutils" id="emcc-emrun">
 <dt><tt class="docutils literal"><span class="pre">--emrun</span></tt></dt>
 <dd>Enables the generated output to be aware of the <a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-html-files-with-emrun"><em>emrun</em></a> command line tool. This allows <tt class="docutils literal"><span class="pre">stdout</span></tt>, <tt class="docutils literal"><span class="pre">stderr</span></tt> and <tt class="docutils literal"><span class="pre">exit(returncode)</span></tt> capture when running the generated application through <em>emrun</em>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--cpuprofiler</span></tt></dt>
+<dd>Embeds a simple CPU profiler onto the generated page. Use this to perform cursory interactive performance profiling.</dd>
+<dt><tt class="docutils literal"><span class="pre">--memoryprofiler</span></tt></dt>
+<dd>Embeds a memory allocation tracker onto the generated page. Use this to profile the application usage of the Emscripten HEAP.</dd>
 </dl>
 <dl class="docutils" id="emcc-config">
 <dt><tt class="docutils literal"><span class="pre">--em-config</span></tt></dt>
@@ -1489,7 +1480,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.34.8',
+            VERSION:'1.35.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
