@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 1.35.4 documentation</title>
+  <title>Porting SIMD code &mdash; Emscripten 1.35.4 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="Emscripten 1.35.4 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
-        <link rel="next" title="Porting SIMD code" href="simd.html"/>
-        <link rel="prev" title="Debugging" href="Debugging.html"/> 
+        <link rel="next" title="Optimizing Code" href="../optimizing/Optimizing-Code.html"/>
+        <link rel="prev" title="Pthreads support" href="pthreads.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -326,16 +326,16 @@
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#need-help">Need help?</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Pthreads support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#compiling-with-pthreads-enabled">Compiling with pthreads enabled</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#special-considerations">Special considerations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#running-code-and-tests">Running code and tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pthreads.html">Pthreads support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#compiling-with-pthreads-enabled">Compiling with pthreads enabled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="simd.html">Porting SIMD code</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="simd.html#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
-<li class="toctree-l3"><a class="reference internal" href="simd.html#tests-and-benchmarks">Tests and Benchmarks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Porting SIMD code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tests-and-benchmarks">Tests and Benchmarks</a></li>
 </ul>
 </li>
 </ul>
@@ -897,7 +897,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Pthreads support</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code</div>
   </div>
  
 </div>
@@ -915,49 +915,47 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Pthreads support</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="pthreads-support">
-<h1>Pthreads support<a class="headerlink" href="#pthreads-support" title="Permalink to this headline">¶</a></h1>
-<p>Low level multithreading is currently supported in Firefox Nightly release channel via an experimental extension to JavaScript Web Workers. This is a work-in-progress research project, and the prototype specification can be located <a class="reference external" href="https://docs.google.com/document/d/1NDGA_gZJ7M7w1Bh8S0AoDyEqwDdRh4uSoTPSNn77PFk/edit?usp=sharing">here</a>.</p>
-<p>The proposed specification allows Emscripten applications to share the main memory heap between web workers. This along with primitives for low level atomics and futex support enables Emscripten to implement support for the Pthreads (POSIX threads) API.</p>
-<div class="section" id="compiling-with-pthreads-enabled">
-<h2>Compiling with pthreads enabled<a class="headerlink" href="#compiling-with-pthreads-enabled" title="Permalink to this headline">¶</a></h2>
-<p>By default, support for pthreads is not enabled, since the specification is still in a prototyping stage. To enable code generation for pthreads, the following command line flags exist:</p>
+  <div class="section" id="porting-simd-code">
+<h1>Porting SIMD code<a class="headerlink" href="#porting-simd-code" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten utilizes the <a class="reference external" href="https://tc39.github.io/ecmascript_simd/">SIMD.js specification</a> to enable support for building SIMD code. While the specification does not expose direct access to native CPU SIMD instructions, it does offer the most basic operations that codebases commonly need. Given the nature of the SIMD.js specification, compiled SIMD code is platform-abstract and the generated .js files will run accelerated on both x86 SSE and ARM NEON enabled CPUs (and any other vector instruction sets that browsers might be targeting), although performance can vary.</p>
+<p>For backwards compatibility, all generated SIMD code will embed a polyfill for all SIMD.js instructions. This allows Emscripten compiled pages to be run even on browsers that don&#8217;t have SIMD support available. However, due to the nature of the interoperation with asm.js, the SIMD.js polyfill will likely be much slower than scalar execution, so it is best to primarily target browsers that do support SIMD.js in hardware.</p>
+<div class="section" id="enabling-simd-code-generation">
+<h2>Enabling SIMD code generation<a class="headerlink" href="#enabling-simd-code-generation" title="Permalink to this headline">¶</a></h2>
+<p>There are three different ways to generate code to benefit from SIMD instructions:</p>
 <ul class="simple">
-<li>Pass the compiler flag -s USE_PTHREADS=1 when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</li>
-<li>Optionally, pass the linker flag -s PTHREAD_POOL_SIZE=&lt;integer&gt; to specify a predefined pool of web workers to populate at page preRun time before application main() is called. If -1 is passed to both PTHREAD_POOL_SIZE and PTHREAD_HINT_NUM_CORES, then a popup dialog will ask the user the size of the pool (useful for testing).</li>
-<li>Optionally, pass the linker flag -s PTHREAD_HINT_NUM_CORES=&lt;integer&gt; to choose what the function emscripten_num_logical_cores(); will return if navigator.hardwareConcurrency is not supported. If -1 is specified here, a popup dialog will be shown at startup to let the user specify the value that is returned here. This can be helpful in order to dynamically test how an application behaves with different values here.</li>
+<li>The easiest way is to utilize LLVM autovectorization support. This does not require any code changes and it is the most straightforward option to try for codebases that have not explicitly been written to target SIMD. To enable autovectorization, pass the linker flag -s SIMD=1 both when compiling and linking output files. Note that not all code can be autovectorized in this manner by the compiler, so the performance gains will greatly depend on the structure of the code in its hot paths.</li>
+<li>Emscripten supports the GCC/Clang compiler specific <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a>. These constructs do not require any changes to the command line build flags, but any code that utilizes the vector built-ins will always unconditionally emit SIMD.js vector instructions.</li>
+<li>A third option is to use the x86 SSE intrinsics. Emscripten has full support for compiling code that utilizes the SSE1 and SSE2 intrinsic function calls. To enable SSE1 intrinsics support, pass the compiler flag -msse, and add in a #include &lt;xmmintrin.h&gt;. To build SSE2 intrinsics code, pass the compiler flag -msse2, and use #include &lt;emmintrin.h&gt;.</li>
 </ul>
-<p>There should be no other changes required. In C/C++ code, the preprocessor check #ifdef __EMSCRIPTEN_PTHREADS__ can be used to detect whether Emscripten is currently targeting pthreads.</p>
+<p>These three methods are not mutually exclusive, but may freely be combined.</p>
 </div>
-<div class="section" id="special-considerations">
-<h2>Special considerations<a class="headerlink" href="#special-considerations" title="Permalink to this headline">¶</a></h2>
-<p>The Emscripten implementation for the pthreads API should follow the POSIX standard closely, but some behavioral differences do exist:</p>
-<ul class="simple">
-<li>If a page is built with the -s USE_PTHREADS=1 flag, then it will not run backwards compatibly in a non-supporting browser. In order to enable backwards compatibility so that multithreaded pages can run in non-supporting browsers (except with pthread_create() disabled), pass the flag -s USE_PTHREADS=2 instead. At runtime, you can use the emscripten_has_threading_support() function to test whether the current browser does have the capability to launch pthreads with pthread_create(). If a browser does not support threads, calls to pthread_create() will fail with error code EAGAIN.</li>
-<li>When -s PTHREAD_POOL_SIZE=&lt;integer&gt; is not specified and pthread_create() is called, the new thread will not actually start to run immediately, but the main JS thread must yield execution back to browser first. This behavior is a result of <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1049079">#1049079</a>.</li>
-<li>Currently several of the functions in the C runtime, such as filesystem functions like fopen(), fread(), printf(), fprintf() etc. are not multithreaded, but instead their execution is proxied over to the main application thread. Memory allocation via malloc() and free() is fully multithreaded though. This proxying can generate a deadlock in a special situation that native code running pthreads does not have. See <a class="reference external" href="https://github.com/kripken/emscripten/issues/3495">bug 3495</a> for more information and how to work around this until proxying is no longer needed in Emscripten.</li>
-<li>The Emscripten implementation does not support <a class="reference external" href="http://man7.org/linux/man-pages/man7/signal.7.html">POSIX signals</a>, which are sometimes used in conjunction with pthreads. This is because it is not possible to send signals to web workers and pre-empt their execution. The only exception to this is pthread_kill() which can be used as normal to forcibly terminate a running thread.</li>
-<li>The Emscripten implementation does also not support multiprocessing via fork() and join().</li>
-<li>For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref &#8220;dom.workers.maxPerDomain&#8221;.</li>
-<li>Some of the features in the pthreads specification are unsupported since the upstream musl library that Emscripten utilizes does not support them, or they are marked optional and a conformant implementation need not support them. Such unsupported features in Emscripten include prioritization of threads, and pthread_rwlock_unlock() is not performed in thread priority order. The functions pthread_mutexattr_set/getprotocol(), pthread_mutexattr_set/getprioceiling() and pthread_attr_set/getscope() are no-ops.</li>
-<li>One particular note to pay attention to when porting is that sometimes in existing codebases the callback function pointers to pthread_create() and pthread_cleanup_push() omit the void* argument, which strictly speaking is undefined behavior in C/C++, but works in several x86 calling conventions. Doing this in Emscripten will issue a compiler warning, and can abort at runtime when attempting to call a function pointer with incorrect signature, so in the presence of such errors, it is good to check the signatures of the thread callback functions.</li>
+<div class="section" id="limitations-and-behavioral-differences">
+<h2>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this headline">¶</a></h2>
+<p>When porting native SIMD code, it should be noted that because of portability concerns, SIMD.js does not expose the full native instruction sets to JavaScript. In particular the following changes exist:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, but all code should be written to use SIMD intrinsic functions.</li>
+<li>The SIMD types supported by SIMD.js are Float32x4, Int32x4, Uint32x4, Int16x8, Uint16x8, Int8x16 and Uint8x16. In particular, Float64x2 and Int64x2 are currently not supported, however Float64x2 is emulated in software in the current polyfill. 256-bit or wider SIMD types (AVX) are not supported either.</li>
+<li>Even though the full set of SSE1 and SSE2 intrinsics are supported, because of the platform-abstract nature of SIMD.js, some of these intrinsics will compile down to scalarized instructions to emulate. To verify which instructions are accelerated and which are not, examine the code in the platform headers <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">xmmintrin.h</a> and <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">emmintrin.h</a>.</li>
+<li>Currently the Intel x86 SIMD support is limited to SSE1 and SSE2 instruction sets. The Intel x86 SSE3, SSSE3, SSE4.1, SSE4.2, AVX, AVX2 and FMA instruction sets or newer are not supported. Also, the old Intel x86 MMX instruction set is not supported.</li>
+<li>SIMD.js does not have control over managing floating point rounding modes or handling denormals.</li>
+<li>Cache line prefetch instructions are not available, and calls to these functions will compile, but be treated as no-ops.</li>
+<li>Asymmetric memory fence operations are not available, but will be implemented as fully synchronous memory fences when SharedArrayBuffer is enabled (-s USE_PTHREADS=1) or as no-ops when multithreading is not enabled (default, -s USE_PTHREADS=0).</li>
+<li>Building ARM NEON -based intrinsics (#include &lt;arm_neon.h&gt;) code is not currently supported, but could be doable. Contributions on this front are welcome.</li>
 </ul>
-<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <cite>pthread-main.js</cite> is generated alongside the output .js file. That file must be deployed with the rest of the generated code files.</p>
+</div></blockquote>
 </div>
-<div class="section" id="running-code-and-tests">
-<h2>Running code and tests<a class="headerlink" href="#running-code-and-tests" title="Permalink to this headline">¶</a></h2>
-<p>Any code that is compiled with pthreads support enabled will currently only work in the Firefox Nightly channel, since the SharedArrayBuffer specification is still in an experimental research stage before standardization. There exists two test suites that can be used to verify the behavior of the pthreads API implementation in Emscripten:</p>
-<ul class="simple">
-<li>The Emscripten unit test suite contains several pthreads-specific tests in the &#8220;browser.&#8221; suite. Run any of the tests named browser.test_pthread_*.</li>
-<li>An Emscripten-specialized version of the <a class="reference external" href="http://posixtest.sourceforge.net/">Open POSIX Test Suite</a> is available at <a class="reference external" href="https://github.com/juj/posixtestsuite">juj/posixtestsuite</a> GitHub repository. This suite contains about 300 tests for pthreads conformance. To run this suite, the pref dom.workers.maxPerDomain should first be increased to at least 50.</li>
-</ul>
-<p>Please check these first in case of any issues. Bugs can be reported to the Emscripten bug tracker as usual.</p>
+<div class="section" id="tests-and-benchmarks">
+<h2>Tests and Benchmarks<a class="headerlink" href="#tests-and-benchmarks" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten repository has several tests for SIMD support. To run SIMD tests, execute e.g. &#8220;python tests/runner.py ALL.test_sse1_full&#8221; in Emscripten root directory. For the full list of tests, see test_simd* and test_sse* in <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/tests/test_core.py">test_core.py</a>.</p>
+<p>To run a synthetic SSE1 API benchmark, execute &#8220;python tests/benchmark_sse1.py&#8221; in Emscripten root directory.</p>
+<p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/kripken/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
 </div>
 </div>
 
@@ -967,10 +965,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="simd.html" class="btn btn-neutral float-right" title="Porting SIMD code"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../optimizing/Optimizing-Code.html" class="btn btn-neutral float-right" title="Optimizing Code"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Debugging.html" class="btn btn-neutral" title="Debugging"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pthreads.html" class="btn btn-neutral" title="Pthreads support"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1021,7 +1019,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Pthreads support</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code</div>
   </div>
  
 </div> -->
@@ -1037,7 +1035,7 @@
   <ul class="wy-breadcrumbs">
       <li class="wy-breadcrumbs-aside">
         
-          <a href="../../_sources/docs/porting/pthreads.txt" rel="nofollow"> View page source</a>
+          <a href="../../_sources/docs/porting/simd.txt" rel="nofollow"> View page source</a>
         
       </li>
 
@@ -1046,7 +1044,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Pthreads%20support%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/pthreads&labels=bug">Page bug</a>
+        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Porting%20SIMD%20code%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/simd&labels=bug">Page bug</a>
       </li>
   </ul>
   
