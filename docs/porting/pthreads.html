@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 1.35.14 documentation</title>
+  <title>Pthreads support &mdash; Emscripten 1.35.17 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.35.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.35.17 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Porting SIMD code" href="simd.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -944,7 +944,7 @@
 <li>If a page is built with the <cite>-s USE_PTHREADS=1</cite> linker flag, then it will not run backwards compatibly in a non-supporting browser. In order to enable backwards compatibility so that multithreaded pages can run in non-supporting browsers (except with pthread_create() disabled), pass the linker flag <cite>-s USE_PTHREADS=2</cite> instead. At runtime, you can use the <cite>emscripten_has_threading_support()</cite> function to test whether the current browser does have the capability to launch pthreads with <cite>pthread_create()</cite>. If a browser does not support threads, calls to <cite>pthread_create()</cite> will fail with error code <cite>EAGAIN</cite>.</li>
 <li>When the linker flag <cite>-s PTHREAD_POOL_SIZE=&lt;integer&gt;</cite> is not specified and <cite>pthread_create()</cite> is called, the new thread will not actually start to run immediately, but the main JS thread must yield execution back to browser first. This behavior is a result of <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1049079">#1049079</a>.</li>
 <li>Currently several of the functions in the C runtime, such as filesystem functions like <cite>fopen()</cite>, <cite>fread()</cite>, <cite>printf()</cite>, <cite>fprintf()</cite> etc. are not multithreaded, but instead their execution is proxied over to the main application thread. Memory allocation via <cite>malloc()</cite> and <cite>free()</cite> is fully multithreaded though. This proxying can generate a deadlock in a special situation that native code running pthreads does not have. See <a class="reference external" href="https://github.com/kripken/emscripten/issues/3495">bug 3495</a> for more information and how to work around this until proxying is no longer needed in Emscripten.</li>
-<li>In order to keep proxying as responsive as possible, whenever main thread calls to a function that performs a futex wait, e.g. <cite>usleep()</cite>, <cite>emscripten_futex_wait()</cite>, or <cite>pthread_mutex_wait()</cite>, the wait is done in very short time slices, which means that functions such as <cite>usleep()</cite> are not necessarily effective to conserve power. In order to save battery in the main thread, it is best to yield back to the browser runtime. When a pthread perform a futex wait, it sleeps in considerably longer slices.</li>
+<li>In order to keep proxying as responsive as possible, whenever main thread calls to a function that performs a futex wait, e.g. <cite>usleep()</cite>, <cite>emscripten_futex_wait()</cite>, or <cite>pthread_mutex_lock()</cite>, the wait is done in very short time slices, which means that functions such as <cite>usleep()</cite> are not necessarily effective to conserve power. In order to save battery in the main thread, it is best to yield back to the browser runtime. When a pthread perform a futex wait, it sleeps in considerably longer slices.</li>
 <li>The Emscripten implementation does not support <a class="reference external" href="http://man7.org/linux/man-pages/man7/signal.7.html">POSIX signals</a>, which are sometimes used in conjunction with pthreads. This is because it is not possible to send signals to web workers and pre-empt their execution. The only exception to this is pthread_kill() which can be used as normal to forcibly terminate a running thread.</li>
 <li>The Emscripten implementation does also not support multiprocessing via <cite>fork()</cite> and <cite>join()</cite>.</li>
 <li>For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref &#8220;dom.workers.maxPerDomain&#8221;.</li>
@@ -1077,7 +1077,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.35.14',
+            VERSION:'1.35.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
