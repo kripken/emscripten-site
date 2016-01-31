@@ -220,6 +220,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &#8220;directly&#8221; from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
@@ -729,6 +730,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#affecting-execution">Affecting execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#other-methods">Other methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#overriding-execution-environment">Overriding execution environment</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h (under-construction)</a></li>
@@ -1104,18 +1106,19 @@
 </dl>
 <dl class="docutils" id="emcc-js-opts">
 <dt><tt class="docutils literal"><span class="pre">--js-opts</span> <span class="pre">&lt;level&gt;</span></tt></dt>
-<dd><p class="first">Enables JavaScript optimizations. Possible <tt class="docutils literal"><span class="pre">level</span></tt> values are:</p>
-<blockquote class="last">
+<dd><p class="first">Enables JavaScript optimizations, relevant when we generate JavaScript. Possible <tt class="docutils literal"><span class="pre">level</span></tt> values are:</p>
+<blockquote>
 <div><ul class="simple">
 <li><tt class="docutils literal"><span class="pre">0</span></tt>: Prevent JavaScript optimizer from running.</li>
 <li><tt class="docutils literal"><span class="pre">1</span></tt>: Use JavaScript optimizer (default).</li>
 </ul>
 </div></blockquote>
+<p class="last">You normally don&#8217;t need to specify this option, as <tt class="docutils literal"><span class="pre">-O</span></tt> with an optimization level will set a good value.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-llvm-opts">
 <dt><tt class="docutils literal"><span class="pre">--llvm-opts</span> <span class="pre">&lt;level&gt;</span></tt></dt>
-<dd><p class="first">Enables LLVM optimizations. Possible <tt class="docutils literal"><span class="pre">level</span></tt> values are:</p>
+<dd><p class="first">Enables LLVM optimizations, relevant when we call the LLVM optimizer (which is done when building source files to object files / bitcode). Possible <tt class="docutils literal"><span class="pre">level</span></tt> values are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><tt class="docutils literal"><span class="pre">0</span></tt>: No LLVM optimizations (default in -O0).</li>
@@ -1125,9 +1128,10 @@
 </ul>
 </div></blockquote>
 <p>You can also specify arbitrary LLVM options, e.g.:</p>
-<div class="last highlight-cpp"><div class="highlight"><pre><span class="o">--</span><span class="n">llvm</span><span class="o">-</span><span class="n">opts</span> <span class="s">&quot;[&#39;-O3&#39;, &#39;-somethingelse&#39;]&quot;</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="o">--</span><span class="n">llvm</span><span class="o">-</span><span class="n">opts</span> <span class="s">&quot;[&#39;-O3&#39;, &#39;-somethingelse&#39;]&quot;</span>
 </pre></div>
 </div>
+<p class="last">You normally don&#8217;t need to specify this option, as <tt class="docutils literal"><span class="pre">-O</span></tt> with an optimization level will set a good value.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-llvm-lto">

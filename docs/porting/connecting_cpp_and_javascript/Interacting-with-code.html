@@ -220,6 +220,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Connecting C++ and JavaScript</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &#8220;directly&#8221; from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
@@ -729,6 +730,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#affecting-execution">Affecting execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#other-methods">Other methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#overriding-execution-environment">Overriding execution environment</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/val.h.html">val.h (under-construction)</a></li>
@@ -1065,6 +1067,38 @@ at all optimisation levels (even if the <a class="reference internal" href="../.
 minifies the function names).</li>
 </ul>
 </div>
+</div>
+<div class="section" id="interacting-with-an-api-written-in-c-c-from-nodejs">
+<h2>Interacting with an API written in C/C++ from NodeJS<a class="headerlink" href="#interacting-with-an-api-written-in-c-c-from-nodejs" title="Permalink to this headline">¶</a></h2>
+<p>Say you have a C library that exposes some procedures:</p>
+<div class="code c highlight-cpp"><div class="highlight"><pre><span class="c1">//api_example.c</span>
+<span class="cp">#include&lt;stdio.h&gt;</span>
+<span class="cp">#include&lt;emscripten.h&gt;</span>
+
+<span class="n">EMSCRIPTEN_KEEPALIVE</span>
+<span class="kt">void</span> <span class="nf">sayHi</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hi!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_KEEPALIVE</span>
+<span class="kt">int</span> <span class="nf">daysInWeek</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">7</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Compile the library with emcc:</p>
+<div class="code bash highlight-cpp"><div class="highlight"><pre><span class="n">emcc</span> <span class="n">api_example</span><span class="p">.</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> <span class="n">api_example</span><span class="p">.</span><span class="n">js</span>
+</pre></div>
+</div>
+<p>Require the library and call its procedures from node:</p>
+<pre class="code javascript literal-block">
+<span class="keyword declaration">var</span> <span class="name other">em_module</span> <span class="operator">=</span> <span class="name other">require</span><span class="punctuation">(</span><span class="literal string single">'./api_example.js'</span><span class="punctuation">);</span>
+
+<span class="name other">em_module</span><span class="punctuation">.</span><span class="name other">_sayHi</span><span class="punctuation">(</span><span class="punctuation">);</span> <span class="comment single">// direct calling works
+</span><span class="name other">em_module</span><span class="punctuation">.</span><span class="name other">ccall</span><span class="punctuation">(</span><span class="literal string double">&quot;sayHi&quot;</span><span class="punctuation">);</span> <span class="comment single">// using ccall etc. also work
+</span><span class="name other">console</span><span class="punctuation">.</span><span class="name other">log</span><span class="punctuation">(</span><span class="name other">em_module</span><span class="punctuation">.</span><span class="name other">_daysInWeek</span><span class="punctuation">(</span><span class="punctuation">));</span> <span class="comment single">// values can be returned, etc.
+</span>
+</pre>
 </div>
 <div class="section" id="call-compiled-c-c-code-directly-from-javascript">
 <span id="interacting-with-code-direct-function-calls"></span><h2>Call compiled C/C++ code &#8220;directly&#8221; from JavaScript<a class="headerlink" href="#call-compiled-c-c-code-directly-from-javascript" title="Permalink to this headline">¶</a></h2>

@@ -220,6 +220,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &#8220;directly&#8221; from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
@@ -729,6 +730,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#affecting-execution">Affecting execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#other-methods">Other methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#overriding-execution-environment">Overriding execution environment</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/val.h.html">val.h (under-construction)</a></li>
@@ -947,7 +949,7 @@
 </li>
 <li><p class="first">Code that relies on x86 alignment behavior. x86 allows unaligned reads and writes (so for example you can read a 16-bit value from a non-even address), but other architectures do not (ARM will raise <tt class="docutils literal"><span class="pre">SIGILL</span></tt>). For Emscripten-generated JavaScript the behavior is undefined. If you build your code with <tt class="docutils literal"><span class="pre">SAFE_HEAP=1</span></tt> then you will get a clear runtime exception, see <a class="reference internal" href="../Debugging.html#debugging"><em>Debugging</em></a>.</p>
 </li>
-<li><p class="first">Code that uses low-level features of the native environment, for example native stack manipulation in conjunction with <tt class="docutils literal"><span class="pre">setjmp</span></tt>/<tt class="docutils literal"><span class="pre">longjmp</span></tt> (we support normal <tt class="docutils literal"><span class="pre">setjmp</span></tt>/<tt class="docutils literal"><span class="pre">longjmp</span></tt>, but not with stack replacing, etc.)</p>
+<li><p class="first">Code that uses low-level features of the native environment, for example native stack manipulation in conjunction with <tt class="docutils literal"><span class="pre">setjmp</span></tt>/<tt class="docutils literal"><span class="pre">longjmp</span></tt> (we support proper <tt class="docutils literal"><span class="pre">setjmp</span></tt>/<tt class="docutils literal"><span class="pre">longjmp</span></tt>, i.e., jumping down the stack, but not jumping up to an unwound stack, which is undefined behavior).</p>
 </li>
 <li><p class="first">Code that scans registers or the stack. This won&#8217;t work because a variable in a register or on the stack may be held in a JavaScript local variable (which cannot be scanned).</p>
 <blockquote>
@@ -956,6 +958,8 @@
 <p class="last">Code of this type might be used for conservative garbage collection. You can do conservative scanning when there is no other code on the stack, e.g. from an iteration of the main event loop.</p>
 </div>
 </div></blockquote>
+</li>
+<li><p class="first">Code with architecture-specific inline assembly (like an <tt class="docutils literal"><span class="pre">asm()</span></tt> containing x86 code) is not portable. That code would need to be replaced with portable C or C++. Sometimes a codebase will have both portable code and optional inline assembly as an optimization, so you might find an option to disable the inline assembly.</p>
 </li>
 </ul>
 </div>
