@@ -1211,8 +1211,7 @@ a JavaScript console while running the offending code.</li>
 <div class="section" id="implement-a-c-api-in-javascript">
 <span id="implement-c-in-javascript"></span><h2>Implement a C API in JavaScript<a class="headerlink" href="#implement-a-c-api-in-javascript" title="Permalink to this headline">¶</a></h2>
 <p>It is possible to implement a C API in JavaScript! This is the approach
-that was used to write Emscripten&#8217;s implementations of <a class="reference internal" href="../../site/glossary.html#term-sdl"><em class="xref std std-term">SDL</em></a> and
-<em>libc</em>.</p>
+used in many of Emscripten&#8217;s libraries, like SDL1 and OpenGL.</p>
 <p>You can use it to write your own APIs to call from C/C++. To do this
 you define the interface, decorating with <tt class="docutils literal"><span class="pre">extern</span></tt> to mark the methods
 in the API as external symbols. You then implement the symbols in
@@ -1220,7 +1219,7 @@ JavaScript by simply adding their definition to <a class="reference external" hr
 default). When compiling the C code, the compiler looks in the JavaScript
 libraries for relevant external symbols.</p>
 <p>By default, the implementation is added to <strong>library.js</strong> (and this is
-where you&#8217;ll find the Emscripten implementation of <em>libc</em>). You can put
+where you&#8217;ll find parts of Emscripten&#8217;s <em>libc</em>). You can put
 the JavaScript implementation in your own library file and add it using
 the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-js-library"><em>emcc option</em></a> <tt class="docutils literal"><span class="pre">--js-library</span></tt>. See
 <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_core.py#L5043">test_js_libraries</a> in <strong>tests/test_other.py</strong> for a complete working
@@ -1265,6 +1264,159 @@ a dialog box using a simple <tt class="docutils literal"><span class="pre">alert
 <p><tt class="docutils literal"><span class="pre">mergeInto</span></tt> just copies the properties on the second parameter onto the
 first, so this add <tt class="docutils literal"><span class="pre">my_js</span></tt> onto <tt class="docutils literal"><span class="pre">LibraryManager.library</span></tt>, the global
 object where all JavaScript library code should be.</p>
+<div class="section" id="javascript-limits-in-library-files">
+<h3>JavaScript Limits in library files<a class="headerlink" href="#javascript-limits-in-library-files" title="Permalink to this headline">¶</a></h3>
+<p>If you&#8217;re not familar with JavaScript, say if you&#8217;re a C/C++ programmer
+and just using emscripten, then the following issues probably won&#8217;t come up, but
+if you&#8217;re an experienced JavaScript programmer you need to be aware
+some common JavaScript practices can not be used in certain ways in emscripten
+library files.</p>
+<p>To save space, by default, emscripten only includes library properties
+referenced from C/C++. It does this by calling <tt class="docutils literal"><span class="pre">toString</span></tt> on each
+used property on the JavaScript libraries that are linked in. That means
+that you can&#8217;t use a closure directly, for example, as <tt class="docutils literal"><span class="pre">toString</span></tt>
+isn&#8217;t compatible with that - just like when using a string to create
+a Web Worker, where you also can&#8217;t pass a closure. (Note that this
+limitation is just for the values for the keys of the object
+passes to <tt class="docutils literal"><span class="pre">mergeInto</span></tt> in the JS library, that is, the toplevel
+key-value pairs are special. Interior code inside a function can
+have arbitrary JS, of course).</p>
+<p>To avoid this limitation of JS libraries, you can put code in another file using
+the <tt class="docutils literal"><span class="pre">--pre-js</span></tt> or <tt class="docutils literal"><span class="pre">--post-js</span></tt> options, which allow arbitary normal
+JS, and it is included and optimized with the rest of the output. That is
+the recommended approach for most cases. Another option is another <tt class="docutils literal"><span class="pre">&lt;script&gt;</span></tt> tag.</p>
+<p>Alternatively, if you prefer to use a JS library file, you can
+have a function replace itself and have it called during
+initialization.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
+
+  <span class="c1">// Solution for bind or referencing other functions directly</span>
+  <span class="nx">good_02__postset</span><span class="o">:</span> <span class="s1">&#39;_good_02();&#39;</span><span class="p">,</span>
+  <span class="nx">good_02</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">_good_02</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
+  <span class="p">},</span>
+
+  <span class="c1">// Solution for closures</span>
+  <span class="nx">good_03__postset</span><span class="o">:</span> <span class="s1">&#39;_good_03();&#39;</span><span class="p">,</span>
+  <span class="nx">good_03</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">callCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">_good_03</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span> <span class="o">++</span><span class="nx">callCount</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">},</span>
+
+  <span class="c1">// Solution for curry/transform</span>
+  <span class="nx">good_05__postset</span><span class="o">:</span> <span class="s1">&#39;_good_05();&#39;</span><span class="p">,</span>
+  <span class="nx">good_05</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">_good_05</span> <span class="o">=</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+ <span class="p">},</span>
+
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>A <cite>__postset</cite> is a string the compiler will emit directly to the
+output file. For the example above this code will be emited.</p>
+<div class="highlight-javascript"><div class="highlight"><pre> <span class="kd">function</span> <span class="nx">_good_02</span><span class="p">()</span> <span class="p">{</span>
+   <span class="nx">_good_o2</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="kd">function</span> <span class="nx">_good_03</span><span class="p">()</span> <span class="p">{</span>
+   <span class="kd">var</span> <span class="nx">callCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+   <span class="nx">_good_03</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span> <span class="o">++</span><span class="nx">callCount</span><span class="p">);</span>
+   <span class="p">};</span>
+ <span class="p">}</span>
+
+ <span class="kd">function</span> <span class="nx">_good_05</span><span class="p">()</span> <span class="p">{</span>
+   <span class="nx">_good_05</span> <span class="o">=</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// Call each function once so it will replace itself</span>
+<span class="nx">_good_02</span><span class="p">();</span>
+<span class="nx">_good_03</span><span class="p">();</span>
+<span class="nx">_good_05</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>You can also put most of your code in the <tt class="docutils literal"><span class="pre">xxx__postset</span></tt> strings.
+The example below each method declares a dependency on <tt class="docutils literal"><span class="pre">$method_support</span></tt>
+and are otherwise dummy functions. <tt class="docutils literal"><span class="pre">$method_support</span></tt> itself has a
+corresponding <tt class="docutils literal"><span class="pre">__postset</span></tt> property with all the code to set the
+various methods to the functions we actually want.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">$method_support</span><span class="o">:</span> <span class="p">{},</span>
+  <span class="nx">$method_support__postset</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s1">&#39;(function() {                                  &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  var SomeLib = function() {                   &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  SomeLib.prototype.getCallCount = function() {&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;    return this.callCount;                     &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  SomeLib.prototype.process = function() {     &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;    ++this.callCount;                          &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  SomeLib.prototype.reset = function() {       &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  var inst = new SomeLib();                    &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  _method_01 = inst.getCallCount.bind(inst);   &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  _method_02 = inst.process.bind(inst);        &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;  _method_03 = inst.reset.bind(inst);          &#39;</span><span class="p">,</span>
+    <span class="s1">&#39;}());                                          &#39;</span><span class="p">,</span>
+  <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">),</span>
+  <span class="nx">method_01</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
+  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+  <span class="nx">method_02</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
+  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+  <span class="nx">method_03</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
+  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+ <span class="p">});</span>
+</pre></div>
+</div>
+<p>Note: If you are using node 4.1 or newer you can use multi-line strings.
+They are only used at compile time not runtime so output will still run in
+ES5 based environments.</p>
+<p>Another option is to put most of your code in an object, not
+a function,</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">$method_support__postset</span><span class="o">:</span> <span class="s1">&#39;method_support();&#39;</span><span class="p">,</span>
+  <span class="nx">$method_support</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">SomeLib</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">callCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="p">};</span>
+
+      <span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getCallCount</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span>
+      <span class="p">};</span>
+
+      <span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">process</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span>
+      <span class="p">};</span>
+
+      <span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">reset</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">callCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="p">};</span>
+
+      <span class="kd">var</span> <span class="nx">inst</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SomeLib</span><span class="p">();</span>
+      <span class="nx">_method_01</span> <span class="o">=</span> <span class="nx">inst</span><span class="p">.</span><span class="nx">getCallCount</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
+      <span class="nx">_method_02</span> <span class="o">=</span> <span class="nx">inst</span><span class="p">.</span><span class="nx">process</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
+      <span class="nx">_method_03</span> <span class="o">=</span> <span class="nx">inst</span><span class="p">.</span><span class="nx">reset</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nx">method_01</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
+  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+  <span class="nx">method_02</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
+  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+  <span class="nx">method_03</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
+  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+ <span class="p">});</span>
+</pre></div>
+</div>
 <p>See the <a class="reference external" href="https://github.com/kripken/emscripten/tree/master/src">library_*.js</a> files for other examples.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1282,7 +1434,12 @@ an example.</li>
 <li>If a JavaScript library depends on a compiled C library (like most
 of <em>libc</em>), you must edit <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/deps_info.json">src/deps_info.json</a>. Search for
 &#8220;deps_info&#8221; in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tools/system_libs.py">tools/system_libs.py</a>.</li>
+<li>The keys passed into <cite>mergeInto</cite> generate functions that are prefixed
+by <tt class="docutils literal"><span class="pre">_</span></tt>. In other words <tt class="docutils literal"><span class="pre">my_func:</span> <span class="pre">function()</span> <span class="pre">{},</span></tt> becomes
+<tt class="docutils literal"><span class="pre">function</span> <span class="pre">_my_func()</span> <span class="pre">{}</span></tt>, as all C methods in emscripten have a <tt class="docutils literal"><span class="pre">_</span></tt> prefix. Keys starting with <tt class="docutils literal"><span class="pre">$</span></tt> have the <tt class="docutils literal"><span class="pre">$</span></tt>
+stripped and no underscore added.</li>
 </ul>
+</div>
 </div>
 </div>
 <div class="section" id="calling-javascript-functions-as-function-pointers-from-c">
