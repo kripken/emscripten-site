@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.35.22 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.36.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.35.22 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.1 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -337,6 +337,31 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/simd.html#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/simd.html#tests-and-benchmarks">Tests and Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#intro">Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#extensions">Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#other-possible-implementations">Other possible implementations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emterpreter.html">Emterpreter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#general-usage">General Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#semantics">Semantics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 </ul>
@@ -711,6 +736,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#including-file-system-support">Including File System Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
@@ -966,27 +992,33 @@
 <dl class="docutils" id="emcc-o2">
 <dt><tt class="docutils literal"><span class="pre">-O2</span></tt></dt>
 <dd><p class="first">Like <tt class="docutils literal"><span class="pre">-O1</span></tt>, but with various JavaScript-level optimizations and LLVM <tt class="docutils literal"><span class="pre">-O3</span></tt> optimizations.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is a reasonable setting for a release build.</p>
+</div>
 <div class="last admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This is the recommended setting for a release build, offering slower compilation time in return for the smallest and fastest output.</p>
+<p class="last">These JavaScript optimizations can reduce code size by removing things that the compiler does not see being used, in particular, parts of the runtime may be stripped if they are not exported on the <tt class="docutils literal"><span class="pre">Module</span></tt> object. The compiler is aware of code in <a class="reference internal" href="#emcc-pre-js"><em>&#8211;pre-js</em></a> and <a class="reference internal" href="#emcc-post-js"><em>&#8211;post-js</em></a>, so you can safely use the runtime from there. Alternatively, you can use <tt class="docutils literal"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></tt>, see <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>.</p>
+</div>
+</dd>
+</dl>
+<dl class="docutils" id="emcc-o3">
+<dt><tt class="docutils literal"><span class="pre">-O3</span></tt></dt>
+<dd><p class="first">Like <tt class="docutils literal"><span class="pre">-O2</span></tt>, but with additional JavaScript optimizations that can take a significant amount of compilation time.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is a good setting for a release build.</p>
 </div>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-os">
 <dt><tt class="docutils literal"><span class="pre">-Os</span></tt></dt>
-<dd>Like <tt class="docutils literal"><span class="pre">-O2</span></tt>, but with extra optimizations that reduce code size at the expense of performance. This applies only for bitcode optimization (<tt class="docutils literal"><span class="pre">-O2</span></tt> is used for JavaScript optimizations).</dd>
+<dd>Like <tt class="docutils literal"><span class="pre">-O3</span></tt>, but with extra optimizations that reduce code size at the expense of performance. This can effect both bitcode generation and JavaScript.</dd>
 </dl>
 <dl class="docutils" id="emcc-oz">
 <dt><tt class="docutils literal"><span class="pre">-Oz</span></tt></dt>
-<dd>Like <tt class="docutils literal"><span class="pre">-Os</span></tt>, but reduces code size even further. This applies only for bitcode optimization (<tt class="docutils literal"><span class="pre">-O2</span></tt> is used for JavaScript optimizations).</dd>
-</dl>
-<dl class="docutils" id="emcc-o3">
-<dt><tt class="docutils literal"><span class="pre">-O3</span></tt></dt>
-<dd><p class="first">Like <tt class="docutils literal"><span class="pre">-O2</span></tt>, but with additional JavaScript optimizations that can take a significant amount of compilation time and/or are relatively new.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This differs from <tt class="docutils literal"><span class="pre">-O2</span></tt> only during the bitcode to JavaScript (final link and JavaScript generation) stage. It is JavaScript-specific, so you can run <tt class="docutils literal"><span class="pre">-Os</span></tt> on your source files for example, and <tt class="docutils literal"><span class="pre">-O3</span></tt> during JavaScript generation if you want.</p>
-</div>
+<dd><p class="first">Like <tt class="docutils literal"><span class="pre">-Os</span></tt>, but reduces code size even further. This can effect both bitcode generation and JavaScript.</p>
+<p>For JavaScript, this turns on some code size reduction optimizations that can take a significant amount of compilation time.</p>
 <div class="last admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For more tips on optimizing your code, see <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><em>Optimizing Code</em></a>.</p>
@@ -1494,7 +1526,7 @@ in the <tt class="docutils literal"><span class="pre">EM_CACHE</span></tt> envir
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.35.22',
+            VERSION:'1.36.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

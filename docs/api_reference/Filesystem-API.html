@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 1.35.22 documentation</title>
+  <title>File System API &mdash; Emscripten 1.36.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.35.22 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.1 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -337,6 +337,31 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/simd.html#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/simd.html#tests-and-benchmarks">Tests and Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#intro">Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#extensions">Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#other-possible-implementations">Other possible implementations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emterpreter.html">Emterpreter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#general-usage">General Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#semantics">Semantics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 </ul>
@@ -711,6 +736,7 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#including-file-system-support">Including File System Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#memfs">MEMFS</a></li>
@@ -937,6 +963,11 @@
 <p>File data in Emscripten is partitioned by mounted file systems. Several file systems are provided. An instance of <a class="reference internal" href="#filesystem-api-memfs"><em>MEMFS</em></a> is mounted to <tt class="docutils literal"><span class="pre">/</span></tt> by default. Instances of <a class="reference internal" href="#filesystem-api-nodefs"><em>NODEFS</em></a> and <a class="reference internal" href="#filesystem-api-idbfs"><em>IDBFS</em></a> can be mounted to other directories if your application needs to <a class="reference internal" href="#filesystem-api-persist-data"><em>persist data</em></a>.</p>
 <p>The automatic tests in <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_core.py#L4285">tests/test_core.py</a> (search for <tt class="docutils literal"><span class="pre">test_files</span></tt>) contain many examples of how to use this API. The <a class="reference internal" href="../getting_started/Tutorial.html#tutorial-files"><em>tutorial</em></a> also shows how to pre-load a file so that it can be read from compiled C/C++.</p>
 <p>A high level overview of the way File Systems work in Emscripten-ported code is provided in the <a class="reference internal" href="../porting/files/file_systems_overview.html#file-system-overview"><em>File System Overview</em></a>.</p>
+<div class="section" id="including-file-system-support">
+<h2>Including File System Support<a class="headerlink" href="#including-file-system-support" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten decides whether to include file system support automatically. Many programs don&#8217;t need files, and file system support is not negligible in size, so Emscripten avoids including it when it doesn&#8217;t see a reason to. That means that if your C/C++ code does not access files, then  the <tt class="docutils literal"><span class="pre">FS</span></tt> object and other file system APIs will not be included in the output. And, on the other hand, if your C/C++ code does use files, then file system support will be automatically included. So normally things will &#8220;just work&#8221; and you don&#8217;t need to think about this at all.</p>
+<p>However, if your C/C++ code doesn&#8217;t use files, but you want to use them from JavaScript, then you can build with <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">FORCE_FILESYSTEM=1</span></tt>, which will make the compiler include file system support even though it doesn&#8217;t see it being used.</p>
+</div>
 <div class="section" id="persistent-data">
 <span id="filesystem-api-persist-data"></span><h2>Persistent data<a class="headerlink" href="#persistent-data" title="Permalink to this headline">¶</a></h2>
 <p>Applications compiled with Emscripten usually expect synchronous I/O, so Emscripten itself provides file systems with completely synchronous interfaces.</p>
@@ -1858,7 +1889,7 @@ FS.createLazyFile(&#39;/&#39;, &#39;bar&#39;, &#39;/get_file.php?name=baz&#39;, 
 <dl class="function">
 <dt id="FS.createPreloadedFile">
 <tt class="descclassname">FS.</tt><tt class="descname">createPreloadedFile</tt><big>(</big><em>parent</em>, <em>name</em>, <em>url</em>, <em>canRead</em>, <em>canWrite</em><big>)</big><a class="headerlink" href="#FS.createPreloadedFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Preloads a file asynchronously. You should call this in <tt class="docutils literal"><span class="pre">preRun</span></tt>, <tt class="docutils literal"><span class="pre">run()</span></tt> will be delayed until all preloaded files are ready. This is how the <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><em>preload-file</em></a> option works in <em>emcc</em>.</p>
+<dd><p>Preloads a file asynchronously, and uses preload plugins to prepare its content. You should call this in <tt class="docutils literal"><span class="pre">preRun</span></tt>, <tt class="docutils literal"><span class="pre">run()</span></tt> will be delayed until all preloaded files are ready. This is how the <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><em>preload-file</em></a> option works in <em>emcc</em> when <tt class="docutils literal"><span class="pre">--use-preload-plugins</span></tt> has been specified (if you use this method by itself, you will need to build the program with that option).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2211,7 +2242,7 @@ For example, consider a symlink <tt class="docutils literal"><span class="pre">/
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.35.22',
+            VERSION:'1.36.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

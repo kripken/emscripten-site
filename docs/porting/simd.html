@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code &mdash; Emscripten 1.35.22 documentation</title>
+  <title>Porting SIMD code &mdash; Emscripten 1.36.1 documentation</title>
   
 
   
@@ -30,9 +30,9 @@
   
 
   
-    <link rel="top" title="Emscripten 1.35.22 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.1 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
-        <link rel="next" title="Optimizing Code" href="../optimizing/Optimizing-Code.html"/>
+        <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Pthreads support" href="pthreads.html"/> 
 
   
@@ -337,6 +337,31 @@
 <li class="toctree-l3"><a class="reference internal" href="#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tests-and-benchmarks">Tests and Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#intro">Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#extensions">Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#other-possible-implementations">Other possible implementations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="emterpreter.html">Emterpreter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#general-usage">General Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#semantics">Semantics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 </ul>
@@ -711,6 +736,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#including-file-system-support">Including File System Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
@@ -935,7 +961,7 @@
 <ul class="simple">
 <li>The easiest way is to utilize LLVM autovectorization support. This does not require any code changes and it is the most straightforward option to try for codebases that have not explicitly been written to target SIMD. To enable autovectorization, pass the linker flag -s SIMD=1 both when compiling and linking output files. Note that not all code can be autovectorized in this manner by the compiler, so the performance gains will greatly depend on the structure of the code in its hot paths.</li>
 <li>Emscripten supports the GCC/Clang compiler specific <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a>. These constructs do not require any changes to the command line build flags, but any code that utilizes the vector built-ins will always unconditionally emit SIMD.js vector instructions.</li>
-<li>A third option is to use the x86 SSE intrinsics. Emscripten has full support for compiling code that utilizes the SSE1 and SSE2 intrinsic function calls. To enable SSE1 intrinsics support, pass the compiler flag -msse, and add in a #include &lt;xmmintrin.h&gt;. To build SSE2 intrinsics code, pass the compiler flag -msse2, and use #include &lt;emmintrin.h&gt;.</li>
+<li>A third option is to use the x86 SSE intrinsics. Emscripten has full support for compiling code that utilizes the SSE1, SSE2, SSE3 and SSSE3 intrinsic function calls. To enable SSE1 intrinsics support, pass the compiler flag -msse, and add in a #include &lt;xmmintrin.h&gt;. To build SSE2 intrinsics code, pass the compiler flag -msse2, and use #include &lt;emmintrin.h&gt;. For SSE3, pass -msse3 and #include &lt;pmmintrin.h&gt;, and for SSSE3, pass -mssse3 and #include &lt;tmmintrin.h&gt;.</li>
 </ul>
 <p>These three methods are not mutually exclusive, but may freely be combined.</p>
 </div>
@@ -946,8 +972,8 @@
 <div><ul class="simple">
 <li>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, but all code should be written to use SIMD intrinsic functions.</li>
 <li>The SIMD types supported by SIMD.js are Float32x4, Int32x4, Uint32x4, Int16x8, Uint16x8, Int8x16 and Uint8x16. In particular, Float64x2 and Int64x2 are currently not supported, however Float64x2 is emulated in software in the current polyfill. 256-bit or wider SIMD types (AVX) are not supported either.</li>
-<li>Even though the full set of SSE1 and SSE2 intrinsics are supported, because of the platform-abstract nature of SIMD.js, some of these intrinsics will compile down to scalarized instructions to emulate. To verify which instructions are accelerated and which are not, examine the code in the platform headers <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">xmmintrin.h</a> and <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">emmintrin.h</a>.</li>
-<li>Currently the Intel x86 SIMD support is limited to SSE1 and SSE2 instruction sets. The Intel x86 SSE3, SSSE3, SSE4.1, SSE4.2, AVX, AVX2 and FMA instruction sets or newer are not supported. Also, the old Intel x86 MMX instruction set is not supported.</li>
+<li>Even though the full set of SSE1, SSE2, SSE3 and SSSE3 intrinsics are supported, because of the platform-abstract nature of SIMD.js, some of these intrinsics will compile down to scalarized instructions to emulate. To verify which instructions are accelerated and which are not, examine the code in the platform headers <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">xmmintrin.h</a> and <a class="reference external" href="https://github.com/kripken/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">emmintrin.h</a>.</li>
+<li>Currently the Intel x86 SIMD support is limited to SSE1, SSE2, SSE3 and SSSE3 instruction sets. The Intel x86 SSE4.1, SSE4.2, AVX, AVX2 and FMA instruction sets or newer are not supported. Also, the old Intel x86 MMX instruction set is not supported.</li>
 <li>SIMD.js does not have control over managing floating point rounding modes or handling denormals.</li>
 <li>Cache line prefetch instructions are not available, and calls to these functions will compile, but be treated as no-ops.</li>
 <li>Asymmetric memory fence operations are not available, but will be implemented as fully synchronous memory fences when SharedArrayBuffer is enabled (-s USE_PTHREADS=1) or as no-ops when multithreading is not enabled (default, -s USE_PTHREADS=0).</li>
@@ -969,7 +995,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../optimizing/Optimizing-Code.html" class="btn btn-neutral float-right" title="Optimizing Code"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="asyncify.html" class="btn btn-neutral float-right" title="Asyncify"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="pthreads.html" class="btn btn-neutral" title="Pthreads support"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1076,7 +1102,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.35.22',
+            VERSION:'1.36.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

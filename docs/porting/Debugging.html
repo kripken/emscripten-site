@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 1.35.22 documentation</title>
+  <title>Debugging &mdash; Emscripten 1.36.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.35.22 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.1 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="OpenGL support in Emscripten" href="multimedia_and_graphics/OpenGL-support.html"/> 
@@ -337,6 +337,31 @@
 <li class="toctree-l3"><a class="reference internal" href="simd.html#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l3"><a class="reference internal" href="simd.html#tests-and-benchmarks">Tests and Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#intro">Intro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#extensions">Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#other-possible-implementations">Other possible implementations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="emterpreter.html">Emterpreter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#general-usage">General Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#semantics">Semantics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 </ul>
@@ -711,6 +736,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#including-file-system-support">Including File System Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
@@ -983,6 +1009,8 @@ emcc tests/hello_world.cpp -o hello.html
 <li><p id="debugging-safe-heap"><tt class="docutils literal"><span class="pre">SAFE_HEAP=1</span></tt> adds additional memory access checks, and will give clear errors for problems like dereferencing 0 and memory alignment issues.</p>
 <p>You can also set <tt class="docutils literal"><span class="pre">SAFE_HEAP_LOG</span></tt> to log <tt class="docutils literal"><span class="pre">SAFE_HEAP</span></tt> operations.</p>
 </li>
+<li><p id="debugging-stack-overflow-check">Passing the <tt class="docutils literal"><span class="pre">STACK_OVERFLOW_CHECK=1</span></tt> linker flag adds a runtime magic token value at the end of the stack, which is checked in certain locations to verify that the user code does not accidentally write past the end of the stack. While overrunning the Emscripten stack is not a security issue (JavaScript is sandboxed already), writing past the stack causes memory corruption in global data and dynamically allocated memory sections in the Emscripten HEAP, which makes the application fail in unexpected ways. The value <tt class="docutils literal"><span class="pre">STACK_OVERFLOW_CHECK=2</span></tt> enables slightly more detailed stack guard checks, which can give a more precise callstack at the expense of some performance. Default value is 2 if <tt class="docutils literal"><span class="pre">ASSERTIONS=1</span></tt> is set, and disabled otherwise.</p>
+</li>
 </ul>
 </div></blockquote>
 <p>A number of other useful debug settings are defined in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>. For more information, search that file for the keywords &#8220;check&#8221; and &#8220;debug&#8221;.</p>
@@ -1247,7 +1275,7 @@ emcc tests/hello_world.cpp -o hello.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.35.22',
+            VERSION:'1.36.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
