@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 1.36.1 documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 1.36.4 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.36.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.4 documentation" href="../../index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Emterpreter" href="../porting/emterpreter.html"/> 
 
@@ -809,6 +809,15 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/CyberDWARF.html">CyberDWARF Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/CyberDWARF.html#building">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/CyberDWARF.html#using">Using</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/CyberDWARF.html#heap-pretty-printer">Heap Pretty Printer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/CyberDWARF.html#api">API</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
@@ -1003,6 +1012,7 @@
 <div class="section" id="trading-off-code-size-and-performance">
 <span id="optimizing-code-oz-os"></span><h3>Trading off code size and performance<a class="headerlink" href="#trading-off-code-size-and-performance" title="Permalink to this headline">¶</a></h3>
 <p>You may wish to build the less performance-sensitive source files in your project using <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><em>-Os</em></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><em>-Oz</em></a> and the remainder using <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-O2</em></a> (<a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><em>-Os</em></a> and <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><em>-Oz</em></a> are similar to <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><em>-O2</em></a>, but reduce code size at the expense of performance. <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><em>-Oz</em></a> reduces code size more than <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><em>-Os</em></a>.)</p>
+<p>Note that <tt class="docutils literal"><span class="pre">-Oz</span></tt> may take longer to build. For example, it enables <tt class="docutils literal"><span class="pre">EVAL_CTORS</span></tt> which tries to optimize out C++ global constructors, which takes time.</p>
 </div>
 <div class="section" id="miscellaneous-code-size-tips">
 <h3>Miscellaneous code size tips<a class="headerlink" href="#miscellaneous-code-size-tips" title="Permalink to this headline">¶</a></h3>
@@ -1011,8 +1021,9 @@
 <li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><em>llvm-lto</em></a> when compiling from bitcode to JavaScript: <tt class="docutils literal"><span class="pre">--llvm-lto</span> <span class="pre">1</span></tt>. This can break some code as the LTO code path is less tested.</li>
 <li>Disable <a class="reference internal" href="#optimizing-code-inlining"><em>Inlining</em></a>: <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></tt>. Compiling with -Os or -Oz generally avoids inlining too.</li>
 <li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><em>closure</em></a> on the outside non-asm.js code: <tt class="docutils literal"><span class="pre">--closure</span> <span class="pre">1</span></tt>. This can break code that doesn&#8217;t use <a class="reference external" href="https://developers.google.com/closure/compiler/docs/api-tutorial3">closure annotations properly</a>.</li>
-<li>You can use the <tt class="docutils literal"><span class="pre">NO_FILESYSTEM</span></tt> and <tt class="docutils literal"><span class="pre">NO_BROWSER</span></tt> options to disable bundling of filesystem and browser support code, which by default are included. This can be useful if you are building a pure computational library, for example. See <tt class="docutils literal"><span class="pre">settings.js</span></tt> for more detals.</li>
+<li>You can use the <tt class="docutils literal"><span class="pre">NO_FILESYSTEM</span></tt> option to disable bundling of filesystem support code (the compiler should optimize it out if not used, but may not always succeed). This can be useful if you are building a pure computational library, for example. See <tt class="docutils literal"><span class="pre">settings.js</span></tt> for more detals.</li>
 <li>You can use <tt class="docutils literal"><span class="pre">EXPORTED_RUNTIME_METHODS</span></tt> to define which runtime methods are exported. By default a bunch of useful methods are exported, which you may not need; setting this to a smaller list will cause fewer methods to be exported. In conjunction with the closure compiler, this can be very effective, since closure can eliminate non-exported code. See <tt class="docutils literal"><span class="pre">settings.js</span></tt> for more detals. See <tt class="docutils literal"><span class="pre">test_no_nuthin</span></tt> in <tt class="docutils literal"><span class="pre">tests/test_other.py</span></tt> for an example usage in the test suite.</li>
+<li>You can use <tt class="docutils literal"><span class="pre">ELIMINATE_DUPLICATE_FUNCTIONS</span></tt> to remove duplicate functions, which C++ templates often create. See <tt class="docutils literal"><span class="pre">settings.js</span></tt> for more details.</li>
 </ul>
 </div>
 </div>
@@ -1229,7 +1240,7 @@ document.body.appendChild(script);
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.36.1',
+            VERSION:'1.36.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
