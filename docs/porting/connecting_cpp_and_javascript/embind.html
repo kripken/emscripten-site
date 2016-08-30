@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 1.36.5 documentation</title>
+  <title>Embind &mdash; Emscripten 1.36.9 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.36.5 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.9 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -1528,7 +1528,30 @@ from the heap.</p>
 <p>Memory views should be treated like raw pointers; lifetime and validity
 are not managed by the runtime and it&#8217;s easy to corrupt data if the
 underlying object is modified or deallocated.</p>
+<div class="code cpp highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;emscripten/bind.h&gt;</span>
+<span class="cp">#include &lt;emscripten/val.h&gt;</span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">emscripten</span><span class="p">;</span>
+
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">byteBuffer</span> <span class="o">=</span> <span class="cm">/* ... */</span><span class="p">;</span>
+<span class="kt">size_t</span> <span class="n">bufferLength</span> <span class="o">=</span> <span class="cm">/* ... */</span><span class="p">;</span>
+
+<span class="n">val</span> <span class="nf">getBytes</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">val</span><span class="p">(</span><span class="n">typed_memory_view</span><span class="p">(</span><span class="n">bufferLength</span><span class="p">,</span> <span class="n">byteBuffer</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">memory_view_example</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">function</span><span class="p">(</span><span class="s">&quot;getBytes&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">getBytes</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>The calling JavaScript code will receive a typed array view into the emscripten heap:</p>
+<div class="code js highlight-cpp"><div class="highlight"><pre>var myUint8Array = Module.getBytes()
+var xhr = new XMLHttpRequest();
+xhr.open(&#39;POST&#39;, /* ... */);
+xhr.send(myUint8Array);
+</pre></div>
+</div>
 <p>The typed array view will be of the appropriate matching type, such as Uint8Array
 for an <tt class="docutils literal"><span class="pre">unsigned</span> <span class="pre">char</span></tt> array or pointer.</p>
 </div>
@@ -1807,7 +1830,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.36.5',
+            VERSION:'1.36.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

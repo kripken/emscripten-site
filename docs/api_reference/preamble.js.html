@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 1.36.5 documentation</title>
+  <title>preamble.js &mdash; Emscripten 1.36.9 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.36.5 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.9 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -999,7 +999,7 @@
 <ul class="last">
 <li><p class="first"><tt class="docutils literal"><span class="pre">ccall</span></tt> uses the C stack for temporary values. If you pass a string then it is only &#8220;alive&#8221; until the call is complete. If the code being called saves the pointer to be used later, it may point to invalid data.</p>
 </li>
-<li><p class="first">If you need a string to live forever, you can create it, for example, using <tt class="docutils literal"><span class="pre">_malloc</span></tt> and <a class="reference internal" href="#writeStringToMemory" title="writeStringToMemory"><tt class="xref js js-func docutils literal"><span class="pre">writeStringToMemory()</span></tt></a>. However, you must later delete it manually!</p>
+<li><p class="first">If you need a string to live forever, you can create it, for example, using <tt class="docutils literal"><span class="pre">_malloc</span></tt> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><tt class="xref js js-func docutils literal"><span class="pre">stringToUTF8()</span></tt></a>. However, you must later delete it manually!</p>
 </li>
 <li><p class="first">LLVM optimizations can inline and remove functions, after which you will not be able to call them. Similarly, function names minified by the <em>Closure Compiler</em> are inaccessible. In either case, the solution is to add the functions to the <tt class="docutils literal"><span class="pre">EXPORTED_FUNCTIONS</span></tt> list when you invoke <em>emcc</em> :</p>
 <blockquote>
@@ -1073,7 +1073,7 @@
 <ul class="last">
 <li><p class="first"><tt class="docutils literal"><span class="pre">cwrap</span></tt> uses the C stack for temporary values. If you pass a string then it is only &#8220;alive&#8221; until the call is complete. If the code being called saves the pointer to be used later, it may point to invalid data.</p>
 </li>
-<li><p class="first">If you need a string to live forever, you can create it, for example, using <tt class="docutils literal"><span class="pre">_malloc</span></tt> and <a class="reference internal" href="#writeStringToMemory" title="writeStringToMemory"><tt class="xref js js-func docutils literal"><span class="pre">writeStringToMemory()</span></tt></a>. However, you must later delete it manually!</p>
+<li><p class="first">If you need a string to live forever, you can create it, for example, using <tt class="docutils literal"><span class="pre">_malloc</span></tt> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><tt class="xref js js-func docutils literal"><span class="pre">stringToUTF8()</span></tt></a>. However, you must later delete it manually!</p>
 </li>
 <li><p class="first">LLVM optimizations can inline and remove functions, after which you will not be able to &#8220;wrap&#8221; them. Similarly, function names minified by the <em>Closure Compiler</em> are inaccessible. In either case, the solution is to add the functions to the <tt class="docutils literal"><span class="pre">EXPORTED_FUNCTIONS</span></tt> list when you invoke <em>emcc</em> :</p>
 <blockquote>
@@ -1215,7 +1215,7 @@ my_func(12)
 
 <dl class="function">
 <dt id="stringToUTF8">
-<tt class="descname">stringToUTF8</tt><big>(</big><em>str</em>, <em>outPtr</em><span class="optional">[</span>, <em>maxBytesToWrite</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#stringToUTF8" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">stringToUTF8</tt><big>(</big><em>str</em>, <em>outPtr</em>, <em>maxBytesToWrite</em><big>)</big><a class="headerlink" href="#stringToUTF8" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the given JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object <tt class="docutils literal"><span class="pre">str</span></tt> to the Emscripten HEAP at address <tt class="docutils literal"><span class="pre">outPtr</span></tt>, null-terminated and encoded in UTF8 form.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1224,7 +1224,7 @@ my_func(12)
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>str</strong> (<em>String</em>) &#8211; A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</li>
 <li><strong>outPtr</strong> &#8211; Pointer to data copied from <tt class="docutils literal"><span class="pre">str</span></tt>, encoded in UTF8 format and null-terminated.</li>
-<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes to write out.</li>
+<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes that this function can at most write out. If the string is longer than this, the output is truncated. The outputted string will always be null terminated, even if truncation occurred.</li>
 </ul>
 </td>
 </tr>
@@ -1254,7 +1254,7 @@ my_func(12)
 
 <dl class="function">
 <dt id="stringToUTF16">
-<tt class="descname">stringToUTF16</tt><big>(</big><em>str</em>, <em>outPtr</em><span class="optional">[</span>, <em>maxBytesToWrite</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#stringToUTF16" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">stringToUTF16</tt><big>(</big><em>str</em>, <em>outPtr</em>, <em>maxBytesToWrite</em><big>)</big><a class="headerlink" href="#stringToUTF16" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the given JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object <tt class="docutils literal"><span class="pre">str</span></tt> to the Emscripten HEAP at address <tt class="docutils literal"><span class="pre">outPtr</span></tt>, null-terminated and encoded in UTF16LE form.</p>
 <p>The copy will require at most <tt class="docutils literal"><span class="pre">(str.length*2+1)*2</span></tt> bytes of space in the HEAP.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1264,7 +1264,7 @@ my_func(12)
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>str</strong> (<em>String</em>) &#8211; A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</li>
 <li><strong>outPtr</strong> &#8211; Pointer to data copied from <tt class="docutils literal"><span class="pre">str</span></tt>, encoded in UTF16LE format and null-terminated.</li>
-<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes to write out.</li>
+<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes that this function can at most write out. If the string is longer than this, the output is truncated. The outputted string will always be null terminated, even if truncation occurred.</li>
 </ul>
 </td>
 </tr>
@@ -1294,7 +1294,7 @@ my_func(12)
 
 <dl class="function">
 <dt id="stringToUTF32">
-<tt class="descname">stringToUTF32</tt><big>(</big><em>str</em>, <em>outPtr</em><span class="optional">[</span>, <em>maxBytesToWrite</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#stringToUTF32" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">stringToUTF32</tt><big>(</big><em>str</em>, <em>outPtr</em>, <em>maxBytesToWrite</em><big>)</big><a class="headerlink" href="#stringToUTF32" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the given JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object <tt class="docutils literal"><span class="pre">str</span></tt> to the Emscripten HEAP at address <tt class="docutils literal"><span class="pre">outPtr</span></tt>, null-terminated and encoded in UTF32LE form.</p>
 <p>The copy will require at most <tt class="docutils literal"><span class="pre">(str.length+1)*4</span></tt> bytes of space in the HEAP, but can use less, since <tt class="docutils literal"><span class="pre">str.length</span></tt> does not return the number of characters in the string, but the number of UTF-16 code units in the string.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1304,7 +1304,7 @@ my_func(12)
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>str</strong> (<em>String</em>) &#8211; A JavaScript <tt class="docutils literal"><span class="pre">String</span></tt> object.</li>
 <li><strong>outPtr</strong> &#8211; Pointer to data copied from <tt class="docutils literal"><span class="pre">str</span></tt>, encoded in encoded in UTF32LE format and null-terminated.</li>
-<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes to write out.</li>
+<li><strong>maxBytesToWrite</strong> &#8211; A limit on the number of bytes that this function can at most write out. If the string is longer than this, the output is truncated. The outputted string will always be null terminated, even if truncation occurred.</li>
 </ul>
 </td>
 </tr>
@@ -1358,6 +1358,11 @@ my_func(12)
 <dt id="writeStringToMemory">
 <tt class="descname">writeStringToMemory</tt><big>(</big><em>string</em>, <em>buffer</em>, <em>dontAddNull</em><big>)</big><a class="headerlink" href="#writeStringToMemory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes a JavaScript string to a specified address in the heap.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This function is deprecated, you should call the function <tt class="docutils literal"><span class="pre">stringToUTF8</span></tt> instead, which provides a secure</p>
+</div>
+<p>bounded version of the same functionality instead.</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="c1">// Allocate space for string and extra &#39;0&#39; at the end</span>
 <span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
 
@@ -1657,7 +1662,7 @@ my_func(12)
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.36.5',
+            VERSION:'1.36.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
