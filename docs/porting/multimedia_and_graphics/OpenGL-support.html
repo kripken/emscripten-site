@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OpenGL support in Emscripten &mdash; Emscripten 1.36.11 documentation</title>
+  <title>OpenGL support in Emscripten &mdash; Emscripten 1.36.14 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.36.11 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.14 documentation" href="../../../index.html"/>
         <link rel="up" title="Multimedia and Graphics" href="index.html"/>
         <link rel="next" title="Debugging" href="../Debugging.html"/>
         <link rel="prev" title="EGL Support in Emscripten" href="EGL-Support-in-Emscripten.html"/> 
@@ -296,12 +296,12 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">OpenGL support in Emscripten</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#webgl-friendly-subset-of-opengl-es">WebGL-friendly subset of OpenGL ES</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opengl-extensions">OpenGL extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#emulation-of-older-desktop-opengl-api-features">Emulation of older Desktop OpenGL API features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#opengl-es-extensions">OpenGL ES extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#test-code-examples">Test code/examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bug-reports">Bug Reports</a></li>
 </ul>
 </li>
 </ul>
@@ -394,6 +394,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#quick-example">Quick Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#details">Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#profiling-tool-commands">Profiling Tool Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#instrumenting-python-scripts">Instrumenting Python Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#python-profiling-blocks">Python Profiling Blocks</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
@@ -412,7 +424,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#alternatives-to-emcc">Alternatives to emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -968,41 +980,37 @@
 <span id="opengl-support"></span><h1>OpenGL support in Emscripten<a class="headerlink" href="#opengl-support-in-emscripten" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten provides three OpenGL modes:</p>
 <ul class="simple">
-<li><a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL</em></a> (default) — supports the set of OpenGL commands that map directly to WebGL.</li>
-<li><a class="reference internal" href="#opengl-support-opengl-es2-0-emulation"><em>OpenGL ES 2.0 emulation</em></a> — full support for OpenGL ES 2.0.</li>
-<li><a class="reference internal" href="#opengl-support-legacy-and-mobile"><em>OpenGL emulation of older desktop and mobile versions</em></a> — support for a number of legacy GL 1.x features and commands.</li>
+<li><a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL ES</em></a> (default) — supports the set of OpenGL ES commands that map directly to WebGL.</li>
+<li><a class="reference internal" href="#opengl-support-opengl-es2-0-emulation"><em>OpenGL ES 2.0 emulation</em></a> — support for some emulated OpenGL ES 2.0 features that are not present in WebGL.</li>
+<li><a class="reference internal" href="#opengl-support-legacy-and-mobile"><em>Emulation of older Desktop OpenGL API features</em></a> — support for a number of legacy GL 1.x features and commands.</li>
 </ul>
 <p>This topic provides information about the modes, and how they are enabled.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">We highly recommend using the <a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL</em></a> for new code, and porting existing code to this subset if possible. The other two modes are much less efficient, and should only be considered for large codebases that rely heavily on those features.</p>
+<p class="last">We highly recommend using the <a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL ES</em></a> for new code, and porting existing code to this subset if possible. The other two modes are less efficient, and should only be considered for codebases that rely heavily on those features.</p>
 </div>
-<div class="section" id="webgl-friendly-subset-of-opengl">
-<span id="opengl-support-webgl-subset"></span><h2>WebGL-friendly subset of OpenGL<a class="headerlink" href="#webgl-friendly-subset-of-opengl" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten supports the WebGL-friendly subset of OpenGL <em>by default</em>. This is the set of commands that map directly to WebGL, so that each GL command becomes a direct call to WebGL. It includes almost all of OpenGL ES 2.0, with the notable exception of client-side arrays.</p>
-<p>This mode is used by default because it is stable, predictable and fast.</p>
+<div class="section" id="webgl-friendly-subset-of-opengl-es">
+<span id="opengl-support-webgl-subset"></span><h2>WebGL-friendly subset of OpenGL ES<a class="headerlink" href="#webgl-friendly-subset-of-opengl-es" title="Permalink to this headline">¶</a></h2>
+<p>By default, Emscripten targets the WebGL-friendly subset of OpenGL ES 2.0. This is the set of GL ES commands that map directly to WebGL, so that each GL command has a roughly direct mapping to WebGL. It includes almost all of OpenGL ES 2.0, with the notable exception of client-side arrays, and some other features that are listed in <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/1.0/#6">WebGL 1.0 Specification/Chapter 6</a>.</p>
+<p>To program against the WebGL subset of OpenGL ES, one uses the GL ES 2.0 header files and the GL ES 2.0 API, while adhering to the limitations specified in Chapter 6 of the WebGL specification.</p>
+<p>This mode is used by default because it best matches the WebGL features brovided by browsers.</p>
 </div>
 <div class="section" id="opengl-es-2-0-emulation">
 <span id="opengl-support-opengl-es2-0-emulation"></span><h2>OpenGL ES 2.0 emulation<a class="headerlink" href="#opengl-es-2-0-emulation" title="Permalink to this headline">¶</a></h2>
-<p>This mode provides a full OpenGL ES 2.0 environment — specifically it emulates client-side arrays that were missing <a class="footnote-reference" href="#f1" id="id1">[1]</a> from the <a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL</em></a>.</p>
-<p>This allows you to use <a class="reference external" href="https://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml">glDrawArrays</a> etc. without a bound buffer, and Emscripten&#8217;s GL bindings will set up the buffer automatically (WebGL requires that a buffer be bound).</p>
-<p>This mode is not as efficient as the WebGL-friendly subset, because Emscripten cannot predict the optimal pattern for buffer creation/sizing/etc. We therefore have to make more (costly) data uploads from the CPU to the GPU than are actually needed.</p>
-<p>To enable <em>OpenGL ES 2.0 emulation</em>, specify the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-s-option-value"><em>emcc</em></a> option <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">FULL_ES2=1</span></tt> when compiling the project.</p>
+<p>This build mode emulates some features of OpenGL ES 2.0 that are not part of the core WebGL 1 specification.</p>
+<p>In particular, this mode emulates client-side arrays that are missing <a class="footnote-reference" href="#f1" id="id1">[1]</a> from the <a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL ES</em></a>.</p>
+<p>This allows you to use functions <a class="reference external" href="https://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml">glDrawArrays</a> and <a class="reference external" href="https://www.opengl.org/sdk/docs/man/html/glDrawElements.xhtml">glDrawElements</a> etc. without a bound buffer, and Emscripten&#8217;s GL bindings will set up the buffer automatically (WebGL requires that a buffer be bound).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This build mode has a limitation that the largest index in client-side index buffer must be smaller than the total number of indices in that buffer. See <a class="reference external" href="https://github.com/kripken/emscripten/issues/4214">issue #4214</a> for more details.</p>
 </div>
-<div class="section" id="opengl-emulation-of-older-desktop-and-mobile-versions">
-<span id="opengl-support-legacy-and-mobile"></span><h2>OpenGL emulation of older desktop and mobile versions<a class="headerlink" href="#opengl-emulation-of-older-desktop-and-mobile-versions" title="Permalink to this headline">¶</a></h2>
-<p>This OpenGL mode enables support for a number of legacy GL 1.x features and commands (for example &#8220;immediate mode&#8221; and <a class="reference external" href="https://www.opengl.org/sdk/docs/man2/xhtml/glNormalPointer.xml">glNormalPointer</a>).</p>
-<p>While the emulation is by no means &#8220;complete&#8221;, it has been sufficient to port the Sauerbraten 3D game (<a class="reference external" href="https://github.com/kripken/BananaBread">BananaBread</a> project) and several other real-world codebases using Emscripten.</p>
-<p>To enable this mode, specify the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-s-option-value"><em>emcc</em></a> option <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">LEGACY_GL_EMULATION=1</span></tt> when compiling the project.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This mode adds <strong>significant</strong> emulation overhead.</p>
+<p>To enable <em>OpenGL ES 2.0 emulation</em>, specify the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-s-option-value"><em>emcc</em></a> option <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">FULL_ES2=1</span></tt> when linking the final executable (.js/.html) of the project.</p>
 </div>
-</div>
-<div class="section" id="opengl-extensions">
-<h2>OpenGL extensions<a class="headerlink" href="#opengl-extensions" title="Permalink to this headline">¶</a></h2>
-<p>When porting code, it should be noted that desktop OpenGL, OpenGL ES and WebGL each have their own extension registries. This means that neither desktop OpenGL or OpenGL ES extensions are automatically also WebGL extensions, although some amount of parity does exist. See the <a class="reference external" href="https://www.khronos.org/registry/webgl/extensions/">WebGL 1.0 extension registry</a> for the full list of registered extensions.</p>
-<p>Additionally, in WebGL, unlike in desktop or mobile OpenGL, extensions must be activated first before the features they expose take effect. If you use one of the native APIs SDL, EGL, GLUT or GLFW to create your GL context, this will be done automatically for most extensions. If instead you use the HTML5 WebGL context creation API, you must explicitly choose whether to autoenable WebGL extensions. If an extension was not automatically enabled at context creation time, the HTML5 API function <cite>emscripten_webgl_enable_extension</cite> can be used to activate it. Debugging related extensions, draft extensions and vendor-prefixed extensions (MOZ_*, WEBKIT_*) are never enabled automatically at context creation time, but must always be activated manually.</p>
+<div class="section" id="emulation-of-older-desktop-opengl-api-features">
+<span id="opengl-support-legacy-and-mobile"></span><h2>Emulation of older Desktop OpenGL API features<a class="headerlink" href="#emulation-of-older-desktop-opengl-api-features" title="Permalink to this headline">¶</a></h2>
+<p>This OpenGL mode enables support for a number of legacy desktop OpenGL 1.x features and commands (for example &#8220;immediate mode&#8221; and <a class="reference external" href="https://www.opengl.org/sdk/docs/man2/xhtml/glNormalPointer.xml">glNormalPointer</a>).</p>
+<p>While the emulation is by no means complete, it has been sufficient to port the Sauerbraten 3D game (<a class="reference external" href="https://github.com/kripken/BananaBread">BananaBread</a> project) and some other real-world codebases using Emscripten.</p>
+<p>To enable this mode, specify the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-s-option-value"><em>emcc</em></a> option <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">LEGACY_GL_EMULATION=1</span></tt> when linking the final executable (.js/.html) of the project.</p>
 <div class="section" id="optimization-settings">
 <h3>Optimization settings<a class="headerlink" href="#optimization-settings" title="Permalink to this headline">¶</a></h3>
 <p>In this mode (<tt class="docutils literal"><span class="pre">-s</span> <span class="pre">LEGACY_GL_EMULATION=1</span></tt>), there are a few extra flags that can be used to tune the performance of the GL emulation layer:</p>
@@ -1012,15 +1020,24 @@
 <li>Add the <tt class="docutils literal"><span class="pre">Module.GL_MAX_TEXTURE_IMAGE_UNITS</span></tt> integer to your shell <strong>.html</strong> file to signal the maximum number of texture units used by the code. This ensures that the GL emulation layer does not waste clock cycles iterating over unused texture units when examining which Fixed Function Pipeline (FFP) emulation shader to run.</li>
 </ul>
 </div>
+<div class="section" id="what-if-my-codebase-depends-on-an-desktop-opengl-feature-that-is-currently-unsupported">
+<h3>What if my codebase depends on an desktop OpenGL feature that is currently unsupported?<a class="headerlink" href="#what-if-my-codebase-depends-on-an-desktop-opengl-feature-that-is-currently-unsupported" title="Permalink to this headline">¶</a></h3>
+<p>You can consider building the codebase against the <a class="reference external" href="https://github.com/p3/regal">Regal</a> Desktop OpenGL emulation library. That project offers a more complete set of emulated Desktop OpenGL features on top of OpenGL ES 2.0. If the built-in Desktop OpenGL emulation works but is too slow, it may also be possible to get better performance by using Regal.</p>
+</div>
+</div>
+<div class="section" id="opengl-es-extensions">
+<h2>OpenGL ES extensions<a class="headerlink" href="#opengl-es-extensions" title="Permalink to this headline">¶</a></h2>
+<p>When porting code, it should be noted that desktop OpenGL, OpenGL ES and WebGL each have their own extension registries. This means that neither desktop OpenGL or OpenGL ES extensions are automatically also WebGL extensions, although some amount of parity does exist. See the <a class="reference external" href="https://www.khronos.org/registry/webgl/extensions/">WebGL 1.0 extension registry</a> for the full list of registered extensions.</p>
+<p>Additionally, in WebGL, unlike in desktop or mobile OpenGL, extensions must be activated first before the features they expose take effect. If you use one of the native APIs SDL, EGL, GLUT or GLFW to create your GL context, this will be done automatically for most extensions. If instead you use the HTML5 WebGL context creation API, you must explicitly choose whether to autoenable WebGL extensions. If an extension was not automatically enabled at context creation time, the HTML5 API function <cite>emscripten_webgl_enable_extension</cite> can be used to activate it. Debugging related extensions, draft extensions and vendor-prefixed extensions (MOZ_*, WEBKIT_*) are never enabled automatically at context creation time, but must always be activated manually.</p>
 </div>
 <div class="section" id="test-code-examples">
 <h2>Test code/examples<a class="headerlink" href="#test-code-examples" title="Permalink to this headline">¶</a></h2>
-<p>The files in <a class="reference external" href="https://github.com/kripken/emscripten/tree/master/tests/glbook">tests/glbook</a> provide a number of simple examples that use only the <a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL</em></a>.</p>
+<p>The files in <a class="reference external" href="https://github.com/kripken/emscripten/tree/master/tests/glbook">tests/glbook</a> provide a number of simple examples that use only the <a class="reference internal" href="#opengl-support-webgl-subset"><em>WebGL-friendly subset of OpenGL ES</em></a>.</p>
 <p>The other modes are covered in various tests, including several in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/test_browser.py">tests/test_browser.py</a>. The best way to locate the tests is to search the source code for the appropriate compiler flags: <tt class="docutils literal"><span class="pre">FULL_ES2</span></tt>, <tt class="docutils literal"><span class="pre">LEGACY_GL_EMULATION</span></tt> etc.</p>
 </div>
-<div class="section" id="what-if-i-need-unsupported-gl-features">
-<h2>What if I need unsupported GL features?<a class="headerlink" href="#what-if-i-need-unsupported-gl-features" title="Permalink to this headline">¶</a></h2>
-<p>File a <a class="reference internal" href="../../getting_started/bug_reports.html#bug-reports"><em>bug report</em></a> (with test case) and we will review.</p>
+<div class="section" id="bug-reports">
+<h2>Bug Reports<a class="headerlink" href="#bug-reports" title="Permalink to this headline">¶</a></h2>
+<p>The Emscripten <a class="reference internal" href="../../getting_started/bug_reports.html#bug-reports"><em>bug tracker</em></a> has labels specific to OpenGL and OpenGL Emulation for tracking various GL-related issues.</p>
 <p><strong>Footnotes:</strong></p>
 <table class="docutils footnote" frame="void" id="f1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
@@ -1146,7 +1163,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.36.11',
+            VERSION:'1.36.14',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

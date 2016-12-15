@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 1.36.11 documentation</title>
+  <title>Building Projects &mdash; Emscripten 1.36.14 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.36.11 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.14 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -296,12 +296,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl-es">WebGL-friendly subset of OpenGL ES</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-extensions">OpenGL extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#emulation-of-older-desktop-opengl-api-features">Emulation of older Desktop OpenGL API features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-extensions">OpenGL ES extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#bug-reports">Bug Reports</a></li>
 </ul>
 </li>
 </ul>
@@ -394,6 +394,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#quick-example">Quick Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#details">Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#profiling-tool-commands">Profiling Tool Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#instrumenting-python-scripts">Instrumenting Python Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#python-profiling-blocks">Python Profiling Blocks</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#integrating-with-a-build-system">Integrating with a build system</a></li>
@@ -412,7 +424,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#manually-using-emcc">Manually using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#alternatives-to-emcc">Alternatives to emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1180,18 +1192,24 @@ emcc allproject.bc -o final.html
 </div>
 <p>In addition to the capabilities it shares with <em>gcc</em>, <em>emcc</em> supports options to optimize code, control what debug information is emitted, generate HTML and other output formats, etc. These options are documented in the <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><em>emcc tool reference</em></a> (<tt class="docutils literal"><span class="pre">./emcc</span> <span class="pre">--help</span></tt> on the command line).</p>
 </div>
-<div class="section" id="alternatives-to-emcc">
-<h2>Alternatives to emcc<a class="headerlink" href="#alternatives-to-emcc" title="Permalink to this headline">¶</a></h2>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">Do not attempt to bypass <em>emcc</em> and call the Emscripten tools directly from your build system.</p>
-</div>
-<p>You can in theory call <em>clang</em>, <em>llvm-ld</em>, and the other tools yourself. This is however considered dangerous because by default:</p>
-<ul class="simple">
-<li><em>Clang</em> does not use the Emscripten-bundled headers, which can lead to various errors.</li>
-<li><em>llvm-ld</em> uses unsafe/unportable LLVM optimizations.</li>
+<div class="section" id="detecting-emscripten-in-preprocessor">
+<h2>Detecting Emscripten in Preprocessor<a class="headerlink" href="#detecting-emscripten-in-preprocessor" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten provides the following preprocessor macros that can be used to identify the compiler version and platform:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The preprocessor define <tt class="docutils literal"><span class="pre">__EMSCRIPTEN__</span></tt> is always defined when compiling programs with Emscripten.</li>
+<li>The preprocessor variables <tt class="docutils literal"><span class="pre">__EMSCRIPTEN_major__</span></tt>, <tt class="docutils literal"><span class="pre">__EMSCRIPTEN_minor__</span></tt> and <tt class="docutils literal"><span class="pre">__EMSCRIPTEN_tiny__</span></tt> specify, as integers, the currently used Emscripten compiler version.</li>
+<li>Emscripten behaves like a variant of Unix, so the preprocessor defines <tt class="docutils literal"><span class="pre">unix</span></tt>, <tt class="docutils literal"><span class="pre">__unix</span></tt> and <tt class="docutils literal"><span class="pre">__unix__</span></tt> are always present when compiling code with Emscripten.</li>
+<li>Emscripten uses Clang/LLVM as its underlying codegen compiler, so the preprocessor defines <tt class="docutils literal"><span class="pre">__llvm__</span></tt> and <tt class="docutils literal"><span class="pre">__clang__</span></tt> are defined, and the preprocessor defines <tt class="docutils literal"><span class="pre">__clang_major__</span></tt>, <tt class="docutils literal"><span class="pre">__clang_minor__</span></tt> and <tt class="docutils literal"><span class="pre">__clang_patchlevel__</span></tt> indicate the version of Clang that is used.</li>
+<li>Clang/LLVM is GCC-compatible, so the preprocessor defines <tt class="docutils literal"><span class="pre">__GNUC__</span></tt>, <tt class="docutils literal"><span class="pre">__GNUC_MINOR__</span></tt> and <tt class="docutils literal"><span class="pre">__GNUC_PATCHLEVEL__</span></tt> are also defined to represent the level of GCC compatibility that Clang/LLVM provides.</li>
+<li>The preprocessor string <tt class="docutils literal"><span class="pre">__VERSION__</span></tt> indicates the GCC compatible version, which is expanded to also show Emscripten version information.</li>
+<li>Likewise, <tt class="docutils literal"><span class="pre">__clang_version__</span></tt> is present and indicates both Emscripten and LLVM version information.</li>
+<li>Emscripten is a 32-bit platform, so <tt class="docutils literal"><span class="pre">size_t</span></tt> is a 32-bit unsigned integer, <tt class="docutils literal"><span class="pre">__POINTER_WIDTH__=32</span></tt>, <tt class="docutils literal"><span class="pre">__SIZEOF_LONG__=4</span></tt> and <tt class="docutils literal"><span class="pre">__LONG_MAX__</span></tt> equals <tt class="docutils literal"><span class="pre">2147483647L</span></tt>.</li>
+<li>When targeting asm.js, the preprocessor defines <tt class="docutils literal"><span class="pre">__asmjs</span></tt> and <tt class="docutils literal"><span class="pre">__asmjs__</span></tt> are present.</li>
+<li>When targeting SSEx SIMD APIs using one of the command line compiler flags <tt class="docutils literal"><span class="pre">-msse</span></tt>, <tt class="docutils literal"><span class="pre">-msse2</span></tt>, <tt class="docutils literal"><span class="pre">-msse3</span></tt>, <tt class="docutils literal"><span class="pre">-mssse3</span></tt>, or <tt class="docutils literal"><span class="pre">-msse4.1</span></tt>, one or more of the preprocessor flags <tt class="docutils literal"><span class="pre">__SSE__</span></tt>, <tt class="docutils literal"><span class="pre">__SSE2__</span></tt>, <tt class="docutils literal"><span class="pre">__SSE3__</span></tt>, <tt class="docutils literal"><span class="pre">__SSSE3__</span></tt>, <tt class="docutils literal"><span class="pre">__SSE4_1__</span></tt> will be present to indicate available support for these instruction sets.</li>
+<li>If targeting the pthreads multithreading support with the compiler &amp; linker flag <tt class="docutils literal"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></tt>, the preprocessor define <tt class="docutils literal"><span class="pre">__EMSCRIPTEN_PTHREADS__</span></tt> will be present.</li>
 </ul>
-<p><em>Emcc</em> automatically ensures the tools are configured and used properly.</p>
+</div></blockquote>
 </div>
 <div class="section" id="examples-test-code">
 <h2>Examples / test code<a class="headerlink" href="#examples-test-code" title="Permalink to this headline">¶</a></h2>
@@ -1327,7 +1345,7 @@ emcc allproject.bc -o final.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.36.11',
+            VERSION:'1.36.14',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

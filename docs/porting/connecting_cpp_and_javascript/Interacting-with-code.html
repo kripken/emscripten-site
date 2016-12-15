@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 1.36.11 documentation</title>
+  <title>Interacting with code &mdash; Emscripten 1.36.14 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.36.11 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.36.14 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -296,12 +296,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl">WebGL-friendly subset of OpenGL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl-es">WebGL-friendly subset of OpenGL ES</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#opengl-emulation-of-older-desktop-and-mobile-versions">OpenGL emulation of older desktop and mobile versions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#opengl-extensions">OpenGL extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#emulation-of-older-desktop-opengl-api-features">Emulation of older Desktop OpenGL API features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#opengl-es-extensions">OpenGL ES extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#what-if-i-need-unsupported-gl-features">What if I need unsupported GL features?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multimedia_and_graphics/OpenGL-support.html#bug-reports">Bug Reports</a></li>
 </ul>
 </li>
 </ul>
@@ -394,6 +394,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#quick-example">Quick Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#details">Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#profiling-tool-commands">Profiling Tool Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#instrumenting-python-scripts">Instrumenting Python Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html#python-profiling-blocks">Python Profiling Blocks</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
@@ -412,7 +424,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#alternatives-to-emcc">Alternatives to emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1052,8 +1064,9 @@ int_sqrt(28)
 <p>The first parameter is the name of the function to be wrapped, the second is
 the return type of the function (or a JavaScript <cite>null</cite> value if there isn&#8217;t one), and the third is an array of parameter
 types (which may be omitted if there are no parameters). The types are
-native JavaScript types, &#8220;number&#8221; (for a C integer, float, or general
-pointer) or &#8220;string&#8221; (for a C <tt class="docutils literal"><span class="pre">char*</span></tt> that represents a string).</p>
+&#8220;number&#8221; (for a JavaScript number corresponding to a C integer, float, or general
+pointer), &#8220;string&#8221; (for a JavaScript string that corresponds to a C <tt class="docutils literal"><span class="pre">char*</span></tt> that represents a string) or
+&#8220;array&#8221; (for a JavaScript array or typed array that corresponds to a C array; for typed arrays, it must be a Uint8Array or Int8Array).</p>
 <p>You can run this yourself by first opening the generated page
 <strong>function.html</strong> in a web browser (nothing will happen on page
 load because there is no <tt class="docutils literal"><span class="pre">main()</span></tt>). Open a JavaScript environment
@@ -1115,8 +1128,8 @@ minifies the function names).</li>
 <h2>Interacting with an API written in C/C++ from NodeJS<a class="headerlink" href="#interacting-with-an-api-written-in-c-c-from-nodejs" title="Permalink to this headline">¶</a></h2>
 <p>Say you have a C library that exposes some procedures:</p>
 <div class="code c highlight-cpp"><div class="highlight"><pre><span class="c1">//api_example.c</span>
-<span class="cp">#include&lt;stdio.h&gt;</span>
-<span class="cp">#include&lt;emscripten.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;emscripten.h&gt;</span>
 
 <span class="n">EMSCRIPTEN_KEEPALIVE</span>
 <span class="kt">void</span> <span class="nf">sayHi</span><span class="p">()</span> <span class="p">{</span>
@@ -1266,7 +1279,7 @@ the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-js-
 example, including the syntax you should use inside the JavaScript library
 file.</p>
 <p>As a simple example, consider the case where you have some C code like this:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">extern</span> <span class="kt">void</span> <span class="nf">my_js</span><span class="p">();</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">extern</span> <span class="kt">void</span> <span class="nf">my_js</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">my_js</span><span class="p">();</span>
@@ -1705,7 +1718,7 @@ natural fit for the project and its build system.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.36.11',
+            VERSION:'1.36.14',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
