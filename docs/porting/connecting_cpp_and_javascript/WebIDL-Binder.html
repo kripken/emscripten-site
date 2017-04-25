@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WebIDL Binder &mdash; Emscripten 1.37.9 documentation</title>
+  <title>WebIDL Binder &mdash; Emscripten 1.37.10 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.9 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.10 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Files and File Systems" href="../files/index.html"/>
         <link rel="prev" title="Embind" href="embind.html"/> 
@@ -248,6 +248,7 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">WebIDL Binder</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#a-quick-example">A quick example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modular-output">Modular output</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#using-c-classes-in-javascript">Using C++ classes in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pointers-references-value-types-ref-and-value">Pointers, References, Value types (Ref and Value)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#const">Const</a></li>
@@ -1091,6 +1092,28 @@ interface Bar {
 <p>The output now contains everything needed to use the C++ classes through JavaScript.</p>
 </div>
 </div>
+<div class="section" id="modular-output">
+<h2>Modular output<a class="headerlink" href="#modular-output" title="Permalink to this headline">¶</a></h2>
+<p>When using the WebIDL binder, often what you are doing is creating a library. In that
+case, the <cite>MODULARIZE</cite> option makes sense to use. It wraps the entire JavaScript output
+in a function, which you call to create instances,</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>(You can use the <cite>EXPORT_NAME</cite> option to change <cite>Module</cite> to something else.) This is
+good practice for libraries, as then they don&#8217;t include unnecessary things in the
+global scope (and in some cases you want to create more than one).</p>
+<p>Modularize also provides a promise-like API, which is the recommended way to use it,</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">instance</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// code that uses the instance here</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>The callback is called when it is safe to run compiled code, similar
+to the <cite>onRuntimeInitialized</cite> callback (i.e., it waits for all
+necessary async events). It receives the instance as a parameter,
+for convenience.</p>
+</div>
 <div class="section" id="using-c-classes-in-javascript">
 <h2>Using C++ classes in JavaScript<a class="headerlink" href="#using-c-classes-in-javascript" title="Permalink to this headline">¶</a></h2>
 <p>Once binding is complete, C++ objects can be created and used in JavaScript as though they were normal JavaScript objects. For example, continuing the above example, you can create the <code class="docutils literal"><span class="pre">Foo</span></code> and <code class="docutils literal"><span class="pre">Bar</span></code> objects and call methods on them.</p>
@@ -1519,7 +1542,7 @@ interface ImplJS {
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.37.9',
+            VERSION:'1.37.10',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
