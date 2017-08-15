@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Profiling the Toolchain &mdash; Emscripten 1.37.10 documentation</title>
+  <title>Profiling the Toolchain &mdash; Emscripten 1.37.18 documentation</title>
   
 
   
@@ -30,9 +30,9 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.18 documentation" href="../../index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
-        <link rel="prev" title="Optimizing Code" href="Optimizing-Code.html"/> 
+        <link rel="prev" title="Optimizing WebGL" href="Optimizing-WebGL.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -102,8 +102,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions">Installation instructions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#windows-installing-using-an-nsis-installer">Windows: Installing using an NSIS installer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#windows-osx-and-linux-installing-the-portable-sdk">Windows, OSX and Linux: Installing the Portable SDK</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
 </li>
@@ -296,8 +294,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl-es">WebGL-friendly subset of OpenGL ES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-emulation">OpenGL ES 2.0 emulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl-es-2-0-3-0">WebGL-friendly subset of OpenGL ES 2.0/3.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-3-0-emulation">OpenGL ES 2.0/3.0 emulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#emulation-of-older-desktop-opengl-api-features">Emulation of older Desktop OpenGL API features</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#opengl-es-extensions">OpenGL ES extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
@@ -394,6 +392,18 @@
 <li class="toctree-l2"><a class="reference internal" href="Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Optimizing-WebGL.html">Optimizing WebGL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#which-gl-mode-to-target">Which GL Mode To Target?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#how-to-profile-webgl">How To Profile WebGL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#avoid-redundant-calls">Avoid Redundant Calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#techniques-to-minimize-api-calls">Techniques To Minimize API Calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#avoid-gpu-cpu-sync-points">Avoid GPU-CPU Sync Points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#gpu-driver-friendly-memory-access-behavior">GPU Driver Friendly Memory Access Behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#when-the-gpu-is-the-bottleneck">When The GPU Is The Bottleneck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#optimizing-load-times-and-other-best-practices">Optimizing Load Times and Other Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Optimizing-WebGL.html#migrating-to-webgl-2">Migrating To WebGL 2</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Profiling the Toolchain</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#quick-example">Quick Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#details">Details</a><ul>
@@ -439,6 +449,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#build-files-and-custom-shell">Build Files and Custom Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#optimizing-download-sizes">Optimizing Download Sizes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#optimizing-page-startup-times">Optimizing Page Startup Times</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#providing-a-quick-second-time-load">Providing a Quick Second Time Load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#reserving-memory-for-compiled-code">Reserving Memory for Compiled Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#robust-error-handling">Robust Error Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#prepare-for-the-web-environment">Prepare for The Web Environment</a></li>
 </ul>
 </li>
 </ul>
@@ -733,7 +753,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#css">CSS</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id103">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id107">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1065,7 +1085,7 @@ tools/emprofile.py --graph --outfile<span class="o">=</span>myresults.html
         <a href="../compiling/index.html" class="btn btn-neutral float-right" title="Compiling and Running Projects"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Optimizing-Code.html" class="btn btn-neutral" title="Optimizing Code"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="Optimizing-WebGL.html" class="btn btn-neutral" title="Optimizing WebGL"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1167,7 +1187,7 @@ tools/emprofile.py --graph --outfile<span class="o">=</span>myresults.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.10',
+            VERSION:'1.37.18',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
