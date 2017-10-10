@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.37.19 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.37.22 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.19 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.22 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -303,6 +303,14 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html#bug-reports">Bug Reports</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Audio.html">Audio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Audio.html#supported-openal-extensions">Supported OpenAL extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Audio.html#guidelines-for-audio-on-emscripten">Guidelines for Audio on Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Audio.html#emscripten-specific-capture-behavior">Emscripten-specific capture behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Audio.html#useful-implementation-details-of-openal-capture">Useful implementation details of OpenAL capture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Audio.html#improving-and-extending-the-implementation">Improving and extending the implementation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a><ul>
@@ -853,6 +861,22 @@
 <li class="toctree-l3"><a class="reference internal" href="trace.h.html#functions">Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="vr.h.html">vr.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vr.h.html#test-example-code">Test/Example code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vr.h.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vr.h.html#initialization">Initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vr.h.html#api-queries">API Queries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vr.h.html#display-functions">Display Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vr.h.html#render-loop">Render Loop</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vr.h.html#defines">Defines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vr.h.html#types">Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vr.h.html#math">Math</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="advanced-apis.html">Advanced APIs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="advanced-apis.html#settings-js">settings.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="advanced-apis.html#preamble-js">preamble.js</a></li>
@@ -1041,52 +1065,64 @@
 <dl class="macro">
 <dt id="c.EM_ASM">
 <code class="descname">EM_ASM</code><span class="sig-paren">(</span>...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convenient syntax for inline assembly/JavaScript.</p>
+<dd><blockquote>
+<div><p>Convenient syntax for inline assembly/JavaScript.</p>
 <p>This allows you to declare JavaScript in your C code &#8220;inline&#8221;, which is then executed when your compiled code is run in the browser. For example, the following C code would display two alerts if it was compiled with Emscripten and run in the browser:</p>
-<div class="highlight-cpp"><div class="highlight"><pre>EM_ASM( alert(‘hai’));
-alert(‘bai’)); )
+<div class="highlight-cpp"><div class="highlight"><pre>EM_ASM(alert(&#39;hai&#39;); alert(&#39;bai&#39;));
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>Double-quotes (&#8221;) cannot be used in the inline assembly/JavaScript. Single-quotes (‘) can be used, as shown above.</li>
-<li>Newlines (\n, \r etc.) are supported in the inline JavaScript. Note that any platform-specific issues with line endings in normal JavaScript also apply to inline JavaScript declared using <code class="docutils literal"><span class="pre">EM_ASM</span></code>.</li>
-<li>You can’t access C variables with <a class="reference internal" href="#c.EM_ASM" title="EM_ASM"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM</span></code></a>, nor receive a value back. Instead use <a class="reference internal" href="#c.EM_ASM_ARGS" title="EM_ASM_ARGS"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_ARGS</span></code></a>, <a class="reference internal" href="#c.EM_ASM_INT" title="EM_ASM_INT"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_INT</span></code></a>, or <a class="reference internal" href="#c.EM_ASM_DOUBLE" title="EM_ASM_DOUBLE"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_DOUBLE</span></code></a>.</li>
-<li>As of <code class="docutils literal"><span class="pre">1.30.4</span></code>, <code class="docutils literal"><span class="pre">EM_ASM</span></code> contents appear as normal JS, outside of the compiled code. Previously we had them as a string that was <code class="docutils literal"><span class="pre">eval``ed.</span> <span class="pre">The</span> <span class="pre">newer</span> <span class="pre">approach</span> <span class="pre">avoids</span> <span class="pre">the</span> <span class="pre">overhead</span> <span class="pre">of</span> <span class="pre">``eval</span></code>, and also allows for better optimization of <code class="docutils literal"><span class="pre">EM_ASM</span></code> contents by things like closure compiler, as their contents are now visible. Note that this means that closure compiler will optimize them as if they were written together with the rest of the codebase, which is a change from before - you may need to use safety quotes in some places (<code class="docutils literal"><span class="pre">a['b']</span></code> instead of <code class="docutils literal"><span class="pre">a.b</span></code>).</li>
-</ul>
+<p>Arguments can be passed inside the JavaScript code block, where they arrive as variables <code class="docutils literal"><span class="pre">$0</span></code>, <code class="docutils literal"><span class="pre">$1</span></code> etc. These arguments can either be of type <code class="docutils literal"><span class="pre">int32_t</span></code> or <code class="docutils literal"><span class="pre">double</span></code>.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_ASM({
+  console.log(&#39;I received: &#39; + [$0, $1]);
+}, 100, 35.5);
+</pre></div>
+</div>
+<p>Note the <code class="docutils literal"><span class="pre">{</span></code> and <code class="docutils literal"><span class="pre">}</span></code>.</p>
+</div></blockquote>
+<p>Null-terminated C strings can also be passed into <code class="docutils literal"><span class="pre">EM_ASM</span></code> blocks, but to operate on them, they need to be copied out from the heap to convert to high-level JavaScript strings.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_ASM(console.log(&#39;hello &#39; + UTF8ToString($0)), &quot;world!&quot;);
+</pre></div>
+</div>
+<p>In the same manner, pointers to any type (including <code class="docutils literal"><span class="pre">void</span> <span class="pre">*</span></code>) can be passed inside <code class="docutils literal"><span class="pre">EM_ASM</span></code> code, where they appear as integers like <code class="docutils literal"><span class="pre">char</span> <span class="pre">*</span></code> pointers above did. Accessing the data can be managed by reading the heap directly.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>        int arr[2] = { 30, 45 };
+        EM_ASM({
+          console.log(&#39;Data: &#39; + HEAP32[$0&gt;&gt;2] + &#39;, &#39; + HEAP32[($0+4)&gt;&gt;2]);
+        }, arr);
+
+.. note::
+        - As of Emscripten ``1.30.4``, the contents of ``EM_ASM`` code blocks appear inside the normal JS file, and as result, Closure compiler and other JavaScript minifiers will be able to operate on them. You may need to use safety quotes in some places (``a[&#39;b&#39;]`` instead of ``a.b``) to avoid minification fro occurring.
+        - The C preprocessor does not have an understanding of JavaScript tokens, and as a result, if the ``code`` block contains a comma character ``,``, it may be necessary to wrap the code block inside parentheses. For example, code ``EM_ASM(return [1,2,3].length);`` will not compile, but ``EM_ASM((return [1,2,3].length));`` does.
+</pre></div>
 </div>
 </dd></dl>
 
 <dl class="macro">
-<dt id="c.EM_ASM_">
-<code class="descname">EM_ASM_</code><span class="sig-paren">(</span>code, ...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_" title="Permalink to this definition">¶</a></dt>
-<dt id="c.EM_ASM_ARGS">
-<code class="descname">EM_ASM_ARGS</code><span class="sig-paren">(</span>code, ...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_ARGS" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EM_ASM_INT">
 <code class="descname">EM_ASM_INT</code><span class="sig-paren">(</span>code, ...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_INT" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EM_ASM_DOUBLE">
 <code class="descname">EM_ASM_DOUBLE</code><span class="sig-paren">(</span>code, ...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_DOUBLE" title="Permalink to this definition">¶</a></dt>
-<dt id="c.EM_ASM_INT_V">
-<code class="descname">EM_ASM_INT_V</code><span class="sig-paren">(</span>code<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_INT_V" title="Permalink to this definition">¶</a></dt>
-<dt id="c.EM_ASM_DOUBLE_V">
-<code class="descname">EM_ASM_DOUBLE_V</code><span class="sig-paren">(</span>code<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_DOUBLE_V" title="Permalink to this definition">¶</a></dt>
-<dd><p>Input-output versions of EM_ASM.</p>
-<p><a class="reference internal" href="#c.EM_ASM_" title="EM_ASM_"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_</span></code></a> (an extra &#8220;_&#8221; is added) or <a class="reference internal" href="#c.EM_ASM_ARGS" title="EM_ASM_ARGS"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_ARGS</span></code></a> allow values (<code class="docutils literal"><span class="pre">int</span></code> or <code class="docutils literal"><span class="pre">double</span></code>) to be sent into the code.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The C preprocessor does not have a full understanding of JavaScript tokens, of course. An issue you might see is that it is not aware of nesting due to <code class="docutils literal"><span class="pre">{</span></code> or <code class="docutils literal"><span class="pre">[</span></code>, it is only aware of <code class="docutils literal"><span class="pre">,</span></code> and <code class="docutils literal"><span class="pre">(</span></code>. As a result, if you have a JavaScript array <code class="docutils literal"><span class="pre">[1,2,3]</span></code> then you might get an error, but can fix things with parentheses: <code class="docutils literal"><span class="pre">([1,2,3])</span></code>.</p>
-</div>
-<p>If you also want a return value, <a class="reference internal" href="#c.EM_ASM_INT" title="EM_ASM_INT"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_INT</span></code></a> receives arguments (of <code class="docutils literal"><span class="pre">int</span></code> or <code class="docutils literal"><span class="pre">double</span></code> type) and returns an <code class="docutils literal"><span class="pre">int</span></code>; <a class="reference internal" href="#c.EM_ASM_DOUBLE" title="EM_ASM_DOUBLE"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_DOUBLE</span></code></a> does the same and returns a <code class="docutils literal"><span class="pre">double</span></code>.</p>
-<p>Arguments arrive as <code class="docutils literal"><span class="pre">$0</span></code>, <code class="docutils literal"><span class="pre">$1</span></code> etc. The output value should be returned:</p>
+<dd><blockquote>
+<div><p>These two functions behave like EM_ASM, but in addition they also return a value back to C code. The output value is passed back with a <code class="docutils literal"><span class="pre">return</span></code> statement:</p>
 <div class="highlight-cpp"><div class="highlight"><pre>int x = EM_ASM_INT({
-  console.log(&#39;I received: &#39; + [$0, $1]);
-  return $0 + $1;
-}, calc(), otherCalc());
+  return $0 + 42;
+}, 100);
+
+int y = EM_ASM_INT(return TOTAL_MEMORY);
 </pre></div>
 </div>
-<p>Note the <code class="docutils literal"><span class="pre">{</span></code> and <code class="docutils literal"><span class="pre">}</span></code>.</p>
-<p>If you just want to receive an output value (<code class="docutils literal"><span class="pre">int</span></code> or <code class="docutils literal"><span class="pre">double</span></code>) but not pass any values, you can use <a class="reference internal" href="#c.EM_ASM_INT_V" title="EM_ASM_INT_V"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_INT_V</span></code></a> or <a class="reference internal" href="#c.EM_ASM_DOUBLE_V" title="EM_ASM_DOUBLE_V"><code class="xref c c-macro docutils literal"><span class="pre">EM_ASM_DOUBLE_V</span></code></a>, respectively.</p>
+</div></blockquote>
+<p>Strings can be returned back to C from JavaScript, but one needs to be careful about memory management.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>char *str = (char*)EM_ASM_INT({
+        var jsString = &#39;Hello with some exotic Unicode characters: Tässä on yksi lumiukko: ☃, ole hyvä.&#39;;
+        var lengthBytes = lengthBytesUTF8(jsString)+1; // &#39;jsString.length&#39; would return the length of the string as UTF-16 units, but Emscripten C strings operate as UTF-8.
+        var stringOnWasmHeap = _malloc(lengthBytes);
+        stringToUTF8(jsString, stringOnWasmHeap, lengthBytes+1);
+        return stringOnWasmHeap;
+});
+printf(&quot;UTF8 string says: %s\n&quot;, str);
+free(str); // Each call to _malloc() must be paired with free(), or heap memory will leak!
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -2944,7 +2980,7 @@ void <code class="descname">emscripten_yield</code><span class="sig-paren">(</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.19',
+            VERSION:'1.37.22',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
