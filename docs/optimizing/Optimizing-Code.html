@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 1.37.22 documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 1.37.25 documentation</title>
   
 
   
@@ -30,9 +30,9 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.22 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.25 documentation" href="../../index.html"/>
         <link rel="next" title="Optimizing WebGL" href="Optimizing-WebGL.html"/>
-        <link rel="prev" title="Emterpreter" href="../porting/emterpreter.html"/> 
+        <link rel="prev" title="Building Projects" href="../compiling/Building-Projects.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -166,6 +166,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-my-compiled-program-access-files">How can my compiled program access files?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-can-t-my-code-access-a-file-in-the-same-directory">Why can&#8217;t my code access a file in the same directory?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions">How can I tell when the page is fully loaded and it is safe to call compiled functions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">What does &#8220;exiting the runtime&#8221; mean? Why don&#8217;t <code class="docutils literal"><span class="pre">atexit()s</span></code> run?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process">Why do functions in my C/C++ source code vanish when I compile to JavaScript, and/or I get <code class="docutils literal"><span class="pre">No</span> <span class="pre">functions</span> <span class="pre">to</span> <span class="pre">process</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-is-the-file-system-api-is-not-available-when-i-build-with-closure">Why is the File System API is not available when I build with closure?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-break-and-gives-odd-errors-when-using-o2-closure-1">Why does my code break and gives odd errors when using <code class="docutils literal"><span class="pre">-O2</span> <span class="pre">--closure</span> <span class="pre">1</span></code>?</a></li>
@@ -370,6 +371,28 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-ports">Emscripten Ports</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#adding-more-ports">Adding more ports</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-issues">Build system issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Optimizing Code</a><ul>
@@ -457,6 +480,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Travis.html">Building projects on Travis CI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Travis.html#a-sample-travis-yml">A sample .travis.yml</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a><ul>
@@ -1060,16 +1087,6 @@
 <div class="section" id="advanced-compiler-settings">
 <h2>Advanced compiler settings<a class="headerlink" href="#advanced-compiler-settings" title="Permalink to this headline">¶</a></h2>
 <p>There are several flags you can <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><span>pass to the compiler</span></a> to affect code generation, which will also affect performance — for example <a class="reference internal" href="#optimizing-code-exception-catching"><span>DISABLE_EXCEPTION_CATCHING</span></a>. These are documented in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/settings.js">src/settings.js</a>. Some of these will be directly affected by the optimization settings (you can find out which ones by searching for <code class="docutils literal"><span class="pre">apply_opt_level</span></code> in <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tools/shared.py#L958">tools/shared.py</a>).</p>
-<p>A few useful flags are:</p>
-<ul>
-<li><p id="optimizing-code-no-exit-runtime"><code class="docutils literal"><span class="pre">NO_EXIT_RUNTIME</span></code>: Building with <code class="docutils literal"><span class="pre">-s</span> <span class="pre">NO_EXIT_RUNTIME=1</span></code> lets the compiler know that you don&#8217;t want to shut down the runtime environment after the <code class="docutils literal"><span class="pre">main()</span></code> function finishes. This allows it to discard the <code class="docutils literal"><span class="pre">atexit</span></code> and global destructor calls it would otherwise make, improving code size and startup speed.</p>
-<p>This is useful if your <code class="docutils literal"><span class="pre">main()</span></code> function finishes but you still want to execute code, for example in an app that uses a <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-runtime-environment-main-loop"><span>main loop function</span></a>.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Emscripten will not shut down the runtime if it detects <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></code></a>, but it is better to optimise away the unnecessary code.</p>
-</div>
-</li>
-</ul>
 </div>
 <div class="section" id="code-size">
 <h2>Code size<a class="headerlink" href="#code-size" title="Permalink to this headline">¶</a></h2>
@@ -1217,7 +1234,7 @@ document.body.appendChild(script);
         <a href="Optimizing-WebGL.html" class="btn btn-neutral float-right" title="Optimizing WebGL"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../porting/emterpreter.html" class="btn btn-neutral" title="Emterpreter"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../compiling/Building-Projects.html" class="btn btn-neutral" title="Building Projects"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1319,7 +1336,7 @@ document.body.appendChild(script);
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.22',
+            VERSION:'1.37.25',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

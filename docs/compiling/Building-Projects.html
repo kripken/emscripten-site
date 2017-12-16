@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 1.37.22 documentation</title>
+  <title>Building Projects &mdash; Emscripten 1.37.25 documentation</title>
   
 
   
@@ -30,10 +30,10 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.22 documentation" href="../../index.html"/>
-        <link rel="up" title="Compiling and Running Projects" href="index.html"/>
-        <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
-        <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
+    <link rel="top" title="Emscripten 1.37.25 documentation" href="../../index.html"/>
+        <link rel="up" title="Porting" href="../porting/index.html"/>
+        <link rel="next" title="Optimizing Code" href="../optimizing/Optimizing-Code.html"/>
+        <link rel="prev" title="Emterpreter" href="../porting/emterpreter.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -167,6 +167,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-my-compiled-program-access-files">How can my compiled program access files?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-can-t-my-code-access-a-file-in-the-same-directory">Why can&#8217;t my code access a file in the same directory?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions">How can I tell when the page is fully loaded and it is safe to call compiled functions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">What does &#8220;exiting the runtime&#8221; mean? Why don&#8217;t <code class="docutils literal"><span class="pre">atexit()s</span></code> run?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process">Why do functions in my C/C++ source code vanish when I compile to JavaScript, and/or I get <code class="docutils literal"><span class="pre">No</span> <span class="pre">functions</span> <span class="pre">to</span> <span class="pre">process</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-is-the-file-system-api-is-not-available-when-i-build-with-closure">Why is the File System API is not available when I build with closure?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-break-and-gives-odd-errors-when-using-o2-closure-1">Why does my code break and gives odd errors when using <code class="docutils literal"><span class="pre">-O2</span> <span class="pre">--closure</span> <span class="pre">1</span></code>?</a></li>
@@ -183,7 +184,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="../porting/index.html">Porting</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html#code-that-cannot-be-compiled">Code that cannot be compiled</a></li>
@@ -371,6 +372,28 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Building Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-projects-with-optimizations">Building projects with optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-projects-with-debug-information">Building projects with debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-libraries">Using libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-ports">Emscripten Ports</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-more-ports">Adding more ports</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#build-system-issues">Build system issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#build-system-self-execution">Build system self-execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#archive-a-files">Archive (.a) files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#manually-using-emcc">Manually using emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples-test-code">Examples / test code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
@@ -458,6 +481,10 @@
 <li class="toctree-l3"><a class="reference internal" href="Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Travis.html">Building projects on Travis CI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Travis.html#a-sample-travis-yml">A sample .travis.yml</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Deploying-Pages.html">Deploying Emscripten Compiled Pages</a><ul>
@@ -1010,7 +1037,7 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
+          <a class="breadcrumb-box-item" href="../porting/index.html">&raquo;&nbsp;Porting</a>
       
     <div class="breadcrumb-box-item">&raquo;&nbsp;Building Projects</div>
   </div>
@@ -1028,7 +1055,7 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
+          <a class="breadcrumb-box-item" href="../porting/index.html">&raquo;&nbsp;Porting</a>
       
     <div class="breadcrumb-box-item">&raquo;&nbsp;Building Projects</div>
   </div>
@@ -1302,10 +1329,10 @@ emcc allproject.bc -o final.html
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Running-html-files-with-emrun.html" class="btn btn-neutral float-right" title="Running HTML files with emrun"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../optimizing/Optimizing-Code.html" class="btn btn-neutral float-right" title="Optimizing Code"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Compiling and Running Projects"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../porting/emterpreter.html" class="btn btn-neutral" title="Emterpreter"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1354,7 +1381,7 @@ emcc allproject.bc -o final.html
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
+          <a class="breadcrumb-box-item" href="../porting/index.html">&raquo;&nbsp;Porting</a>
       
     <div class="breadcrumb-box-item">&raquo;&nbsp;Building Projects</div>
   </div>
@@ -1409,7 +1436,7 @@ emcc allproject.bc -o final.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.22',
+            VERSION:'1.37.25',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
