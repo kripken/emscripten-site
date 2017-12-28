@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 1.37.25 documentation</title>
+  <title>FAQ &mdash; Emscripten 1.37.27 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.25 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.27 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Porting" href="../porting/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -1325,8 +1325,20 @@ then compile the object to JavaScript, you need that option on the second comman
 <p>Aside from just forgetting to link in a necessary object file, one possible cause for this error is inline functions in headers. If you have a header with <code class="docutils literal"><span class="pre">inline</span> <span class="pre">int</span> <span class="pre">my_func()</span> <span class="pre">{</span> <span class="pre">..</span> <span class="pre">}</span></code> then <em>Clang</em> may not actually inline the function (since inline is just a hint), and also not generate code for it (since it&#8217;s in a header). The result is that the generated bitcode and JavaScript will not have that function implemented. One solution is to add <code class="docutils literal"><span class="pre">static</span></code> to the function declaration, which forces code to be generated in the object file: <code class="docutils literal"><span class="pre">static</span> <span class="pre">inline</span> <span class="pre">int</span> <span class="pre">my_func()</span> <span class="pre">{</span> <span class="pre">..</span> <span class="pre">}</span></code>.</p>
 </div>
 <div class="section" id="why-do-i-get-typeerror-module-something-is-not-a-function">
-<h2>Why do I get <code class="docutils literal"><span class="pre">TypeError:</span> <span class="pre">Module.someThing</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">function</span></code>?<a class="headerlink" href="#why-do-i-get-typeerror-module-something-is-not-a-function" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">Module</span></code> object will contain exported methods. For something to appear there, you should add it to <code class="docutils literal"><span class="pre">EXPORTED_FUNCTIONS</span></code> for compiled code, or <code class="docutils literal"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code> for a runtime method (like <code class="docutils literal"><span class="pre">getValue</span></code>).</p>
+<span id="faq-export-stuff"></span><h2>Why do I get <code class="docutils literal"><span class="pre">TypeError:</span> <span class="pre">Module.someThing</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">function</span></code>?<a class="headerlink" href="#why-do-i-get-typeerror-module-something-is-not-a-function" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">Module</span></code> object will contain exported methods. For something to appear there, you should add it to <code class="docutils literal"><span class="pre">EXPORTED_FUNCTIONS</span></code> for compiled code, or <code class="docutils literal"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code> for a runtime method (like <code class="docutils literal"><span class="pre">getValue</span></code>). For example,</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s">&quot;[&#39;_main&#39;, &#39;_my_func&#39;]&quot;</span> <span class="p">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>would export a C method <code class="docutils literal"><span class="pre">my_func</span></code> (in addition to <code class="docutils literal"><span class="pre">main</span></code>, in this example). And</p>
+<blockquote>
+<div><div class="highlight-cpp"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXTRA_EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="s">&quot;[&#39;ccall&#39;]&quot;</span> <span class="p">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>will export <code class="docutils literal"><span class="pre">ccall</span></code>. In both cases you can then access the exported function on the <code class="docutils literal"><span class="pre">Module</span></code> object.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can use runtime methods directly, without exporting them, if the compiler can see them used. For example, you can use <code class="docutils literal"><span class="pre">getValue</span></code> in <code class="docutils literal"><span class="pre">EM_ASM</span></code> code, or a <code class="docutils literal"><span class="pre">--pre-js</span></code>, by calling it directly. The optimizer will not remove that JS runtime method because it sees it is used. You only need to use <code class="docutils literal"><span class="pre">Module.getValue</span></code> if you want to call that method from outside the JS code the compiler can see, and then you need to export it.</p>
@@ -1496,7 +1508,7 @@ then compile the object to JavaScript, you need that option on the second comman
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.25',
+            VERSION:'1.37.27',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
