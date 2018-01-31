@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 1.37.28 documentation</title>
+  <title>FAQ &mdash; Emscripten 1.37.32 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.28 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.32 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Porting" href="../porting/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -909,7 +909,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#settings-js">settings.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#preamble-js">preamble.js</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#module-runtime">Module.Runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#advanced-file-system-api">Advanced File System API</a></li>
 </ul>
 </li>
@@ -1225,15 +1224,6 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>You can also define a <code class="docutils literal"><span class="pre">main()</span></code> function in JavaScript:</p>
-<div class="highlight-cpp"><div class="highlight"><pre>Module[&#39;_main&#39;] = function() { ... };
-</pre></div>
-</div>
-<p>or</p>
-<div class="highlight-cpp"><div class="highlight"><pre>Module[&#39;_main&#39;] = allReady;
-</pre></div>
-</div>
-<p>What happens in practice is that when code is ready to be run, we check for <code class="docutils literal"><span class="pre">Module._main</span></code>. If present, we call it. If a <code class="docutils literal"><span class="pre">main()</span></code> function was compiled from C, it will be there (and it will be a JavaScript function). But, you can also just define a JavaScript function there, either will work.</p>
 <p>Another option is to define an <code class="docutils literal"><span class="pre">onRuntimeInitialized</span></code> function,</p>
 <div class="highlight-cpp"><div class="highlight"><pre>Module[&#39;onRuntimeInitialized&#39;] = function() { ... };
 </pre></div>
@@ -1251,6 +1241,12 @@
 </pre></div>
 </div>
 <p>The crucial thing is that <code class="docutils literal"><span class="pre">Module</span></code> exists, and has the property <code class="docutils literal"><span class="pre">onRuntimeInitialized</span></code>, before the script containing emscripten output (<code class="docutils literal"><span class="pre">my_project.js</span></code> in this example) is loaded.</p>
+<p>Another option is to use the <code class="docutils literal"><span class="pre">MODULARIZE</span></code> option, using <code class="docutils literal"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span></code>. That will put all of the generated JavaScript in a function, which you can call to create an instance. The instance has a promise-like <cite>.then()</cite> method, so if you build with say <code class="docutils literal"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span> <span class="pre">-s</span> <span class="pre">'EXPORT_NAME=&quot;MyCode&quot;'</span></code> (see details in settings.js), then you can do something like this:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="n">MyCode</span><span class="p">().</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">Module</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// this is reached when everything is ready, and you can call methods on Module</span>
+<span class="p">});</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">
 <span id="faq-no-exit-runtime"></span><h2>What does &#8220;exiting the runtime&#8221; mean? Why don&#8217;t <code class="docutils literal"><span class="pre">atexit()s</span></code> run?<a class="headerlink" href="#what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run" title="Permalink to this headline">¶</a></h2>
@@ -1379,11 +1375,14 @@ then compile the object to JavaScript, you need that option on the second comman
 </pre></div>
 </div>
 <p>You may need to quote things like this:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="cp"># this works on most Linuxes and on macOS</span>
-<span class="p">.</span><span class="o">/</span><span class="n">emcc</span> <span class="n">a</span><span class="p">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="s">&quot;EXTRA_EXPORTED_RUNTIME_METHODS=[&#39;addOnPostRun&#39;]&quot;</span>
+<div class="highlight-cpp"><div class="highlight"><pre># this works in the shell on most Linuxes and on macOS
+./emcc a.c -s &quot;EXTRA_EXPORTED_RUNTIME_METHODS=[&#39;addOnPostRun&#39;]&quot;
+
+# or you may need something like this in a Makefile
+./emcc a.c -s EXTRA_EXPORTED_RUNTIME_METHODS=\&quot;[&#39;addOnPostRun&#39;]\&quot;
 </pre></div>
 </div>
-<p>The proper syntax depends on the OS and shell you are in.</p>
+<p>The proper syntax depends on the OS and shell you are in, and if you are writing in a Makefile, etc.</p>
 </div>
 <div class="section" id="why-do-i-get-an-odd-python-error-complaining-about-libcxx-bc-or-libcxxabi-bc">
 <h2>Why do I get an odd python error complaining about libcxx.bc or libcxxabi.bc?<a class="headerlink" href="#why-do-i-get-an-odd-python-error-complaining-about-libcxx-bc-or-libcxxabi-bc" title="Permalink to this headline">¶</a></h2>
@@ -1545,7 +1544,7 @@ then compile the object to JavaScript, you need that option on the second comman
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.28',
+            VERSION:'1.37.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

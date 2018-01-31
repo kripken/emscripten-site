@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>vr.h &mdash; Emscripten 1.37.28 documentation</title>
+  <title>vr.h &mdash; Emscripten 1.37.32 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.28 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.32 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Advanced APIs" href="advanced-apis.html"/>
         <link rel="prev" title="trace.h" href="trace.h.html"/> 
@@ -909,7 +909,6 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced-apis.html">Advanced APIs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="advanced-apis.html#settings-js">settings.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="advanced-apis.html#preamble-js">preamble.js</a></li>
-<li class="toctree-l3"><a class="reference internal" href="advanced-apis.html#module-runtime">Module.Runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="advanced-apis.html#advanced-file-system-api">Advanced File System API</a></li>
 </ul>
 </li>
@@ -1092,16 +1091,24 @@
 <h3>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_vr_init">
-int <code class="descname">emscripten_vr_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_init" title="Permalink to this definition">¶</a></dt>
+int <code class="descname">emscripten_vr_init</code><span class="sig-paren">(</span>em_vr_arg_callback_func<em>&nbsp;callback</em>, void*<em>&nbsp;userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the emscripten VR API. This will <a class="reference external" href="https://w3c.github.io/webvr/spec/1.1/#navigator-getvrdisplays-attribute">navigator.getVRDisplays()</a>
 and when completed, set the return of <a class="reference internal" href="#c.emscripten_vr_ready" title="emscripten_vr_ready"><code class="xref c c-func docutils literal"><span class="pre">emscripten_vr_ready()</span></code></a> to be <cite>true</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>1</cite> on success, <cite>0</cite> if the browsers WebVR support is insufficient.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>callback</strong> (<em>em_vr_callback_arg_func</em>) &#8211; C function to call when initialization is complete. The function signature must have a <code class="docutils literal"><span class="pre">void*</span></code> parameter for passing the <code class="docutils literal"><span class="pre">arg</span></code> value.</li>
+<li><strong>arg</strong> (<em>void*</em>) &#8211; User-defined data passed to the callback, untouched by the API itself.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>1</cite> on success, <cite>0</cite> if the browsers WebVR support is insufficient.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1110,7 +1117,7 @@ and when completed, set the return of <a class="reference internal" href="#c.ems
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p class="last">This call succeeding is not sufficient for use of the rest of the API. Please
-make sure to wait until the return value of <a class="reference internal" href="#c.emscripten_vr_ready" title="emscripten_vr_ready"><code class="xref c c-func docutils literal"><span class="pre">emscripten_vr_ready()</span></code></a> is true.</p>
+make sure to wait until the callback is executed.</p>
 </div>
 <dl class="function">
 <dt id="c.emscripten_vr_ready">
@@ -1124,6 +1131,21 @@ running browser.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>1</cite> if ready, <cite>0</cite> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_vr_deinit">
+int <code class="descname">emscripten_vr_deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_deinit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deinitialize the emscripten VR API. This will free all memory allocated for
+display name strings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>1</cite> on success.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
@@ -1213,8 +1235,10 @@ VRDisplayHandle <code class="descname">emscripten_vr_get_display_handle</code><s
 
 <dl class="function">
 <dt id="c.emscripten_vr_get_display_name">
-char* <code class="descname">emscripten_vr_get_display_name</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_get_display_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a user-readable name which identifies the VR display.</p>
+const char* <code class="descname">emscripten_vr_get_display_name</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_get_display_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a user-readable name which identifies the VR display. The memory for the
+returned string is managed by the API and will be freed on
+<a class="reference internal" href="#c.emscripten_vr_deinit" title="emscripten_vr_deinit"><code class="xref c c-func docutils literal"><span class="pre">emscripten_vr_deinit()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1235,8 +1259,8 @@ char* <code class="descname">emscripten_vr_get_display_name</code><span class="s
 </dd></dl>
 
 <dl class="function">
-<dt id="c.emscripten_vr_get_display_connected">
-bool <code class="descname">emscripten_vr_get_display_connected</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_get_display_connected" title="Permalink to this definition">¶</a></dt>
+<dt id="c.emscripten_vr_display_connected">
+bool <code class="descname">emscripten_vr_display_connected</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_display_connected" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1258,8 +1282,8 @@ the handle is invalid.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="c.emscripten_vr_get_display_presenting">
-bool <code class="descname">emscripten_vr_get_display_presenting</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_get_display_presenting" title="Permalink to this definition">¶</a></dt>
+<dt id="c.emscripten_vr_display_presenting">
+bool <code class="descname">emscripten_vr_display_presenting</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_display_presenting" title="Permalink to this definition">¶</a></dt>
 <dd><p>See also <a class="reference internal" href="#c.emscripten_vr_request_present" title="emscripten_vr_request_present"><code class="xref c c-func docutils literal"><span class="pre">emscripten_vr_request_present()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1405,7 +1429,7 @@ void <code class="descname">emscripten_vr_cancel_display_render_loop</code><span
 
 <dl class="function">
 <dt id="c.emscripten_vr_get_frame_data">
-int <code class="descname">emscripten_vr_get_frame_data</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_get_frame_data" title="Permalink to this definition">¶</a></dt>
+int <code class="descname">emscripten_vr_get_frame_data</code><span class="sig-paren">(</span>VRDisplayHandle<em>&nbsp;handle</em>, <a class="reference internal" href="#c.VRFrameData" title="VRFrameData">VRFrameData</a>*<em>&nbsp;frameData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_vr_get_frame_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get view matrix, projection matrix, timestamp and head pose for current frame.
 Only valid when called from within a render loop callback.</p>
 <p>See also <a class="reference internal" href="#c.emscripten_vr_set_display_render_loop" title="emscripten_vr_set_display_render_loop"><code class="xref c c-func docutils literal"><span class="pre">emscripten_vr_set_display_render_loop()</span></code></a> and <a class="reference internal" href="#c.emscripten_vr_set_display_render_loop_arg" title="emscripten_vr_set_display_render_loop_arg"><code class="xref c c-func docutils literal"><span class="pre">emscripten_vr_set_display_render_loop_arg()</span></code></a> for information about setting and using the render loop.</p>
@@ -1415,6 +1439,7 @@ Only valid when called from within a render loop callback.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>handle</strong> (<em>VRDisplayHandle</em>) &#8211; a display handle.</li>
+<li><strong>frameData</strong> (<a class="reference internal" href="#c.VRFrameData" title="VRFrameData"><em>VRFrameData*</em></a>) &#8211; Will receive the new framedata values.</li>
 </ul>
 </td>
 </tr>
@@ -1598,37 +1623,37 @@ the <code class="xref c c-member docutils literal"><span class="pre">poseFlags</
 <dl class="member">
 <dt id="c.VRPose.position">
 <a class="reference internal" href="#c.VRVector3" title="VRVector3">VRVector3</a> <code class="descname">position</code><a class="headerlink" href="#c.VRPose.position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Position, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_POSITION</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<dd><p>Position, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_POSITION</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.VRPose.linearVelocity">
 <a class="reference internal" href="#c.VRVector3" title="VRVector3">VRVector3</a> <code class="descname">linearVelocity</code><a class="headerlink" href="#c.VRPose.linearVelocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Linear velocity, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_LINEAR_VELOCITY</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<dd><p>Linear velocity, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_LINEAR_VELOCITY</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.VRPose.linearAcceleration">
 <a class="reference internal" href="#c.VRVector3" title="VRVector3">VRVector3</a> <code class="descname">linearAcceleration</code><a class="headerlink" href="#c.VRPose.linearAcceleration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Linear acceleration, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_LINEAR_ACCELERATION</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<dd><p>Linear acceleration, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_LINEAR_ACCELERATION</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.VRPose.orientation">
 <a class="reference internal" href="#c.VRQuaternion" title="VRQuaternion">VRQuaternion</a> <code class="descname">orientation</code><a class="headerlink" href="#c.VRPose.orientation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Orientation quaternion, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_ORIENTATION</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<dd><p>Orientation quaternion, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_ORIENTATION</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.VRPose.angularVelocity">
 <a class="reference internal" href="#c.VRVector3" title="VRVector3">VRVector3</a> <code class="descname">angularVelocity</code><a class="headerlink" href="#c.VRPose.angularVelocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Angular velocity, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_ANGULAR_VELOCITY</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<dd><p>Angular velocity, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_ANGULAR_VELOCITY</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.VRPose.angularAcceleration">
 <a class="reference internal" href="#c.VRVector3" title="VRVector3">VRVector3</a> <code class="descname">angularAcceleration</code><a class="headerlink" href="#c.VRPose.angularAcceleration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Angular acceleration, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_ANGULAR_ACCELERATION</span> <span class="pre">==</span> <span class="pre">0</span></code>.</p>
+<dd><p>Angular acceleration, valid only if <code class="docutils literal"><span class="pre">poseFlags</span> <span class="pre">&amp;</span> <span class="pre">VR_POSE_ANGULAR_ACCELERATION</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
@@ -1864,7 +1889,7 @@ float <code class="descname">w</code><a class="headerlink" href="#c.VRQuaternion
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.28',
+            VERSION:'1.37.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

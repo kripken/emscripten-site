@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emterpreter &mdash; Emscripten 1.37.28 documentation</title>
+  <title>Emterpreter &mdash; Emscripten 1.37.32 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.28 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.32 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Building Projects" href="../compiling/Building-Projects.html"/>
         <link rel="prev" title="Asyncify" href="asyncify.html"/> 
@@ -909,7 +909,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#settings-js">settings.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#preamble-js">preamble.js</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#module-runtime">Module.Runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#advanced-file-system-api">Advanced File System API</a></li>
 </ul>
 </li>
@@ -1139,6 +1138,10 @@
 <h4>Static Analysis<a class="headerlink" href="#static-analysis" title="Permalink to this headline">¶</a></h4>
 <p>Building with <code class="docutils literal"><span class="pre">EMTERPRETIFY_ADVISE</span></code> will process the project and perform a static analysis to determine which methods should probably be run in the interpreter. This checks which methods <em>could</em> be on the stack underneath a call to a synchronous method, in which case they must be interpreted so that we can save and restore the stack later in an asynchronous way.</p>
 <p>The analysis is pessimistic, in that it checks what <em>could</em> possibly be called, but might not in practice. For example, function pointers are hard to figure out: Even though the analysis takes into account the <strong>type</strong> of function pointer, if you call a <code class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></code> method by a function pointer, then the analysis must assume that any <code class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></code> method (that ever has its address taken, i.e., <em>could</em> be called via a function pointer) could be called there. For example, on Doom it suggests that 31% (!) of all methods should be interpreted, while in practice only 1% need to be (as is easy to verify by reading the code).</p>
+<p>If you have written custom synchronous functions, use <code class="docutils literal"><span class="pre">EMTERPRETIFY_SYNCLIST</span></code> to specify them and <code class="docutils literal"><span class="pre">EMTERPRETIFY_ADVISE</span></code> will include them in its analysis along with the standard synchronous functions.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>-s EMTERPRETIFY_SYNCLIST=&#39;[&quot;_custom_func_a&quot;,&quot;_custom_func_b&quot;]&#39;
+</pre></div>
+</div>
 </div>
 <div class="section" id="dynamic-tools">
 <h4>Dynamic Tools<a class="headerlink" href="#dynamic-tools" title="Permalink to this headline">¶</a></h4>
@@ -1324,7 +1327,7 @@ run/&lt;@file:///home/alon/Dev/boon/boon.js:19:32169
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.28',
+            VERSION:'1.37.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
