@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.37.37 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.37.39 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.37 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.39 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -1091,6 +1091,99 @@
 <p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span>Calling JavaScript from C/C++</span></a>.</p>
 <div class="section" id="defines">
 <h3>Defines<a class="headerlink" href="#defines" title="Permalink to this headline">¶</a></h3>
+<dl class="macro">
+<dt id="c.EM_JS">
+<code class="descname">EM_JS</code><span class="sig-paren">(</span>return_type, function_name, arguments, code<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_JS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenient syntax for JavaScript library functions.</p>
+<p>This allows you to declare JavaScript in your C code as a function, which can
+be called like a normal C function. For example, the following C program would
+display two alerts if it was compiled with Emscripten and run in the browser:</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_JS(void, two_alerts, (), {
+  alert(&#39;hai&#39;);
+  alert(&#39;bai&#39;);
+});
+
+int main() {
+  two_alerts();
+  return 0;
+}
+</pre></div>
+</div>
+<p>Arguments can be passed as normal C arguments, and have the same name in the
+JavaScript code. These arguments can either be of type <code class="docutils literal"><span class="pre">int32_t</span></code> or
+<code class="docutils literal"><span class="pre">double</span></code>.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_JS(void, take_args, (int x, float y), {
+  console.log(&#39;I received: &#39; + [x, y]);
+});
+
+int main() {
+  take_args(100, 35.5);
+  return 0;
+}
+</pre></div>
+</div>
+<p>Null-terminated C strings can also be passed into <code class="docutils literal"><span class="pre">EM_JS</span></code> functions, but to
+operate on them, they need to be copied out from the heap to convert to
+high-level JavaScript strings.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_JS(void, say_hello, (const char* str), {
+  console.log(&#39;hello &#39; + UTF8ToString(str));
+}
+</pre></div>
+</div>
+<p>In the same manner, pointers to any type (including <code class="docutils literal"><span class="pre">void</span> <span class="pre">*</span></code>) can be passed
+inside <code class="docutils literal"><span class="pre">EM_JS</span></code> code, where they appear as integers like <code class="docutils literal"><span class="pre">char</span> <span class="pre">*</span></code> pointers
+above did. Accessing the data can be managed by reading the heap directly.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_JS(void, read_data, (int* data), {
+  console.log(&#39;Data: &#39; + HEAP32[data&gt;&gt;2] + &#39;, &#39; + HEAP32[(data+4)&gt;&gt;2]);
+});
+
+int main() {
+  int arr[2] = { 30, 45 };
+  read_data(arr);
+  return 0;
+}
+</pre></div>
+</div>
+<p>In addition, EM_JS functions can return a value back to C code. The output
+value is passed back with a <code class="docutils literal"><span class="pre">return</span></code> statement:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">add_forty_two</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">),</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">42</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">get_total_memory</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">TOTAL_MEMORY</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">add_forty_two</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_total_memory</span><span class="p">();</span>
+  <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Strings can be returned back to C from JavaScript, but one needs to be careful
+about memory management.</p>
+<div class="highlight-cpp"><div class="highlight"><pre>EM_JS(const char*, get_unicode_str, (), {
+  var jsString = &#39;Hello with some exotic Unicode characters: Tässä on yksi lumiukko: ☃, ole hyvä.&#39;;
+  // &#39;jsString.length&#39; would return the length of the string as UTF-16
+  // units, but Emscripten C strings operate as UTF-8.
+  var lengthBytes = lengthBytesUTF8(jsString)+1;
+  var stringOnWasmHeap = _malloc(lengthBytes);
+  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes+1);
+  return stringOnWasmHeap;
+});
+
+int main() {
+  const char* str = get_unicode_str();
+  printf(&quot;UTF8 string says: %s\n&quot;, str);
+  // Each call to _malloc() must be paired with free(), or heap memory will leak!
+  free(str);
+  return 0;
+}
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="macro">
 <dt id="c.EM_ASM">
 <code class="descname">EM_ASM</code><span class="sig-paren">(</span>...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM" title="Permalink to this definition">¶</a></dt>
@@ -3017,7 +3110,7 @@ void <code class="descname">emscripten_yield</code><span class="sig-paren">(</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.37.37',
+            VERSION:'1.37.39',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

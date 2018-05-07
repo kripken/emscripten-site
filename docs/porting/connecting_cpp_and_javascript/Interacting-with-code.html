@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 1.37.37 documentation</title>
+  <title>Interacting with code &mdash; Emscripten 1.37.39 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.37.37 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.37.39 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -1086,6 +1086,7 @@ created with:<ul>
 </li>
 <li>Call JavaScript functions from <strong>C/C++</strong>:<ul>
 <li><a class="reference internal" href="#interacting-with-code-call-javascript-from-native"><span>Using emscripten_run_script()</span></a>.</li>
+<li><a class="reference internal" href="#interacting-with-code-call-javascript-from-native"><span>Using EM_JS()</span></a> (faster).</li>
 <li><a class="reference internal" href="#interacting-with-code-call-javascript-from-native"><span>Using EM_ASM()</span></a> (faster).</li>
 <li><a class="reference internal" href="#implement-c-in-javascript"><span>Using a C API implemented in JavaScript</span></a>.</li>
 <li><a class="reference internal" href="#interacting-with-code-call-function-pointers-from-c"><span>As function pointers from C</span></a>.</li>
@@ -1307,9 +1308,26 @@ or other JavaScript shells. A more generic alternative is to call
 <a class="reference internal" href="../../api_reference/module.html#Module.print" title="Module.print"><code class="xref js js-func docutils literal"><span class="pre">Module.print()</span></code></a>.</p>
 </div>
 <p>A faster way to call JavaScript from C is to write &#8220;inline JavaScript&#8221;,
-using <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM" title="EM_ASM"><code class="xref c c-func docutils literal"><span class="pre">EM_ASM()</span></code></a> (and related macros). These are used in a similar
-manner to inline assembly code. The &#8220;alert&#8221; example above might be
-written using inline JavaScript as:</p>
+using <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_JS" title="EM_JS"><code class="xref c c-func docutils literal"><span class="pre">EM_JS()</span></code></a> or <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM" title="EM_ASM"><code class="xref c c-func docutils literal"><span class="pre">EM_ASM()</span></code></a> (and related macros).</p>
+<p>EM_JS is used to declare JavaScript functions from inside a C file. The &#8220;alert&#8221;
+example might be written using EM_JS like:</p>
+<div class="highlight-c++"><div class="highlight"><pre>#include &lt;emscripten.h&gt;
+
+EM_JS(void, call_alert, (), {
+  alert(&#39;hello world!&#39;);
+  throw &#39;all done&#39;;
+});
+
+int main() {
+  call_alert();
+  return 0;
+}
+</pre></div>
+</div>
+<p>EM_JS&#8217;s implementation is essentially a shorthand for <a class="reference internal" href="#implement-c-in-javascript"><span>implementing a
+JavaScript library</span></a>.</p>
+<p>EM_ASM is used in a similar manner to inline assembly code. The &#8220;alert&#8221; example
+might be written with inline JavaScript as:</p>
 <div class="highlight-c++"><div class="highlight"><pre>#include &lt;emscripten.h&gt;
 
 int main() {
@@ -1836,7 +1854,7 @@ natural fit for the project and its build system.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.37.37',
+            VERSION:'1.37.39',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
