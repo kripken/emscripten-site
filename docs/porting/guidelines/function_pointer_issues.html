@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Function Pointer Issues &mdash; Emscripten 1.38.4 documentation</title>
+  <title>Function Pointer Issues &mdash; Emscripten 1.38.5 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.4 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.5 documentation" href="../../../index.html"/>
         <link rel="up" title="Code Portability and Limitations" href="index.html"/>
         <link rel="next" title="Specific Browser Limitations" href="browser_limitations.html"/>
         <link rel="prev" title="API Limitations" href="api_limitations.html"/> 
@@ -264,7 +264,8 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="">Function Pointer Issues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#asm-pointer-casts">Asm pointer casts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debugging-function-pointer-issues">Debugging function pointer issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#working-around-function-pointer-issues">Working around function pointer issues</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="browser_limitations.html">Specific Browser Limitations</a></li>
@@ -1076,49 +1077,35 @@
             
   <div class="section" id="function-pointer-issues">
 <span id="portability-function-pointer-issues"></span><h1>Function Pointer Issues<a class="headerlink" href="#function-pointer-issues" title="Permalink to this headline">¶</a></h1>
-<p>There are three general issues with function pointers:</p>
+<p>There are two main issues with function pointers:</p>
 <ol class="arabic">
-<li><p class="first"><a class="reference internal" href="#asm-pointer-casts"><span>Function pointer casts</span></a> can cause function pointer calls to fail.</p>
-<p>Function pointers are stored in a specific table based on their signature when they are <em>declared</em>. When a function is called the code searches for it in the table associated with its <em>current</em> function pointer signature. If the function pointer used to call the function does not have the same signature as the original type, the calling code will look for it in the wrong table.</p>
-<p>For example, consider a function declared as <code class="docutils literal"><span class="pre">int</span> <span class="pre">(int)</span></code> (return <code class="docutils literal"><span class="pre">int</span></code>, receive <code class="docutils literal"><span class="pre">int</span></code>) and hence added to the table <code class="docutils literal"><span class="pre">FUNCTION_TABLE_ii</span></code>. If you cast a function pointer to it to <code class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></code> (no return, receive <code class="docutils literal"><span class="pre">int</span></code>), then the code will look for the function in <code class="docutils literal"><span class="pre">FUNCTION_TABLE_vi</span></code>.</p>
-<p>You may see compilation warnings for this error:</p>
+<li><p class="first">Function pointer casts can cause function pointer calls to fail.</p>
+<p>Function pointers must be called with the correct type: it is undefined behavior in C and C++ to cast a function pointer to another type and call it that way. This does work in most native platforms, however, despite it being UB, but in asm.js and in wasm it can fail. In that case, you may see an <code class="docutils literal"><span class="pre">abort(10)</span></code> or some other number, and if assertions are on you may see a message with details that start with</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="n">Invalid</span> <span class="n">function</span> <span class="n">pointer</span> <span class="n">called</span>
+</pre></div>
+</div>
+<p>Rarely, you may see a compiler warning like this:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="nl">warning</span><span class="p">:</span> <span class="n">implicit</span> <span class="n">declaration</span> <span class="n">of</span> <span class="n">function</span>
 </pre></div>
 </div>
-<p>The recommended workaround is to refactor code to avoid this type of situation, as described in <a class="reference internal" href="#asm-pointer-casts"><span>Asm pointer casts</span></a> below.</p>
-</li>
-<li><p class="first">When using optimisation <a class="reference internal" href="../../tools_reference/emcc.html#emcc-o2"><span>-O2</span></a> and above, comparing function pointers of different types can give false positives, and bugs with incorrect function pointers are potentially more misleading. To check if this is the cause of problems with your code, you can compile with <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/src/settings.js#L213">ALIASING_FUNCTION_POINTERS</a> unset (<code class="docutils literal"><span class="pre">-s</span> <span class="pre">ALIASING_FUNCTION_POINTERS=0</span></code>).</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>In <strong>asm.js</strong>, function pointers are stored within a function-type specific table (as in the <code class="docutils literal"><span class="pre">FUNCTION_TABLE_ii</span></code> example from before).</p>
-<p>At lower levels of optimisation each function pointer has a unique index value across all the function-type tables (a function pointer will exist at a specific index in one table only, and there will be an empty slot at that index in all the other tables). As a result, comparing function pointers (indexes) gives an accurate result, and attempting to call a function pointer in the wrong table will throw an error as that index will be empty.</p>
-<p>At optimisation <code class="docutils literal"><span class="pre">-O2</span></code> and above, the tables are optimised so that all the function pointers are in sequential indexes. This is a useful optimisation because the tables are much more compact without all the empty slots, but it does mean that the  function index is no longer &#8220;globally&#8221; unique. Each function is now uniquely indexed using both its table and its index within that table.</p>
-<p>As a result, at higher optimisations:</p>
-<blockquote class="last">
-<div><ul class="simple">
-<li>Comparisons of the function pointers can give a false positive, because functions of different types can have the same index (albeit in different tables).</li>
-<li>Mistakes in function pointer code can be more difficult to debug, because they result in the wrong code being called rather than an explicit error (as is raised in the case of a &#8220;hole&#8221; in the table).</li>
-</ul>
-</div></blockquote>
-</div>
+<p>This may be related to a function pointer cast problem as implicit declarations may have a different type than how you call them. However, in general the compiler cannot warn about this, and you will only see a problem at runtime.</p>
 </li>
 <li><p class="first">Older versions of <a class="reference internal" href="../../site/glossary.html#term-clang"><span class="xref std std-term">clang</span></a> can generate different code for C and C++ calls when a structure is passed <strong>by value</strong> (for completeness, one convention is <code class="docutils literal"><span class="pre">struct</span> <span class="pre">byval</span></code> and the other is <code class="docutils literal"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></code>). The two formats are incompatible with each other, and you may get a warning.</p>
 <p>The workaround is to pass the structure by reference, or simply not mix C and C++ in that location (for example, rename the <strong>.c</strong> file to <strong>.cpp</strong>).</p>
 </li>
 </ol>
-<div class="section" id="asm-pointer-casts">
-<span id="function-pointer-issues-point-asmjs"></span><span id="id1"></span><h2>Asm pointer casts<a class="headerlink" href="#asm-pointer-casts" title="Permalink to this headline">¶</a></h2>
-<p>As mentioned <a class="reference internal" href="#function-pointer-issues-point-asmjs"><span>above</span></a>, in <strong>asm.js</strong> mode function pointers must be called using their correct type or the call will fail. This is because each function pointer is stored in a specific table based on its signature when it is declared: casting the pointer to another type will cause calling code to look for the function pointer in the wrong place.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Having a separate table for each type of function pointer allows the JavaScript engine to know the exact type of each function pointer call, and optimize those calls much better than would otherwise be possible.</p>
+<div class="section" id="debugging-function-pointer-issues">
+<span id="asm-pointer-casts"></span><span id="function-pointer-issues-point-asmjs"></span><h2>Debugging function pointer issues<a class="headerlink" href="#debugging-function-pointer-issues" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">SAFE_HEAP</span></code> and <code class="docutils literal"><span class="pre">ASSERTION</span></code> options can catch some of these errors at runtime and provide useful information. You can also see if <code class="docutils literal"><span class="pre">EMULATE_FUNCTION_POINTER_CASTS</span></code> fixes things for you, but see later down about the overhead.</p>
 </div>
+<div class="section" id="working-around-function-pointer-issues">
+<h2>Working around function pointer issues<a class="headerlink" href="#working-around-function-pointer-issues" title="Permalink to this headline">¶</a></h2>
 <p>There are three solutions to this problem (the second is preferred):</p>
 <blockquote>
 <div><ul class="simple">
 <li>Cast the function pointer back to the correct type before it is called. This is problematic because it requires that the caller knows the original type.</li>
-<li>Make an adapter function that does not need to be cast, and will hence be found in the correct function-pointer table. From the adapter function call the original function.</li>
-<li>Use <code class="docutils literal"><span class="pre">EMULATE_FUNCTION_POINTER_CASTS</span></code>. When you build with <code class="docutils literal"><span class="pre">-s</span> <span class="pre">EMULATE_FUNCTION_POINTER_CASTS=1</span></code>, Emscripten emits code to emulate function pointer casts at runtime, adding extra arguments/dropping them/changing their type/adding or dropping a return type/etc. This can add significant runtime overhead, so it is not recommended, but might be worth trying.</li>
+<li>Manually write an adapter function that does not need to be cast, and calls the original function. For example, it might ignore a parameter, and in that way bridge between the different function pointer types.</li>
+<li>Use <code class="docutils literal"><span class="pre">EMULATE_FUNCTION_POINTER_CASTS</span></code>. When you build with <code class="docutils literal"><span class="pre">-s</span> <span class="pre">EMULATE_FUNCTION_POINTER_CASTS=1</span></code>, Emscripten emits code to emulate function pointer casts at runtime, adding extra arguments/dropping them/changing their type/adding or dropping a return type/etc. This can add significant runtime overhead, so it is not recommended, but is be worth trying.</li>
 </ul>
 </div></blockquote>
 <p>For a real-world example, consider the code below:</p>
@@ -1160,29 +1147,22 @@
 </pre></div>
 </div>
 <p>The code defines three functions with different signatures: <code class="docutils literal"><span class="pre">voidReturn</span></code> of type <code class="docutils literal"><span class="pre">vi</span></code> (<code class="docutils literal"><span class="pre">void</span> <span class="pre">(int)</span></code>), <code class="docutils literal"><span class="pre">intReturn</span></code> of type <code class="docutils literal"><span class="pre">ii</span></code>, and <code class="docutils literal"><span class="pre">voidReturnNoParam</span></code> of type <code class="docutils literal"><span class="pre">v</span></code>. These function pointers are cast to type <code class="docutils literal"><span class="pre">vi</span></code> and added to a list. The functions are then called using the function pointers in the list.</p>
-<p>The code runs (and works) when compiled to machine code. You can try it by saving the code as <strong>main.c</strong> and executing <strong>cc main.c</strong> and then <strong>./a.out</strong>. You&#8217;ll see this output:</p>
+<p>The code runs (and works) when compiled to native machine code (on all major platforms). You can try it by saving the code as <strong>main.c</strong> and executing <strong>cc main.c</strong> and then <strong>./a.out</strong>. You&#8217;ll see this output:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="nl">voidReturn</span><span class="p">:</span> <span class="n">hello</span> <span class="n">world</span>
 <span class="nl">intReturn</span><span class="p">:</span> <span class="n">hello</span> <span class="n">world</span>
 <span class="nl">voidReturnNoParam</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>However, the code fails with a runtime exception in Emscripten, and displays the console output:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="nl">voidReturn</span><span class="p">:</span> <span class="n">hello</span> <span class="n">world</span>
+<div class="highlight-cpp"><div class="highlight"><pre>voidReturn: hello world
+Invalid function pointer called with signature &#39;vi&#39;. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)
+Build with ASSERTIONS=2 for more info.
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can try this yourself. Save the code as <strong>main.c</strong>, compile using <code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-O0</span> <span class="pre">main.c</span> <span class="pre">-o</span> <span class="pre">main.html</span></code>, and then load <strong>main.html</strong> into a browser.</p>
 </div>
-<p>To see why this breaks, look at the html source. You should be able to find the section below in the code, showing the methods are stored in function tables based on their <em>original</em> function signatures.</p>
-<div class="code javascript highlight-cpp"><div class="highlight"><pre><span class="n">var</span> <span class="n">FUNCTION_TABLE_vi</span> <span class="o">=</span> <span class="p">[</span><span class="n">b0</span><span class="p">,</span><span class="n">b0</span><span class="p">,</span><span class="n">b0</span><span class="p">,</span><span class="n">b0</span><span class="p">,</span><span class="n">b0</span><span class="p">,</span><span class="n">b0</span><span class="p">,</span><span class="n">_voidReturn</span><span class="p">,</span><span class="n">b0</span><span class="p">];</span>
-<span class="n">var</span> <span class="n">FUNCTION_TABLE_ii</span> <span class="o">=</span> <span class="p">[</span><span class="n">b1</span><span class="p">,</span><span class="n">b1</span><span class="p">,</span><span class="n">_intReturn</span><span class="p">,</span><span class="n">b1</span><span class="p">,</span><span class="n">b1</span><span class="p">,</span><span class="n">b1</span><span class="p">,</span><span class="n">b1</span><span class="p">,</span><span class="n">b1</span><span class="p">];</span>
-<span class="n">var</span> <span class="n">FUNCTION_TABLE_iii</span> <span class="o">=</span> <span class="p">[</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">,</span><span class="n">b2</span><span class="p">];</span>
-<span class="n">var</span> <span class="n">FUNCTION_TABLE_v</span> <span class="o">=</span> <span class="p">[</span><span class="n">b3</span><span class="p">,</span><span class="n">b3</span><span class="p">,</span><span class="n">b3</span><span class="p">,</span><span class="n">b3</span><span class="p">,</span><span class="n">_voidReturnNoParam</span><span class="p">,</span><span class="n">b3</span><span class="p">,</span><span class="n">b3</span><span class="p">,</span><span class="n">b3</span><span class="p">];</span>
-</pre></div>
-</div>
-<p>When Emscripten-generated code executes a function, it looks up the function in the table based on its signature. In our <code class="docutils literal"><span class="pre">callFunctions()</span></code> method we are passed a list of functions with the signature <code class="docutils literal"><span class="pre">vi</span></code>, so Emscripten looks for all the functions in the table <code class="docutils literal"><span class="pre">FUNCTION_TABLE_vi</span></code>. Only the function <code class="docutils literal"><span class="pre">voidReturn</span></code> is found in <code class="docutils literal"><span class="pre">FUNCTION_TABLE_vi</span></code>. The other two functions are not found, causing the exception.</p>
-<p>As stated above, there are two solutions to this problem.</p>
 <p>The code fragment below shows how we can cast the function pointer back to its original signature just before calling it, so that it is found in the correct table. This requires the receiver of the table to have special knowledge about what is in the list (you can see this in the special case for index <code class="docutils literal"><span class="pre">1</span></code> in the while loop). Additionally, <a class="reference internal" href="../../tools_reference/emcc.html#emccdoc"><span>emcc</span></a> will continue to complain about the original cast taking place in <code class="docutils literal"><span class="pre">main()</span></code> when adding the function to <code class="docutils literal"><span class="pre">functionList[1]</span></code>.</p>
 <div class="code cpp highlight-cpp"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">callFunctions</span><span class="p">(</span><span class="k">const</span> <span class="n">voidReturnType</span> <span class="o">*</span> <span class="n">funcs</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
   <span class="kt">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -1331,7 +1311,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.38.4',
+            VERSION:'1.38.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

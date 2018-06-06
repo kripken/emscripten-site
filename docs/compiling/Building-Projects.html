@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 1.38.4 documentation</title>
+  <title>Building Projects &mdash; Emscripten 1.38.5 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.4 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.5 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -264,7 +264,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html">Function Pointer Issues</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html#asm-pointer-casts">Asm pointer casts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html#debugging-function-pointer-issues">Debugging function pointer issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html#working-around-function-pointer-issues">Working around function pointer issues</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
@@ -1094,17 +1095,20 @@ make
 ./emcc <span class="o">[</span>-Ox<span class="o">]</span> project.bc -o project.js
 </pre></div>
 </div>
-<p><em>emconfigure</em> is called with the normal <em>configure</em> as an argument (in <em>configure</em>-based build systems), and <em>emmake</em> with <em>make</em> as an argument. If your build system doesn&#8217;t use configure, then you can omit the first step.</p>
+<p><em>emconfigure</em> is called with the normal <em>configure</em> as an argument (in <em>configure</em>-based build systems), and <em>emmake</em> with <em>make</em> as an argument. If your build system uses <strong>CMake</strong>, replace <code class="docutils literal"><span class="pre">./configure</span></code> with <code class="docutils literal"><span class="pre">cmake</span> <span class="pre">.</span></code> etc. in the above example. If your build system doesn&#8217;t use configure or CMake, then you can omit the first step and just run <code class="docutils literal"><span class="pre">make</span></code> (although then you may need to edit the <code class="docutils literal"><span class="pre">Makefile</span></code> manually).</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">We recommend you call both <em>emconfigure</em> and <em>emmake</em> scripts in <em>configure</em>-based build systems. Whether you actually <strong>need</strong> to call both tools depends on the build system (some systems will store the environment variables in the configure step, and others will not).</p>
+<p class="last">We recommend you call both <em>emconfigure</em> and <em>emmake</em> scripts in <em>configure</em>- and <em>CMake</em>-based build systems. Whether you actually <strong>need</strong> to call both tools depends on the build system (some systems will store the environment variables in the configure step, and others will not).</p>
 </div>
 <p><em>Make</em> generates linked LLVM bitcode. It does not automatically generate JavaScript during linking because all the files must be compiled using the <a class="reference internal" href="#building-projects-optimizations"><span>same optimizations and compiler options</span></a> — and it makes sense to do this in the final conversion from bitcode to JavaScript.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The file output from <em>make</em> might have a different suffix: <strong>.a</strong> for a static library archive, <strong>.so</strong> for a shared library, <strong>.o</strong> or <strong>.bc</strong> for object files (these file extensions are the same as <em>gcc</em> would use for the different types). Irrespective of the file extension, these files contain linked LLVM bitcode that <em>emcc</em> can compile into JavaScript in the final step.</p>
+<p class="last">The file output from <em>make</em> might have a different suffix: <strong>.a</strong> for a static library archive, <strong>.so</strong> for a shared library, <strong>.o</strong> or <strong>.bc</strong> for object files (these file extensions are the same as <em>gcc</em> would use for the different types). Irrespective of the file extension, these files contain linked LLVM bitcode that <em>emcc</em> can compile into JavaScript in the final step. If the suffix is something else - like no suffix at all, or something like <strong>.so.1</strong> - then you may need to rename the file before sending it to <em>emcc</em>.</p>
 </div>
-<p>The last step is to compile the linked bitcode into JavaScript. We do this by calling <em>emcc</em> again, specifying the linked LLVM bitcode file as an input, and a JavaScript file as the output.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Some build systems may not properly emit bitcode using the above procedure, and you may see <code class="docutils literal"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">valid</span> <span class="pre">bitcode</span></code> warnings. You can run <code class="docutils literal"><span class="pre">file</span></code> to check if a file contains bitcode (also you can manually check if the contents start with <code class="docutils literal"><span class="pre">BC</span></code>). It is also worth running <code class="docutils literal"><span class="pre">emmake</span> <span class="pre">make</span> <span class="pre">VERBOSE=1</span></code> which will print out the commands it runs - you should see <em>emcc</em> being used, and not the native system compiler. If <em>emcc</em> is not used, you may need to modify the configure or cmake scripts.</p>
+</div>
 </div>
 <div class="section" id="building-projects-with-optimizations">
 <span id="building-projects-optimizations"></span><h2>Building projects with optimizations<a class="headerlink" href="#building-projects-with-optimizations" title="Permalink to this headline">¶</a></h2>
@@ -1444,7 +1448,7 @@ emcc allproject.bc -o final.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.4',
+            VERSION:'1.38.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
