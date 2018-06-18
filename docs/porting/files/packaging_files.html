@@ -1080,6 +1080,14 @@
 <p>This topic shows how to package the files that will be used to populate <a class="reference internal" href="file_systems_overview.html#file-system-overview"><span>Emscripten&#8217;s virtual file system</span></a> when the page is loaded.</p>
 <p>There are two alternatives for how files are packaged: <em>preloading</em> and <em>embedding</em>. Embedding puts the specified files inside the generated JavaScript, while preloading packages the files separately. Embedding files is much less efficient than preloading and should only be used when packaging small numbers of small files. Preloading also enables the option to separately host the data.</p>
 <p><em>Emcc</em> uses the <em>file packager</em> to package the files and generate the <a class="reference internal" href="../../api_reference/Filesystem-API.html#filesystem-api"><span>File System API</span></a> calls that create and load the file system at run time. While <em>Emcc</em> is the recommended tool for packaging, there are cases where it can make sense to run the <em>file packager</em> manually.</p>
+<p>With <code class="docutils literal"><span class="pre">--use-preload-plugins</span></code>, files can be automatically decoded
+using the browser&#8217;s codecs, based on their extension (this can also be
+done manually by calling <a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><code class="xref c c-func docutils literal"><span class="pre">emscripten_run_preload_plugins()</span></code></a> on
+each file).  The files remain stored in their original form in the
+file system, but their decoded form can be used by <code class="docutils literal"><span class="pre">IMG_Load</span></code> (SDL1
+and SDL2 port, which rely on
+<a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_get_preloaded_image_data" title="emscripten_get_preloaded_image_data"><code class="xref c c-func docutils literal"><span class="pre">emscripten_get_preloaded_image_data()</span></code></a>) or <code class="docutils literal"><span class="pre">Mix_LoadWAV</span></code>
+(SDL1 only).</p>
 <div class="section" id="packaging-using-emcc">
 <h2>Packaging using emcc<a class="headerlink" href="#packaging-using-emcc" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way to package files is to use <a class="reference internal" href="../../tools_reference/emcc.html#emccdoc"><span>emcc</span></a> at compile time. The <a class="reference internal" href="../../tools_reference/emcc.html#emcc-preload-file"><span>preload</span></a> and <a class="reference internal" href="../../tools_reference/emcc.html#emcc-embed-file"><span>embed</span></a> commands select their respective packaging methods.</p>
