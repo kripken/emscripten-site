@@ -1814,6 +1814,66 @@ and then play the tone.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>A full example is shown below:</p>
+<div class="code cpp highlight-cpp"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;emscripten/bind.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">emscripten</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">returnVectorData</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">returnMapData</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">;</span>
+  <span class="n">m</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s">&quot;This is a string.&quot;</span><span class="p">));</span>
+  <span class="k">return</span> <span class="n">m</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">function</span><span class="p">(</span><span class="s">&quot;returnVectorData&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">returnVectorData</span><span class="p">);</span>
+  <span class="n">function</span><span class="p">(</span><span class="s">&quot;returnMapData&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">returnMapData</span><span class="p">);</span>
+
+  <span class="c1">// register bindings for std::vector&lt;int&gt; and std::map&lt;int, std::string&gt;.</span>
+  <span class="n">register_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;vector&lt;int&gt;&quot;</span><span class="p">);</span>
+  <span class="n">register_map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;map&lt;int, string&gt;&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following JavaScript can be used to interact with the above C++.</p>
+<div class="code js highlight-cpp"><div class="highlight"><pre>var retVector = Module[&#39;returnVectorData&#39;]();
+
+// vector size
+var vectorSize = retVector.size();
+
+// reset vector value
+retVector.set(vectorSize - 1, 11);
+
+// push value into vector
+retVector.push_back(12);
+
+// retrieve value from the vector
+for (var i = 0; i &lt; retVector.size(); i++) {
+    console.log(&quot;Vector Value: &quot;, retVector.get(i));
+}
+
+// expand vector size
+retVector.resize(20, 1);
+
+var retMap = Module[&#39;returnMapData&#39;]();
+
+// map size
+var mapSize = retMap.size();
+
+// retrieve value from map
+console.log(&quot;Map Value: &quot;, retMap.get(10));
+
+// reset the value at the given index position
+retMap.set(10, &quot;OtherValue&quot;);
+</pre></div>
+</div>
 </div>
 <div class="section" id="performance">
 <h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
