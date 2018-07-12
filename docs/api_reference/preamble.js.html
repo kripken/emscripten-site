@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 1.38.6 documentation</title>
+  <title>preamble.js &mdash; Emscripten 1.38.8 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.8 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -119,13 +119,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-the-whole-test-suite">Running the whole test suite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-specific-tests">Running specific tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#core-test-modes">Core test modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#non-core-test-modes">Non-core test modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmark-tests">Benchmark tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#common-tests">Common tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#debugging-test-failures">Debugging test failures</a></li>
 </ul>
 </li>
@@ -1155,17 +1153,21 @@
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result of the function call as a native JavaScript value (as in <code class="docutils literal"><span class="pre">returnType</span></code>).</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result of the function call as a native JavaScript value (as in <code class="docutils literal"><span class="pre">returnType</span></code>) or, if the <code class="docutils literal"><span class="pre">async</span></code> option is set, a JavaScript Promise of the result.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Opts:</th><td class="field-body"><p class="first">An optional options object. It can contain the following properties:</p>
 <ul class="last simple">
-<li><code class="docutils literal"><span class="pre">async</span></code>: Implies that the ccall will perform an async operation. This assumes you are using the Emterpreter-Async option for your code. When using this option, the ccalled function cannot return a value (it can&#8217;t be received synchronously anyhow).</li>
+<li><code class="docutils literal"><span class="pre">async</span></code>: If <code class="docutils literal"><span class="pre">true</span></code>, implies that the ccall will perform an async operation. This assumes you are using the Emterpreter-Async option for your code.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Async calls currently don&#8217;t support promise error handling.</p>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -1212,6 +1214,7 @@ my_func(12)
 <li><strong>ident</strong> &#8211; The name of the C function to be called.</li>
 <li><strong>returnType</strong> &#8211; The return type of the function. This can be <code class="docutils literal"><span class="pre">&quot;number&quot;</span></code>, <code class="docutils literal"><span class="pre">&quot;string&quot;</span></code> or <code class="docutils literal"><span class="pre">&quot;array&quot;</span></code>, which correspond to the appropriate JavaScript types (use <code class="docutils literal"><span class="pre">&quot;number&quot;</span></code> for any C pointer, and <code class="docutils literal"><span class="pre">&quot;array&quot;</span></code> for JavaScript arrays and typed arrays; note that arrays are 8-bit), or for a void function it can be <code class="docutils literal"><span class="pre">null</span></code> (note: the JavaScript <code class="docutils literal"><span class="pre">null</span></code> value, not a string containing the word &#8220;null&#8221;).</li>
 <li><strong>argTypes</strong> &#8211; An array of the types of arguments for the function (if there are no arguments, this can be omitted). Types are as in <code class="docutils literal"><span class="pre">returnType</span></code>, except that <code class="docutils literal"><span class="pre">array</span></code> is not supported as there is no way for us to know the length of the array).</li>
+<li><strong>opts</strong> &#8211; An optional options object, see <a class="reference internal" href="#ccall" title="ccall"><code class="xref js js-func docutils literal"><span class="pre">ccall()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -1777,7 +1780,7 @@ my_func(12)
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.6',
+            VERSION:'1.38.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

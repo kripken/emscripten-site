@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 1.38.6 documentation</title>
+  <title>Debugging &mdash; Emscripten 1.38.8 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.8 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="Audio" href="Audio.html"/> 
@@ -119,13 +119,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-the-whole-test-suite">Running the whole test suite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-specific-tests">Running specific tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#core-test-modes">Core test modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#non-core-test-modes">Non-core test modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmark-tests">Benchmark tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#common-tests">Common tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#debugging-test-failures">Debugging test failures</a></li>
 </ul>
 </li>
@@ -1085,7 +1083,7 @@
 <p>This article describes the main tools and settings provided by Emscripten for debugging, along with a section explaining how to debug a number of <a class="reference internal" href="#debugging-emscripten-specific-issues"><span>Emscripten-specific issues</span></a>.</p>
 <div class="section" id="debug-information">
 <span id="debugging-debug-information-g"></span><h2>Debug information<a class="headerlink" href="#debug-information" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span>Emcc</span></a> strips out most of the debug information from <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span>optimized builds</span></a> by default. Optimisation levels <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span>-01</span></a> and above remove LLVM debug information, and also disable runtime <a class="reference internal" href="#debugging-assertions"><span>ASSERTIONS</span></a> checks. From optimization level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span>-02</span></a> the code is minified by the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> and becomes virtually unreadable.</p>
+<p><a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span>Emcc</span></a> strips out most of the debug information from <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span>optimized builds</span></a> by default. Optimisation levels <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span>-O1</span></a> and above remove LLVM debug information, and also disable runtime <a class="reference internal" href="#debugging-assertions"><span>ASSERTIONS</span></a> checks. From optimization level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span>-O2</span></a> the code is minified by the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> and becomes virtually unreadable.</p>
 <p>The <em>emcc</em> <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span>-g flag</span></a> can be used to preserve debug information in the compiled output. By default, this option preserves white-space, function names and variable names.</p>
 <p>The flag can also be specified with one of five levels: <a class="reference internal" href="../tools_reference/emcc.html#emcc-g0"><span>-g0</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g1"><span>-g1</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g2"><span>-g2</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g3"><span>-g3</span></a>, and <a class="reference internal" href="../tools_reference/emcc.html#emcc-g4"><span>-g4</span></a>. Each level builds on the last to provide progressively more debug information in the compiled output. The <a class="reference internal" href="../tools_reference/emcc.html#emcc-g3"><span>-g3 flag</span></a> provides the same level of debug information as the <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span>-g flag</span></a>.</p>
 <p>The <a class="reference internal" href="../tools_reference/emcc.html#emcc-g4"><span>-g4</span></a> option provides the most debug information — it generates source maps that allow you to view and debug the <em>C/C++ source code</em> in your browser&#8217;s debugger on Firefox, Chrome or Safari!</p>
@@ -1117,14 +1115,14 @@ emcc tests/hello_world.cpp -o hello.html
 <div class="section" id="compiler-settings">
 <span id="debugging-compilation-settings"></span><h2>Compiler settings<a class="headerlink" href="#compiler-settings" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten has a number of compiler settings that can be useful for debugging. These are set using the <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><span>emcc -s</span></a> option, and will override any optimization flags. For example:</p>
-<div class="highlight-bash"><div class="highlight"><pre>./emcc -01 -s <span class="nv">ASSERTIONS</span><span class="o">=</span><span class="m">1</span> tests/hello_world
+<div class="highlight-bash"><div class="highlight"><pre>./emcc -O1 -s <span class="nv">ASSERTIONS</span><span class="o">=</span><span class="m">1</span> tests/hello_world
 </pre></div>
 </div>
 <p>The most important settings are:</p>
 <blockquote>
 <div><ul>
 <li><p id="debugging-assertions"><code class="docutils literal"><span class="pre">ASSERTIONS=1</span></code> is used to enable runtime checks for common memory allocation errors (e.g. writing more memory than was allocated). It also defines how Emscripten should handle errors in program flow. The value can be set to <code class="docutils literal"><span class="pre">ASSERTIONS=2</span></code> in order to run additional tests.</p>
-<p><code class="docutils literal"><span class="pre">ASSERTIONS=1</span></code> is enabled by default. Assertions are turned off for optimized code (<a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span>-01</span></a> and above).</p>
+<p><code class="docutils literal"><span class="pre">ASSERTIONS=1</span></code> is enabled by default. Assertions are turned off for optimized code (<a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span>-O1</span></a> and above).</p>
 </li>
 <li><p id="debugging-safe-heap"><code class="docutils literal"><span class="pre">SAFE_HEAP=1</span></code> adds additional memory access checks, and will give clear errors for problems like dereferencing 0 and memory alignment issues.</p>
 <p>You can also set <code class="docutils literal"><span class="pre">SAFE_HEAP_LOG</span></code> to log <code class="docutils literal"><span class="pre">SAFE_HEAP</span></code> operations.</p>
@@ -1159,7 +1157,7 @@ emcc tests/hello_world.cpp -o hello.html
 <div class="section" id="disabling-optimizations">
 <h2>Disabling optimizations<a class="headerlink" href="#disabling-optimizations" title="Permalink to this headline">¶</a></h2>
 <p>It can sometimes be useful to compile with either LLVM optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-opts"><span>llvm-opts</span></a>) or JavaScript optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-js-opts"><span>js-opts</span></a>) disabled.</p>
-<p>For example, the following command enables <a class="reference internal" href="#debugging-debug-information-g"><span>Debug information</span></a> and <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span>-02</span></a> optimization (for both LLVM and JavaScript), but then explicitly turns off the JavaScript optimizer.</p>
+<p>For example, the following command enables <a class="reference internal" href="#debugging-debug-information-g"><span>Debug information</span></a> and <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span>-O2</span></a> optimization (for both LLVM and JavaScript), but then explicitly turns off the JavaScript optimizer.</p>
 <div class="highlight-bash"><div class="highlight"><pre>./emcc -O2 --js-opts <span class="m">0</span> -g4 tests/hello_world_loop.cpp
 </pre></div>
 </div>
@@ -1395,7 +1393,7 @@ emcc tests/hello_world.cpp -o hello.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.6',
+            VERSION:'1.38.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

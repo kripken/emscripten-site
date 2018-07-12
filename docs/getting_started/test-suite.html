@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Test Suite &mdash; Emscripten 1.38.6 documentation</title>
+  <title>Emscripten Test Suite &mdash; Emscripten 1.38.8 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.8 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Bug Reporting" href="bug_reports.html"/>
         <link rel="prev" title="Emscripten Tutorial" href="Tutorial.html"/> 
@@ -119,13 +119,11 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Emscripten Test Suite</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#running-the-whole-test-suite">Running the whole test suite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#running-specific-tests">Running specific tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-tests">Running tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#skipping-tests">Skipping Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#core-test-modes">Core test modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#non-core-test-modes">Non-core test modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#benchmark-tests">Benchmark tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#common-tests">Common tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#important-tests">Important Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmarking">Benchmarking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#debugging-test-failures">Debugging test failures</a></li>
 </ul>
 </li>
@@ -1073,40 +1071,65 @@
             
   <div class="section" id="emscripten-test-suite">
 <span id="id1"></span><h1>Emscripten Test Suite<a class="headerlink" href="#emscripten-test-suite" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten has a comprehensive test suite, which covers virtually all Emscripten functionality. These tests are an excellent resource for developers as they provide practical examples of most features, and are known to build successfully on the master branch. There are also <a class="reference internal" href="#emscripten-benchmark-tests"><span>benchmark tests</span></a> that can be used to test how close Emscripten is getting to native speed.</p>
+<p>Emscripten has a comprehensive test suite, which covers virtually all Emscripten functionality. These tests are an excellent resource for developers as they provide practical examples of most features, and are known to pass on the master branch (and almost always on the incoming branch). In addition to correctness tests, there are also benchmarks that you can run.</p>
 <p>This article explains how to run the test and benchmark suite, and provides an overview of what tests are available.</p>
-<div class="section" id="running-the-whole-test-suite">
-<h2>Running the whole test suite<a class="headerlink" href="#running-the-whole-test-suite" title="Permalink to this headline">¶</a></h2>
-<p>The whole core test suite can be run using the script <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/runner.py">tests/runner.py</a>:</p>
+<div class="section" id="running-tests">
+<h2>Running tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
+<p>Run the test suite runner (<a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/runner.py">tests/runner.py</a>) with no arguments to see the help message:</p>
 <div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>The core test suite is not the entire test suite, see <a class="reference internal" href="#emscripten-test-suite-modes"><span>section about core test modes</span></a></li>
-<li>This may take several hours.</li>
-<li><a class="reference internal" href="../site/glossary.html#term-node-js"><span class="xref std std-term">Node.js</span></a> cannot run all of the tests in the suite; if you need to run them all, you should get a recent trunk version of the <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Introduction_to_the_JavaScript_shell">SpiderMonkey</a> shell. On Windows you can install and activate <em>SpiderMonkey</em> using the <a class="reference internal" href="../tools_reference/emsdk.html#emsdk"><span>Emscripten SDK (emsdk)</span></a>.</li>
+<p>The tests are divided into <em>modes</em>. You can run either an entire mode or an individual test, or use wildcards to run some tests in some modes. For example:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># run one test (in the default mode)</span>
+python tests/runner.py test_loop
+
+<span class="c1"># run one test in a specific mode (here, asm.js -O2)</span>
+python tests/runner.py asm2.test_loop
+
+<span class="c1"># run a test in a bunch of modes (here, all asm.js modes)</span>
+python tests/runner.py asm*.test_loop
+
+<span class="c1"># run a bunch of tests in one mode (here, all i64 tests in wasm -O3)</span>
+python tests/runner.py binaryen3.test_*i64*
+
+<span class="c1"># run all tests in a specific mode (here, asm.js -O1)</span>
+python tests/runner.py asm1
+</pre></div>
+</div>
+<p>The <em>core</em> test modes (<code class="docutils literal"><span class="pre">asm*</span></code> and <code class="docutils literal"><span class="pre">binaryen*</span></code>, defined in <code class="docutils literal"><span class="pre">tests/test_core.py</span></code>) let you run a specific test in either asm.js or wasm, and with different optimization flags. There are also non-core test modes, that run tests in more special manner (in particular, in those tests it is not possible to say &#8220;run the test with a different optimization flag&#8221; - that is what the core tests are for). The non-core test modes include</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>other</cite>: Non-core tests running in the shell.</li>
+<li><cite>browser</cite>: Tests that run in a browser.</li>
+<li><cite>sockets</cite>: Networking tests that run in a browser.</li>
+<li><cite>interactive</cite>: Browser tests that are not fully automated, and require user interaction (these should be automated eventually).</li>
+<li><cite>sanity</cite>: Tests for emscripten setting itself up. This modifies your <cite>.emscripten</cite> file temporarily.</li>
+<li><cite>benchmark</cite>: Runs benchmarks, measuring speed and code size.</li>
 </ul>
-</div>
-</div>
-<div class="section" id="running-specific-tests">
-<h2>Running specific tests<a class="headerlink" href="#running-specific-tests" title="Permalink to this headline">¶</a></h2>
-<p>You can also use <em>runner.py</em> to run different parts of the test suite, or individual tests. For example, you would run test named <code class="docutils literal"><span class="pre">test_hello_world</span></code> as shown:</p>
-<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py test_hello_world
+</div></blockquote>
+<p>The wildcards we mentioned above work for non-core test modes too, for example:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># run one browser test</span>
+python tests/runner.py browser.test_sdl_image
+
+<span class="c1"># run all SDL2 browser tests</span>
+python tests/runner.py browser.test_sdl2*
+
+<span class="c1"># run all browser tests</span>
+python tests/runner.py browser
 </pre></div>
 </div>
-<p>Tests in the &#8220;core&#8221; test suite (<code class="docutils literal"><span class="pre">tests/test_core.py</span></code>) can be run as above. Other tests may need a prefix, for example <code class="docutils literal"><span class="pre">browser.test_cubegeom</span></code> for a test in <code class="docutils literal"><span class="pre">tests/test_browser.py</span></code>. You can also specify an optional prefix for tests in core, to run them with extra options, for example <code class="docutils literal"><span class="pre">asm2.test_hello_world</span></code> will run <code class="docutils literal"><span class="pre">hello_world</span></code> using <code class="docutils literal"><span class="pre">asm2</span></code> opts (basically <code class="docutils literal"><span class="pre">-O2</span></code>). See more examples in <a class="reference internal" href="#emscripten-test-suite-list-of-tests"><span>Common tests</span></a>.</p>
-<p>It is possible to pass a wildcard to match multiple tests by name. For example, the commands</p>
-<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py ALL.test_simd_* ALL.test_sse*
+</div>
+<div class="section" id="skipping-tests">
+<h2>Skipping Tests<a class="headerlink" href="#skipping-tests" title="Permalink to this headline">¶</a></h2>
+<p>An individual test can be skipped by passing the &#8220;skip:&#8221; prefix. E.g.</p>
+<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py other skip:other.test_cmake
 </pre></div>
 </div>
-<p>would run all the SIMD related tests in the suite.</p>
-<p>Individual tests can be skipped, so</p>
-<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py browser.test_pthread_* skip:browser.test_pthread_gcc_atomic_fetch_and_op
+<p>Wildcards can also be passed in skip, so</p>
+<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py browser skip:browser.test_pthread_*
 </pre></div>
 </div>
-<p>would run all the multithreading tests except the one test <code class="docutils literal"><span class="pre">browser.test_pthread_gcc_atomic_fetch_and_op</span></code>.</p>
+<p>will run the whole browser suite except for all the pthread tests in it.</p>
 </div>
 <div class="section" id="running-a-bunch-of-random-tests">
 <h2>Running a bunch of random tests<a class="headerlink" href="#running-a-bunch-of-random-tests" title="Permalink to this headline">¶</a></h2>
@@ -1116,83 +1139,42 @@
 </div>
 <p>Replace <code class="docutils literal"><span class="pre">100</span></code> with another number as you prefer. This will run that number of random tests, and tell you the statistical likelihood of almost all the test suite passing assuming those tests do. This works just like election surveys do - given a small sample, we can predict fairly well that so-and-so percent of the public will vote for candidate A. In our case, the &#8220;candidates&#8221; are pass or fail, and we can predict how much of the test suite will pass given that sample. Assuming the sample tests all pass, we can say with high likelihood that most of the test suite will in fact pass. (Of course, this is no guarantee, and even a single test failure is serious, however, this gives a quick estimate that your patch does not cause significant and obvious breakage.)</p>
 </div>
-<div class="section" id="core-test-modes">
-<h2>Core test modes<a class="headerlink" href="#core-test-modes" title="Permalink to this headline">¶</a></h2>
-<p>By default, calling the test runner without arguments will run the core test suite</p>
-<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py
-</pre></div>
-</div>
-<p>The core test suite includes <code class="docutils literal"><span class="pre">default</span></code> (no optimizations), <code class="docutils literal"><span class="pre">asm1</span></code> (<code class="docutils literal"><span class="pre">-O1</span></code> optimizations), and a bunch of other optimization and compiler flags, each of which is a different &#8220;mode&#8221;. The core test suite is the bulk of the entire test suite, and it runs each test in each of those modes.</p>
-<p>You can also run a specific mode or test in a mode, or a specific test across all modes:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># Run all tests in asm1 mode    (-O1 optimizations).</span>
-python tests/runner.py asm1
+<div class="section" id="important-tests">
+<h2>Important Tests<a class="headerlink" href="#important-tests" title="Permalink to this headline">¶</a></h2>
+<p>When you want to run the entire test suite locally, these are the important commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># Run all core asm.js and wasm tests</span>
+python tests/runner.py asm* binaryen*
 
-<span class="c1"># Run one test in asm1 mode     (-O1 optimizations).</span>
-python tests/runner.py asm1.test_hello_world
-
-<span class="c1"># Run one test in all modes.</span>
-python tests/runner.py ALL.test_hello_world
-</pre></div>
-</div>
-<p>The core test modes are documented at the end of <a class="reference external" href="https://github.com/kripken/emscripten/blob/1.29.12/tests/test_core.py#L7421">/tests/test_core.py</a>.</p>
-<p id="emscripten-test-suite-modes">The core tests are the bulk of the entire test suite, in both number and time to run. To speed them up, you can run them in parallel using <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/tests/parallel_test_core.py">/tests/parallel_test_core.py</a>. That runs the test modes using a python process pool, emitting their outputs and stderrs to <code class="docutils literal"><span class="pre">*.out,</span> <span class="pre">*.err</span></code> for each mode.</p>
-</div>
-<div class="section" id="non-core-test-modes">
-<h2>Non-core test modes<a class="headerlink" href="#non-core-test-modes" title="Permalink to this headline">¶</a></h2>
-<p>The main non-core test modes are <code class="docutils literal"><span class="pre">other,</span> <span class="pre">browser,</span> <span class="pre">sockets,</span> <span class="pre">interactive,</span> <span class="pre">sanity</span></code>. See <a class="reference internal" href="#emscripten-test-suite-list-of-tests"><span>Common tests</span></a> for how to run them.</p>
-</div>
-<div class="section" id="benchmark-tests">
-<span id="emscripten-benchmark-tests"></span><h2>Benchmark tests<a class="headerlink" href="#benchmark-tests" title="Permalink to this headline">¶</a></h2>
-<p>You can view <a class="reference external" href="http://arewefastyet.com/#machine=11&amp;view=breakdown&amp;suite=asmjs-ubench">Emscripten’s current benchmark test results</a> online. These are created by compiling a sequence of benchmarks and running them several times, then reporting averaged statistics including a comparison of how fast the same code runs when compiled to a native executable.</p>
-<p>You can run the tests yourself using the following command:</p>
-<div class="highlight-bash"><div class="highlight"><pre>python tests/runner.py benchmark
-</pre></div>
-</div>
-</div>
-<div class="section" id="common-tests">
-<span id="emscripten-test-suite-list-of-tests"></span><h2>Common tests<a class="headerlink" href="#common-tests" title="Permalink to this headline">¶</a></h2>
-<p>Below is a list of some common tests/example commands. These include a comment explaining what each test does.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># Run all (core) tests</span>
-python tests/runner.py
-
-<span class="c1"># Run hello world test, in default mode</span>
-python tests/runner.py test_hello_world
-
-<span class="c1"># Run it in asm1 mode</span>
-python tests/runner.py asm1.test_hello_world
-
-<span class="c1"># Run it in all modes</span>
-python tests/runner.py ALL.test_hello_world
-
-<span class="c1"># Run all (core) tests in asm1 mode</span>
-python tests/runner.py asm1
-
-<span class="c1"># Run all &quot;other&quot; tests - that have no mode</span>
+<span class="c1"># Run &quot;other&quot; test suite</span>
 python tests/runner.py other
 
-<span class="c1"># Run a specific test in &quot;other&quot;</span>
-python tests/runner.py other.test_static_link
-
-<span class="c1"># Run all browser tests</span>
+<span class="c1"># Run &quot;browser&quot; test suite - this requires a web browser</span>
 python tests/runner.py browser
 
-<span class="c1"># Run a specific browser test</span>
-python tests/runner.py browser.test_sdlglshader
-
-<span class="c1"># Run all network tests. Note that you can also run specific tests (sockets.test_*)</span>
+<span class="c1"># Run &quot;sockets&quot; test suite - this requires a web browser too</span>
 python tests/runner.py sockets
 
-<span class="c1"># Run all sanity tests. Note that you can also run specific tests (sanity.test_*)</span>
+<span class="c1"># Run &quot;sanity&quot; test suite - this tests setting up emscripten during</span>
+<span class="c1"># first run, etc., and so it modifies your .emscripten file temporarily.</span>
 python tests/runner.py sanity
 
-<span class="c1"># Run all benchmarks. Note that you can also run specific tests (benchmark.test_*)</span>
+<span class="c1"># Optionally, also run benchmarks to check for regressions</span>
 python tests/runner.py benchmark
 </pre></div>
 </div>
 </div>
+<div class="section" id="benchmarking">
+<h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten has a benchmark suite that measures both speed and code size. To run it, do:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c1"># Run all benchmarks</span>
+python tests/runner.py benchmark
+</pre></div>
+</div>
+<p>Usually you will want to customize the python in <cite>tests/test_benchmark.py</cite> to run the benchmarks you want, see <code class="docutils literal"><span class="pre">benchmarkers</span></code> in the source code.</p>
+</div>
 <div class="section" id="debugging-test-failures">
 <h2>Debugging test failures<a class="headerlink" href="#debugging-test-failures" title="Permalink to this headline">¶</a></h2>
-<p>Setting the <a class="reference internal" href="../porting/Debugging.html#debugging-emcc-debug"><span>Debug mode (EMCC_DEBUG)</span></a> is useful for debugging tests, as it emits debug output and intermediate files from the compilation process:</p>
+<p>Setting the <a class="reference internal" href="../porting/Debugging.html#debugging-emcc-debug"><span>Debug mode (EMCC_DEBUG)</span></a> is useful for debugging tests, as it emits debug output and intermediate files (the files go in <strong>/tmp/emscripten_temp/</strong>):</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="c1"># On Windows, use &quot;set&quot; to set and un-set the EMCC_DEBUG environment variable:</span>
 <span class="nb">set</span> <span class="nv">EMCC_DEBUG</span><span class="o">=</span>1
 python tests/runner.py test_hello_world
@@ -1205,7 +1187,7 @@ python tests/runner.py test_hello_world
 <span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">2</span> python tests/runner.py test_hello_world
 </pre></div>
 </div>
-<p>You can also specify <code class="docutils literal"><span class="pre">EM_SAVE_DIR=1</span></code> in the environment to save the temporary directory that the test runner uses into <strong>/tmp/emscripten_temp/</strong>. This is a test suite-specific feature, and is useful for tests that create temporary files.</p>
+<p>You can also specify <code class="docutils literal"><span class="pre">EM_SAVE_DIR=1</span></code> in the environment to save the temporary directory that the test runner uses into <strong>/tmp/emscripten_temp/</strong> (same place where <code class="docutils literal"><span class="pre">EMCC_DEBUG</span></code> intermediate files go). This is a test suite-specific feature, and is useful for tests that create temporary files.</p>
 <p>The <a class="reference internal" href="../porting/Debugging.html#debugging"><span>Debugging</span></a> topic provides more guidance on how to debug Emscripten-generated code.</p>
 </div>
 </div>
@@ -1323,7 +1305,7 @@ python tests/runner.py test_hello_world
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.6',
+            VERSION:'1.38.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
