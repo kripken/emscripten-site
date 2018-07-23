@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 1.38.8 documentation</title>
+  <title>Pthreads support &mdash; Emscripten 1.38.9 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.8 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.9 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Porting SIMD code" href="simd.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -342,6 +342,7 @@
 <li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#modifying-file-locations-in-the-virtual-file-system">Modifying file locations in the virtual file system</a></li>
 <li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#valid-character-set">Valid Character Set</a></li>
 <li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#monitoring-file-usage">Monitoring file usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#preloading-files">Preloading files</a></li>
 <li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#test-code">Test code</a></li>
 </ul>
 </li>
@@ -1102,7 +1103,7 @@
 <li>One particular note to pay attention to when porting is that sometimes in existing codebases the callback function pointers to pthread_create() and pthread_cleanup_push() omit the void* argument, which strictly speaking is undefined behavior in C/C++, but works in several x86 calling conventions. Doing this in Emscripten will issue a compiler warning, and can abort at runtime when attempting to call a function pointer with incorrect signature, so in the presence of such errors, it is good to check the signatures of the thread callback functions.</li>
 <li>Note that the function emscripten_num_logical_cores() will always return the value of navigator.hardwareConcurrency, i.e. the number of logical cores on the system, even when shared memory is not supported. This means that it is possible for emscripten_num_logical_cores() to return a value greater than 1, while at the same time emscripten_has_threading_support() can return false. The return value of emscripten_has_threading_support() denotes whether the browser has shared memory support available.</li>
 </ul>
-<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <cite>pthread-main.js</cite> is generated alongside the output .js file. That file must be deployed with the rest of the generated code files. By default, <cite>pthread-main.js</cite> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <cite>Module.locateFile(filename)</cite> function in the main HTML <cite>Module</cite> object to return the URL of the target location of the <cite>pthread-main.js</cite> entry point. If this function is not defined in <cite>Module</cite>, then the relative location specified by <cite>Module.pthreadMainPrefixURL + &#8216;/pthread-main.js&#8217;</cite> will be used instead. If this is prefix URL is not specified either, then the default location relative to the main HTML file is used.</p>
+<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <cite>pthread-main.js</cite> is generated alongside the output .js file. That file must be deployed with the rest of the generated code files. By default, <cite>pthread-main.js</cite> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <cite>Module.locateFile(filename)</cite> function in the main HTML <cite>Module</cite> object to return the URL of the target location of the <cite>pthread-main.js</cite> entry point. If this function is not defined in <cite>Module</cite>, then the default location relative to the main HTML file is used.</p>
 </div>
 <div class="section" id="running-code-and-tests">
 <h2>Running code and tests<a class="headerlink" href="#running-code-and-tests" title="Permalink to this headline">¶</a></h2>
@@ -1228,7 +1229,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.8',
+            VERSION:'1.38.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
