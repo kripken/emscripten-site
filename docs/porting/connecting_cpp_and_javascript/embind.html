@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 1.38.9 documentation</title>
+  <title>Embind &mdash; Emscripten 1.38.10 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Emscripten 1.38.9 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.10 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -1132,12 +1132,24 @@ the simple C++ <code class="docutils literal"><span class="pre">lerp()</span></c
 or via a <code class="docutils literal"><span class="pre">&lt;script&gt;</span></code> tag:</p>
 <div class="code html highlight-cpp"><div class="highlight"><pre>&lt;!doctype html&gt;
 &lt;html&gt;
-  &lt;script src=&quot;quick_example.js&quot;&gt;&lt;/script&gt;
   &lt;script&gt;
-    console.log(&#39;lerp result: &#39; + Module.lerp(1, 2, 0.5));
+    var Module = {
+      onRuntimeInitialized: function() {
+        console.log(&#39;lerp result: &#39; + Module.lerp(1, 2, 0.5));
+      }
+    };
   &lt;/script&gt;
+  &lt;script src=&quot;quick_example.js&quot;&gt;&lt;/script&gt;
 &lt;/html&gt;
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We use the <code class="docutils literal"><span class="pre">onRuntimeInitialized</span></code> callback to run code when the runtime is ready, which is an asynchronous operation (in order to compile WebAssembly).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Open the developer tools console to see the output of <code class="docutils literal"><span class="pre">console.log</span></code>.</p>
 </div>
 <p>The code in an <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv219EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block runs when the JavaScript
 file is initially loaded (at the same time as the global constructors). The
@@ -2000,7 +2012,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.38.9',
+            VERSION:'1.38.10',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
