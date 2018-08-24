@@ -3951,6 +3951,20 @@ int <code class="descname">minorVersion</code><a class="headerlink" href="#c.Ems
 <dd><p>If <code class="docutils literal"><span class="pre">true</span></code>, all GLES2-compatible non-performance-impacting WebGL extensions will automatically be enabled for you after the context has been created. If <code class="docutils literal"><span class="pre">false</span></code>, no extensions are enabled by default, and you need to manually call <a class="reference internal" href="#c.emscripten_webgl_enable_extension" title="emscripten_webgl_enable_extension"><code class="xref c c-func docutils literal"><span class="pre">emscripten_webgl_enable_extension()</span></code></a> to enable each extension that you want to use. Default value: <code class="docutils literal"><span class="pre">true</span></code>.</p>
 </dd></dl>
 
+<dl class="member">
+<dt id="c.EmscriptenWebGLContextAttributes.explicitSwapControl">
+<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">explicitSwapControl</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.explicitSwapControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, when <code class="docutils literal"><span class="pre">explicitSwapControl</span></code> is in its default state <code class="docutils literal"><span class="pre">false</span></code>, rendered WebGL content is implicitly presented (displayed to the user) on the canvas when the event handler that renders with WebGL returns back to the browser event loop. If <code class="docutils literal"><span class="pre">explicitSwapControl</span></code> is set to <code class="docutils literal"><span class="pre">true</span></code>, rendered content will not be displayed on screen automatically when event handler function finishes, but the control of swapping is given to the user to manage, via the <code class="docutils literal"><span class="pre">emscripten_webgl_commit_frame()</span></code> function.</p>
+<p>In order to be able to set <code class="docutils literal"><span class="pre">explicitSwapControl==true</span></code>, support for it must explicitly be enabled either 1) via adding the <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> Emscripten linker flag, and enabling <code class="docutils literal"><span class="pre">renderViaOffscreenBackBuffer==1</span></code>, or 2) via adding the the linker flag <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code>, and running in a browser that supports OffscreenCanvas.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer">
+<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">renderViaOffscreenBackBuffer</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal"><span class="pre">true</span></code>, an extra intermediate backbuffer (offscreen render target) is allocated to the created WebGL context, and rendering occurs to this backbuffer instead of directly onto the WebGL &#8220;default backbuffer&#8221;. This is required to be enabled if 1) <code class="docutils literal"><span class="pre">explicitSwapControl==true</span></code> and the browser does not support OffscreenCanvas, 2) when performing WebGL rendering in a worker thread and the browser does not support OffscreenCanvas, and 3) when performing WebGL context accesses from multiple threads simultaneously (independent of whether OffscreenCanvas is supported or not).</p>
+<p>Because supporting offscreen framebuffer adds some amount of extra code to the compiled output, support for it must explicitly be enabled via the <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> Emscripten linker flag. When building simultaneously with both <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> and <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code> linker flags enabled, offscreen backbuffer can be used as a polyfill-like compatibility fallback to enable rendering WebGL from a pthread when the browser does not support the OffscreenCanvas API.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -4121,6 +4135,22 @@ void <code class="descname">emscripten_webgl_init_context_attributes</code><span
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The currently active WebGL rendering context, or 0 if no context is active.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE"><code class="xref c c-type docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_webgl_commit_frame">
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="descname">emscripten_webgl_commit_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_webgl_commit_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Presents (&#8220;swaps&#8221;) the content rendered on the currently active WebGL context to be visible on the canvas. This function is available on WebGL contexts that were created with the <code class="docutils literal"><span class="pre">explicitSwapControl==true</span></code> context creation attribute. If <code class="docutils literal"><span class="pre">explicitSwapControl==false</span></code>, then the rendered content is displayed on the screen &#8220;implicitly&#8221; when yielding back to the browser from the calling event handler.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#c.EMSCRIPTEN_RESULT_SUCCESS" title="EMSCRIPTEN_RESULT_SUCCESS"><code class="xref c c-data docutils literal"><span class="pre">EMSCRIPTEN_RESULT_SUCCESS</span></code></a>, or one of the other result values, denoting a reason for failure.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT"><code class="xref c c-type docutils literal"><span class="pre">EMSCRIPTEN_RESULT</span></code></a></td>
 </tr>
 </tbody>
 </table>
