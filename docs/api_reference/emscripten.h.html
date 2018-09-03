@@ -168,6 +168,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-building-from-source-fail-during-linking-at-100">Why does building from source fail during linking (at 100%)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-odd-rounding-errors-when-using-float-variables">Why do I get odd rounding errors when using float variables?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#can-i-use-multiple-emscripten-compiled-programs-on-one-web-page">Can I use multiple Emscripten-compiled programs on one Web page?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#can-i-build-javascript-that-only-runs-on-the-web">Can I build JavaScript that only runs on the Web?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-the-weird-name-for-the-project">Why the weird name for the project?</a></li>
 </ul>
 </li>
@@ -1525,6 +1526,10 @@ void <code class="descname">emscripten_resume_main_loop</code><span class="sig-p
 void <code class="descname">emscripten_cancel_main_loop</code><span class="sig-paren">(</span>void<span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_cancel_main_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cancels the main event loop for the calling thread.</p>
 <p>See also <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop()</span></code></a> and <a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> for information about setting and using the main loop.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function cancels the main loop, which means that it will no longer be called. No other changes occur to control flow. In particular, if you started the main loop with the <code class="docutils literal"><span class="pre">simulate_infinite_loop</span></code> option, you can still cancel the main loop, but execution will not continue in the code right after setting the main loop (we do not actually run an infinite loop there - that&#8217;s not possible in JavaScript, so to simulate an infinite loop we halt execution at that stage, and then the next thing that runs is the main loop itself, so it seems like an infinite loop has begun there; canceling the main loop sort of breaks the metaphor).</p>
+</div>
 </dd></dl>
 
 <dl class="function">
