@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 1.38.13 documentation</title>
+  <title>Release Notes &mdash; Emscripten 1.38.16 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.13 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.16 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -1087,7 +1087,7 @@ these announcements include additional informal release notes and “highlights�
 information. The easiest way to find these posts is to use <a class="reference external" href="https://groups.google.com/forum/#!searchin/emscripten-discuss/%22Emscripten$20SDK%22$20$20AND$20(released$20OR$20out$20OR$20available)">this search</a>.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 1.38.13 (Oct 19, 2018) is listed below (master version
+<p>The ChangeLog for Emscripten 1.38.16 (Nov 05, 2018) is listed below (master version
 <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/ChangeLog.markdown">here</a>).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
@@ -1106,6 +1106,30 @@ full changeset diff at the end of each section.
 
 Current Trunk
 -------------
+ - Minify wasm import and export names. This decreases JS and wasm size by
+   minifying the identifiers where JS calls into wasm or vice versa, which
+   are not minifiable by closure or other JS-only tools. This happens in
+   -O3, -Os and above. See #7431
+
+v1.38.15: 11/02/2018
+--------------------
+ - Breaking change: Do not automatically set EXPORT_ALL for MAIN_MODULES or
+   SIDE_MODULES. This means that you must explicitly export things that will
+   be called from outside (normally, on EXPORTED_FUNCTIONS), or
+   you can manually enable EXPORT_ALL yourself (which returns to the exact
+   same behavior as before). This change brings us in line with more standard
+   dynamic linking, and will match what the LLVM wasm backend will have.
+   See #7312.
+ - Invalid -s flags on the command line are now treated as errors.
+ - Remove BUILD_AS_SHARED_LIBRARY setting.
+
+v1.38.14: 10/22/2018
+--------------------
+ - Errors are now reported when functions listed in EXPORTED_FUNCTIONS are not
+   defined. This can be disabled via ERROR_ON_UNDEFINED_SYMBOLS=0. See #7311.
+
+v1.38.13: 10/10/2018
+--------------------
  - Support `-s NO_X=1` as an alias for `-s X=0` and vice versa, which
    simplifies current settings with `NO_`-prefixed names. See #7151.
  - Various `EMULATED_FUNCTION_POINTER` improvements. See #7108, #7128.
@@ -4552,7 +4576,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.13',
+            VERSION:'1.38.16',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
