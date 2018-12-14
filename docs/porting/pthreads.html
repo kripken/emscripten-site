@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 1.38.16 documentation</title>
+  <title>Pthreads support &mdash; Emscripten 1.38.21 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.16 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Porting SIMD code" href="simd.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -180,6 +180,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -444,6 +445,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -1127,7 +1129,7 @@ such backwards compatibility, two separate builds must be done, one with <code c
 <li><p class="first">Note that the function emscripten_num_logical_cores() will always return the value of navigator.hardwareConcurrency, i.e. the number of logical cores on the system, even when shared memory is not supported. This means that it is possible for emscripten_num_logical_cores() to return a value greater than 1, while at the same time emscripten_has_threading_support() can return false. The return value of emscripten_has_threading_support() denotes whether the browser has shared memory support available.</p>
 </li>
 </ul>
-<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <cite>pthread-main.js</cite> is generated alongside the output .js file. That file must be deployed with the rest of the generated code files. By default, <cite>pthread-main.js</cite> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <cite>Module.locateFile(filename)</cite> function in the main HTML <cite>Module</cite> object to return the URL of the target location of the <cite>pthread-main.js</cite> entry point. If this function is not defined in <cite>Module</cite>, then the default location relative to the main HTML file is used.</p>
+<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <cite>NAME.worker.js</cite> is generated alongside the output .js file (where <cite>NAME</cite> is the basename of the main file being emitted). That file must be deployed with the rest of the generated code files. By default, <cite>NAME.worker.js</cite> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <cite>Module.locateFile(filename)</cite> function in the main HTML <cite>Module</cite> object to return the URL of the target location of the <cite>NAME.worker.js</cite> entry point. If this function is not defined in <cite>Module</cite>, then the default location relative to the main HTML file is used.</p>
 </div>
 <div class="section" id="running-code-and-tests">
 <h2>Running code and tests<a class="headerlink" href="#running-code-and-tests" title="Permalink to this headline">¶</a></h2>
@@ -1253,7 +1255,7 @@ such backwards compatibility, two separate builds must be done, one with <code c
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.16',
+            VERSION:'1.38.21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

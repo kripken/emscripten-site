@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 1.38.16 documentation</title>
+  <title>Building Projects &mdash; Emscripten 1.38.21 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.16 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -180,6 +180,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-libraries">Using libraries</a></li>
@@ -444,6 +445,7 @@
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-libraries">Using libraries</a></li>
@@ -1113,6 +1115,27 @@ make
 <p class="last">Some build systems may not properly emit bitcode using the above procedure, and you may see <code class="docutils literal"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">valid</span> <span class="pre">bitcode</span></code> warnings. You can run <code class="docutils literal"><span class="pre">file</span></code> to check if a file contains bitcode (also you can manually check if the contents start with <code class="docutils literal"><span class="pre">BC</span></code>). It is also worth running <code class="docutils literal"><span class="pre">emmake</span> <span class="pre">make</span> <span class="pre">VERBOSE=1</span></code> which will print out the commands it runs - you should see <em>emcc</em> being used, and not the native system compiler. If <em>emcc</em> is not used, you may need to modify the configure or cmake scripts.</p>
 </div>
 </div>
+<div class="section" id="emscripten-build-output-files">
+<span id="building-projects-build-outputs"></span><h2>Emscripten build output files<a class="headerlink" href="#emscripten-build-output-files" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten compiler output often consists of several files and not just one. The set of produced files changes depending on the final linker flags passed to <cite>emcc/em++</cite>. Here is a cheat sheet of which files are produced under which conditions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>emcc … -o output.html</cite> builds a <cite>output.html</cite> file as an output, as well as an accompanying <cite>output.js</cite> launcher file, and a <cite>output.wasm</cite> WebAssembly file.</li>
+<li><cite>emcc … -o output.js</cite> omits generating a HTML launcher file (expecting you to provide it yourself if you plan to run in browser), and produces two files, <cite>output.js</cite> and <cite>output.wasm</cite>. (that can be run in e.g. node.js shell)</li>
+<li><cite>emcc … -o output.bc</cite> does not produce a final asm.js/wasm build, but stops at LLVM bitcode generation stage, and produces a single LLVM bitcode file <cite>output.bc</cite>. Likewise only one bitcode file is produced if output suffix is <cite>.ll</cite>, <cite>.o</cite>, ‘.obj’, ‘.lo’, <cite>.lib</cite>, <cite>.dylib</cite> or <cite>.so</cite>.</li>
+<li><cite>emcc … -o output.a</cite> generates a single archive file <cite>output.a</cite>.</li>
+<li><cite>emcc … -o output.{html,js} -s WASM=0</cite> causes the compiler to target asm.js, and therefore a <cite>.wasm</cite> file is not produced.</li>
+<li><cite>emcc … -o output.{html,js} -s WASM=0 –separate-asm</cite> likewise targets asm.js, but splits up the generated code to two files, <cite>output.js</cite> and <cite>output.asm.js</cite>.</li>
+<li><cite>emcc … -o output.html -s WASM=0 -s PRECISE_F32=2</cite> (combination of targeting .html, asm.js and PRECISE_F32=2) implies as if <cite>–separate-asm</cite> was passed, so also produces <cite>output.asm.js</cite>.</li>
+<li><cite>emcc … -o output.{html,js} –emit-symbol-map</cite> produces a file <cite>output.{html,js}.symbols</cite> if WebAssembly is being targeted (<cite>-s WASM=0</cite> not specified), or if asm.js is being targeted and <cite>-Os</cite>, <cite>-Oz</cite> or <cite>-O2</cite> or higher is specified, but debug level setting is <cite>-g1</cite> or lower (i.e. if symbols minification did occur).</li>
+<li><cite>emcc … -o output.{html,js} -s WASM=0 –memory-init-file 1</cite> causes the generation of <cite>output.{html,js}.mem</cite> memory initializer file. Pasing <cite>-O2</cite>, <cite>-Os</cite> or <cite>-Oz</cite> also implies <cite>–memory-init-file 1</cite>.</li>
+<li><cite>emcc … -o output.{html,js} -g4</cite> generates a source map file <cite>output.wasm.map</cite>. If targeting asm.js with <cite>-s WASM=0</cite>, the filename is <cite>output.{html,js}.map</cite>.</li>
+<li><cite>emcc … -o output.{html,js} –preload-file xxx</cite> directive generates a preloaded MEMFS filesystem file <cite>output.data</cite>.</li>
+<li><cite>emcc … -o output.{html,js} -s WASM={0,1} -s SINGLE_FILE=1</cite> merges JavaScript and WebAssembly code in the single output file <cite>output.{html,js}</cite> (in base64) to produce only one file for deployment. (If paired with <cite>–preload-file</cite>, the preloaded <cite>.data</cite> file still exists as a separate file)</li>
+</ul>
+</div></blockquote>
+<p>This list is not exhaustive, but illustrates most commonly used combinations.</p>
+</div>
 <div class="section" id="building-projects-with-optimizations">
 <span id="building-projects-optimizations"></span><h2>Building projects with optimizations<a class="headerlink" href="#building-projects-with-optimizations" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten performs <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span class="std std-ref">compiler optimization</span></a> at two levels: each source file is optimized by LLVM as it is compiled into an object file, and then JavaScript/WebAssembly-specific optimizations are applied when converting object files into the final JavaScript/WebAssembly.</p>
@@ -1451,7 +1474,7 @@ emcc allproject.bc -o final.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.16',
+            VERSION:'1.38.21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

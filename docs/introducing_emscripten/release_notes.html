@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 1.38.16 documentation</title>
+  <title>Release Notes &mdash; Emscripten 1.38.21 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.16 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -180,6 +180,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -444,6 +445,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -1087,8 +1089,8 @@ these announcements include additional informal release notes and “highlights�
 information. The easiest way to find these posts is to use <a class="reference external" href="https://groups.google.com/forum/#!searchin/emscripten-discuss/%22Emscripten$20SDK%22$20$20AND$20(released$20OR$20out$20OR$20available)">this search</a>.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 1.38.16 (Nov 05, 2018) is listed below (master version
-<a class="reference external" href="https://github.com/kripken/emscripten/blob/master/ChangeLog.markdown">here</a>).</p>
+<p>The ChangeLog for Emscripten 1.38.21 (Dec 13, 2018) is listed below (master version
+<a class="reference external" href="https://github.com/kripken/emscripten/blob/master/ChangeLog.md">here</a>).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that in the compiler, version numbering is used as the mechanism to
@@ -1106,12 +1108,44 @@ full changeset diff at the end of each section.
 
 Current Trunk
 -------------
+ - System librarys have been renamed to include the `lib` prefix.  If you use
+   EMCC_FORCE_STDLIBS or EMCC_ONLY_FORCED_STDLIBS to select system libaries
+   you may need to add the `lib` prefix.
+ - Rename `pthread-main.js` to `NAME.worker.js`, where `NAME` is the main
+   name of your application, that is, if you emit `program.js` then you&#39;ll get
+   `program.worker.js` (this allows more than one to exist in the same
+   directory, etc.).
+
+v1.38.21: 11/30/2018
+--------------------
+ - fastcomp: Remove `runPostSets` function and replace with normal static
+   constructor function. See #7579
+
+v1.38.20: 11/20/2018
+--------------------
+ - Remove SPLIT_MEMORY option.
+ - Move getTempRet0/setTempRet0 to be JS library functions rather than
+   auto-generated by fastcomp.
+ - Change `strptime()`&#39;s handling of the &quot;%c&quot; to match that of `strftime()`.
+   This is a breaking change for code which depends on the old definition of
+   &quot;%c&quot;.
+
+v1.38.19: 11/15/2018
+--------------------
+
+v1.38.18: 11/08/2018
+--------------------
+ - Wasm dynamic linking: Rename `tableBase/memoryBase` to
+   `__table_base/__memory_base` (#7467)
+
+v1.38.17: 11/07/2018
+--------------------
  - Minify wasm import and export names. This decreases JS and wasm size by
    minifying the identifiers where JS calls into wasm or vice versa, which
    are not minifiable by closure or other JS-only tools. This happens in
    -O3, -Os and above. See #7431
 
-v1.38.15: 11/02/2018
+v1.38.16: 11/02/2018
 --------------------
  - Breaking change: Do not automatically set EXPORT_ALL for MAIN_MODULES or
    SIDE_MODULES. This means that you must explicitly export things that will
@@ -1122,6 +1156,9 @@ v1.38.15: 11/02/2018
    See #7312.
  - Invalid -s flags on the command line are now treated as errors.
  - Remove BUILD_AS_SHARED_LIBRARY setting.
+
+v1.38.15: 10/25/2018
+--------------------
 
 v1.38.14: 10/22/2018
 --------------------
@@ -1139,7 +1176,7 @@ v1.38.12: 09/03/2018
 --------------------
  - Update SDL2 to 2.0.7. See #7016.
  - Optionally build using native object files (wasm backend only).
-   For now this is befind a new option flag: `-s WASM_OBJECT_FILES=1`.
+   For now this is behind a new option flag: `-s WASM_OBJECT_FILES=1`.
    See #6875.
 
 v1.38.11: 08/02/2018
@@ -3190,9 +3227,9 @@ v1.21.8: 7/28/2014
 
 v1.21.7: 7/25/2014
 ------------------
- - Added new link option -s EMCC_ONLY_FORCED_STDLIBS which can be used to
+ - Added new environment varaible EMCC_ONLY_FORCED_STDLIBS which can be used to
    restrict to only linking to the chosen set of Emscripten-provided libraries.
-   (See also -s EMCC_FORCE_STDLIBS)
+   (See also EMCC_FORCE_STDLIBS)
  - Adjusted argv[0] and environment variables USER, HOME, LANG and _ to report a
    more convenient set of default values. (#2565)
  - Fixed an issue where the application could not use environ without also
@@ -4576,7 +4613,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.16',
+            VERSION:'1.38.21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

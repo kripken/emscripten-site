@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>html5.h &mdash; Emscripten 1.38.16 documentation</title>
+  <title>html5.h &mdash; Emscripten 1.38.21 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.16 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="preamble.js" href="preamble.js.html"/>
         <link rel="prev" title="emscripten.h" href="emscripten.h.html"/> 
@@ -180,6 +180,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -444,6 +445,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -1473,10 +1475,14 @@ unsigned long <code class="descname">which</code><a class="headerlink" href="#c.
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT"><code class="xref c c-type docutils literal"><span class="pre">EMSCRIPTEN_RESULT</span></code></a></p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-even field"><th class="field-name">See also:</th><td class="field-body"><ul class="first simple">
 <li><a class="reference external" href="https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent">https://developer.mozilla.org/en/DOM/Event/UIEvent/KeyEvent</a></li>
 <li><a class="reference external" href="http://www.javascriptkit.com/jsref/eventkeyboardmouse.shtml">http://www.javascriptkit.com/jsref/eventkeyboardmouse.shtml</a></li>
 </ul>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To receive events, the element must be focusable, see <a class="reference external" href="https://github.com/kripken/emscripten/pull/7484#issuecomment-437887001">https://github.com/kripken/emscripten/pull/7484#issuecomment-437887001</a></p>
+</div>
 </td>
 </tr>
 </tbody>
@@ -3985,6 +3991,16 @@ int <code class="descname">minorVersion</code><a class="headerlink" href="#c.Ems
 <p>Because supporting offscreen framebuffer adds some amount of extra code to the compiled output, support for it must explicitly be enabled via the <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> Emscripten linker flag. When building simultaneously with both <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> and <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code> linker flags enabled, offscreen backbuffer can be used as a polyfill-like compatibility fallback to enable rendering WebGL from a pthread when the browser does not support the OffscreenCanvas API.</p>
 </dd></dl>
 
+<dl class="member">
+<dt id="c.EmscriptenWebGLContextAttributes.proxyContextToMainThread">
+<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">proxyContextToMainThread</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>This member specifies the threading model that will be used for the created WebGL context, when the WebGL context is created in a pthread. Three values are possible: <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_DISALLOW</span></code>, <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_FALLBACK</span></code> or <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_ALWAYS</span></code>. If <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_DISALLOW</span></code> is specified, the WebGLRenderingContext object will be created inside the pthread that is calling the <code class="docutils literal"><span class="pre">emscripten_webgl_create_context()</span></code> function as an OffscreenCanvas-based rendering context. This is only possible if 1) current browser supports OffscreenCanvas specification, 2) code was compiled with <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code> linker flag enabled, 3) the Canvas object that the context is being created on was transferred over to the calling pthread with function <code class="docutils literal"><span class="pre">emscripten_pthread_attr_settransferredcanvases()</span></code> when the pthread was originally created, and 4) no OffscreenCanvas-based context already exists from the given Canvas at the same time.</p>
+<p>If a WebGL rendering context is created as an OffscreenCanvas-based context, it will have the limitation that only the pthread that created the context can enable access to it (via <code class="docutils literal"><span class="pre">emscripten_webgl_make_context_current()</span></code> function). Other threads will not be able to activate rendering to the context, i.e. OffscreenCanvas-based contexts are essentially “pinned” to the pthread that created them.</p>
+<p>If the current browser does not support OffscreenCanvas, you can specify the <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_ALWAYS</span></code> WebGL context creation flag. If this flag is passed, and code was compiled with <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> enabled, the WebGL context will be created as a “proxied context”. In this context mode, the WebGLRenderingContext object will actually be created on the main browser thread, and all WebGL API calls will be proxied as asynchronous messages from the pthread into the main thread. This will have a performance and latency impact in comparison to OffscreenCanvas contexts, however unlike OffscreenCanvas-based contexts, proxied contexts can be shared across any number of pthreads: you can use the <code class="docutils literal"><span class="pre">emscripten_webgl_make_context_current()</span></code> function in any pthread to activate and deactivate access to the WebGL context: for example, you could have one WebGL loading thread, and another WebGL rendering thread that coordinate shared access to the WebGL rendering context by cooperatively acquiring and releasing access to the WebGL rendering context via the <code class="docutils literal"><span class="pre">emscripten_webgl_make_context_current()</span></code> function. Proxied contexts do not require any special support from the browser, so any WebGL capable browser can create a proxied WebGL context.</p>
+<p>The <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_ALWAYS</span></code> WebGL context creation flag will always create a proxied context, even if the browser did support OffscreenCanvas. If you would like to prefer to create a higher performance OffscreenCanvas context whenever suppported by the browser, but only fall back to a proxied WebGL context to keep compatibility with browsers that do not yet have OffscreenCanvas support, you can specify the <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_FALLBACK</span></code> context creation flag. In order to use this flag, code should be compiled with both <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> and <code class="docutils literal"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code> linker flags.</p>
+<p>Default value of <code class="docutils literal"><span class="pre">proxyContextToMainThread</span></code> after calling <code class="docutils literal"><span class="pre">emscripten_webgl_init_context_attributes()</span></code> is <code class="docutils literal"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_FALLBACK</span></code>.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -4421,7 +4437,7 @@ void <code class="descname">emscripten_webgl_init_context_attributes</code><span
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.16',
+            VERSION:'1.38.21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building to WebAssembly &mdash; Emscripten 1.38.16 documentation</title>
+  <title>Building to WebAssembly &mdash; Emscripten 1.38.21 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.16 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Building Projects" href="Building-Projects.html"/> 
@@ -180,6 +180,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -444,6 +445,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -1204,6 +1206,14 @@
 <div class="highlight-none"><div class="highlight"><pre><span></span>AddOutputFilterByType DEFLATE application/wasm
 </pre></div>
 </div>
+<p>If you serve large <code class="docutils literal"><span class="pre">.wasm</span></code> files, the webserver will consume CPU compressing them on the fly at each request.
+Instead you can pre-compress them to <code class="docutils literal"><span class="pre">.wasm.gz</span></code> and use content negotiation:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>Options Multiviews
+RemoveType .gz
+AddEncoding x-gzip .gz
+AddType application/wasm .wasm
+</pre></div>
+</div>
 </div>
 <div class="section" id="llvm-webassembly-backend">
 <h2>LLVM WebAssembly backend<a class="headerlink" href="#llvm-webassembly-backend" title="Permalink to this headline">¶</a></h2>
@@ -1217,7 +1227,6 @@
 <p>Note that when using the WebAssembly backend in this manner, you do not actually need Emscripten’s asm.js backend, which means you don’t need Emscripten’s “fastcomp” fork of LLVM. Instead you must use “vanilla” LLVM (that is, pure upstream LLVM, with no Emscripten additions).</p>
 <ul class="simple">
 <li>When doing so, you do not need the <code class="docutils literal"><span class="pre">EMCC_WASM_BACKEND=1</span></code> env var, as emcc will detect the lack of the asm.js backend and infer it must use the wasm backend. (However, you can still set it, and it’s a little faster, since it avoids the check).</li>
-<li>If you build LLVM by yourself, note that WebAssembly is not built by default. You should pass <code class="docutils literal"><span class="pre">-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly</span></code> to <code class="docutils literal"><span class="pre">cmake</span></code>.</li>
 <li>Edit <code class="docutils literal"><span class="pre">LLVM_ROOT</span></code> in <code class="docutils literal"><span class="pre">~/.emscripten</span></code> so that it points to the <code class="docutils literal"><span class="pre">bin</span></code> directory of your custom LLVM build.</li>
 </ul>
 </div>
@@ -1336,7 +1345,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.16',
+            VERSION:'1.38.21',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
