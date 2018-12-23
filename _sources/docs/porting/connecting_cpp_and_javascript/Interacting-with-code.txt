@@ -215,17 +215,17 @@ appears in the generated code. This will be the same as the original C
 function, but with a leading ``_``.
 
 .. note:: If you use :js:func:`ccall` or :js:func:`cwrap`, you do not need
-   to prefix function calls with ``_`` — just use the C name.
+   to prefix function calls with ``_`` -- just use the C name.
 
 The types of the parameters you pass to functions need to make sense.
 Integers and floating point values can be passed as is. Pointers are
 simply integers in the generated code.
 
 Strings in JavaScript must be converted to pointers for compiled
-code — the relevant function is :js:func:`Pointer_stringify`, which
+code -- the relevant function is :js:func:`Pointer_stringify`, which
 given a pointer returns a JavaScript string. Converting a JavaScript
 string ``someString`` to a pointer can be accomplished using ``ptr = ``
-:js:func:`allocate(intArrayFromString(someString), 'i8', ALLOC_NORMAL) <allocate>`.
+allocate(intArrayFromString(someString), 'i8', ALLOC_NORMAL) <allocate>``.
 
 .. note:: The conversion to a pointer allocates memory, which needs to be
    freed up via a call to ``free(ptr)`` afterwards (``_free`` in JavaScript side)
@@ -261,9 +261,7 @@ A faster way to call JavaScript from C is to write "inline JavaScript",
 using :c:func:`EM_JS` or :c:func:`EM_ASM` (and related macros).
 
 EM_JS is used to declare JavaScript functions from inside a C file. The "alert"
-example might be written using EM_JS like:
-
-.. code-block:: c++
+example might be written using EM_JS like::
 
    #include <emscripten.h>
 
@@ -281,9 +279,7 @@ EM_JS's implementation is essentially a shorthand for :ref:`implementing a
 JavaScript library<implement-c-in-javascript>`.
 
 EM_ASM is used in a similar manner to inline assembly code. The "alert" example
-might be written with inline JavaScript as:
-
-.. code-block:: c++
+might be written with inline JavaScript as::
 
    #include <emscripten.h>
 
@@ -302,26 +298,22 @@ Emscripten still does a function call even in this case, which has some
 amount of overhead.)
 
 You can also send values from C into JavaScript inside :c:macro:`EM_ASM_`
-(note the extra "_" at the end), for example
+(note the extra "_" at the end), for example::
 
-.. code-block:: cpp
+   EM_ASM_({
+     console.log('I received: ' + $0);
+   }, 100);
 
-      EM_ASM_({
-        console.log('I received: ' + $0);
-      }, 100);
-
-This will show ``I received: 100``. 
+This will show ``I received: 100``.
 
 You can also receive values back, for example the following will print out ``I received: 100``
-and then ``101``.
+and then ``101``::
 
-.. code-block:: cpp
-
-      int x = EM_ASM_INT({
-        console.log('I received: ' + $0);
-        return $0 + 1;
-      }, 100);
-      printf("%d\n", x);
+   int x = EM_ASM_INT({
+     console.log('I received: ' + $0);
+     return $0 + 1;
+   }, 100);
+   printf("%d\n", x);
 
 See the :c:macro:`emscripten.h docs <EM_ASM_>` for more details.
 
@@ -419,7 +411,7 @@ some common JavaScript practices can not be used in certain ways in emscripten
 library files.
 
 To save space, by default, emscripten only includes library properties
-referenced from C/C++. It does this by calling ``toString`` on each 
+referenced from C/C++. It does this by calling ``toString`` on each
 used property on the JavaScript libraries that are linked in. That means
 that you can't use a closure directly, for example, as ``toString``
 isn't compatible with that - just like when using a string to create
@@ -447,7 +439,7 @@ initialization.
      good_02: function() {
        _good_02 = document.querySelector.bind(document);
      },
-     
+
      // Solution for closures
      good_03__postset: '_good_03();',
      good_03: function() {
@@ -456,11 +448,11 @@ initialization.
          console.log("times called: ", ++callCount);
        };
      },
-     
+
      // Solution for curry/transform
      good_05__postset: '_good_05();',
      good_05: function() {
-       _good_05 = curry(scrollTo, 0);  
+       _good_05 = curry(scrollTo, 0);
     },
 
    });
@@ -473,24 +465,24 @@ output file. For the example above this code will be emitted.
      function _good_02() {
        _good_o2 = document.querySelector.bind(document);
      }
-     
+
      function _good_03() {
        var callCount = 0;
        _good_03 = function() {
          console.log("times called: ", ++callCount);
        };
      }
-     
+
      function _good_05() {
-       _good_05 = curry(scrollTo, 0);  
+       _good_05 = curry(scrollTo, 0);
     };
-    
+
     // Call each function once so it will replace itself
     _good_02();
     _good_03();
     _good_05();
 
-You can also put most of your code in the ``xxx__postset`` strings. 
+You can also put most of your code in the ``xxx__postset`` strings.
 The example below each method declares a dependency on ``$method_support``
 and are otherwise dummy functions. ``$method_support`` itself has a
 corresponding ``__postset`` property with all the code to set the
@@ -524,7 +516,7 @@ various methods to the functions we actually want.
       '  _method_03 = inst.reset.bind(inst);          ',
       '}());                                          ',
     ].join('\n'),
-    method_01: function() {}, 
+    method_01: function() {},
     method_01__deps: ['$method_support'],
     method_02: function() {},
     method_01__deps: ['$method_support'],
@@ -545,29 +537,29 @@ a function,
     $method_support__postset: 'method_support();',
     $method_support: {
       init: function() {
-        var SomeLib = function() {                   
-          this.callCount = 0;                        
-        };                                           
-                                                     
+        var SomeLib = function() {
+          this.callCount = 0;
+        };
+
         SomeLib.prototype.getCallCount = function() {
-          return this.callCount;                     
-        };                                           
-                                                     
-        SomeLib.prototype.process = function() {     
-          ++this.callCount;                          
-        };                                           
-                                                     
-        SomeLib.prototype.reset = function() {       
-          this.callCount = 0;                        
-        };                                           
-                                                     
-        var inst = new SomeLib();                    
-        _method_01 = inst.getCallCount.bind(inst);   
-        _method_02 = inst.process.bind(inst);        
-        _method_03 = inst.reset.bind(inst);          
-      }                                         
+          return this.callCount;
+        };
+
+        SomeLib.prototype.process = function() {
+          ++this.callCount;
+        };
+
+        SomeLib.prototype.reset = function() {
+          this.callCount = 0;
+        };
+
+        var inst = new SomeLib();
+        _method_01 = inst.getCallCount.bind(inst);
+        _method_02 = inst.process.bind(inst);
+        _method_03 = inst.reset.bind(inst);
+      }
     },
-    method_01: function() {}, 
+    method_01: function() {},
     method_01__deps: ['$method_support'],
     method_02: function() {},
     method_01__deps: ['$method_support'],

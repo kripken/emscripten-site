@@ -21,15 +21,15 @@ Installing required tools
 
 These instructions explain how to install **all** the :ref:`required tools <toolchain-what-you-need>`. You can :ref:`test whether some of these are already installed <toolchain-test-which-dependencies-are-installed>` on the platform and skip those steps.
 
-#. Install the *XCode Command Line Tools*. These include the toolchain to build :term:`Fastcomp`, and are a precondition for *git*.
+#. Install the *Xcode Command Line Tools*. These include the toolchain to build :term:`Fastcomp`, and are a precondition for *git*.
 
-	-  Install XCode from the `Mac OS X App Store <http://superuser.com/questions/455214/where-is-svn-on-os-x-mountain-lion>`_.
-	-  In **XCode | Preferences | Downloads**, install *Command Line Tools*.
+	-  Install Xcode from the `Mac OS X App Store <http://superuser.com/questions/455214/where-is-svn-on-os-x-mountain-lion>`_.
+	-  In **Xcode | Preferences | Downloads**, install *Command Line Tools*.
 
 #. Install *git*:
 
 	- `Allow installation of unsigned packages <https://www.my-private-network.co.uk/knowledge-base/apple-related-questions/osx-unsigned-apps.html>`_, or installing the git package won't succeed.
-	- Install XCode and the XCode Command Line Tools (should already have been done). This will provide *git* to the system PATH (see `this stackoverflow post <http://stackoverflow.com/questions/9329243/xcode-4-4-command-line-tools>`_).
+	- Install Xcode and the Xcode Command Line Tools (should already have been done). This will provide *git* to the system PATH (see `this stackoverflow post <http://stackoverflow.com/questions/9329243/xcode-4-4-command-line-tools>`_).
 	- Download and install git directly from http://git-scm.com/.	
 
 #. Install *CMake* if you do not have it yet:
@@ -43,7 +43,7 @@ These instructions explain how to install **all** the :ref:`required tools <tool
 
 #. Build :ref:`Fastcomp <LLVM-Backend>` (LLVM + Clang) from source using :ref:`these instructions <building-fastcomp-from-source-building>`. 
 	
-#. Clone the `kripken/emscripten <https://github.com/kripken/emscripten>`_ repository from Github. This repository contains the main compiler tool for compiling C/C++ programs to JavaScript:
+#. Clone the `kripken/emscripten <https://github.com/kripken/emscripten>`_ repository from GitHub. This repository contains the main compiler tool for compiling C/C++ programs to JavaScript:
 
 	-  Create a directory (with no spaces in the name) to contain the clone. 
 	-  Enter the following command into the terminal: ::
