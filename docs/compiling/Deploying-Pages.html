@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Deploying Emscripten Compiled Pages &mdash; Emscripten 1.38.21 documentation</title>
+  <title>Deploying Emscripten Compiled Pages &mdash; Emscripten 1.38.25 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.25 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Porting" href="../porting/index.html"/>
         <link rel="prev" title="Building projects on Travis CI" href="Travis.html"/> 
@@ -203,10 +203,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="WebAssembly.html">Building to WebAssembly</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="WebAssembly.html#setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="WebAssembly.html#binaryen-methods">Binaryen methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="WebAssembly.html#codegen-effects">Codegen effects</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="WebAssembly.html#binaryen-codegen-options">Binaryen codegen options</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="WebAssembly.html#trap-mode">Trap mode</a></li>
 </ul>
@@ -651,6 +647,18 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id95">Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id98">Animation and Timing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id99">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id100">Console</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id101">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id102">Throw</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id103">Functions</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a><ul>
@@ -1026,7 +1034,7 @@
    <!--Nav bar defined as a document followed by short version of nav text and long version
     If no such page exists then nav item is not created. CSS defines which of the long or short version is 
 	displayed.   -->
-   <a href="https://github.com/kripken/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+   <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
   
    <div class="main-nav-bar" style="">   
    
@@ -1084,7 +1092,7 @@
 <p>Emscripten build output consists of two essential parts: 1) the low level compiled code module and 2) the JavaScript runtime to interact with it. If targeting WebAssembly which is done with linker flags <code class="docutils literal"><span class="pre">-s</span> <span class="pre">WASM=1</span> <span class="pre">-o</span> <span class="pre">out.html</span></code>, the compiled code is stored in a file <code class="docutils literal"><span class="pre">out.wasm</span></code> and the runtime lives in a file <code class="docutils literal"><span class="pre">out.js</span></code>. When targeting asm.js there exists an additional binary file <code class="docutils literal"><span class="pre">out.mem</span></code> that contains the static memory section of the compiled code. This part is embedded in the <code class="docutils literal"><span class="pre">out.wasm</span></code> file when targeting WebAssembly.</p>
 <p>By default when targeting asm.js, the compiled code and the runtime are fused in the same <code class="docutils literal"><span class="pre">out.js</span></code> file. For moderately large asm.js projects, it is recommended to use the <code class="docutils literal"><span class="pre">--separate-asm</span></code> flag to separate the compiled code to its own <code class="docutils literal"><span class="pre">out.asm.js</span></code> file, which enables browsers to optimize memory usage for the compiled asm.js code.</p>
 <p>Additional build output files can also exist, depending on which features are used. If the Emscripten file packager is used, a binary <code class="docutils literal"><span class="pre">out.data</span></code> package is generated, along with an associated <code class="docutils literal"><span class="pre">out.data.js</span></code> loader file. Also Emscripten pthreads and Fetch APIs have their own associated Web Worker related script <code class="docutils literal"><span class="pre">.js</span></code> output files.</p>
-<p>Developers can choose to output either to JavaScript or HTML. If outputting JavaScript (<code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.js</span></code>), the developer is expected to manually create the <code class="docutils literal"><span class="pre">out.html</span></code> main page in which the code is run in browsers. When targeting HTML with <code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.html</span></code> (the recommended build mode), Emscripten will generate the HTML shell file automatically. This shell file can be customized by using the <code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.html</span> <span class="pre">--shell-file</span> <span class="pre">path/to/custom_shell.html</span></code> linker directive. Copy the <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/shell_minimal.html">default minimal HTML shell file</a> from Emscripten repository to your project tree to get a good starting template for a customized shell file.</p>
+<p>Developers can choose to output either to JavaScript or HTML. If outputting JavaScript (<code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.js</span></code>), the developer is expected to manually create the <code class="docutils literal"><span class="pre">out.html</span></code> main page in which the code is run in browsers. When targeting HTML with <code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.html</span></code> (the recommended build mode), Emscripten will generate the HTML shell file automatically. This shell file can be customized by using the <code class="docutils literal"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.html</span> <span class="pre">--shell-file</span> <span class="pre">path/to/custom_shell.html</span></code> linker directive. Copy the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/shell_minimal.html">default minimal HTML shell file</a> from Emscripten repository to your project tree to get a good starting template for a customized shell file.</p>
 <p>The following sections offer tips for improving the site experience.</p>
 </div>
 <div class="section" id="optimizing-download-sizes">
@@ -1200,7 +1208,7 @@
 <li>If using the <code class="docutils literal"><span class="pre">requestAnimationFrame()</span></code> API (i.e. <code class="docutils literal"><span class="pre">emscripten_set_main_loop()</span></code> function) to drive rendering, be aware that the rate at which the function is called is not always 60 Hz, but can vary at runtime e.g. when moving the browser window from one display to another in a multimonitor setup, if the displays have different refresh rates. Update intervals such as 75Hz, 90Hz, 100Hz, 120Hz, 144Hz and 200Hz are becoming more common.</li>
 <li>Simulate lack of any special APIs that the page might need, e.g. Gamepad, Acceleration or Touch Events, and make sure that appropriate error flow is handled in those cases as well.</li>
 </ul>
-<p>If you have good tips or suggestsions to share, please help improve this guide by posting feedback to the <a class="reference external" href="https://github.com/kripken/emscripten/issues">Emscripten bug tracker</a> or the <a class="reference external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">emscripten-discuss</a> mailing list.</p>
+<p>If you have good tips or suggestsions to share, please help improve this guide by posting feedback to the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues">Emscripten bug tracker</a> or the <a class="reference external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">emscripten-discuss</a> mailing list.</p>
 </div>
 </div>
 
@@ -1242,7 +1250,7 @@
          
 		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
          
-		      <a class="footer-navlink-short external" href="https://github.com/kripken/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/kripken/emscripten/wiki">Wiki</a>
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
         
               <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
         
@@ -1289,7 +1297,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:Deploying%20Emscripten%20Compiled%20Pages%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/Deploying-Pages&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Deploying%20Emscripten%20Compiled%20Pages%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/Deploying-Pages&labels=bug">Page bug</a>
       </li>
   </ul>
   
@@ -1317,7 +1325,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.21',
+            VERSION:'1.38.25',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

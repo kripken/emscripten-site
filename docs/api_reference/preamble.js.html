@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 1.38.21 documentation</title>
+  <title>preamble.js &mdash; Emscripten 1.38.25 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.25 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -203,10 +203,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/WebAssembly.html">Building to WebAssembly</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#binaryen-methods">Binaryen methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#codegen-effects">Codegen effects</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#binaryen-codegen-options">Binaryen codegen options</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#trap-mode">Trap mode</a></li>
 </ul>
@@ -651,6 +647,18 @@
 <li class="toctree-l4"><a class="reference internal" href="html5.h.html#id95">Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="html5.h.html#id98">Animation and Timing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="html5.h.html#id99">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="html5.h.html#id100">Console</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="html5.h.html#id101">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="html5.h.html#id102">Throw</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="html5.h.html#id103">Functions</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">preamble.js</a><ul>
@@ -1026,7 +1034,7 @@
    <!--Nav bar defined as a document followed by short version of nav text and long version
     If no such page exists then nav item is not created. CSS defines which of the long or short version is 
 	displayed.   -->
-   <a href="https://github.com/kripken/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+   <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
   
    <div class="main-nav-bar" style="">   
    
@@ -1078,7 +1086,7 @@
             
   <div class="section" id="preamble-js">
 <span id="id1"></span><h1>preamble.js<a class="headerlink" href="#preamble-js" title="Permalink to this headline">¶</a></h1>
-<p>The JavaScript APIs in <a class="reference external" href="https://github.com/kripken/emscripten/blob/master/src/preamble.js">preamble.js</a> provide programmatic access for interacting with the compiled C code, including: calling compiled C functions, accessing memory, converting pointers to JavaScript <code class="docutils literal"><span class="pre">Strings</span></code> and <code class="docutils literal"><span class="pre">Strings</span></code> to pointers (with different encodings/formats), and other convenience functions.</p>
+<p>The JavaScript APIs in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/preamble.js">preamble.js</a> provide programmatic access for interacting with the compiled C code, including: calling compiled C functions, accessing memory, converting pointers to JavaScript <code class="docutils literal"><span class="pre">Strings</span></code> and <code class="docutils literal"><span class="pre">Strings</span></code> to pointers (with different encodings/formats), and other convenience functions.</p>
 <p>We call this “<code class="docutils literal"><span class="pre">preamble.js</span></code>” because Emscripten’s output JS, at a high level, contains the preamble (from <code class="docutils literal"><span class="pre">src/preamble.js</span></code>), then the compiled code, then the postamble. (In slightly more detail, the preamble contains utility functions and setup, while the postamble connects things and handles running the application.)</p>
 <p>The preamble code is included in the output JS, which is then optimized all together by the compiler, together with any <code class="docutils literal"><span class="pre">--pre-js</span></code> and <code class="docutils literal"><span class="pre">--post-js</span></code> files you added and code from any JavaScript libraries (<code class="docutils literal"><span class="pre">--js-library</span></code>). That means that you can call methods from the preamble directly, and the compiler will see that you need them, and not remove them as being unused.</p>
 <p>If you want to call preamble methods from somewhere the compiler can’t see, like another script tag on the HTML, you need to <strong>export</strong> them. To do so, add them to <code class="docutils literal"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code> (for example, <code class="docutils literal"><span class="pre">-s</span> <span class="pre">'EXTRA_EXPORTED_RUNTIME_METHODS=[&quot;ccall&quot;,</span> <span class="pre">&quot;cwrap&quot;]'</span></code> will export <code class="docutils literal"><span class="pre">call</span></code> and <code class="docutils literal"><span class="pre">cwrap</span></code>). Once exported, you can access them on the <code class="docutils literal"><span class="pre">Module</span></code> object (as <code class="docutils literal"><span class="pre">Module.ccall</span></code>, for example).</p>
@@ -1708,7 +1716,7 @@
          
 		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
          
-		      <a class="footer-navlink-short external" href="https://github.com/kripken/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/kripken/emscripten/wiki">Wiki</a>
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
         
               <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
         
@@ -1755,7 +1763,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/kripken/emscripten/issues/new?title=Bug%20in%20page:preamble.js%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/api_reference/preamble.js&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:preamble.js%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/api_reference/preamble.js&labels=bug">Page bug</a>
       </li>
   </ul>
   
@@ -1783,7 +1791,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.21',
+            VERSION:'1.38.25',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
