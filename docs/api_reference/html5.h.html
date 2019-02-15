@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>html5.h &mdash; Emscripten 1.38.25 documentation</title>
+  <title>html5.h &mdash; Emscripten 1.38.27 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.25 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.27 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="preamble.js" href="preamble.js.html"/>
         <link rel="prev" title="emscripten.h" href="emscripten.h.html"/> 
@@ -2575,7 +2575,7 @@ will change the aspect ratio of the displayed content.</p>
 <code class="descname">EMSCRIPTEN_FULLSCREEN_SCALE_ASPECT</code><a class="headerlink" href="#c.EMSCRIPTEN_FULLSCREEN_SCALE_ASPECT" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies that the Emscripten runtime should explicitly scale the CSS size of the target element to cover the whole screen, while adding either vertical or horizontal
 black letterbox padding to preserve the aspect ratio of the content. The aspect ratio that is used here is the render target size of the canvas element. To change the
-desired aspect ratio, call <a class="reference internal" href="emscripten.h.html#c.emscripten_set_canvas_size" title="emscripten_set_canvas_size"><code class="xref c c-func docutils literal"><span class="pre">emscripten_set_canvas_size()</span></code></a> before entering fullscreen mode.</p>
+desired aspect ratio, call <a class="reference internal" href="#c.emscripten_set_canvas_element_size" title="emscripten_set_canvas_element_size"><code class="xref c c-func docutils literal"><span class="pre">emscripten_set_canvas_element_size()</span></code></a> before entering fullscreen mode.</p>
 </dd></dl>
 
 <dl class="macro">
@@ -3979,9 +3979,9 @@ double <code class="descname">level</code><a class="headerlink" href="#c.Emscrip
 </dd></dl>
 
 <dl class="member">
-<dt id="c.EmscriptenWebGLContextAttributes.preferLowPowerToHighPerformance">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">preferLowPowerToHighPerformance</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.preferLowPowerToHighPerformance" title="Permalink to this definition">¶</a></dt>
-<dd><p>If <code class="docutils literal"><span class="pre">true</span></code>, hints the browser to initialize a low-power GPU rendering context. If <code class="docutils literal"><span class="pre">false</span></code>, prefers to initialize a high-performance rendering context. Default value: <code class="docutils literal"><span class="pre">false</span></code>.</p>
+<dt id="c.EmscriptenWebGLContextAttributes.powerPreference">
+EM_WEBGL_POWER_PREFERENCE <code class="descname">powerPreference</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.powerPreference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies a hint to the WebGL canvas implementation to how it should choose the use of available GPU resources. One of EM_WEBGL_POWER_PREFERENCE_DEFAULT, EM_WEBGL_POWER_PREFERENCE_LOW_POWER, EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE.</p>
 </dd></dl>
 
 <dl class="member">
@@ -4096,18 +4096,18 @@ int <code class="descname">minorVersion</code><a class="headerlink" href="#c.Ems
 
 <dl class="function">
 <dt id="c.emscripten_is_webgl_context_lost">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">emscripten_is_webgl_context_lost</code><span class="sig-paren">(</span>const char<em>&nbsp;*target</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_is_webgl_context_lost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Queries the given canvas element for whether its WebGL context is in a lost state.</p>
+<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">emscripten_is_webgl_context_lost</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</a><em>&nbsp;context</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_is_webgl_context_lost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Queries the given WebGL context if it is in a lost context state.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>target</strong> (<em>const char*</em>) – Reserved for future use, pass in 0.</li>
+<li><strong>target</strong> (<a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE"><em>EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</em></a>) – Specifies a handle to the context to test.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">true</span></code> if the WebGL context is in a lost state.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">true</span></code> if the WebGL context is in a lost state (or the context does not exist)</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal"><span class="pre">EM_BOOL</span></code></a></p>
@@ -4206,6 +4206,27 @@ void <code class="descname">emscripten_webgl_init_context_attributes</code><span
 </dd></dl>
 
 <dl class="function">
+<dt id="c.emscripten_webgl_get_context_attributes">
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="descname">emscripten_webgl_get_context_attributes</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</a><em>&nbsp;context</em>, <a class="reference internal" href="#c.EmscriptenWebGLContextAttributes" title="EmscriptenWebGLContextAttributes">EmscriptenWebGLContextAttributes</a><em>&nbsp;*outAttributes</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_webgl_get_context_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the context creation attributes that were used to initialize the given WebGL context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>context</strong> (<a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE"><em>EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</em></a>) – The WebGL context to query.</li>
+<li><strong>*outAttributes</strong> (<a class="reference internal" href="#c.EmscriptenWebGLContextAttributes" title="EmscriptenWebGLContextAttributes"><em>EmscriptenWebGLContextAttributes</em></a>) – The context creation attributes of the specified context will be filled in here. This pointer cannot be null.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">On success, EMSCRIPTEN_RESULT_SUCCESS.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="c.emscripten_webgl_commit_frame">
 <a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="descname">emscripten_webgl_commit_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_webgl_commit_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Presents (“swaps”) the content rendered on the currently active WebGL context to be visible on the canvas. This function is available on WebGL contexts that were created with the <code class="docutils literal"><span class="pre">explicitSwapControl==true</span></code> context creation attribute. If <code class="docutils literal"><span class="pre">explicitSwapControl==false</span></code>, then the rendered content is displayed on the screen “implicitly” when yielding back to the browser from the calling event handler.</p>
@@ -4287,6 +4308,50 @@ void <code class="descname">emscripten_webgl_init_context_attributes</code><span
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal"><span class="pre">EM_BOOL</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_set_canvas_element_size">
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="descname">emscripten_set_canvas_element_size</code><span class="sig-paren">(</span>const char<em>&nbsp;*target</em>, int<em>&nbsp;width</em>, int<em>&nbsp;height</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_canvas_element_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resizes the pixel width and height of the given Canvas element in the DOM.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target</strong> – Specifies a selector for the canvas to resize.</li>
+<li><strong>width</strong> – New pixel width of canvas element.</li>
+<li><strong>height</strong> – New pixel height of canvas element.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EMSCRIPTEN_RESULT_SUCCESS if resizing succeeded, and one of the EMSCRIPTEN_RESULT_* error values on failure.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_get_canvas_element_size">
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="descname">emscripten_get_canvas_element_size</code><span class="sig-paren">(</span>const char<em>&nbsp;*target</em>, int<em>&nbsp;*width</em>, int<em>&nbsp;*height</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_get_canvas_element_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the current pixel width and height of the given Canvas element in the DOM.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target</strong> – Specifies a selector for the canvas to resize.</li>
+<li><strong>width</strong> – A pointer to memory location where the width of the canvas element is received. This pointer may not be null.</li>
+<li><strong>height</strong> – A pointer to memory location where the height of the canvas element is received. This pointer may not be null.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EMSCRIPTEN_RESULT_SUCCESS if resizing succeeded, and one of the EMSCRIPTEN_RESULT_* error values on failure.</p>
 </td>
 </tr>
 </tbody>
@@ -4818,7 +4883,7 @@ void <code class="descname">emscripten_throw_string</code><span class="sig-paren
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.25',
+            VERSION:'1.38.27',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
