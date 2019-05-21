@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.38.31 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.38.32 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.31 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.32 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -1189,7 +1189,7 @@ about memory management.</p>
   // units, but Emscripten C strings operate as UTF-8.
   var lengthBytes = lengthBytesUTF8(jsString)+1;
   var stringOnWasmHeap = _malloc(lengthBytes);
-  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes+1);
+  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
   return stringOnWasmHeap;
 });
 
@@ -1256,7 +1256,7 @@ char *str = (char*)EM_ASM_INT({
   var jsString = &#39;Hello with some exotic Unicode characters: Tässä on yksi lumiukko: ☃, ole hyvä.&#39;;
   var lengthBytes = lengthBytesUTF8(jsString)+1; // &#39;jsString.length&#39; would return the length of the string as UTF-16 units, but Emscripten C strings operate as UTF-8.
   var stringOnWasmHeap = _malloc(lengthBytes);
-  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes+1);
+  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
   return stringOnWasmHeap;
 });
 printf(&quot;UTF8 string says: %s\n&quot;, str);
@@ -1640,7 +1640,7 @@ void <code class="descname">emscripten_async_call</code><span class="sig-paren">
 <dd><p>Call a C function asynchronously, that is, after returning control to the JavaScript event loop.</p>
 <p>This is done by a <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code>.</p>
 <p>When building natively this becomes a simple direct call, after <code class="docutils literal notranslate"><span class="pre">SDL_Delay</span></code> (you must include <strong>SDL.h</strong> for that).</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">millis</span></code> is negative, the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism is used.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">millis</span></code> is negative, the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism is used. (Note that 0 means that <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> is still used, which basically means “run asynchronously as soon as possible”.)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3102,7 +3102,7 @@ void <code class="descname">emscripten_yield</code><span class="sig-paren">(</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.31',
+            VERSION:'1.38.32',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
