@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code &mdash; Emscripten 1.38.32 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 1.38.33 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.32 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.33 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Pthreads support" href="pthreads.html"/> 
@@ -410,12 +410,9 @@
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Porting SIMD code</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#enabling-simd-code-generation">Enabling SIMD code generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tests-and-benchmarks">Tests and Benchmarks</a></li>
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#intro">Intro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage">Usage</a></li>
@@ -866,6 +863,14 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/Sanitizers.html#undefined-behaviour-sanitizer">Undefined Behaviour Sanitizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#catching-null-dereference">Catching Null Dereference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#minimal-runtime">Minimal Runtime</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a><ul>
@@ -1061,7 +1066,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code targeting WebAssembly</div>
   </div>
  
 </div>
@@ -1079,48 +1084,39 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code targeting WebAssembly</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <div class="section" id="porting-simd-code">
-<h1>Porting SIMD code<a class="headerlink" href="#porting-simd-code" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten utilizes the <a class="reference external" href="https://tc39.github.io/ecmascript_simd/">SIMD.js specification</a> to enable support for building SIMD code. While the specification does not expose direct access to native CPU SIMD instructions, it does offer the most basic operations that codebases commonly need. Given the nature of the SIMD.js specification, compiled SIMD code is platform-abstract and the generated .js files will run accelerated on both x86 SSE and ARM NEON enabled CPUs (and any other vector instruction sets that browsers might be targeting), although performance can vary.</p>
-<p>For backwards compatibility, all generated SIMD code will embed a polyfill for all SIMD.js instructions. This allows Emscripten compiled pages to be run even on browsers that don’t have SIMD support available. However, due to the nature of the interoperation with asm.js, the SIMD.js polyfill will likely be much slower than scalar execution, so it is best to primarily target browsers that do support SIMD.js in hardware.</p>
-<div class="section" id="enabling-simd-code-generation">
-<h2>Enabling SIMD code generation<a class="headerlink" href="#enabling-simd-code-generation" title="Permalink to this headline">¶</a></h2>
-<p>There are three different ways to generate code to benefit from SIMD instructions:</p>
+  <div class="section" id="porting-simd-code-targeting-webassembly">
+<h1>Porting SIMD code targeting WebAssembly<a class="headerlink" href="#porting-simd-code-targeting-webassembly" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten supports the <a class="reference external" href="https://github.com/webassembly/simd/">WebAssembly SIMD proposal</a> when using the WebAssembly LLVM backend. To enable SIMD, pass the -msimd128 flag at compile time. This will also turn on LLVM’s autovectorization passes, so no source modifications are necessary to benefit from SIMD.</p>
+<p>At the source level, the GCC/Clang <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a> can be used and will be lowered to WebAssembly SIMD instructions where possible. A portable intrinsics header for WebAssembly SIMD is also being actively developed.</p>
+<p>WebAssembly SIMD is not supported when using the Fastcomp backend.</p>
+</div>
+<div class="section" id="porting-simd-code-targeting-asm-js">
+<h1>Porting SIMD code targeting asm.js<a class="headerlink" href="#porting-simd-code-targeting-asm-js" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten utilizes a polyfill of the <a class="reference external" href="https://tc39.github.io/ecmascript_simd/">SIMD.js specification</a> to enable support for building SIMD code. Note that no modern JS engine supports SIMD.js natively, so using Emscripten’s SIMD.js support will almost always be slower than building without SIMD. As such, Emscripten’s SIMD.js support should be considered deprecated and may be removed in a future release.</p>
+<p>There are two different ways to generate code using the SIMD.js polyfill:</p>
 <ul class="simple">
-<li>The easiest way is to utilize LLVM autovectorization support. This does not require any code changes and it is the most straightforward option to try for codebases that have not explicitly been written to target SIMD. To enable autovectorization, pass the linker flag -s SIMD=1 both when compiling and linking output files. Note that not all code can be autovectorized in this manner by the compiler, so the performance gains will greatly depend on the structure of the code in its hot paths.</li>
+<li>The easiest way is to utilize LLVM autovectorization support. This does not require any code changes and it is the most straightforward option to try for codebases that have not explicitly been written to target SIMD. To enable autovectorization, pass the linker flag -s SIMD=1 both when compiling and linking output files.</li>
 <li>Emscripten supports the GCC/Clang compiler specific <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a>. These constructs do not require any changes to the command line build flags, but any code that utilizes the vector built-ins will always unconditionally emit SIMD.js vector instructions.</li>
-<li>A third option is to use the x86 SSE intrinsics. Emscripten has full support for compiling code that utilizes the SSE1, SSE2, SSE3 and SSSE3 intrinsic function calls. To enable SSE1 intrinsics support, pass the compiler flag -msse, and add in a #include &lt;xmmintrin.h&gt;. To build SSE2 intrinsics code, pass the compiler flag -msse2, and use #include &lt;emmintrin.h&gt;. For SSE3, pass -msse3 and #include &lt;pmmintrin.h&gt;, and for SSSE3, pass -mssse3 and #include &lt;tmmintrin.h&gt;.</li>
 </ul>
-<p>These three methods are not mutually exclusive, but may freely be combined.</p>
 </div>
 <div class="section" id="limitations-and-behavioral-differences">
-<h2>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this headline">¶</a></h2>
-<p>When porting native SIMD code, it should be noted that because of portability concerns, SIMD.js does not expose the full native instruction sets to JavaScript. In particular the following changes exist:</p>
+<h1>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this headline">¶</a></h1>
+<p>When porting native SIMD code, it should be noted that because of portability concerns, neither the WebAssembly SIMD proposal nor SIMD.js expose the full native instruction sets. In particular the following changes exist:</p>
 <blockquote>
 <div><ul class="simple">
-<li>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, but all code should be written to use SIMD intrinsic functions.</li>
-<li>The SIMD types supported by SIMD.js are Float32x4, Int32x4, Uint32x4, Int16x8, Uint16x8, Int8x16 and Uint8x16. In particular, Float64x2 and Int64x2 are currently not supported, however Float64x2 is emulated in software in the current polyfill. 256-bit or wider SIMD types (AVX) are not supported either.</li>
-<li>Even though the full set of SSE1, SSE2, SSE3 and SSSE3 intrinsics are supported, because of the platform-abstract nature of SIMD.js, some of these intrinsics will compile down to scalarized instructions to emulate. To verify which instructions are accelerated and which are not, examine the code in the platform headers <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">xmmintrin.h</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/incoming/system/include/emscripten/xmmintrin.h">emmintrin.h</a>.</li>
-<li>Currently the Intel x86 SIMD support is limited to SSE1, SSE2, SSE3 and SSSE3 instruction sets. The Intel x86 SSE4.1, SSE4.2, AVX, AVX2 and FMA instruction sets or newer are not supported. Also, the old Intel x86 MMX instruction set is not supported.</li>
-<li>SIMD.js does not have control over managing floating point rounding modes or handling denormals.</li>
+<li>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, so all code should be written to use SIMD intrinsic functions or compiler vector extensions.</li>
+<li>WebAssembly SIMD and SIMD.js do not have control over managing floating point rounding modes or handling denormals.</li>
 <li>Cache line prefetch instructions are not available, and calls to these functions will compile, but be treated as no-ops.</li>
 <li>Asymmetric memory fence operations are not available, but will be implemented as fully synchronous memory fences when SharedArrayBuffer is enabled (-s USE_PTHREADS=1) or as no-ops when multithreading is not enabled (default, -s USE_PTHREADS=0).</li>
-<li>Building ARM NEON -based intrinsics (#include &lt;arm_neon.h&gt;) code is not currently supported, but could be doable. Contributions on this front are welcome.</li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="tests-and-benchmarks">
-<h2>Tests and Benchmarks<a class="headerlink" href="#tests-and-benchmarks" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten repository has several tests for SIMD support. To run SIMD tests, execute e.g. “python tests/runner.py asm*.test_sse1_full” in Emscripten root directory (note that currently - 2018-7-11 - only asm.js supports SIMD, so we run the <cite>asm*</cite> tests). For the full list of tests, see test_simd* and test_sse* in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/incoming/tests/test_core.py">test_core.py</a>.</p>
-<p>To run a synthetic SSE1 API benchmark, execute “python tests/benchmark_sse1.py” in Emscripten root directory.</p>
 <p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
-</div>
 </div>
 
 
@@ -1183,7 +1179,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code targeting WebAssembly</div>
   </div>
  
 </div> -->
@@ -1208,7 +1204,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Porting%20SIMD%20code%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/simd&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Porting%20SIMD%20code%20targeting%20WebAssembly%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/simd&labels=bug">Page bug</a>
       </li>
   </ul>
   
@@ -1236,7 +1232,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.32',
+            VERSION:'1.38.33',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
