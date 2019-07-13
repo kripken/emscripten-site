@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>bind.h (under-construction) &mdash; Emscripten 1.38.36 documentation</title>
+  <title>bind.h (under-construction) &mdash; Emscripten 1.38.38 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.36 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.38 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="trace.h" href="trace.h.html"/>
         <link rel="prev" title="val.h (under-construction)" href="val.h.html"/> 
@@ -875,6 +875,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../debugging/Sanitizers.html#undefined-behaviour-sanitizer">Undefined Behaviour Sanitizer</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#catching-null-dereference">Catching Null Dereference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#minimal-runtime">Minimal Runtime</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/Sanitizers.html#address-sanitizer">Address Sanitizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#buffer-overflow">Buffer Overflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#use-after-free">Use After Free</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#memory-leaks">Memory Leaks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#use-after-return">Use After Return</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1761,42 +1771,26 @@ an <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title=
 <dt id="_CPPv3NK6class_8functionEv">
 <span id="_CPPv2NK6class_8functionEv"></span><span id="class_::functionC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv36class_" title="class_">class_</a> &amp;<code class="descname">function</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv3NK6class_8functionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">ReturnType</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Policies</span><span class="o">&gt;</span>
-<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">function</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">methodName</span><span class="p">,</span> <span class="n">ReturnType</span> <span class="p">(</span><span class="n">ClassType</span><span class="o">::*</span><span class="n">memberFunction</span><span class="p">)(</span><span class="n">Args</span><span class="p">...),</span> <span class="n">Policies</span><span class="p">...)</span> <span class="k">const</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">Signature</span> <span class="o">=</span> <span class="n">internal</span><span class="o">::</span><span class="n">DeduceArgumentsTag</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Callable</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Policies</span><span class="o">&gt;</span>
+<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">function</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">methodName</span><span class="p">,</span> <span class="n">Callable</span> <span class="n">callable</span><span class="p">,</span> <span class="n">Policies</span><span class="p">...)</span> <span class="k">const</span>
 </pre></div>
 </div>
 <p>This method is for declaring a method belonging to a class.</p>
-<p>On the JavaScript side this is a function that gets bound as a property of the prototype. For example <code class="docutils literal notranslate"><span class="pre">.function(&quot;myClassMember&quot;,</span> <span class="pre">&amp;MyClass::myClassMember)</span></code> would bind <code class="docutils literal notranslate"><span class="pre">myClassMember</span></code> to <code class="docutils literal notranslate"><span class="pre">MyClass.prototype.myClassMember</span></code> in the JavaScript.</p>
-<p>:param const char* methodName
-:param ReturnType (ClassType::*memberFunction)(Args…) Note that <code class="docutils literal notranslate"><span class="pre">ReturnType</span></code> is a template typename for this function and <code class="docutils literal notranslate"><span class="pre">ClassType</span></code> is a template typename for the class.
-:param typename… Policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv318allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
-:returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv36class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv3NK6class_8functionEPKcM9ClassTypeKF10ReturnTypeDp4ArgsEDp8Policies">
-<span id="_CPPv2NK6class_8functionEPKcM9ClassTypeKF10ReturnTypeDp4ArgsEDp8Policies"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv36class_" title="class_">class_</a> &amp;<code class="descname">function</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>methodName</em>, ReturnType (<em>ClassType</em>::*<em>memberFunction</em>)<span class="sig-paren">(</span>Args...<span class="sig-paren">)</span> <em class="property">const</em>, Policies..., <span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv3NK6class_8functionEPKcM9ClassTypeKF10ReturnTypeDp4ArgsEDp8Policies" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">ReturnType</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Policies</span><span class="o">&gt;</span>
-<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">function</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">methodName</span><span class="p">,</span> <span class="n">ReturnType</span> <span class="p">(</span><span class="n">ClassType</span><span class="o">::*</span><span class="n">memberFunction</span><span class="p">)(</span><span class="n">Args</span><span class="p">...)</span> <span class="k">const</span><span class="p">,</span> <span class="n">Policies</span><span class="p">...)</span> <span class="k">const</span>
+<p>On the JavaScript side this is a function that gets bound as a property of the prototype. For example <code class="docutils literal notranslate"><span class="pre">.function(&quot;myClassMember&quot;,</span> <span class="pre">&amp;MyClass::myClassMember)</span></code>
+would bind <code class="docutils literal notranslate"><span class="pre">myClassMember</span></code> to <code class="docutils literal notranslate"><span class="pre">MyClass.prototype.myClassMember</span></code> in the JavaScript.  This method will accept either a pointer-to-member-function, function
+pointer, <code class="docutils literal notranslate"><span class="pre">std::function</span></code> object or function object.  When the <code class="docutils literal notranslate"><span class="pre">Callable</span></code> is not a pointer-to-member-function it must accept the <code class="docutils literal notranslate"><span class="pre">ClassType</span></code> as the first
+(<code class="docutils literal notranslate"><span class="pre">this</span></code>) parameter.  When the <code class="docutils literal notranslate"><span class="pre">Callable</span></code> is a function object the function signature must be explicitly specified in the <code class="docutils literal notranslate"><span class="pre">Signature</span></code> template parameter
+in the format <code class="docutils literal notranslate"><span class="pre">ReturnType</span> <span class="pre">(Args...)</span></code>.  For <code class="docutils literal notranslate"><span class="pre">Callable</span></code> types other than function objects the method signature will be deduced.</p>
+<p>The following are all valid calls to <code class="docutils literal notranslate"><span class="pre">function</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="p">;</span>
+<span class="n">myClass</span><span class="p">.</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;myClassMember&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">MyClass</span><span class="o">::</span><span class="n">myClassMember</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;myFreeFunction&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">my_free_function</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;myStdFunction&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">float</span><span class="p">(</span><span class="n">ClassType</span><span class="o">&amp;</span><span class="p">,</span> <span class="kt">float</span><span class="p">,</span> <span class="kt">float</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_function</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">function</span><span class="o">&lt;</span><span class="n">val</span><span class="p">(</span><span class="k">const</span> <span class="n">MyClass</span><span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;myFunctor&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_functor_taking_this</span><span class="p">,</span> <span class="n">_1</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>:param const char* methodName
-:param ReturnType (ClassType::*memberFunction)(Args…) const: Note that <code class="docutils literal notranslate"><span class="pre">ReturnType</span></code> is a template typename for this function and <code class="docutils literal notranslate"><span class="pre">ClassType</span></code> is a template typename for the class.
-:param typename… Policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv318allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
-:returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv36class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="_CPPv3NK6class_8functionEPKcPF10ReturnType8ThisTypeDp4ArgsEDp8Policies">
-<span id="_CPPv2NK6class_8functionEPKcPF10ReturnType8ThisTypeDp4ArgsEDp8Policies"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv36class_" title="class_">class_</a> &amp;<code class="descname">function</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>methodName</em>, ReturnType (*<em>function</em>)<span class="sig-paren">(</span>ThisType, Args...<span class="sig-paren">)</span>, Policies..., <span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv3NK6class_8functionEPKcPF10ReturnType8ThisTypeDp4ArgsEDp8Policies" title="Permalink to this definition">¶</a><br /></dt>
-<dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">ReturnType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ThisType</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Policies</span><span class="o">&gt;</span>
-<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">function</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">methodName</span><span class="p">,</span> <span class="n">ReturnType</span> <span class="p">(</span><span class="o">*</span><span class="n">function</span><span class="p">)(</span><span class="n">ThisType</span><span class="p">,</span> <span class="n">Args</span><span class="p">...),</span> <span class="n">Policies</span><span class="p">...)</span> <span class="k">const</span>
-</pre></div>
-</div>
-<p>:param const char* methodName
-:param ReturnType (*function)(ThisType, Args…)
+:param Callable callable Note that <code class="docutils literal notranslate"><span class="pre">Callable</span></code> may be either a member function pointer, function pointer, <code class="docutils literal notranslate"><span class="pre">std::function</span></code> or function object.
 :param typename… Policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv318allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv36class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
@@ -2138,7 +2132,7 @@ an <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title=
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.36',
+            VERSION:'1.38.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

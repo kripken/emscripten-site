@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging with Sanitizers &mdash; Emscripten 1.38.36 documentation</title>
+  <title>Debugging with Sanitizers &mdash; Emscripten 1.38.38 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.36 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.38 documentation" href="../../index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="CyberDWARF Debugging" href="CyberDWARF.html"/> 
 
@@ -876,6 +876,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#minimal-runtime">Minimal Runtime</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#address-sanitizer">Address Sanitizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#buffer-overflow">Buffer Overflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-after-free">Use After Free</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#memory-leaks">Memory Leaks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-after-return">Use After Return</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
@@ -1041,7 +1051,7 @@
 <span id="sanitizers"></span><h1>Debugging with Sanitizers<a class="headerlink" href="#debugging-with-sanitizers" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="undefined-behaviour-sanitizer">
 <span id="sanitizer-ubsan"></span><h2>Undefined Behaviour Sanitizer<a class="headerlink" href="#undefined-behaviour-sanitizer" title="Permalink to this headline">¶</a></h2>
-<p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html">undefined behavior sanitizer</a> (UBSan) is now available for use with
+<p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html">undefined behavior sanitizer</a> (UBSan) is available for use with
 Emscripten. This makes it much easier to catch bugs in your code.</p>
 <p>To use UBSan, simply pass <code class="docutils literal notranslate"><span class="pre">-fsanitize=undefined</span></code> to <code class="docutils literal notranslate"><span class="pre">emcc</span></code> or <code class="docutils literal notranslate"><span class="pre">em++</span></code>.</p>
 <div class="section" id="catching-null-dereference">
@@ -1112,6 +1122,198 @@ designed for production uses.</p>
 <span class="go">ubsan: type-mismatch</span>
 <span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
 </pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="address-sanitizer">
+<span id="sanitizer-asan"></span><h2>Address Sanitizer<a class="headerlink" href="#address-sanitizer" title="Permalink to this headline">¶</a></h2>
+<p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/AddressSanitizer.html">address sanitizer</a> (ASan) is also available for use with Emscripten.
+This makes it much easier to catch buffer overflows, memory leaks, and other
+related bugs in your code.</p>
+<p>To use ASan, simply pass <code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code> to <code class="docutils literal notranslate"><span class="pre">emcc</span></code> or <code class="docutils literal notranslate"><span class="pre">em++</span></code>.</p>
+<p>You probably need to increase <code class="docutils literal notranslate"><span class="pre">TOTAL_MEMORY</span></code> to at least 64 MB or pass
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ALLOW_MEMORY_GROWTH</span></code> so that ASan has enough memory to start. Otherwise,
+you will receive an error message that looks something like:</p>
+<blockquote>
+<div>Cannot enlarge memory arrays to size 55152640 bytes (OOM). Either (1) compile
+with  -s TOTAL_MEMORY=X  with X higher than the current value 50331648, (2)
+compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at
+runtime, or (3) if you want malloc to return NULL (0) instead of this abort,
+compile with  -s ABORTING_MALLOC=0</div></blockquote>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Here are some examples of how AddressSanitizer can be used to help find bugs.</p>
+<div class="section" id="buffer-overflow">
+<h4>Buffer Overflow<a class="headerlink" href="#buffer-overflow" title="Permalink to this headline">¶</a></h4>
+<p>Consider <code class="docutils literal notranslate"><span class="pre">buffer_overflow.c</span></code>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+  <span class="n">memset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> emcc -g4 -fsanitize<span class="o">=</span>address -s ALLOW_MEMORY_GROWTH buffer_overflow.c
+<span class="gp">$</span> node a.out.js
+<span class="go">=================================================================</span>
+<span class="go">==42==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x02965e5a at pc 0x000015f0 bp 0x02965a30 sp 0x02965a30</span>
+<span class="go">WRITE of size 11 at 0x02965e5a thread T0</span>
+<span class="gp">    #</span><span class="m">0</span> 0x15f0 in __asan_memset+0x15f0 <span class="o">(</span>a.out.wasm+0x15f0<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span> 0xc46 in __original_main stack_buffer_overflow.c:5:3
+<span class="gp">    #</span><span class="m">2</span> 0xcbc in main+0xcbc <span class="o">(</span>a.out.wasm+0xcbc<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span> 0x800019bc in Object.Module._main a.out.js:6588:32
+<span class="gp">    #</span><span class="m">4</span> 0x80001aeb in Object.callMain a.out.js:6891:30
+<span class="gp">    #</span><span class="m">5</span> 0x80001b25 in doRun a.out.js:6949:60
+<span class="gp">    #</span><span class="m">6</span> 0x80001b33 in run a.out.js:6963:5
+<span class="gp">    #</span><span class="m">7</span> 0x80001ad6 in runCaller a.out.js:6870:29
+
+<span class="go">Address 0x02965e5a is located in stack of thread T0 at offset 26 in frame</span>
+<span class="gp">    #</span><span class="m">0</span> 0x11  <span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
+
+<span class="go">  This frame has 1 object(s):</span>
+<span class="go">    [16, 26) &#39;x&#39; (line 4) &lt;== Memory access at offset 26 overflows this variable</span>
+<span class="go">HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork</span>
+<span class="go">      (longjmp and C++ exceptions *are* supported)</span>
+<span class="go">SUMMARY: AddressSanitizer: stack-buffer-overflow (a.out.wasm+0x15ef)</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-after-free">
+<h4>Use After Free<a class="headerlink" href="#use-after-free" title="Permalink to this headline">¶</a></h4>
+<p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_free.cpp</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="o">*</span><span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+  <span class="k">delete</span> <span class="p">[]</span> <span class="n">array</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> em++ -g4 -fsanitize<span class="o">=</span>address -s ALLOW_MEMORY_GROWTH use_after_free.cpp
+<span class="gp">$</span> node a.out.js
+<span class="go">=================================================================</span>
+<span class="go">==42==ERROR: AddressSanitizer: heap-use-after-free on address 0x03203e40 at pc 0x00000c1b bp 0x02965e70 sp 0x02965e7c</span>
+<span class="go">READ of size 4 at 0x03203e40 thread T0</span>
+<span class="gp">    #</span><span class="m">0</span> 0xc1b in __original_main use_after_free.cpp:4:10
+<span class="gp">    #</span><span class="m">1</span> 0xc48 in main+0xc48 <span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+
+<span class="go">0x03203e40 is located 0 bytes inside of 400-byte region [0x03203e40,0x03203fd0)</span>
+<span class="go">freed by thread T0 here:</span>
+<span class="gp">    #</span><span class="m">0</span> 0x5fe8 in operator delete<span class="o">[](</span>void*<span class="o">)</span>+0x5fe8 <span class="o">(</span>a.out.wasm+0x5fe8<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span> 0xb76 in __original_main use_after_free.cpp:3:3
+<span class="gp">    #</span><span class="m">2</span> 0xc48 in main+0xc48 <span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span> 0x800019b5 in Object.Module._main a.out.js:6581:32
+<span class="gp">    #</span><span class="m">4</span> 0x80001ade in Object.callMain a.out.js:6878:30
+<span class="gp">    #</span><span class="m">5</span> 0x80001b18 in doRun a.out.js:6936:60
+<span class="gp">    #</span><span class="m">6</span> 0x80001b26 in run a.out.js:6950:5
+<span class="gp">    #</span><span class="m">7</span> 0x80001ac9 in runCaller a.out.js:6857:29
+
+<span class="go">previously allocated by thread T0 here:</span>
+<span class="gp">    #</span><span class="m">0</span> 0x5db4 in operator new<span class="o">[](</span>unsigned long<span class="o">)</span>+0x5db4 <span class="o">(</span>a.out.wasm+0x5db4<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span> 0xb41 in __original_main use_after_free.cpp:2:16
+<span class="gp">    #</span><span class="m">2</span> 0xc48 in main+0xc48 <span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span> 0x800019b5 in Object.Module._main a.out.js:6581:32
+<span class="gp">    #</span><span class="m">4</span> 0x80001ade in Object.callMain a.out.js:6878:30
+<span class="gp">    #</span><span class="m">5</span> 0x80001b18 in doRun a.out.js:6936:60
+<span class="gp">    #</span><span class="m">6</span> 0x80001b26 in run a.out.js:6950:5
+<span class="gp">    #</span><span class="m">7</span> 0x80001ac9 in runCaller a.out.js:6857:29
+
+<span class="go">SUMMARY: AddressSanitizer: heap-use-after-free (a.out.wasm+0xc1a)</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="memory-leaks">
+<h4>Memory Leaks<a class="headerlink" href="#memory-leaks" title="Permalink to this headline">¶</a></h4>
+<p>Consider <code class="docutils literal notranslate"><span class="pre">leak.cpp</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> em++ -g4 -fsanitize<span class="o">=</span>address -s ALLOW_MEMORY_GROWTH -s EXIT_RUNTIME leak.cpp
+<span class="gp">$</span> node a.out.js
+
+<span class="go">=================================================================</span>
+<span class="go">==42==ERROR: LeakSanitizer: detected memory leaks</span>
+
+<span class="go">Direct leak of 40 byte(s) in 1 object(s) allocated from:</span>
+<span class="gp">    #</span><span class="m">0</span> 0x5ce5 in operator new<span class="o">[](</span>unsigned long<span class="o">)</span>+0x5ce5 <span class="o">(</span>a.out.wasm+0x5ce5<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span> 0xb24 in __original_main leak.cpp:2:3
+<span class="gp">    #</span><span class="m">2</span> 0xb3a in main+0xb3a <span class="o">(</span>a.out.wasm+0xb3a<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span> 0x800019b8 in Object.Module._main a.out.js:6584:32
+<span class="gp">    #</span><span class="m">4</span> 0x80001ae1 in Object.callMain a.out.js:6881:30
+<span class="gp">    #</span><span class="m">5</span> 0x80001b1b in doRun a.out.js:6939:60
+<span class="gp">    #</span><span class="m">6</span> 0x80001b29 in run a.out.js:6953:5
+<span class="gp">    #</span><span class="m">7</span> 0x80001acc in runCaller a.out.js:6860:29
+
+<span class="go">SUMMARY: AddressSanitizer: 40 byte(s) leaked in 1 allocation(s).</span>
+</pre></div>
+</div>
+<p>Note that since leak checks take place at program exit, you must use
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXIT_RUNTIME</span></code>, or invoke <code class="docutils literal notranslate"><span class="pre">__lsan::DoLeakCheck</span></code> manually.</p>
+<p>You can detect that AddressSanitizer is enabled and run <code class="docutils literal notranslate"><span class="pre">__lsan::DoLeakCheck</span></code>
+by doing:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#if defined(__has_feature)</span>
+<span class="cp">#if __has_feature(address_sanitizer)</span>
+  <span class="c1">// code for ASan-enabled builds</span>
+  <span class="n">__lsan</span><span class="o">::</span><span class="n">DoLeakCheck</span><span class="p">();</span>
+<span class="cp">#endif</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<p>Also, if you only want to check for memory leaks, you may use
+<code class="docutils literal notranslate"><span class="pre">-fsanitize=leak</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code>. <code class="docutils literal notranslate"><span class="pre">-fsanitize=leak</span></code>
+does not instrument all memory accesses, and as a result is much faster than
+<code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code>.</p>
+</div>
+<div class="section" id="use-after-return">
+<h4>Use After Return<a class="headerlink" href="#use-after-return" title="Permalink to this headline">¶</a></h4>
+<p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_return.c</span></code>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">__asan_default_options</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="s">&quot;detect_stack_use_after_return=1&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="o">*</span><span class="nf">f</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">buf</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+  <span class="k">return</span> <span class="n">buf</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="o">*</span><span class="n">f</span><span class="p">()</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that to do this check, you have to use the ASan option
+<code class="docutils literal notranslate"><span class="pre">detect_stack_use_after_return</span></code>. You may enable this option by declaring
+a function called <code class="docutils literal notranslate"><span class="pre">__asan_default_options</span></code> like the example, or you can
+define <code class="docutils literal notranslate"><span class="pre">Module['ASAN_OPTIONS']</span> <span class="pre">=</span> <span class="pre">'detect_stack_use_after_return=1'</span></code> in the
+generated JavaScript. <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> is helpful here.</p>
+<p>This option is fairly expensive because it converts stack allocations into
+heap allocations, and these allocations are not reused so that future accesses
+can cause traps. Hence, it is not enabled by default.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> emcc -g4 -fsanitize<span class="o">=</span>address -s <span class="nv">ALLOW_MEMORY_GROWTH</span><span class="o">=</span><span class="m">1</span> use_after_return.c
+<span class="gp">$</span> node a.out.js
+<span class="go">=================================================================</span>
+<span class="go">==42==ERROR: AddressSanitizer: stack-use-after-return on address 0x02a95010 at pc 0x00000d90 bp 0x02965f70 sp 0x02965f7c</span>
+<span class="go">WRITE of size 4 at 0x02a95010 thread T0</span>
+<span class="gp">    #</span><span class="m">0</span> 0xd90 in __original_main use_after_return.c:13:10
+<span class="gp">    #</span><span class="m">1</span> 0xe0a in main+0xe0a <span class="o">(</span>a.out.wasm+0xe0a<span class="o">)</span>
+
+<span class="go">Address 0x02a95010 is located in stack of thread T0 at offset 16 in frame</span>
+<span class="gp">    #</span><span class="m">0</span> 0x11  <span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
+
+<span class="go">  This frame has 1 object(s):</span>
+<span class="go">    [16, 56) &#39;buf&#39; (line 8) &lt;== Memory access at offset 16 is inside this variable</span>
+<span class="go">HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork</span>
+<span class="go">      (longjmp and C++ exceptions *are* supported)</span>
+<span class="go">SUMMARY: AddressSanitizer: stack-use-after-return (a.out.wasm+0xd8f)</span>
+<span class="go">...</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -1228,7 +1430,7 @@ designed for production uses.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.36',
+            VERSION:'1.38.38',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
