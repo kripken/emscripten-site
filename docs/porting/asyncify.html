@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 1.38.39 documentation</title>
+  <title>Asyncify &mdash; Emscripten 1.38.41 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.39 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Emterpreter" href="emterpreter.html"/>
         <link rel="prev" title="Porting SIMD code targeting WebAssembly" href="simd.html"/> 
@@ -425,6 +425,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reentrancy">Reentrancy</a></li>
@@ -525,6 +526,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asyncify-functions">Asyncify functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id11">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id12">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#memory-scanning-functions">Memory scanning functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id13">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id14">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1081,7 +1087,7 @@ expands on the Emscripten examples from that post.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This post talks about Asyncify using the new LLVM wasm backend.
-There is also an older Asyncify implementation for the old fastcomp
+There was an older Asyncify implementation for the old fastcomp
 backend. The two algorithms and implementations are entirely separate,
 so if you are using fastcomp, these docs may not be accurate - you
 should upgrade to the wasm backend and new Asyncify!</p>
@@ -1257,6 +1263,35 @@ example is based off of
 return the value returned from <code class="docutils literal notranslate"><span class="pre">handleSleep()</span></code>. The calling C code then
 gets it normally, after the Promise completes.</p>
 </div>
+<div class="section" id="optimizing">
+<h2>Optimizing<a class="headerlink" href="#optimizing" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned earlier, unoptimized builds with Asyncify can be large and slow.
+Build with optimizations (say, <code class="docutils literal notranslate"><span class="pre">-O3</span></code>) to get good results.</p>
+<p>Asyncify adds overhead, both code size and slowness, because it instruments
+code to allow unwinding and rewinding. That overhead is usually not extreme,
+something like 50% or so. Asyncify achieves that by doing a whole-program
+analysis to find functions need to be instrumented and which do not -
+basically, which can call something that reaches one of
+<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>. That analysis avoids a lot of unnecessary overhead,
+however, it is limited by <strong>indirect calls</strong>, since it can’t tell where
+they go - it could be anything in the function table (with the same type).</p>
+<p>If you know that indirect calls are never on the stack when unwinding, then
+you can tell Asyncify to ignore indirect calls using
+<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IGNORE_INDIRECT</span></code>.</p>
+<p>If you know that some indirect calls matter and others do not, then you
+can provide a manual list of functions to Asyncify:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">ASYNCIFY_BLACKLIST</span></code> is a list of functions that do not unwind the stack.
+Asyncify will do it’s normal whole-program analysis under the assumption
+that those do not unwind.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ASYNCIFY_WHITELIST</span></code> is a list of the <strong>only</strong> functions that can unwind
+the stack. Asyncify will instrument those and no others.</li>
+</ul>
+<p>For more details see <code class="docutils literal notranslate"><span class="pre">settings.js</span></code>. Note that the manual settings
+mentioned here are error-prone - if you don’t get things exactly right,
+your application can break. If you don’t absolutely need maximal performance,
+it’s usually ok to use the defaults.</p>
+</div>
 <div class="section" id="potential-problems">
 <h2>Potential problems<a class="headerlink" href="#potential-problems" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="stack-overflows">
@@ -1410,7 +1445,7 @@ see <code class="docutils literal notranslate"><span class="pre">src/library_asy
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.39',
+            VERSION:'1.38.41',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

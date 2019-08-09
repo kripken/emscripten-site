@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.38.39 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.38.41 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.39 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -424,6 +424,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#reentrancy">Reentrancy</a></li>
@@ -524,6 +526,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-functions">Asyncify functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id11">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id12">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-scanning-functions">Memory scanning functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id13">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1064,22 +1071,23 @@
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#inline-assembly-javascript" id="id13">Inline assembly/JavaScript</a></li>
-<li><a class="reference internal" href="#calling-javascript-from-c-c" id="id14">Calling JavaScript From C/C++</a></li>
-<li><a class="reference internal" href="#browser-execution-environment" id="id15">Browser Execution Environment</a></li>
-<li><a class="reference internal" href="#emscripten-asynchronous-file-system-api" id="id16">Emscripten Asynchronous File System API</a></li>
-<li><a class="reference internal" href="#emscripten-asynchronous-indexeddb-api" id="id17">Emscripten Asynchronous IndexedDB API</a></li>
-<li><a class="reference internal" href="#compiling" id="id18">Compiling</a></li>
-<li><a class="reference internal" href="#worker-api" id="id19">Worker API</a></li>
-<li><a class="reference internal" href="#logging-utilities" id="id20">Logging utilities</a></li>
-<li><a class="reference internal" href="#socket-event-registration" id="id21">Socket event registration</a></li>
-<li><a class="reference internal" href="#unaligned-types" id="id22">Unaligned types</a></li>
-<li><a class="reference internal" href="#emterpreter-async-functions" id="id23">Emterpreter-Async functions</a></li>
-<li><a class="reference internal" href="#asyncify-functions" id="id24">Asyncify functions</a></li>
+<li><a class="reference internal" href="#inline-assembly-javascript" id="id15">Inline assembly/JavaScript</a></li>
+<li><a class="reference internal" href="#calling-javascript-from-c-c" id="id16">Calling JavaScript From C/C++</a></li>
+<li><a class="reference internal" href="#browser-execution-environment" id="id17">Browser Execution Environment</a></li>
+<li><a class="reference internal" href="#emscripten-asynchronous-file-system-api" id="id18">Emscripten Asynchronous File System API</a></li>
+<li><a class="reference internal" href="#emscripten-asynchronous-indexeddb-api" id="id19">Emscripten Asynchronous IndexedDB API</a></li>
+<li><a class="reference internal" href="#compiling" id="id20">Compiling</a></li>
+<li><a class="reference internal" href="#worker-api" id="id21">Worker API</a></li>
+<li><a class="reference internal" href="#logging-utilities" id="id22">Logging utilities</a></li>
+<li><a class="reference internal" href="#socket-event-registration" id="id23">Socket event registration</a></li>
+<li><a class="reference internal" href="#unaligned-types" id="id24">Unaligned types</a></li>
+<li><a class="reference internal" href="#emterpreter-async-functions" id="id25">Emterpreter-Async functions</a></li>
+<li><a class="reference internal" href="#asyncify-functions" id="id26">Asyncify functions</a></li>
+<li><a class="reference internal" href="#memory-scanning-functions" id="id27">Memory scanning functions</a></li>
 </ul>
 </div>
 <div class="section" id="inline-assembly-javascript">
-<h2><a class="toc-backref" href="#id13">Inline assembly/JavaScript</a><a class="headerlink" href="#inline-assembly-javascript" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Inline assembly/JavaScript</a><a class="headerlink" href="#inline-assembly-javascript" title="Permalink to this headline">¶</a></h2>
 <p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Calling JavaScript from C/C++</span></a>.</p>
 <div class="section" id="defines">
 <h3>Defines<a class="headerlink" href="#defines" title="Permalink to this headline">¶</a></h3>
@@ -1240,7 +1248,7 @@ free(str); // Each call to _malloc() must be paired with free(), or heap memory 
 </div>
 </div>
 <div class="section" id="calling-javascript-from-c-c">
-<h2><a class="toc-backref" href="#id14">Calling JavaScript From C/C++</a><a class="headerlink" href="#calling-javascript-from-c-c" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">Calling JavaScript From C/C++</a><a class="headerlink" href="#calling-javascript-from-c-c" title="Permalink to this headline">¶</a></h2>
 <p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Calling JavaScript from C/C++</span></a>.</p>
 <div class="section" id="function-pointer-types-for-callbacks">
 <h3>Function pointer types for callbacks<a class="headerlink" href="#function-pointer-types-for-callbacks" title="Permalink to this headline">¶</a></h3>
@@ -1398,7 +1406,7 @@ void <code class="descname">emscripten_async_load_script</code><span class="sig-
 </div>
 </div>
 <div class="section" id="browser-execution-environment">
-<span id="emscripten-h-browser-execution-environment"></span><h2><a class="toc-backref" href="#id15">Browser Execution Environment</a><a class="headerlink" href="#browser-execution-environment" title="Permalink to this headline">¶</a></h2>
+<span id="emscripten-h-browser-execution-environment"></span><h2><a class="toc-backref" href="#id17">Browser Execution Environment</a><a class="headerlink" href="#browser-execution-environment" title="Permalink to this headline">¶</a></h2>
 <p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-runtime-environment"><span class="std std-ref">Emscripten Runtime Environment</span></a>.</p>
 <div class="section" id="id3">
 <h3>Functions<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
@@ -1712,7 +1720,7 @@ float <code class="descname">emscripten_random</code><span class="sig-paren">(</
 </div>
 </div>
 <div class="section" id="emscripten-asynchronous-file-system-api">
-<span id="emscripten-h-asynchronous-file-system-api"></span><h2><a class="toc-backref" href="#id16">Emscripten Asynchronous File System API</a><a class="headerlink" href="#emscripten-asynchronous-file-system-api" title="Permalink to this headline">¶</a></h2>
+<span id="emscripten-h-asynchronous-file-system-api"></span><h2><a class="toc-backref" href="#id18">Emscripten Asynchronous File System API</a><a class="headerlink" href="#emscripten-asynchronous-file-system-api" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="typedefs">
 <h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline">¶</a></h3>
 <dl class="type">
@@ -2020,7 +2028,7 @@ void <code class="descname">emscripten_run_preload_plugins_data</code><span clas
 </div>
 </div>
 <div class="section" id="emscripten-asynchronous-indexeddb-api">
-<h2><a class="toc-backref" href="#id17">Emscripten Asynchronous IndexedDB API</a><a class="headerlink" href="#emscripten-asynchronous-indexeddb-api" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">Emscripten Asynchronous IndexedDB API</a><a class="headerlink" href="#emscripten-asynchronous-indexeddb-api" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div>IndexedDB is a browser API that lets you store data persistently, that is, you can save data there and load it later when the user re-visits the web page. IDBFS provides one way to use IndexedDB, through the Emscripten filesystem layer. The <code class="docutils literal notranslate"><span class="pre">emscripten_idb_*</span></code> methods listed here provide an alternative API, directly to IndexedDB, thereby avoiding the overhead of the filesystem layer.</div></blockquote>
 <dl class="function">
@@ -2184,7 +2192,7 @@ int <code class="descname">emscripten_run_preload_plugins</code><span class="sig
 
 </div>
 <div class="section" id="compiling">
-<h2><a class="toc-backref" href="#id18">Compiling</a><a class="headerlink" href="#compiling" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id20">Compiling</a><a class="headerlink" href="#compiling" title="Permalink to this headline">¶</a></h2>
 <dl class="macro">
 <dt id="c.EMSCRIPTEN_KEEPALIVE">
 <code class="descname">EMSCRIPTEN_KEEPALIVE</code><a class="headerlink" href="#c.EMSCRIPTEN_KEEPALIVE" title="Permalink to this definition">¶</a></dt>
@@ -2198,7 +2206,7 @@ int <code class="descname">emscripten_run_preload_plugins</code><span class="sig
 
 </div>
 <div class="section" id="worker-api">
-<h2><a class="toc-backref" href="#id19">Worker API</a><a class="headerlink" href="#worker-api" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">Worker API</a><a class="headerlink" href="#worker-api" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id5">
 <h3>Typedefs<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <dl class="var">
@@ -2344,7 +2352,7 @@ int <code class="descname">emscripten_get_worker_queue_size</code><span class="s
 </div>
 </div>
 <div class="section" id="logging-utilities">
-<h2><a class="toc-backref" href="#id20">Logging utilities</a><a class="headerlink" href="#logging-utilities" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">Logging utilities</a><a class="headerlink" href="#logging-utilities" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id7">
 <h3>Defines<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <dl class="macro">
@@ -2564,7 +2572,7 @@ int <code class="descname">emscripten_print_double</code><span class="sig-paren"
 </div>
 </div>
 <div class="section" id="socket-event-registration">
-<span id="emscripten-api-reference-sockets"></span><h2><a class="toc-backref" href="#id21">Socket event registration</a><a class="headerlink" href="#socket-event-registration" title="Permalink to this headline">¶</a></h2>
+<span id="emscripten-api-reference-sockets"></span><h2><a class="toc-backref" href="#id23">Socket event registration</a><a class="headerlink" href="#socket-event-registration" title="Permalink to this headline">¶</a></h2>
 <p>The functions in this section register callback functions for receiving socket events. These events are analogous to <a class="reference external" href="https://developer.mozilla.org/en/docs/WebSockets">WebSocket</a> events but are emitted <em>after</em> the internal Emscripten socket processing has occurred. This means, for example, that the message callback will be triggered after the data has been added to the <em>recv_queue</em>, so that an application receiving this callback can simply read the data using the file descriptor passed as a parameter to the callback. All of the callbacks are passed a file descriptor (<code class="docutils literal notranslate"><span class="pre">fd</span></code>) representing the socket that the notified activity took place on. The error callback also takes an <code class="docutils literal notranslate"><span class="pre">int</span></code> representing the socket error number (<code class="docutils literal notranslate"><span class="pre">errno</span></code>) and a <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represents the error message (<code class="docutils literal notranslate"><span class="pre">msg</span></code>).</p>
 <p>Only a single callback function may be registered to handle any given event, so calling a given registration function more than once will cause the first callback to be replaced. Similarly, passing a <code class="docutils literal notranslate"><span class="pre">NULL</span></code> callback function to any <code class="docutils literal notranslate"><span class="pre">emscripten_set_socket_*_callback</span></code> call will de-register the callback registered for that event.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">userData</span></code> pointer allows arbitrary data specified during event registration to be passed to the callback, this is particularly useful for passing <code class="docutils literal notranslate"><span class="pre">this</span></code> pointers around in Object Oriented code.</p>
@@ -2748,7 +2756,7 @@ void <code class="descname">emscripten_set_socket_close_callback</code><span cla
 </div>
 </div>
 <div class="section" id="unaligned-types">
-<h2><a class="toc-backref" href="#id22">Unaligned types</a><a class="headerlink" href="#unaligned-types" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id24">Unaligned types</a><a class="headerlink" href="#unaligned-types" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id10">
 <h3>Typedefs<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <dl class="type">
@@ -2779,7 +2787,7 @@ void <code class="descname">emscripten_set_socket_close_callback</code><span cla
 </div>
 </div>
 <div class="section" id="emterpreter-async-functions">
-<h2><a class="toc-backref" href="#id23">Emterpreter-Async functions</a><a class="headerlink" href="#emterpreter-async-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">Emterpreter-Async functions</a><a class="headerlink" href="#emterpreter-async-functions" title="Permalink to this headline">¶</a></h2>
 <p>Emterpreter-async functions are asynchronous functions that appear synchronously in C, the linker flags <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EMTERPRETIFY=1</span> <span class="pre">-s</span> <span class="pre">EMTERPRETIFY_ASYNC=1</span></code> are required to use these functions. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/wiki/Emterpreter">Emterpreter</a> for more details.</p>
 <div class="section" id="sleeping">
 <h3>Sleeping<a class="headerlink" href="#sleeping" title="Permalink to this headline">¶</a></h3>
@@ -2909,7 +2917,7 @@ Even so, you should use this method carefully: the order of execution is potenti
 </div>
 </div>
 <div class="section" id="asyncify-functions">
-<h2><a class="toc-backref" href="#id24">Asyncify functions</a><a class="headerlink" href="#asyncify-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id26">Asyncify functions</a><a class="headerlink" href="#asyncify-functions" title="Permalink to this headline">¶</a></h2>
 <p>Asyncify functions are asynchronous functions that appear synchronously in C, the linker flag <cite>-s ASYNCIFY=1</cite> is required to use these functions. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/wiki/Asyncify">Asyncify</a> for more details.</p>
 <div class="section" id="id11">
 <h3>Typedefs<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
@@ -2931,30 +2939,87 @@ void <code class="descname">emscripten_sleep</code><span class="sig-paren">(</sp
 <dl class="function">
 <dt id="c.emscripten_coroutine_create">
 <a class="reference internal" href="#c.emscripten_coroutine" title="emscripten_coroutine">emscripten_coroutine</a> <code class="descname">emscripten_coroutine_create</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func">em_arg_callback_func</a><em>&nbsp;func</em>, void<em>&nbsp;*arg</em>, int<em>&nbsp;stack_size</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_coroutine_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a coroutine which will be run as <cite>func(arg)</cite>.</p>
+<dd><blockquote>
+<div><p>Create a coroutine which will be run as <cite>func(arg)</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>stack_size</strong> (<em>int</em>) – the stack size that should be allocated for the coroutine, use 0 for the default value.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name" colspan="2">param int stack_size:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">the stack size that should be allocated for the coroutine, use 0 for the default value.</td>
 </tr>
 </tbody>
 </table>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this only works in fastcomp</p>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="c.emscripten_coroutine_next">
 int <code class="descname">emscripten_coroutine_next</code><span class="sig-paren">(</span><a class="reference internal" href="#c.emscripten_coroutine" title="emscripten_coroutine">emscripten_coroutine</a><em>&nbsp;coroutine</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_coroutine_next" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run <cite>coroutine</cite> until it returns, or <cite>emscripten_yield</cite> is called. A non-zero value is returned if <cite>emscripten_yield</cite> is called, otherwise 0 is returned, and future calls of <cite>emscripten_coroutine_next</cite> on this coroutine is undefined behaviour.</p>
+<dd><blockquote>
+<div>Run <cite>coroutine</cite> until it returns, or <cite>emscripten_yield</cite> is called. A non-zero value is returned if <cite>emscripten_yield</cite> is called, otherwise 0 is returned, and future calls of <cite>emscripten_coroutine_next</cite> on this coroutine is undefined behaviour.</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this only works in fastcomp</p>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="c.emscripten_yield">
 void <code class="descname">emscripten_yield</code><span class="sig-paren">(</span>void<span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_yield" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function should only be called in a coroutine created by <cite>emscripten_coroutine_create</cite>, when it called, the coroutine is paused and the caller will continue.</p>
+<dd><blockquote>
+<div>This function should only be called in a coroutine created by <cite>emscripten_coroutine_create</cite>, when it called, the coroutine is paused and the caller will continue.</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">this only works in fastcomp</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="memory-scanning-functions">
+<h2><a class="toc-backref" href="#id27">Memory scanning functions</a><a class="headerlink" href="#memory-scanning-functions" title="Permalink to this headline">¶</a></h2>
+<p>These functions can help with conservative garbage collection, where roots are
+scanned for.</p>
+<div class="section" id="id13">
+<h3>Typedefs<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<dl class="type">
+<dt id="c.em_scan_func">
+<code class="descname">em_scan_func</code><a class="headerlink" href="#c.em_scan_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function pointer type for use in scan callbacks, receiving two pointers, for
+the beginning and end of a range of memory. You can then scan that range.</p>
+<p>Defined as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_scan_func</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="id14">
+<h3>Functions<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="c.emscripten_scan_stack">
+void <code class="descname">emscripten_scan_stack</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_scan_func" title="em_scan_func">em_scan_func</a><em>&nbsp;func</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_scan_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan the C userspace stack, which means the stack managed by the compiled
+code (as opposed to the wasm VM’s internal stack, which is not directly
+observable). This data is already in linear memory; this function just
+gives you a simple way to know where it is.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_scan_registers">
+void <code class="descname">emscripten_scan_registers</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_scan_func" title="em_scan_func">em_scan_func</a><em>&nbsp;func</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_scan_registers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan “registers”, by which we mean data that is not in memory. In wasm,
+that means data stored in locals, including locals in functions higher up
+the stack - the wasm VM has spilled them, but none of that is observable to
+user code).</p>
+<p>This function requires Asyncify - it relies on that option to spill the
+local state all the way up the stack. As a result, it will add overhead
+to your program.</p>
 </dd></dl>
 
 </div>
@@ -3074,7 +3139,7 @@ void <code class="descname">emscripten_yield</code><span class="sig-paren">(</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.39',
+            VERSION:'1.38.41',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

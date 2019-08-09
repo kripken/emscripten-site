@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Emscripten 1.38.39 documentation</title>
+  <title>Index &mdash; Emscripten 1.38.41 documentation</title>
   
 
   
@@ -34,7 +34,7 @@
         <link rel="index" title="Index"
               href="#"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Emscripten 1.38.39 documentation" href="index.html"/> 
+    <link rel="top" title="Emscripten 1.38.41 documentation" href="index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -423,6 +423,7 @@
 <li class="toctree-l3"><a class="reference internal" href="docs/porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="docs/porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="docs/porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docs/porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="docs/porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="docs/porting/asyncify.html#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="docs/porting/asyncify.html#reentrancy">Reentrancy</a></li>
@@ -523,6 +524,11 @@
 <li class="toctree-l3"><a class="reference internal" href="docs/api_reference/emscripten.h.html#asyncify-functions">Asyncify functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="docs/api_reference/emscripten.h.html#id11">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="docs/api_reference/emscripten.h.html#id12">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docs/api_reference/emscripten.h.html#memory-scanning-functions">Memory scanning functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docs/api_reference/emscripten.h.html#id13">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="docs/api_reference/emscripten.h.html#id14">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1160,7 +1166,7 @@
 </li>
       <li><a href="docs/api_reference/bind.h.html#_CPPv3N6class_10class_typeE">class_::class_type (C++ type)</a>
 </li>
-      <li><a href="docs/api_reference/bind.h.html#_CPPv3NK6class_11constructorEPF10ReturnTypeDp4ArgsEDp8Policies">class_::constructor (C++ function)</a>, <a href="docs/api_reference/bind.h.html#_CPPv3NK6class_11constructorEv">[1]</a>
+      <li><a href="docs/api_reference/bind.h.html#_CPPv3NK6class_11constructorE8CallableDp8Policies">class_::constructor (C++ function)</a>, <a href="docs/api_reference/bind.h.html#_CPPv3NK6class_11constructorEv">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -1289,6 +1295,8 @@
       <li><a href="docs/api_reference/html5.h.html#c.em_pointerlockerror_callback_func">em_pointerlockerror_callback_func (C type)</a>
 </li>
       <li><a href="docs/api_reference/emscripten.h.html#c.em_run_preload_plugins_data_onload_func">em_run_preload_plugins_data_onload_func (C type)</a>
+</li>
+      <li><a href="docs/api_reference/emscripten.h.html#c.em_scan_func">em_scan_func (C type)</a>
 </li>
       <li><a href="docs/api_reference/emscripten.h.html#c.em_socket_callback">em_socket_callback (C type)</a>
 </li>
@@ -1648,6 +1656,10 @@
 </li>
       <li><a href="docs/api_reference/html5.h.html#c.emscripten_sample_gamepad_data">emscripten_sample_gamepad_data (C function)</a>
 </li>
+      <li><a href="docs/api_reference/emscripten.h.html#c.emscripten_scan_registers">emscripten_scan_registers (C function)</a>
+</li>
+      <li><a href="docs/api_reference/emscripten.h.html#c.emscripten_scan_stack">emscripten_scan_stack (C function)</a>
+</li>
       <li><a href="docs/api_reference/html5.h.html#c.emscripten_set_batterychargingchange_callback">emscripten_set_batterychargingchange_callback (C function)</a>
 </li>
       <li><a href="docs/api_reference/html5.h.html#c.emscripten_set_batterylevelchange_callback">emscripten_set_batterylevelchange_callback (C function)</a>
@@ -1692,12 +1704,12 @@
 </li>
       <li><a href="docs/api_reference/html5.h.html#c.emscripten_set_keyup_callback">emscripten_set_keyup_callback (C function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop">emscripten_set_main_loop (C function)</a>
 </li>
       <li><a href="docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop_arg">emscripten_set_main_loop_arg (C function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop_expected_blockers">emscripten_set_main_loop_expected_blockers (C function)</a>
 </li>
       <li><a href="docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop_timing">emscripten_set_main_loop_timing (C function)</a>
@@ -2892,7 +2904,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.38.39',
+            VERSION:'1.38.41',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

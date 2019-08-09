@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>bind.h (under-construction) &mdash; Emscripten 1.38.39 documentation</title>
+  <title>bind.h (under-construction) &mdash; Emscripten 1.38.41 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.39 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="trace.h" href="trace.h.html"/>
         <link rel="prev" title="val.h (under-construction)" href="val.h.html"/> 
@@ -424,6 +424,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#reentrancy">Reentrancy</a></li>
@@ -524,6 +526,11 @@
 <li class="toctree-l3"><a class="reference internal" href="emscripten.h.html#asyncify-functions">Asyncify functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id11">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id12">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten.h.html#memory-scanning-functions">Memory scanning functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id13">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id14">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1432,7 +1439,7 @@ an <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title=
 
 <dl class="type">
 <dt id="_CPPv3I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE">
-<span id="_CPPv2I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE"></span>template&lt;typename <code class="descname">PointeeType</code>&gt;<br /><em class="property">using </em><code class="descname">smart_ptr_trait</code>&lt;std::shared_ptr&lt;<a class="reference internal" href="#_CPPv3I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE" title="smart_ptr_trait&lt;std::shared_ptr&lt;PointeeType&gt;&gt;::PointeeType">PointeeType</a>&gt;&gt;<a class="headerlink" href="#_CPPv3I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv2I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE"></span>template&lt;typename <code class="descname">PointeeType</code>&gt;<br /><em class="property">using </em><code class="descname">smart_ptr_trait</code>&lt;std::shared_ptr&lt;PointeeType&gt;&gt;<a class="headerlink" href="#_CPPv3I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
 <span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">PointeeType</span><span class="o">&gt;</span>
 <span class="k">struct</span> <span class="n">smart_ptr_trait</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointeeType</span><span class="o">&gt;&gt;</span>
@@ -1463,7 +1470,7 @@ an <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title=
 
 <dl class="function">
 <dt id="_CPPv3N15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE5shareEP11PointeeTypeN8internal6EM_VALE">
-<span id="_CPPv2N15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE5shareEP11PointeeTypeN8internal6EM_VALE"></span><span id="smart_ptr_trait:std::shared_ptr:PointeeType::::share__PointeeTypeP.internal::EM_VAL"></span><em class="property">static</em> std::shared_ptr&lt;<a class="reference internal" href="#_CPPv3I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE" title="smart_ptr_trait&lt;std::shared_ptr&lt;PointeeType&gt;&gt;::PointeeType">PointeeType</a>&gt; *<code class="descname">share</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv3I0E15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE" title="smart_ptr_trait&lt;std::shared_ptr&lt;PointeeType&gt;&gt;::PointeeType">PointeeType</a> *<em>p</em>, internal::EM_VAL <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv3N15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE5shareEP11PointeeTypeN8internal6EM_VALE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv2N15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE5shareEP11PointeeTypeN8internal6EM_VALE"></span><span id="smart_ptr_trait:std::shared_ptr:PointeeType::::share__PointeeTypeP.internal::EM_VAL"></span><em class="property">static</em> std::shared_ptr&lt;PointeeType&gt; *<code class="descname">share</code><span class="sig-paren">(</span>PointeeType *<em>p</em>, internal::EM_VAL <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv3N15smart_ptr_traitINSt10shared_ptrI11PointeeTypeEEE5shareEP11PointeeTypeN8internal6EM_VALE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1692,29 +1699,28 @@ an <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title=
 <span class="target" id="embind-class-function-pointer-constructor"></span></dd></dl>
 
 <dl class="function">
-<dt id="_CPPv3NK6class_11constructorEPF10ReturnTypeDp4ArgsEDp8Policies">
-<span id="_CPPv2NK6class_11constructorEPF10ReturnTypeDp4ArgsEDp8Policies"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv36class_" title="class_">class_</a> &amp;<code class="descname">constructor</code><span class="sig-paren">(</span>ReturnType (*<em>factory</em>)<span class="sig-paren">(</span>Args...<span class="sig-paren">)</span>, Policies..., <span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv3NK6class_11constructorEPF10ReturnTypeDp4ArgsEDp8Policies" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv3NK6class_11constructorE8CallableDp8Policies">
+<span id="_CPPv2NK6class_11constructorE8CallableDp8Policies"></span><span id="class_::constructor__Callable.PoliciesDpC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv36class_" title="class_">class_</a> &amp;<code class="descname">constructor</code><span class="sig-paren">(</span>Callable <em>callable</em>, Policies...<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv3NK6class_11constructorE8CallableDp8Policies" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="p">...</span> <span class="n">Args</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ReturnType</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Policies</span><span class="o">&gt;</span>
-<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">constructor</span><span class="p">(</span><span class="n">ReturnType</span> <span class="p">(</span><span class="o">*</span><span class="n">factory</span><span class="p">)(</span><span class="n">Args</span><span class="p">...),</span> <span class="n">Policies</span><span class="p">...)</span> <span class="k">const</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">Signature</span> <span class="o">=</span> <span class="n">internal</span><span class="o">::</span><span class="n">DeduceArgumentsTag</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Callable</span><span class="p">,</span> <span class="k">typename</span><span class="p">...</span> <span class="n">Policies</span><span class="o">&gt;</span>
+<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">constructor</span><span class="p">(</span><span class="n">Callable</span> <span class="n">callable</span><span class="p">,</span> <span class="n">Policies</span><span class="p">...)</span> <span class="k">const</span>
 </pre></div>
 </div>
-<p>Class constructor for objects that use a factory function to create the object. See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-external-constructors"><span class="std std-ref">External constructors</span></a> for more information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ReturnType (*factory)(Args...)</strong> – The address of the class factory function.</li>
-<li><strong>Policies... policies</strong> – <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv318allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv36class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
-</td>
-</tr>
-</tbody>
-</table>
+<p>Class constructor for objects that use a factory function to create the object.  This method will accept either a function pointer, <code class="docutils literal notranslate"><span class="pre">std::function</span></code>
+object or function object which will return a newly constructed object.  When the <code class="docutils literal notranslate"><span class="pre">Callable</span></code> is a function object the function signature must be
+explicitly specified in the <code class="docutils literal notranslate"><span class="pre">Signature</span></code> template parameter in the format <code class="docutils literal notranslate"><span class="pre">ReturnType</span> <span class="pre">(Args...)</span></code>.  For <code class="docutils literal notranslate"><span class="pre">Callable</span></code> types other than function objects
+the method signature will be deduced.</p>
+<p>The following are all valid calls to <code class="docutils literal notranslate"><span class="pre">constructor</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="o">::</span><span class="n">placeholders</span><span class="p">;</span>
+<span class="n">myClass1</span><span class="p">.</span><span class="n">constructor</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_factory</span><span class="p">);</span>
+<span class="n">myClass2</span><span class="p">.</span><span class="n">constructor</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">ClassType2</span><span class="p">(</span><span class="kt">float</span><span class="p">,</span> <span class="kt">float</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">class2_factory</span><span class="p">));</span>
+<span class="n">myClass3</span><span class="p">.</span><span class="n">constructor</span><span class="o">&lt;</span><span class="n">ClassType3</span><span class="p">(</span><span class="k">const</span> <span class="n">val</span><span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">Class3Functor</span><span class="p">(),</span> <span class="n">_1</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-external-constructors"><span class="std std-ref">External constructors</span></a> for more information.</p>
+<p>:param Callable callable Note that <code class="docutils literal notranslate"><span class="pre">Callable</span></code> may be either a member function pointer, function pointer, <code class="docutils literal notranslate"><span class="pre">std::function</span></code> or function object.
+:param Policies… policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv318allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
+:returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv36class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
 
 <dl class="function">
@@ -2137,7 +2143,7 @@ an <a class="reference internal" href="#_CPPv319EMSCRIPTEN_BINDINGS4name" title=
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.39',
+            VERSION:'1.38.41',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

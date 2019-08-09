@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building to WebAssembly &mdash; Emscripten 1.38.39 documentation</title>
+  <title>Building to WebAssembly &mdash; Emscripten 1.38.41 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.39 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Building Projects" href="Building-Projects.html"/> 
@@ -424,6 +424,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#reentrancy">Reentrancy</a></li>
@@ -524,6 +526,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asyncify-functions">Asyncify functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id11">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id12">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#memory-scanning-functions">Memory scanning functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id13">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id14">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1059,8 +1066,8 @@
             
   <div class="section" id="building-to-webassembly">
 <span id="webassembly"></span><h1>Building to WebAssembly<a class="headerlink" href="#building-to-webassembly" title="Permalink to this headline">¶</a></h1>
-<p>WebAssembly is a new binary format for executing code on the web, allowing much faster start times (smaller download, much faster parsing in browsers) for Emscripten projects. Emscripten supports compiling to WebAssembly with a compiler flag, so it is easy for projects to target both WebAssembly and asm.js.</p>
-<p>For more background, see</p>
+<p>WebAssembly is a binary format for executing code on the web, allowing fast start times (smaller download and much faster parsing in browsers when compared to JS or asm.js). Emscripten compiles to WebAssembly by default, but you can also compile to JS for older browsers.</p>
+<p>For some historical background, see</p>
 <ul class="simple">
 <li><a class="reference external" href="https://kripken.github.io/talks/wasm.html">these slides</a> and</li>
 <li><a class="reference external" href="https://hacks.mozilla.org/2015/12/compiling-to-webassembly-its-happening/">this blogpost</a>.</li>
@@ -1077,17 +1084,22 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Emscripten’s WebAssembly support depends on <a class="reference external" href="https://github.com/WebAssembly/binaryen">Binaryen</a>, which will be automatically fetched and built for you (you may see logging about that, the first time you compile to WebAssembly).</p>
+<p class="last">Emscripten’s WebAssembly support depends on <a class="reference external" href="https://github.com/WebAssembly/binaryen">Binaryen</a>, which is provided by the emsdk (if you don’t use the emsdk, you need to build it and set it up in your <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> file).</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The <code class="docutils literal notranslate"><span class="pre">WASM</span></code>, <code class="docutils literal notranslate"><span class="pre">BINARYEN*</span></code>, etc. options only matter when compiling to your final executable. In other words, the same .o files are used for both asm.js and WebAssembly. Only when linking them and compiling to asm.js or WebAssembly do you need to specify WebAssembly if you want that. That means that it is easy to build your project to both asm.js and WebAssembly.</p>
+<p class="last">Deciding to compile to wasm or JS can be done at the linking stage: it doesn’t affect the object files.</p>
 </div>
 <div class="section" id="backends">
 <h3>Backends<a class="headerlink" href="#backends" title="Permalink to this headline">¶</a></h3>
-<p>Emscripten can currently (April 2019) use 2 backends to generate WebAssembly: <strong>fastcomp</strong> (the asm.js backend, together with asm2wasm) and the <strong>upstream LLVM wasm backend</strong>.</p>
-<p>Fastcomp is currently the default, but we hope to switch the default soon to the upstream backend.</p>
-<p>To use fastcomp, just use the emsdk normally to get <code class="docutils literal notranslate"><span class="pre">latest</span></code>. For the upstream backend, you can use <code class="docutils literal notranslate"><span class="pre">latest-upstream</span></code> for now on Linux, until we finish setting up builders, or you can set LLVM in the <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> file to point to a build you make of very recent LLVM (preferably from git/svn master).</p>
+<p>Emscripten can currently (July 2019) use 2 backends to generate WebAssembly: <strong>fastcomp</strong> (the asm.js backend, together with asm2wasm) and the <strong>upstream LLVM wasm backend</strong>.</p>
+<p>Fastcomp is currently the default, but we hope to <a class="reference external" href="https://v8.dev/blog/emscripten-llvm-wasm">switch the default soon to the upstream backend</a>.</p>
+<p>To use fastcomp, just use the emsdk normally to get <code class="docutils literal notranslate"><span class="pre">latest</span></code>. For the upstream backend, use <code class="docutils literal notranslate"><span class="pre">latest-upstream</span></code> (or, if you are not using the emsdk, you can set LLVM in the <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> file to point to a build you make of very recent LLVM - preferably from git/svn master).</p>
+<p>There are some differences you may notice between the two backends, if you upgrade from fastcomp to upstream:</p>
+<ul class="simple">
+<li>The wasm backend is strict about linking files with different features sets - for example, if one file was built with atomics but another was not, it will error at link time. This prevents possible bugs, but may mean you need to make some build system fixes.</li>
+<li>Also see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/projects/1">blocker bugs on the wasm backend</a>, and the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?utf8=✓&amp;q=is%3Aissue+is%3Aopen+label%3A&quot;LLVM+wasm+backend&quot;">wasm backend tagged issues</a>.</li>
+</ul>
 </div>
 </div>
 <div class="section" id="binaryen-codegen-options">
@@ -1126,7 +1138,7 @@
 </div>
 <div class="section" id="debugging">
 <h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
-<p>asm.js support is considered very stable now, and you can change between it and wasm with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=1</span></code>, so if you see something odd in a wasm build, comparing to a parallel asm.js build can help. In general, any difference between the two could be a compiler bug or browser bug, but there are a few legitimate causes of different behavior between the two, that you may want to rule out:</p>
+<p>asm.js support is considered very stable now, and you can change between it and wasm with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=0</span></code>, so if you see something odd in a wasm build, comparing to a parallel asm.js build can help. In general, any difference between the two could be a compiler bug or browser bug, but there are a few legitimate causes of different behavior between the two, that you may want to rule out:</p>
 <ul class="simple">
 <li>wasm allows unaligned accesses, i.e. it will load 4 bytes from an unaligned address the same way x86 does (it doesn’t care it’s unaligned). asm.js works more like ARM CPUs which mostly don’t accept such things (but they often trap, while asm.js just returns a wrong result). To rule this out, you can build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span></code>, that will catch all such invalid accesses.</li>
 <li>Timing issues - wasm might run faster or slower. To some extent you can mitigate that by building with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DETERMINISTIC=1</span></code>.</li>
@@ -1299,7 +1311,7 @@ AddType application/wasm .wasm
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.39',
+            VERSION:'1.38.41',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
