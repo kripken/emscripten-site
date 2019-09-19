@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 1.38.41 documentation</title>
+  <title>Embind &mdash; Emscripten 1.38.45 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.45 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -897,6 +897,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../debugging/Sanitizers.html#use-after-return">Use After Return</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../debugging/Sanitizers.html#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../debugging/Sanitizers.html#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1078,7 +1082,7 @@ from C++</span></a>.</p>
 introduced in C++11 and C++14. Its only significant limitation is
 that it does not currently support <a class="reference internal" href="#embind-raw-pointers"><span class="std std-ref">raw pointers with complicated
 lifetime semantics</span></a>.</p>
-<p>This article shows how to use <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> blocks to
+<p>This article shows how to use <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> blocks to
 create bindings for functions, classes, value types, pointers (including
 both raw and smart pointers), enums, and constants, and how to create
 bindings for abstract classes that can be overridden in JavaScript. It
@@ -1101,8 +1105,8 @@ approach for defining bindings.</p>
 </div>
 <div class="section" id="a-quick-example">
 <h2>A quick example<a class="headerlink" href="#a-quick-example" title="Permalink to this headline">¶</a></h2>
-<p>The following code uses an <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block to expose
-the simple C++ <code class="docutils literal notranslate"><span class="pre">lerp()</span></code> <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv38functionv" title="function"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">function()</span></code></a> to JavaScript.</p>
+<p>The following code uses an <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block to expose
+the simple C++ <code class="docutils literal notranslate"><span class="pre">lerp()</span></code> <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv48functionv" title="function"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">function()</span></code></a> to JavaScript.</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">cpp</span>
 <span class="c1">#include &lt;emscripten/bind.h&gt;</span>
 
@@ -1145,7 +1149,7 @@ or via a <code class="docutils literal notranslate"><span class="pre">&lt;script
 <p class="first admonition-title">Note</p>
 <p class="last">Open the developer tools console to see the output of <code class="docutils literal notranslate"><span class="pre">console.log</span></code>.</p>
 </div>
-<p>The code in an <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block runs when the JavaScript
+<p>The code in an <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block runs when the JavaScript
 file is initially loaded (at the same time as the global constructors). The
 function <code class="docutils literal notranslate"><span class="pre">lerp()</span></code>’s parameter types and return type are automatically
 inferred by <em>embind</em>.</p>
@@ -1202,10 +1206,10 @@ For example:</p>
 </pre></div>
 </div>
 <p>The binding block defines a chain of member function calls on the temporary
-<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv36class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> object (this same style is used in <em>Boost.Python</em>). The
-functions register the class, its <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_11constructorEv" title="class_::constructor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">constructor()</span></code></a>, member
-<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_8functionEv" title="class_::function"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">function()</span></code></a>, <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_14class_functionEv" title="class_::class_function"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">class_function()</span></code></a> (static)
-and <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_8propertyEv" title="class_::property"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">property()</span></code></a>.</p>
+<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> object (this same style is used in <em>Boost.Python</em>). The
+functions register the class, its <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_11constructorEv" title="class_::constructor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">constructor()</span></code></a>, member
+<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_8functionEv" title="class_::function"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">function()</span></code></a>, <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_14class_functionEv" title="class_::class_function"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">class_function()</span></code></a> (static)
+and <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_8propertyEv" title="class_::property"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">property()</span></code></a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This binding block binds the class and all its methods. As a rule
@@ -1247,8 +1251,8 @@ it has received, or the Emscripten heap will grow indefinitely.</p>
 <div class="section" id="value-types">
 <h2>Value types<a class="headerlink" href="#value-types" title="Permalink to this headline">¶</a></h2>
 <p>Manual memory management for basic types is onerous, so <em>embind</em> provides
-support for value types. <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv311value_array" title="value_array"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Value</span> <span class="pre">arrays</span></code></a> are
-converted to and from JavaScript Arrays and <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv312value_object" title="value_object"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">value</span> <span class="pre">objects</span></code></a> are converted to and from JavaScript Objects.</p>
+support for value types. <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv411value_array" title="value_array"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Value</span> <span class="pre">arrays</span></code></a> are
+converted to and from JavaScript Arrays and <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412value_object" title="value_object"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">value</span> <span class="pre">objects</span></code></a> are converted to and from JavaScript Objects.</p>
 <p>Consider the example below:</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">struct</span> <span class="n">Point2f</span> <span class="p">{</span>
     <span class="nb">float</span> <span class="n">x</span><span class="p">;</span>
@@ -1288,7 +1292,7 @@ converted to and from JavaScript Arrays and <a class="reference internal" href="
 <div class="section" id="raw-pointers">
 <span id="embind-raw-pointers"></span><h3>Raw pointers<a class="headerlink" href="#raw-pointers" title="Permalink to this headline">¶</a></h3>
 <p>Because raw pointers have unclear lifetime semantics, <em>embind</em> requires
-their use to be marked with <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv318allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</p>
+their use to be marked with <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</p>
 <p>For example:</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">C</span> <span class="p">{};</span>
 <span class="n">C</span><span class="o">*</span> <span class="n">passThrough</span><span class="p">(</span><span class="n">C</span><span class="o">*</span> <span class="n">ptr</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">ptr</span><span class="p">;</span> <span class="p">}</span>
@@ -1355,7 +1359,7 @@ the object in JavaScript. Continuing the example above:</p>
 the smart pointer type.</p>
 <p>For example, consider managing a class <code class="docutils literal notranslate"><span class="pre">C</span></code>’s lifetime with
 <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;C&gt;</span></code>. The best way to do this is to use
-<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_21smart_ptr_constructorEv" title="class_::smart_ptr_constructor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">smart_ptr_constructor()</span></code></a> to register the
+<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_21smart_ptr_constructorEv" title="class_::smart_ptr_constructor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">smart_ptr_constructor()</span></code></a> to register the
 smart pointer type:</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">better_smart_pointers</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">class_</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
@@ -1366,8 +1370,8 @@ smart pointer type:</p>
 </div>
 <p>When an object of this type is constructed (e.g. using <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Module.C()</span></code>)
 it returns a <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;C&gt;</span></code>.</p>
-<p>An alternative is to use <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_9smart_ptrEPKc" title="class_::smart_ptr"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">smart_ptr()</span></code></a> in the
-<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv319EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block:</p>
+<p>An alternative is to use <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_9smart_ptrEPKc" title="class_::smart_ptr"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">smart_ptr()</span></code></a> in the
+<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block:</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">smart_pointers</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">class_</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
         <span class="o">.</span><span class="n">constructor</span><span class="o">&lt;&gt;</span><span class="p">()</span>
@@ -1386,7 +1390,7 @@ return a raw pointer.</p>
 <div class="section" id="custom-smart-pointers">
 <h4>Custom smart pointers<a class="headerlink" href="#custom-smart-pointers" title="Permalink to this headline">¶</a></h4>
 <p>To teach <em>embind</em> about custom smart pointer templates, you must specialize
-the <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv315smart_ptr_trait" title="smart_ptr_trait"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">smart_ptr_trait</span></code></a> template.</p>
+the <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415smart_ptr_trait" title="smart_ptr_trait"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">smart_ptr_trait</span></code></a> template.</p>
 </div>
 </div>
 <div class="section" id="non-member-functions-on-the-javascript-prototype">
@@ -1449,7 +1453,7 @@ implemented in JavaScript.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="../../api_reference/bind.h.html#_CPPv3NK6class_14allow_subclassEv" title="class_::allow_subclass"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">allow_subclass()</span></code></a> adds two special methods to the
+<p><a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_14allow_subclassEv" title="class_::allow_subclass"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">allow_subclass()</span></code></a> adds two special methods to the
 Interface binding: <code class="docutils literal notranslate"><span class="pre">extend</span></code> and <code class="docutils literal notranslate"><span class="pre">implement</span></code>. <code class="docutils literal notranslate"><span class="pre">extend</span></code> allows
 JavaScript to subclass in the style exemplified by <a class="reference external" href="http://backbonejs.org/#Model-extend">Backbone.js</a>.
 <code class="docutils literal notranslate"><span class="pre">implement</span></code> is used when you have a JavaScript object, perhaps
@@ -1457,7 +1461,7 @@ provided by the browser or some other library, and you want to
 use it to implement a C++ interface.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv312pure_virtual" title="pure_virtual"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">pure_virtual</span></code></a> annotation on the function binding
+<p class="last">The <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412pure_virtual" title="pure_virtual"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">pure_virtual</span></code></a> annotation on the function binding
 allows JavaScript to throw a helpful error if the JavaScript class
 does not override <code class="docutils literal notranslate"><span class="pre">invoke()</span></code>. Otherwise, you may run into confusing
 errors.</p>
@@ -1574,7 +1578,7 @@ downcasting to work.</p>
 <h2>Overloaded functions<a class="headerlink" href="#overloaded-functions" title="Permalink to this headline">¶</a></h2>
 <p>Constructors and functions can be overloaded on the number of arguments,
 but <em>embind</em> does not support overloading based on type. When specifying
-an overload, use the <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv315select_overloadNSt11add_pointerI9SignatureE4typeE" title="select_overload"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">select_overload()</span></code></a> helper function to select
+an overload, use the <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415select_overloadNSt11add_pointerI9SignatureE4typeE" title="select_overload"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">select_overload()</span></code></a> helper function to select
 the appropriate signature.</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">struct</span> <span class="n">HasOverloadedMethods</span> <span class="p">{</span>
     <span class="n">void</span> <span class="n">foo</span><span class="p">();</span>
@@ -1594,7 +1598,7 @@ the appropriate signature.</p>
 </div>
 <div class="section" id="enums">
 <span id="embind-enums"></span><h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
-<p><em>Embind</em>’s <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv35enum_" title="enum_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">enumeration</span> <span class="pre">support</span></code></a> works with both C++98
+<p><em>Embind</em>’s <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv45enum_" title="enum_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">enumeration</span> <span class="pre">support</span></code></a> works with both C++98
 enums and C++11 “enum classes”.</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span> <span class="n">OldStyle</span> <span class="p">{</span>
     <span class="n">OLD_STYLE_ONE</span><span class="p">,</span>
@@ -1627,7 +1631,7 @@ type.</p>
 </div>
 <div class="section" id="constants">
 <span id="embind-constants"></span><h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
-<p>To expose a C++ <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv38constantPKcRK12ConstantType" title="constant"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">constant()</span></code></a> to JavaScript, simply write:</p>
+<p>To expose a C++ <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv48constantPKcRK12ConstantType" title="constant"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">constant()</span></code></a> to JavaScript, simply write:</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">my_constant_example</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">constant</span><span class="p">(</span><span class="s2">&quot;SOME_CONSTANT&quot;</span><span class="p">,</span> <span class="n">SOME_CONSTANT</span><span class="p">);</span>
 <span class="p">}</span>
@@ -1811,8 +1815,8 @@ and then play the tone.</p>
 </tbody>
 </table>
 <p>For convenience, <em>embind</em> provides factory functions to register
-<code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv315register_vectorPKc" title="register_vector"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_vector()</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">std::map&lt;K,</span> <span class="pre">V&gt;</span></code>
-(<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv312register_mapPKc" title="register_map"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_map()</span></code></a>) types:</p>
+<code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415register_vectorPKc" title="register_vector"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_vector()</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">std::map&lt;K,</span> <span class="pre">V&gt;</span></code>
+(<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412register_mapPKc" title="register_map"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_map()</span></code></a>) types:</p>
 <div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">stl_wrappers</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">register_vector</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">&quot;VectorInt&quot;</span><span class="p">);</span>
     <span class="n">register_map</span><span class="o">&lt;</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">&quot;MapIntInt&quot;</span><span class="p">);</span>
@@ -2015,7 +2019,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.38.41',
+            VERSION:'1.38.45',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -2024,6 +2028,7 @@ real-world applications has proved to be more than acceptable.</p>
       <script type="text/javascript" src="../../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../_static/language_data.js"></script>
 
   
 

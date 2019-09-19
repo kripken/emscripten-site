@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging with Sanitizers &mdash; Emscripten 1.38.41 documentation</title>
+  <title>Debugging with Sanitizers &mdash; Emscripten 1.38.45 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.45 documentation" href="../../index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="CyberDWARF Debugging" href="CyberDWARF.html"/> 
 
@@ -896,6 +896,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#use-after-return">Use After Return</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1158,6 +1162,7 @@ with  -s TOTAL_MEMORY=X  with X higher than the current value 50331648, (2)
 compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at
 runtime, or (3) if you want malloc to return NULL (0) instead of this abort,
 compile with  -s ABORTING_MALLOC=0</div></blockquote>
+<p>ASan fully supports multi-thread environments.</p>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Here are some examples of how AddressSanitizer can be used to help find bugs.</p>
@@ -1334,6 +1339,33 @@ can cause traps. Hence, it is not enabled by default.</p>
 </div>
 </div>
 </div>
+<div class="section" id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<p>ASan can be configured via a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> file:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span> <span class="o">=</span> <span class="s1">&#39;option1=a:option2=b&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>For example, put the above snippet with your options into <code class="docutils literal notranslate"><span class="pre">asan_options.js</span></code>,
+and compile with <code class="docutils literal notranslate"><span class="pre">--pre-js</span> <span class="pre">asan_options.js</span></code>.</p>
+<p>For standalone LSan, use <code class="docutils literal notranslate"><span class="pre">Module.LSAN_OPTIONS</span></code> instead.</p>
+<p>For a detailed understanding of the flags, see the <a class="reference external" href="https://github.com/google/sanitizers/wiki/AddressSanitizerFlags#run-time-flags">ASan documentation</a>.
+Please be warned that most flag combinations are not tested and may or may not
+work.</p>
+<div class="section" id="disabling-malloc-free-stack-traces">
+<h4>Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces<a class="headerlink" href="#disabling-malloc-free-stack-traces" title="Permalink to this headline">¶</a></h4>
+<p>In a program that uses <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> (or their C++ equivalent,
+<code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">new</span></code>/<code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">delete</span></code>) very frequently, taking a stack trace at
+all invocations to <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> can be very expensive. As a result, if
+you find your program to be very slow when using ASan, you can try using the
+option <code class="docutils literal notranslate"><span class="pre">malloc_context_size=0</span></code>, like this:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span> <span class="o">=</span> <span class="s1">&#39;malloc_context_size=0&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This prevents ASan from reporting the location of memory leaks, as well as
+offer insight into where the memory for a heap-based memory error originated,
+but may provide tremendous speed ups.</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -1448,7 +1480,7 @@ can cause traps. Hence, it is not enabled by default.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.41',
+            VERSION:'1.38.45',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -1457,6 +1489,7 @@ can cause traps. Hence, it is not enabled by default.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

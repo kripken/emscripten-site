@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building projects on Travis CI &mdash; Emscripten 1.38.41 documentation</title>
+  <title>Building projects on Travis CI &mdash; Emscripten 1.38.45 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.41 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.45 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Deploying Emscripten Compiled Pages" href="Deploying-Pages.html"/>
         <link rel="prev" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/> 
@@ -897,6 +897,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#use-after-return">Use After Return</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1069,50 +1073,50 @@
 <p><a class="reference external" href="https://travis-ci.org/">Travis CI</a> is a popular continuous integration service which offers free plans for open source projects. Thanks to a <a class="reference external" href="https://hub.docker.com/r/trzeci/emscripten/">Docker image by trzeci</a> installing emscripten in Travis CI is essentially a one line task.</p>
 <div class="section" id="a-sample-travis-yml">
 <h2>A sample .travis.yml<a class="headerlink" href="#a-sample-travis-yml" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">notifications</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">email</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">notifications</span><span class="p">:</span>
+  <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
 
-<span class="l l-Scalar l-Scalar-Plain">language</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">node_js</span>
-<span class="l l-Scalar l-Scalar-Plain">node_js</span><span class="p p-Indicator">:</span>
+<span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">node_js</span>
+<span class="nt">node_js</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">node</span>
 
-<span class="l l-Scalar l-Scalar-Plain">sudo</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="nt">sudo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">required</span>
 
-<span class="l l-Scalar l-Scalar-Plain">services</span><span class="p p-Indicator">:</span>
+<span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>
 
-<span class="l l-Scalar l-Scalar-Plain">before_install</span><span class="p p-Indicator">:</span>
+<span class="nt">before_install</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash</span>
 
-<span class="l l-Scalar l-Scalar-Plain">script</span><span class="p p-Indicator">:</span>
+<span class="nt">script</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker exec -it emscripten make helloworld.js</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">make test</span>
 </pre></div>
 </div>
 <p>Let’s break it down:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">notifications</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">email</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">notifications</span><span class="p">:</span>
+  <span class="nt">email</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
 
-<span class="l l-Scalar l-Scalar-Plain">language</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">node_js</span>
-<span class="l l-Scalar l-Scalar-Plain">node_js</span><span class="p p-Indicator">:</span>
+<span class="nt">language</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">node_js</span>
+<span class="nt">node_js</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">node</span>
 
-<span class="l l-Scalar l-Scalar-Plain">sudo</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="nt">sudo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">required</span>
 
-<span class="l l-Scalar l-Scalar-Plain">services</span><span class="p p-Indicator">:</span>
+<span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>
 </pre></div>
 </div>
 <p>These lines set up the basic settings for the Travis container. Most people do not want email notifications, but feel free to leave out those lines if you do.</p>
 <p><code class="docutils literal notranslate"><span class="pre">language:</span> <span class="pre">node_js</span></code> and <code class="docutils literal notranslate"><span class="pre">node_js:</span> <span class="pre">-</span> <span class="pre">node</span></code> tell Travis we are a Node.js project, and that we want the latest stable Node release.</p>
 <p><code class="docutils literal notranslate"><span class="pre">sudo:</span> <span class="pre">required</span></code> and <code class="docutils literal notranslate"><span class="pre">services:</span> <span class="pre">-</span> <span class="pre">docker</span></code> are required to enable Docker in the Travis container.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">before_install</span><span class="p p-Indicator">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">before_install</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash</span>
 </pre></div>
 </div>
 <p>In the before_install stage we download the Docker image, create a container with that image, and then give it the name <code class="docutils literal notranslate"><span class="pre">emscripten</span></code>. The <code class="docutils literal notranslate"><span class="pre">-dit</span></code> options tell Docker that we want the container to run <em>bash</em> in the background.</p>
 <p>This Docker image contains everything emscripten needs to run, as well as several additional build tools such as <em>make</em> and <em>cmake</em>. If you do not need them you can use the <a class="reference external" href="https://hub.docker.com/r/trzeci/emscripten-slim/">emscripten-slim image</a> instead, which excludes them and will be downloaded and installed slightly quicker. The emscripten versions available are listed at <a class="reference external" href="https://hub.docker.com/r/trzeci/emscripten/tags/">the Docker Hub</a>.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">script</span><span class="p p-Indicator">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">script</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker exec -it emscripten make helloworld.js</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">make test</span>
 </pre></div>
@@ -1236,7 +1240,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.41',
+            VERSION:'1.38.45',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -1245,6 +1249,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 
