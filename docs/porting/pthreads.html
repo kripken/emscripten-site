@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 1.38.45 documentation</title>
+  <title>Pthreads support &mdash; Emscripten 1.38.47 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.45 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.47 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Porting SIMD code targeting WebAssembly" href="simd.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -101,13 +101,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions">Installation instructions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#verifying-the-installation">Verifying the installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#archived-releases">Archived releases</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
@@ -413,6 +413,7 @@
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Pthreads support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#compiling-with-pthreads-enabled">Compiling with pthreads enabled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-flags">Additional flags</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#special-considerations">Special considerations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-code-and-tests">Running code and tests</a></li>
 </ul>
@@ -1070,60 +1071,63 @@
             
   <div class="section" id="pthreads-support">
 <h1>Pthreads support<a class="headerlink" href="#pthreads-support" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten has support for multithreading using the new SharedArrayBuffer capability in browsers. That API allows sharing memory between the main thread and web workers as well as atomic operations for synchronization, which enables Emscripten to implement support for the Pthreads (POSIX threads) API.</p>
-<p>Support in asm.js is fairly stable in Emscripten. Support in WebAssembly is arriving in browsers, and still experimental.</p>
+<p>Emscripten has support for multithreading using SharedArrayBuffer in browsers. That API allows sharing memory between the main thread and web workers as well as atomic operations for synchronization, which enables Emscripten to implement support for the Pthreads (POSIX threads) API. This support is considered stable in Emscripten.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">As of January 2018, browsers have disabled SharedArrayBuffer due to the Spectre set of vulnerabilities. Until it is restored you can still experiment with it if you flip a pref in your browser.</p>
+<p class="last">As of Sep 2019, some browsers have disabled SharedArrayBuffer due to
+the Spectre set of vulnerabilities. Until it is restored you can still
+experiment with it if you flip a pref in those browsers. In other
+browsers (like Chrome on desktop), SharedArrayBuffer is fully enabled
+by default and you don’t need to flip any flags.</p>
 </div>
 <div class="section" id="compiling-with-pthreads-enabled">
 <h2>Compiling with pthreads enabled<a class="headerlink" href="#compiling-with-pthreads-enabled" title="Permalink to this headline">¶</a></h2>
-<p>By default, support for pthreads is not enabled, since the specification is still in a prototyping stage. To enable code generation for pthreads, the following command line flags exist:</p>
+<p>By default, support for pthreads is not enabled. To enable code generation for pthreads, the following command line flags exist:</p>
 <ul class="simple">
-<li>Pass the compiler flag -s USE_PTHREADS=1 when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</li>
-<li>Optionally, pass the linker flag -s PTHREAD_POOL_SIZE=&lt;integer&gt; to specify a predefined pool of web workers to populate at page preRun time before application main() is called. If -1 is passed to both PTHREAD_POOL_SIZE and PTHREAD_HINT_NUM_CORES, then a popup dialog will ask the user the size of the pool (useful for testing).</li>
-<li>Optionally, pass the linker flag -s PTHREAD_HINT_NUM_CORES=&lt;integer&gt; to choose what the function emscripten_num_logical_cores(); will return if navigator.hardwareConcurrency is not supported. If -1 is specified here, a popup dialog will be shown at startup to let the user specify the value that is returned here. This can be helpful in order to dynamically test how an application behaves with different values here.</li>
+<li>Pass the compiler flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code> when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</li>
+<li>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code> to specify a predefined pool of web workers to populate at page preRun time before application main() is called. This is important because if the workers do not already exist then we may need to wait for the next browser event iteration for certain things, see below. (If -1 is passed to both PTHREAD_POOL_SIZE and PTHREAD_HINT_NUM_CORES, then a popup dialog will ask the user the size of the pool, which is useful for testing.)</li>
+<li>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_HINT_NUM_CORES=&lt;integer&gt;</span></code> to choose what the function emscripten_num_logical_cores(); will return if navigator.hardwareConcurrency is not supported. If -1 is specified here, a popup dialog will be shown at startup to let the user specify the value that is returned here. This can be helpful in order to dynamically test how an application behaves with different values here.</li>
 </ul>
-<p>There should be no other changes required. In C/C++ code, the preprocessor check #ifdef __EMSCRIPTEN_PTHREADS__ can be used to detect whether Emscripten is currently targeting pthreads.</p>
+<p>There should be no other changes required. In C/C++ code, the preprocessor check <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__EMSCRIPTEN_PTHREADS__</span></code> can be used to detect whether Emscripten is currently targeting pthreads.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is not possible to build one binary that would be able to leverage
+multithreading when available and fall back to single threaded when not. The
+best you can do is two separate builds, one with and one
+without threads, and pick between them at runtime.</p>
+</div>
+</div>
+<div class="section" id="additional-flags">
+<h2>Additional flags<a class="headerlink" href="#additional-flags" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PROXY_TO_PTHREAD</span></code>: In this mode your original <code class="docutils literal notranslate"><span class="pre">main()</span></code> is replaced by
+a new one that creates a pthread and runs the original <code class="docutils literal notranslate"><span class="pre">main()</span></code> on it. As a
+result, your application’s <code class="docutils literal notranslate"><span class="pre">main()</span></code> is run off the browser main (UI) thread,
+which is good for responsiveness. The browser main thread does still run code
+when things are proxied to it, for example to handle events, rendering, etc.</li>
+</ul>
+<p>Note that Emscripten has the
+<code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code> <a class="reference internal" href="../tools_reference/emcc.html#proxy-to-worker"><span class="std std-ref">linker flag</span></a> which sounds similar
+but is unrelated. That flag does not use pthreads or SharedArrayBuffer, and
+instead uses a plain Web Worker to run your main program (and postMessage to
+proxy messages back and forth).</p>
 </div>
 <div class="section" id="special-considerations">
 <h2>Special considerations<a class="headerlink" href="#special-considerations" title="Permalink to this headline">¶</a></h2>
 <p>The Emscripten implementation for the pthreads API should follow the POSIX standard closely, but some behavioral differences do exist:</p>
-<ul>
-<li><p class="first">At runtime, you can <cite>#include &lt;emscripten/threading.h&gt;</cite> and use the <code class="docutils literal notranslate"><span class="pre">emscripten_has_threading_support()</span></code> function to
-test whether the currently executing code was compiled with pthreads support
-enabled. If this function returns true, then the currently executing code was
-compiled with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code> (and the current browser supports
-multithreading).</p>
-<p>If code is compiled with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code> and the current browser does
-not support multithreading, then an exception will be thrown at page load
-time.  It is not possible to build one binary that would be able to leverage
-multithreading when available and fall back to single threaded when not. For
-such backwards compatibility, two separate builds must be done, one with <code class="docutils literal notranslate"><span class="pre">-s</span>
-<span class="pre">USE_PTHREADS=1</span></code> and the other with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=0</span></code>.</p>
-</li>
-<li><p class="first">When the linker flag <cite>-s PTHREAD_POOL_SIZE=&lt;integer&gt;</cite> is not specified and <cite>pthread_create()</cite> is called, the new thread will not actually start to run immediately, but the main JS thread must yield execution back to browser first. This behavior is a result of <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1049079">#1049079</a>.</p>
-</li>
-<li><p class="first">Currently several of the functions in the C runtime, such as filesystem functions like <cite>fopen()</cite>, <cite>fread()</cite>, <cite>printf()</cite>, <cite>fprintf()</cite> etc. are not multithreaded, but instead their execution is proxied over to the main application thread. Memory allocation via <cite>malloc()</cite> and <cite>free()</cite> is fully multithreaded though. This proxying can generate a deadlock in a special situation that native code running pthreads does not have. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/3495">bug 3495</a> for more information and how to work around this until proxying is no longer needed in Emscripten.</p>
-</li>
-<li><p class="first">In order to keep proxying as responsive as possible, whenever main thread calls to a function that performs a futex wait, e.g. <cite>usleep()</cite>, <cite>emscripten_futex_wait()</cite>, or <cite>pthread_mutex_lock()</cite>, the wait is done in very short time slices, which means that functions such as <cite>usleep()</cite> are not necessarily effective to conserve power. In order to save battery in the main thread, it is best to yield back to the browser runtime. When a pthread perform a futex wait, it sleeps in considerably longer slices.</p>
-</li>
-<li><p class="first">The Emscripten implementation does not support <a class="reference external" href="http://man7.org/linux/man-pages/man7/signal.7.html">POSIX signals</a>, which are sometimes used in conjunction with pthreads. This is because it is not possible to send signals to web workers and pre-empt their execution. The only exception to this is pthread_kill() which can be used as normal to forcibly terminate a running thread.</p>
-</li>
-<li><p class="first">The Emscripten implementation does also not support multiprocessing via <cite>fork()</cite> and <cite>join()</cite>.</p>
-</li>
-<li><p class="first">For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref “dom.workers.maxPerDomain”.</p>
-</li>
-<li><p class="first">Some of the features in the pthreads specification are unsupported since the upstream musl library that Emscripten utilizes does not support them, or they are marked optional and a conformant implementation need not support them. Such unsupported features in Emscripten include prioritization of threads, and pthread_rwlock_unlock() is not performed in thread priority order. The functions pthread_mutexattr_set/getprotocol(), pthread_mutexattr_set/getprioceiling() and pthread_attr_set/getscope() are no-ops.</p>
-</li>
-<li><p class="first">One particular note to pay attention to when porting is that sometimes in existing codebases the callback function pointers to pthread_create() and pthread_cleanup_push() omit the void* argument, which strictly speaking is undefined behavior in C/C++, but works in several x86 calling conventions. Doing this in Emscripten will issue a compiler warning, and can abort at runtime when attempting to call a function pointer with incorrect signature, so in the presence of such errors, it is good to check the signatures of the thread callback functions.</p>
-</li>
-<li><p class="first">Note that the function emscripten_num_logical_cores() will always return the value of navigator.hardwareConcurrency, i.e. the number of logical cores on the system, even when shared memory is not supported. This means that it is possible for emscripten_num_logical_cores() to return a value greater than 1, while at the same time emscripten_has_threading_support() can return false. The return value of emscripten_has_threading_support() denotes whether the browser has shared memory support available.</p>
-</li>
-<li><p class="first">Pthreads + memory growth (<cite>ALLOW_MEMORY_GROWTH</cite>) is especially tricky, see <a class="reference external" href="https://github.com/WebAssembly/design/issues/1271">wasm design issue #1271</a>. This currently causes JS accessing the wasm memory to be slow - but this will likely only be noticeable if the JS does heavy work (wasm runs at full speed, so moving work over can fix this). This also requires that your JS be aware that the HEAP* views may need to be updated - use the <cite>GROWABLE_HEAP_*</cite> helper functions which automatically handle that for you.</p>
-</li>
+<ul class="simple">
+<li>When the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code> is not specified and <code class="docutils literal notranslate"><span class="pre">pthread_create()</span></code> is called, the new thread will not start until control is yielded back to the browser’s main event loop, because the web worker cannot be created while JS or wasm code is running. This is a violation of POSIX behavior and will break common code which creates a thread and immediately joins it or otherwise synchronously waits to observe an effect such as a memory write. Using a pool creates the web workers before main is called, allowing thread creation to be synchronous.</li>
+<li>Browser DOM access is only possible on the main browser thread, and therefore things that may access the DOM, like filesystem operations (<code class="docutils literal notranslate"><span class="pre">fopen()</span></code>, etc.) or changing the HTML page’s title, etc., are proxied over to the main browser thread. This proxying can generate a deadlock in a special situation that native code running pthreads does not have. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/3495">bug 3495</a> for more information and how to work around this until this proxying is no longer needed in Emscripten. (To check which operations are proxied, you can look for the function’s implementation in the JS library (<code class="docutils literal notranslate"><span class="pre">src/library_*</span></code>) and see if it is annotated with <code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'sync'</span></code> or <code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'async'</span></code>.)</li>
+<li>When doing a futex wait, e.g. <code class="docutils literal notranslate"><span class="pre">usleep()</span></code>, <code class="docutils literal notranslate"><span class="pre">emscripten_futex_wait()</span></code>, or <code class="docutils literal notranslate"><span class="pre">pthread_mutex_lock()</span></code>, we use <code class="docutils literal notranslate"><span class="pre">Atomics.wait</span></code> on workers, which the browser should do pretty efficiently. But that is not available on the main thread, and so we busy-wait there. Busy-waiting is not recommended because it freezes the tab, and also wastes power.</li>
+<li>The Emscripten implementation does not support <a class="reference external" href="http://man7.org/linux/man-pages/man7/signal.7.html">POSIX signals</a>, which are sometimes used in conjunction with pthreads. This is because it is not possible to send signals to web workers and pre-empt their execution. The only exception to this is pthread_kill() which can be used as normal to forcibly terminate a running thread.</li>
+<li>The Emscripten implementation does also not support multiprocessing via <code class="docutils literal notranslate"><span class="pre">fork()</span></code> and <code class="docutils literal notranslate"><span class="pre">join()</span></code>.</li>
+<li>For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref “dom.workers.maxPerDomain”.</li>
+<li>Some of the features in the pthreads specification are unsupported since the upstream musl library that Emscripten utilizes does not support them, or they are marked optional and a conformant implementation need not support them. Such unsupported features in Emscripten include prioritization of threads, and pthread_rwlock_unlock() is not performed in thread priority order. The functions pthread_mutexattr_set/getprotocol(), pthread_mutexattr_set/getprioceiling() and pthread_attr_set/getscope() are no-ops.</li>
+<li>One particular note to pay attention to when porting is that sometimes in existing codebases the callback function pointers to pthread_create() and pthread_cleanup_push() omit the void* argument, which strictly speaking is undefined behavior in C/C++, but works in several x86 calling conventions. Doing this in Emscripten will issue a compiler warning, and can abort at runtime when attempting to call a function pointer with incorrect signature, so in the presence of such errors, it is good to check the signatures of the thread callback functions.</li>
+<li>Note that the function emscripten_num_logical_cores() will always return the value of navigator.hardwareConcurrency, i.e. the number of logical cores on the system, even when shared memory is not supported. This means that it is possible for emscripten_num_logical_cores() to return a value greater than 1, while at the same time emscripten_has_threading_support() can return false. The return value of emscripten_has_threading_support() denotes whether the browser has shared memory support available.</li>
+<li>Pthreads + memory growth (<code class="docutils literal notranslate"><span class="pre">ALLOW_MEMORY_GROWTH</span></code>) is especially tricky, see <a class="reference external" href="https://github.com/WebAssembly/design/issues/1271">wasm design issue #1271</a>. This currently causes JS accessing the wasm memory to be slow - but this will likely only be noticeable if the JS does large amounts of memory reads and writes (wasm runs at full speed, so moving work over can fix this). This also requires that your JS be aware that the HEAP* views may need to be updated - use the <code class="docutils literal notranslate"><span class="pre">GROWABLE_HEAP_*</span></code> helper functions which automatically handle that for you.</li>
 </ul>
-<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <cite>NAME.worker.js</cite> is generated alongside the output .js file (where <cite>NAME</cite> is the basename of the main file being emitted). That file must be deployed with the rest of the generated code files. By default, <cite>NAME.worker.js</cite> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <cite>Module.locateFile(filename)</cite> function in the main HTML <cite>Module</cite> object to return the URL of the target location of the <cite>NAME.worker.js</cite> entry point. If this function is not defined in <cite>Module</cite>, then the default location relative to the main HTML file is used.</p>
+<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> is generated alongside the output .js file (where <code class="docutils literal notranslate"><span class="pre">NAME</span></code> is the basename of the main file being emitted). That file must be deployed with the rest of the generated code files. By default, <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <code class="docutils literal notranslate"><span class="pre">Module.locateFile(filename)</span></code> function in the main HTML <code class="docutils literal notranslate"><span class="pre">Module</span></code> object to return the URL of the target location of the <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> entry point. If this function is not defined in <code class="docutils literal notranslate"><span class="pre">Module</span></code>, then the default location relative to the main HTML file is used.</p>
 </div>
 <div class="section" id="running-code-and-tests">
 <h2>Running code and tests<a class="headerlink" href="#running-code-and-tests" title="Permalink to this headline">¶</a></h2>
@@ -1249,7 +1253,7 @@ such backwards compatibility, two separate builds must be done, one with <code c
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.45',
+            VERSION:'1.38.47',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

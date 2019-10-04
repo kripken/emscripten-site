@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 1.38.45 documentation</title>
+  <title>Release Notes &mdash; Emscripten 1.38.47 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.45 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.38.47 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -413,6 +413,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/pthreads.html">Pthreads support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#compiling-with-pthreads-enabled">Compiling with pthreads enabled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#additional-flags">Additional flags</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
@@ -1081,7 +1082,7 @@ these announcements include additional informal release notes and “highlights�
 information. The easiest way to find these posts is to use <a class="reference external" href="https://groups.google.com/forum/#!searchin/emscripten-discuss/%22Emscripten$20SDK%22$20$20AND$20(released$20OR$20out$20OR$20available)">this search</a>.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 1.38.45 (Sep 23, 2019) is listed below (master version
+<p>The ChangeLog for Emscripten 1.38.47 (Oct 03, 2019) is listed below (master version
 <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/ChangeLog.md">here</a>).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
@@ -1100,9 +1101,25 @@ full changeset diff at the end of each section.
 
 See docs/process.md for how version tagging works.
 
-
 Current Trunk
 -------------
+
+v.1.38.47: 10/02/2019
+---------------------
+ - Redefine errno values to be consistent with wasi. This will let us avoid
+   needing to convert the values back and forth as we use more wasi APIs.
+   This is an ABI change, which should not be noticeable from user code
+   unless you use errno defines (like EAGAIN) *and* keep around binaries
+   compiled with an older version that you link against. In that case, you
+   should rebuild them. See #9545.
+ - Removed build option -s ONLY_MY_CODE as we now have much better solutions
+   for that, like building to a wasm object file or using STANDALONE_WASM
+   etc. (see https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone).
+
+v.1.38.46: 09/25/2019
+---------------------
+ - Rename libpthreads to libpthread to match its normal name on other platforms.
+   This change should be completely internal to emscripten.
  - Remove redundnant `COMPILER_ENGINE` and `JS_ENGINE` options.  We only support
    node as the compiler engine so just use a single `NODE_JS` option for that.
  - Module.abort is no longer exported by default. It can be exported in the normal
@@ -1112,6 +1129,10 @@ Current Trunk
    that we want the wasm to be as standalone as possible. We may still emit JS in
    that case, but the JS would just be a convenient way to run the wasm on the Web
    or in Node.js.
+ - ASYNCIFY_BLACKLIST and ASYNCIFY_WHITELIST now support simple &#39;*&#39; wildcard matching
+
+v.1.38.45: 09/12/2019
+---------------------
 
 v.1.38.44: 09/11/2019
 ---------------------
@@ -4810,7 +4831,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.45',
+            VERSION:'1.38.47',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
