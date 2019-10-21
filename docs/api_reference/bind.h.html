@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>bind.h (under-construction) &mdash; Emscripten 1.38.47 documentation</title>
+  <title>bind.h (under-construction) &mdash; Emscripten 1.39.0 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.38.47 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.0 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="trace.h" href="trace.h.html"/>
         <link rel="prev" title="val.h (under-construction)" href="val.h.html"/> 
@@ -534,6 +534,7 @@
 <li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#id14">Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten.h.html#abi-functions">ABI functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="html5.h.html">html5.h</a><ul>
@@ -1855,10 +1856,15 @@ in the format <code class="docutils literal notranslate"><span class="pre">Retur
 <dt id="_CPPv4NK6class_8propertyEPKc6Getter">
 <span id="_CPPv3NK6class_8propertyEPKc6Getter"></span><span id="_CPPv2NK6class_8propertyEPKc6Getter"></span><span id="class_::property__cCP.GetterC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv46class_" title="class_">class_</a> &amp;<code class="descname">property</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>fieldName</em>, Getter <em>getter</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6class_8propertyEPKc6Getter" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">Getter</span><span class="o">&gt;</span>
-<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">property</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">fieldName</span><span class="p">,</span> <span class="n">Getter</span> <span class="n">getter</span><span class="p">)</span> <span class="k">const</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">PropertyType</span> <span class="o">=</span> <span class="n">internal</span><span class="o">::</span><span class="n">DeduceArgumentsTag</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Getter</span><span class="o">&gt;</span>
+<span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">property</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">fieldName</span><span class="p">,</span> <span class="n">Getter</span> <span class="n">getter</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>Declare a read-only property with the specified <code class="docutils literal notranslate"><span class="pre">fieldName</span></code> on the class using the specified <code class="docutils literal notranslate"><span class="pre">getter</span></code> to retrieve the property
+value.  <code class="docutils literal notranslate"><span class="pre">Getter</span></code> may be either a class method, a function, a <code class="docutils literal notranslate"><span class="pre">std::function</span></code> or a function object.  When <code class="docutils literal notranslate"><span class="pre">Getter</span></code>
+is not pointer-to-member-function, it must accept an instance of the <code class="docutils literal notranslate"><span class="pre">ClassType</span></code> as the <code class="docutils literal notranslate"><span class="pre">this</span></code> argument.  When
+<code class="docutils literal notranslate"><span class="pre">Getter</span></code> is a function object, the property type must be specified as a template parameter as it cannot be deduced,
+e.g.: <code class="docutils literal notranslate"><span class="pre">myClass.property&lt;int&gt;(&quot;myIntProperty&quot;,</span> <span class="pre">MyIntGetterFunctor());</span></code></p>
 <p>:param const char* fieldName
 :param Getter getter Note that <code class="docutils literal notranslate"><span class="pre">Getter</span></code> is a function template typename.
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
@@ -1868,11 +1874,16 @@ in the format <code class="docutils literal notranslate"><span class="pre">Retur
 <dt id="_CPPv4NK6class_8propertyEPKc6Getter6Setter">
 <span id="_CPPv3NK6class_8propertyEPKc6Getter6Setter"></span><span id="_CPPv2NK6class_8propertyEPKc6Getter6Setter"></span><span id="class_::property__cCP.Getter.SetterC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv46class_" title="class_">class_</a> &amp;<code class="descname">property</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>fieldName</em>, Getter <em>getter</em>, Setter <em>setter</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6class_8propertyEPKc6Getter6Setter" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//prototype</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">Getter</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Setter</span><span class="o">&gt;</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">PropertyType</span> <span class="o">=</span> <span class="n">internal</span><span class="o">::</span><span class="n">DeduceArgumentsTag</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Getter</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Setter</span><span class="o">&gt;</span>
 <span class="n">EMSCRIPTEN_ALWAYS_INLINE</span> <span class="k">const</span> <span class="n">class_</span><span class="o">&amp;</span> <span class="n">property</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">fieldName</span><span class="p">,</span> <span class="n">Getter</span> <span class="n">getter</span><span class="p">,</span> <span class="n">Setter</span> <span class="n">setter</span><span class="p">)</span> <span class="k">const</span>
 </pre></div>
 </div>
-<p>This is a function template taking typenames <code class="docutils literal notranslate"><span class="pre">Setter</span></code> and <code class="docutils literal notranslate"><span class="pre">Getter</span></code>: <code class="docutils literal notranslate"><span class="pre">template&lt;typename</span> <span class="pre">Getter,</span> <span class="pre">typename</span> <span class="pre">Setter&gt;</span></code></p>
+<p>This is a function template taking typenames <code class="docutils literal notranslate"><span class="pre">Setter</span></code> and <code class="docutils literal notranslate"><span class="pre">Getter</span></code>: <code class="docutils literal notranslate"><span class="pre">template&lt;typename</span> <span class="pre">Getter,</span> <span class="pre">typename</span> <span class="pre">Setter&gt;</span></code>
+which declares a read-write property with the specified <code class="docutils literal notranslate"><span class="pre">fieldName</span></code> on the class. <code class="docutils literal notranslate"><span class="pre">Getter</span></code> and <code class="docutils literal notranslate"><span class="pre">Setter</span></code> may be either a
+class method, a function, a <code class="docutils literal notranslate"><span class="pre">std::function</span></code> or a function object.  When <code class="docutils literal notranslate"><span class="pre">Getter</span></code> or <code class="docutils literal notranslate"><span class="pre">Setter</span></code> is not pointer-to-member-function,
+it must accept an instance of the <code class="docutils literal notranslate"><span class="pre">ClassType</span></code> as the <code class="docutils literal notranslate"><span class="pre">this</span></code> argument. When <code class="docutils literal notranslate"><span class="pre">Getter</span></code> or <code class="docutils literal notranslate"><span class="pre">Setter</span></code> is a function object, the
+property type must be specified as a template parameter as it cannot be deduced, e.g.:
+<code class="docutils literal notranslate"><span class="pre">myClass.property&lt;int&gt;(&quot;myIntProperty&quot;,</span> <span class="pre">MyIntGetterFunctor(),</span> <span class="pre">MyIntSetterFunctor());</span></code></p>
 <p>:param const char* fieldName
 :param Getter getter: Note that <code class="docutils literal notranslate"><span class="pre">Getter</span></code> is a function template typename.
 :param Setter setter: Note that <code class="docutils literal notranslate"><span class="pre">Setter</span></code> is a function template typename.
@@ -2148,7 +2159,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.38.47',
+            VERSION:'1.39.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
