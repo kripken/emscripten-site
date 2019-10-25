@@ -1095,7 +1095,11 @@
 <span id="emcc-compiler-optimization-options"></span><dl class="docutils" id="emcc-o0">
 <dt><code class="docutils literal notranslate"><span class="pre">-O0</span></code></dt>
 <dd><p class="first">No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.</p>
-<p class="last">This and other optimization settings are meaningful both during compile and during link. During compile it affects LLVM optimizations, and during link it affects final optimization of the code in Binaryen as well as optimization of the JS. (For fast incremental builds <code class="docutils literal notranslate"><span class="pre">-O0</span></code> is best, while for release you should link with something higher.)</p>
+<p class="last">This and other optimization settings are meaningful both during compile and
+during link. During compile it affects LLVM optimizations, and during link it
+affects final optimization of the code in Binaryen as well as optimization of
+the JS. (For fast incremental builds <code class="docutils literal notranslate"><span class="pre">-O0</span></code> is best, while for release you
+should link with something higher.)</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-o1">
@@ -1169,63 +1173,32 @@
 <dt><code class="docutils literal notranslate"><span class="pre">-g</span></code></dt>
 <dd><p class="first">Preserve debug information.</p>
 <ul class="last simple">
-<li>When compiling to bitcode, this is the same as in <em>Clang</em> and <em>gcc</em> (it adds debug information to the object files).</li>
-<li>When compiling from source to JavaScript or bitcode to JavaScript, it is equivalent to <a class="reference internal" href="#emcc-g3"><span class="std std-ref">-g3</span></a> (discards LLVM debug info including C/C++ line numbers, but otherwise keeps as much debug information as possible). Use <a class="reference internal" href="#emcc-g4"><span class="std std-ref">-g4</span></a> to get line number debugging information in JavaScript.</li>
+<li>When compiling to object files, this is the same as in <em>Clang</em> and <em>gcc</em>, it adds debug information to the object files.</li>
+<li>When linking, this is equivalent to <a class="reference internal" href="#emcc-g3"><span class="std std-ref">-g3</span></a> (preserve JS whitespace and compiled function names).</li>
 </ul>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-gn">
 <dt><code class="docutils literal notranslate"><span class="pre">-g&lt;level&gt;</span></code></dt>
-<dd><p class="first">Controls how much debug information is kept when compiling from bitcode to JavaScript. Each level builds on the previous level:</p>
+<dd><p class="first">Controls the level of debuggability. Each level builds on the previous one:</p>
 <blockquote class="last">
-<div><ul>
-<li><p id="emcc-g0"><code class="docutils literal notranslate"><span class="pre">-g0</span></code>: Make no effort to keep code debuggable. Will discard LLVM debug information (this is done by default in <a class="reference internal" href="#emcc-o1"><span class="std std-ref">-01</span></a> and higher).</p>
+<div><ul class="simple">
+<li><p id="emcc-g0"><code class="docutils literal notranslate"><span class="pre">-g0</span></code>: Make no effort to keep code debuggable.</p>
 </li>
-<li><p id="emcc-g1"><code class="docutils literal notranslate"><span class="pre">-g1</span></code>: Preserve whitespace (do not minify).</p>
-<blockquote>
-<div><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">a</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">a</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">b</span> <span class="o">=</span> <span class="nx">b</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">f</span><span class="p">(</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">|</span> <span class="mi">0</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
+<li><p id="emcc-g1"><code class="docutils literal notranslate"><span class="pre">-g1</span></code>: When linking, preserve whitespace in JavaScript.</p>
 </li>
-<li><p id="emcc-g2"><code class="docutils literal notranslate"><span class="pre">-g2</span></code>: Preserve function names.</p>
-<blockquote>
-<div><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">_addAndPrint</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">a</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">b</span> <span class="o">=</span> <span class="nx">b</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">_printAnInteger</span><span class="p">(</span><span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="o">|</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// _printAnInteger is human readable.</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
+<li><p id="emcc-g2"><code class="docutils literal notranslate"><span class="pre">-g2</span></code>: When linking, preserve function names in compiled code.</p>
 </li>
-<li><p id="emcc-g3"><code class="docutils literal notranslate"><span class="pre">-g3</span></code>: Preserve variable names (this is the same as <a class="reference internal" href="#emcc-g"><span class="std std-ref">-g</span></a>).</p>
-<blockquote>
-<div><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">_addAndPrint</span><span class="p">(</span><span class="nx">$left</span><span class="p">,</span> <span class="nx">$right</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">$left</span> <span class="o">=</span> <span class="nx">$left</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">$right</span> <span class="o">=</span> <span class="nx">$right</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="nx">_printAnInteger</span><span class="p">(</span><span class="nx">$left</span> <span class="o">+</span> <span class="nx">$right</span> <span class="o">|</span> <span class="mi">0</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Variable names in the output will not necessarily match the original variable names in source. They are, however, usually similar enough to infer the purpose of the variables.</p>
-</div>
-</div></blockquote>
+<li><p id="emcc-g3"><code class="docutils literal notranslate"><span class="pre">-g3</span></code>: When compiling to object files, keep debug info (this is the same as <a class="reference internal" href="#emcc-g"><span class="std std-ref">-g</span></a>).</p>
 </li>
 </ul>
 <ul id="emcc-g4">
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">-g4</span></code>: Preserve LLVM debug information. This is the highest level of debuggability. If <code class="docutils literal notranslate"><span class="pre">-g</span></code> was used when compiling the C/C++ sources, this shows line number debug comments, and generates source maps.</p>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">-g4</span></code>: When linking, generate a source map using LLVM debug information (which must be present in object files, i.e., they should have been compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code>).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
-<li>This debugging level may make compilation at optimization level <a class="reference internal" href="#emcc-o1"><span class="std std-ref">-O1</span></a> and above significantly slower, because JavaScript optimization will be limited to one core (the default in <code class="docutils literal notranslate"><span class="pre">-O0</span></code>).</li>
-<li>Source maps allow you to view and debug the <em>C/C++ source code</em> in your browser’s debugger! This works in Firefox, Chrome and Safari.</li>
+<li>Source maps allow you to view and debug the <em>C/C++ source code</em> in your browser’s debugger!</li>
+<li>This debugging level may make compilation significantly slower (this is why we only do it on <code class="docutils literal notranslate"><span class="pre">-g4</span></code>).</li>
 </ul>
 </div>
 </li>
