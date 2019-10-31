@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting &mdash; Emscripten 1.39.0 documentation</title>
+  <title>Porting &mdash; Emscripten 1.39.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.1 documentation" href="../../index.html"/>
         <link rel="next" title="Code Portability and Limitations" href="guidelines/index.html"/>
         <link rel="prev" title="Building and Deploying on GitLab" href="../compiling/GitLab.html"/> 
 
@@ -413,6 +413,8 @@
 <li class="toctree-l2"><a class="reference internal" href="pthreads.html">Pthreads support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#compiling-with-pthreads-enabled">Compiling with pthreads enabled</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#additional-flags">Additional flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#proxying">Proxying</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#special-considerations">Special considerations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
@@ -491,12 +493,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id3">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-asynchronous-file-system-api">Emscripten Asynchronous File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asynchronous-file-system-api">Asynchronous File System API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#typedefs">Typedefs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id4">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-asynchronous-indexeddb-api">Emscripten Asynchronous IndexedDB API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asynchronous-indexeddb-api">Asynchronous IndexedDB API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#compiling">Compiling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#worker-api">Worker API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id5">Typedefs</a></li>
@@ -517,20 +519,20 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id10">Typedefs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#emterpreter-async-functions">Emterpreter-Async functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#pseudo-synchronous-functions">Pseudo-synchronous functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#sleeping">Sleeping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#network">Network</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#indexeddb">IndexedDB</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asyncify-functions">Asyncify functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id11">Typedefs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id12">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#fastcomp-asyncify-functions">Fastcomp Asyncify functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id12">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id13">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#memory-scanning-functions">Memory scanning functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id13">Typedefs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id14">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#upstream-asyncify-functions">Upstream Asyncify functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id14">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id15">Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#abi-functions">ABI functions</a></li>
@@ -1199,7 +1201,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.0',
+            VERSION:'1.39.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
