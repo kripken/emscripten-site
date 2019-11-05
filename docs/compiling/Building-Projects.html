@@ -1344,7 +1344,18 @@ emcc allproject.bc -o final.html
 <div class="section" id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p class="first">Make sure to use bitcode-aware <em>llvm-ar</em> instead of <em>ar</em> (which may discard code). <em>emmake</em> and <em>emconfigure</em> set the AR environment variable correctly, but a build system might incorrectly hardcode <em>ar</em>.</p>
+<li><p class="first">Make sure to use <code class="docutils literal notranslate"><span class="pre">emar</span></code> (which calls <code class="docutils literal notranslate"><span class="pre">llvm-ar</span></code>), as the system <code class="docutils literal notranslate"><span class="pre">ar</span></code> may
+not support our object files. <code class="docutils literal notranslate"><span class="pre">emmake</span></code> and <code class="docutils literal notranslate"><span class="pre">emconfigure</span></code> set the AR
+environment variable correctly, but a build system might incorrectly hardcode
+<code class="docutils literal notranslate"><span class="pre">ar</span></code>.</p>
+</li>
+<li><p class="first">Similarly, using the system <code class="docutils literal notranslate"><span class="pre">ranlib</span></code> instead of <code class="docutils literal notranslate"><span class="pre">emranlib</span></code> (which calls
+<code class="docutils literal notranslate"><span class="pre">llvm-ranlib</span></code>) may lead to problems, like not supporting our object files
+and removing the index, leading to
+<code class="docutils literal notranslate"><span class="pre">archive</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">index;</span> <span class="pre">run</span> <span class="pre">ranlib</span> <span class="pre">to</span> <span class="pre">add</span> <span class="pre">one</span></code> from <code class="docutils literal notranslate"><span class="pre">wasm-ld</span></code>. Again, using
+<code class="docutils literal notranslate"><span class="pre">emmake</span></code>/<code class="docutils literal notranslate"><span class="pre">emconfigure</span></code> should avoid this by setting the env var RANLIB,
+but a build system might have it hardcoded, or require you to
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/9705#issuecomment-548199052">pass an option</a>.</p>
 </li>
 <li><p class="first">The compilation error <code class="docutils literal notranslate"><span class="pre">multiply</span> <span class="pre">defined</span> <span class="pre">symbol</span></code> indicates that the project has linked a particular static library multiple times. The project will need to be changed so that the problem library is linked only once.</p>
 <div class="admonition note">
