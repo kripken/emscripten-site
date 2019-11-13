@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.39.1 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.39.2 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.2 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -1210,10 +1210,10 @@ int main() {
 <p>Note the <code class="docutils literal notranslate"><span class="pre">{</span></code> and <code class="docutils literal notranslate"><span class="pre">}</span></code>.</p>
 <p>Null-terminated C strings can also be passed into <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> blocks, but to operate on them, they need to be copied out from the heap to convert to high-level JavaScript strings.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>EM_ASM(console.log(&#39;hello &#39; + UTF8ToString($0)), &quot;world!&quot;);
-
-In the same manner, pointers to any type (including ``void *``) can be passed inside ``EM_ASM`` code, where they appear as integers like ``char *`` pointers above did. Accessing the data can be managed by reading the heap directly. ::
-
-int arr[2] = { 30, 45 };
+</pre></div>
+</div>
+<p>In the same manner, pointers to any type (including <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">*</span></code>) can be passed inside <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code, where they appear as integers like <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> pointers above did. Accessing the data can be managed by reading the heap directly.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int arr[2] = { 30, 45 };
 EM_ASM({
   console.log(&#39;Data: &#39; + HEAP32[$0&gt;&gt;2] + &#39;, &#39; + HEAP32[($0+4)&gt;&gt;2]);
 }, arr);
@@ -1231,19 +1231,20 @@ EM_ASM({
 <dl class="macro">
 <dt id="c.EM_ASM_INT">
 <code class="descname">EM_ASM_INT</code><span class="sig-paren">(</span>code, ...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_INT" title="Permalink to this definition">¶</a></dt>
-<dd><p>EM_ASM_DOUBLE(code, …)</p>
-<p>These two functions behave like EM_ASM, but in addition they also return a value back to C code. The output value is passed back with a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement:</p>
+<dd><p>This macro, as well as the <a class="reference internal" href="#c.EM_ASM_DOUBLE" title="EM_ASM_DOUBLE"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_DOUBLE</span></code></a> one, behave like <a class="reference internal" href="#c.EM_ASM" title="EM_ASM"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM</span></code></a>, but in addition they also return a value back to C code. The output value is passed back with a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>int x = EM_ASM_INT({
   return $0 + 42;
 }, 100);
 
 int y = EM_ASM_INT(return TOTAL_MEMORY);
-
-Strings can be returned back to C from JavaScript, but one needs to be careful about memory management. ::
-
-char *str = (char*)EM_ASM_INT({
+</pre></div>
+</div>
+<p>Strings can be returned back to C from JavaScript, but one needs to be careful about memory management.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>char *str = (char*)EM_ASM_INT({
   var jsString = &#39;Hello with some exotic Unicode characters: Tässä on yksi lumiukko: ☃, ole hyvä.&#39;;
-  var lengthBytes = lengthBytesUTF8(jsString)+1; // &#39;jsString.length&#39; would return the length of the string as UTF-16 units, but Emscripten C strings operate as UTF-8.
+  var lengthBytes = lengthBytesUTF8(jsString)+1;
+  // &#39;jsString.length&#39; would return the length of the string as UTF-16
+  // units, but Emscripten C strings operate as UTF-8.
   var stringOnWasmHeap = _malloc(lengthBytes);
   stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
   return stringOnWasmHeap;
@@ -1252,6 +1253,12 @@ printf(&quot;UTF8 string says: %s\n&quot;, str);
 free(str); // Each call to _malloc() must be paired with free(), or heap memory will leak!
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="macro">
+<dt id="c.EM_ASM_DOUBLE">
+<code class="descname">EM_ASM_DOUBLE</code><span class="sig-paren">(</span>code, ...<span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM_DOUBLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to <a class="reference internal" href="#c.EM_ASM_INT" title="EM_ASM_INT"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_INT</span></code></a> but for a <code class="docutils literal notranslate"><span class="pre">double</span></code> return value.</p>
 </dd></dl>
 
 </div>
@@ -2803,18 +2810,6 @@ there are other async events waiting to happen, they will not happen during this
 on the stack (that’s how it looks in the C source code).</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="c.emscripten_sleep_with_yield">
-void <code class="descname">emscripten_sleep_with_yield</code><span class="sig-paren">(</span>unsigned int<em>&nbsp;ms</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_sleep_with_yield" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sleep for <cite>ms</cite> milliseconds, while allowing other asynchronous operations, e.g. caused by <code class="docutils literal notranslate"><span class="pre">emscripten_async_call</span></code>, to run normally, during
-this sleep. Note that this method <strong>does</strong> still block the main loop, as otherwise it could recurse, if you are calling this method from it.
-Even so, you should use this method carefully: the order of execution is potentially very confusing this way.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This only works in fastcomp. In the wasm backend, just use sleep, which does not have strict yield checking.</p>
-</div>
-</dd></dl>
-
 </div>
 <div class="section" id="network">
 <h3>Network<a class="headerlink" href="#network" title="Permalink to this headline">¶</a></h3>
@@ -2959,9 +2954,15 @@ void <code class="descname">emscripten_wget</code><span class="sig-paren">(</spa
 <div class="section" id="id13">
 <h3>Functions<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt>
-void <code class="descname">emscripten_sleep</code><span class="sig-paren">(</span>unsigned int<em>&nbsp;ms</em><span class="sig-paren">)</span></dt>
-<dd><p>Sleep for <cite>ms</cite> milliseconds.</p>
+<dt id="c.emscripten_sleep_with_yield">
+void <code class="descname">emscripten_sleep_with_yield</code><span class="sig-paren">(</span>unsigned int<em>&nbsp;ms</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_sleep_with_yield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sleep for <cite>ms</cite> milliseconds, while allowing other asynchronous operations, e.g. caused by <code class="docutils literal notranslate"><span class="pre">emscripten_async_call</span></code>, to run normally, during
+this sleep. Note that this method <strong>does</strong> still block the main loop, as otherwise it could recurse, if you are calling this method from it.
+Even so, you should use this method carefully: the order of execution is potentially very confusing this way.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This only works in fastcomp. In the wasm backend, just use sleep, which does not have strict yield checking.</p>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -3199,7 +3200,7 @@ to constantly check for after any wasm code runs. See
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.1',
+            VERSION:'1.39.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
