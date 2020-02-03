@@ -1,0 +1,1273 @@
+
+    
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Networking &mdash; Emscripten 1.39.6 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Emscripten 1.39.6 documentation" href="../../index.html"/>
+        <link rel="up" title="Porting" href="index.html"/>
+        <link rel="next" title="Porting SIMD code targeting WebAssembly" href="simd.html"/>
+        <link rel="prev" title="Pthreads support" href="pthreads.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+
+<div class="grid-to-center-rtd-theme"> 
+ 
+  <div class="wy-grid-for-nav">
+  
+
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <!-- <a href="../../index.html" class="fa fa-home"> Emscripten</a> -->
+		<a href="../../index.html"> <img src="../..//_static/Emscripten_logo_full.png" alt="Logo" /> </a>
+		
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+
+		 
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#emscripten-toolchain">Emscripten Toolchain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html#porting-code-to-use-emscripten">Porting code to use Emscripten</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/community.html#get-in-touch">Get in touch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/community.html#report-a-bug">Report a bug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/community.html#contribute">Contribute</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#books">Books</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions">Installation instructions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#verifying-the-installation">Verifying the installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#first-things-first">First things first</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#verifying-emscripten">Verifying Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#running-emscripten">Running Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#generating-html">Generating HTML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#using-files">Using files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#optimizing-code">Optimizing code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#emscripten-test-suite-and-benchmarks">Emscripten Test Suite and Benchmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/Tutorial.html#general-tips-and-next-steps">General tips and next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#debugging-test-failures">Debugging test failures</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/bug_reports.html#llvm-wasm-ld-clang-binaryen-bugs">LLVM, wasm-ld, clang, Binaryen bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/bug_reports.html#site-and-documentation-bugs">Site and documentation bugs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-compile-code">How do I compile code?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-multiple-errors-building-basic-code-and-the-tests">Why do I get multiple errors building basic code and the tests?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#i-tried-something-why-doesnt-it-work">I tried something: why doesn’t it work?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#do-i-need-to-change-my-build-system-to-use-emscripten">Do I need to change my build system to use Emscripten?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-is-code-compilation-slow">Why is code compilation slow?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-run-slowly">Why does my code run slowly?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-is-my-compiled-code-big">Why is my compiled code big?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-compiling-code-that-works-on-another-machine-gives-me-errors">Why does compiling code that works on another machine gives me errors?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-program-stall-in-downloading-or-preparing">Why does my program stall in “Downloading…” or “Preparing…”?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-an-event-loop">How do I run an event loop?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-doesn-t-my-sdl-app-work">Why doesn’t my SDL app work?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-link-against-system-libraries-like-sdl-boost-etc">How do I link against system libraries like SDL, boost, etc.?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-are-my-options-for-audio-playback">What are my options for audio playback?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-my-compiled-program-access-files">How can my compiled program access files?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-can-t-my-code-access-a-file-in-the-same-directory">Why can’t my code access a file in the same directory?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions">How can I tell when the page is fully loaded and it is safe to call compiled functions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">What does “exiting the runtime” mean? Why don’t <code class="docutils literal notranslate"><span class="pre">atexit()s</span></code> run?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-functions-in-my-c-c-source-code-vanish-when-i-compile-to-javascript-and-or-i-get-no-functions-to-process">Why do functions in my C/C++ source code vanish when I compile to JavaScript, and/or I get <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">functions</span> <span class="pre">to</span> <span class="pre">process</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-is-the-file-system-api-is-not-available-when-i-build-with-closure">Why is the File System API is not available when I build with closure?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-break-and-gives-odd-errors-when-using-o2-closure-1">Why does my code break and gives odd errors when using <code class="docutils literal notranslate"><span class="pre">-O2</span> <span class="pre">--closure</span> <span class="pre">1</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-typeerror-module-something-is-not-a-function">Why do I get <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">Module.someThing</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">function</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-runtime-no-longer-exist-why-do-i-get-an-error-trying-to-access-runtime-something">Why does <code class="docutils literal notranslate"><span class="pre">Runtime</span></code> no longer exist? Why do I get an error trying to access <code class="docutils literal notranslate"><span class="pre">Runtime.someThing</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-a-nameerror-or-a-problem-occurred-in-evaluating-content-after-a-s-when-i-use-a-s-option">Why do I get a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">problem</span> <span class="pre">occurred</span> <span class="pre">in</span> <span class="pre">evaluating</span> <span class="pre">content</span> <span class="pre">after</span> <span class="pre">a</span> <span class="pre">&quot;-s&quot;</span></code> when I use a <code class="docutils literal notranslate"><span class="pre">-s</span></code> option?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-an-odd-python-error-complaining-about-libcxx-bc-or-libcxxabi-bc">Why do I get an odd python error complaining about libcxx.bc or libcxxabi.bc?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-an-error-mentioning-uglify-and-throw-new-js-parse-error">Why do I get an error mentioning Uglify and <code class="docutils literal notranslate"><span class="pre">throw</span> <span class="pre">new</span> <span class="pre">JS_Parse_Error</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-running-llvm-bitcode-generated-by-emcc-through-lli-break-with-errors-about-impure-ptr">Why does running LLVM bitcode generated by emcc through <strong>lli</strong> break with errors about <code class="docutils literal notranslate"><span class="pre">impure_ptr</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-a-stack-size-error-when-optimizing-rangeerror-maximum-call-stack-size-exceeded-or-similar">Why do I get a stack size error when optimizing: <code class="docutils literal notranslate"><span class="pre">RangeError:</span> <span class="pre">Maximum</span> <span class="pre">call</span> <span class="pre">stack</span> <span class="pre">size</span> <span class="pre">exceeded</span></code> or similar?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-cannot-compile-this-aggregate-va-arg-expression-yet-and-it-says-compiler-frontend-failed-to-generate-llvm-bitcode-halting-afterwards">Why do I get <code class="docutils literal notranslate"><span class="pre">error:</span> <span class="pre">cannot</span> <span class="pre">compile</span> <span class="pre">this</span> <span class="pre">aggregate</span> <span class="pre">va_arg</span> <span class="pre">expression</span> <span class="pre">yet</span></code> and it says <code class="docutils literal notranslate"><span class="pre">compiler</span> <span class="pre">frontend</span> <span class="pre">failed</span> <span class="pre">to</span> <span class="pre">generate</span> <span class="pre">LLVM</span> <span class="pre">bitcode,</span> <span class="pre">halting</span></code> afterwards?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-building-from-source-fail-during-linking-at-100">Why does building from source fail during linking (at 100%)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-odd-rounding-errors-when-using-float-variables">Why do I get odd rounding errors when using float variables?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-pass-int64-t-and-uint64-t-values-from-js-into-wasm-functions">How do I pass int64_t and uint64_t values from js into wasm functions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#can-i-use-multiple-emscripten-compiled-programs-on-one-web-page">Can I use multiple Emscripten-compiled programs on one Web page?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#can-i-build-javascript-that-only-runs-on-the-web">Can I build JavaScript that only runs on the Web?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-the-weird-name-for-the-project">Why the weird name for the project?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-ports">Emscripten Ports</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#adding-more-ports">Adding more ports</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-issues">Build system issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/WebAssembly.html">Building to WebAssembly</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#setup">Setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#backends">Backends</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#binaryen-codegen-options">Binaryen codegen options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#trapping">Trapping</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#compiler-output">Compiler output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#testing-native-webassembly-in-browsers">Testing native WebAssembly in browsers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#debugging">Debugging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#debugging-webassembly">Debugging WebAssembly</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#wasm-files-and-compilation"><code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files and compilation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#web-server-setup">Web server setup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#quick-how-to">Quick how-to</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#choosing-the-browser-to-run">Choosing the browser to run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#security-implications">Security implications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#controlling-web-server-operation">Controlling web server operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#controlling-log-output">Controlling log output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#cleaning-up-after-the-run">Cleaning up after the run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Travis.html">Building projects on Travis CI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Travis.html#a-sample-travis-yml">A sample .travis.yml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#build-files-and-custom-shell">Build Files and Custom Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#optimizing-download-sizes">Optimizing Download Sizes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#optimizing-page-startup-times">Optimizing Page Startup Times</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#providing-a-quick-second-time-load">Providing a Quick Second Time Load</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#reserving-memory-for-compiled-code">Reserving Memory for Compiled Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#robust-error-handling">Robust Error Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Deploying-Pages.html#prepare-for-the-web-environment">Prepare for The Web Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/GitLab.html">Building and Deploying on GitLab</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/GitLab.html#a-sample-gitlab-ci-yml">A sample .gitlab-ci.yml</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Porting</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/portability_guidelines.html">Portability Guidelines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/portability_guidelines.html#current-web-limitations">Current Web limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/portability_guidelines.html#code-that-cannot-be-compiled">Code that cannot be compiled</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/portability_guidelines.html#code-that-compiles-but-might-run-slowly">Code that compiles but might run slowly</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/portability_guidelines.html#other-issues">Other issues</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/api_limitations.html">API Limitations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/api_limitations.html#networking">Networking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/api_limitations.html#file-systems">File Systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/api_limitations.html#application-main-loop">Application Main Loop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/api_limitations.html#other-apis">Other APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/function_pointer_issues.html">Function Pointer Issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/function_pointer_issues.html#debugging-function-pointer-issues">Debugging function pointer issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guidelines/function_pointer_issues.html#working-around-function-pointer-issues">Working around function pointer issues</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="emscripten-runtime-environment.html">Emscripten Runtime Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#input-output">Input/output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#file-systems">File Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#browser-main-loop">Browser main loop</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emscripten-runtime-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#execution-lifecycle">Execution lifecycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emscripten-runtime-environment.html#emscripten-memory-representation">Emscripten memory representation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#access-memory-from-javascript">Access memory from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#affect-execution-behaviour">Affect execution behaviour</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#environment-variables">Environment variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#binding-c-and-javascript-webidl-binder-and-embind">Binding C++ and JavaScript — WebIDL Binder and Embind</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html">Embind</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#a-quick-example">A quick example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-management">Memory management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#value-types">Value types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#advanced-class-concepts">Advanced class concepts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#a-quick-example">A quick example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#modular-output">Modular output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#using-c-classes-in-javascript">Using C++ classes in JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#pointers-references-value-types-ref-and-value">Pointers, References, Value types (Ref and Value)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#const">Const</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#un-deletable-classes-nodelete">Un-deletable classes (NoDelete)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#defining-inner-classes-and-classes-inside-namespaces-prefix">Defining inner classes and classes inside namespaces (Prefix)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#operators">Operators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#enums">enums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#sub-classing-c-base-classes-in-javascript-jsimplementation">Sub-classing C++ base classes in JavaScript (JSImplementation)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#pointers-and-comparisons">Pointers and comparisons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#null">NULL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#void">void*</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#webidl-types">WebIDL types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html#test-and-example-code">Test and example code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="files/file_systems_overview.html">File System Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="files/file_systems_overview.html#emscripten-file-system-runtime-environment">Emscripten file system runtime environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/file_systems_overview.html#emscripten-file-system-architecture">Emscripten file system architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="files/packaging_files.html">Packaging Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#packaging-using-emcc">Packaging using emcc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#packaging-using-the-file-packager-tool">Packaging using the file packager tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#changing-the-data-file-location">Changing the data file location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#modifying-file-locations-in-the-virtual-file-system">Modifying file locations in the virtual file system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#valid-character-set">Valid Character Set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#monitoring-file-usage">Monitoring file usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#preloading-files">Preloading files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/packaging_files.html#test-code">Test code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html#test-code">Test code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html#instructions">Instructions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#what-egl-is-not">What EGL is not?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#how-to-create-a-webgl-context-using-egl">How to create a WebGL context using EGL?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#implementation-status-and-notes">Implementation status and notes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#webgl-friendly-subset-of-opengl-es-2-0-3-0">WebGL-friendly subset of OpenGL ES 2.0/3.0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-es-2-0-3-0-emulation">OpenGL ES 2.0/3.0 emulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#emulation-of-older-desktop-opengl-api-features">Emulation of older Desktop OpenGL API features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-es-extensions">OpenGL ES extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#test-code-examples">Test code/examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#bug-reports">Bug Reports</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Audio.html">Audio</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Audio.html#supported-openal-extensions">Supported OpenAL extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Audio.html#guidelines-for-audio-on-emscripten">Guidelines for Audio on Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Audio.html#emscripten-specific-capture-behavior">Emscripten-specific capture behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Audio.html#useful-implementation-details-of-openal-capture">Useful implementation details of OpenAL capture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Audio.html#improving-and-extending-the-implementation">Improving and extending the implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#compiler-settings">Compiler settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#sanitizers">Sanitizers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Debugging.html#infinite-loops">Infinite loops</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#autodebugger">AutoDebugger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#useful-links">Useful Links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#need-help">Need help?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pthreads.html">Pthreads support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#compiling-with-pthreads-enabled">Compiling with pthreads enabled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#additional-flags">Additional flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#proxying">Proxying</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#running-code-and-tests">Running code and tests</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Networking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-websockets-api">Emscripten WebSockets API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emulated-posix-tcp-sockets-over-websockets">Emulated POSIX TCP Sockets over WebSockets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-posix-sockets-over-websocket-proxy-server">Full POSIX Sockets over WebSocket Proxy Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xmlhttprequests-and-fetch-api">XmlHttpRequests and Fetch API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#webrtc-and-udp">WebRTC and UDP</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#optimizing">Optimizing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#potential-problems">Potential problems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="asyncify.html#stack-overflows">Stack overflows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="asyncify.html#reentrancy">Reentrancy</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="emterpreter.html">Emterpreter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#general-usage">General Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#semantics">Semantics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#debugging">Debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#bytecode-design">Bytecode Design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-ports">Emscripten Ports</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#adding-more-ports">Adding more ports</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-issues">Build system issues</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#inline-assembly-javascript">Inline assembly/JavaScript</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#defines">Defines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#calling-javascript-from-c-c">Calling JavaScript From C/C++</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#function-pointer-types-for-callbacks">Function pointer types for callbacks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#browser-execution-environment">Browser Execution Environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id3">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asynchronous-file-system-api">Asynchronous File System API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#typedefs">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id4">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#asynchronous-indexeddb-api">Asynchronous IndexedDB API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#compiling">Compiling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#worker-api">Worker API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id5">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id6">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#logging-utilities">Logging utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id7">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id8">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#socket-event-registration">Socket event registration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#callback-functions">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id9">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#unaligned-types">Unaligned types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id10">Typedefs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#pseudo-synchronous-functions">Pseudo-synchronous functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#sleeping">Sleeping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#network">Network</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#indexeddb">IndexedDB</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#fastcomp-asyncify-functions">Fastcomp Asyncify functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id12">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id13">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#upstream-asyncify-functions">Upstream Asyncify functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id14">Typedefs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/emscripten.h.html#id15">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/emscripten.h.html#abi-functions">ABI functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#how-to-use-this-api">How to use this API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#registration-functions">Registration functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#callback-functions">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#functions-affected-by-web-security">Functions affected by web security</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#test-example-code">Test/Example code</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#general-types">General types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#function-result-values">Function result values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#keys">Keys</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#defines">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#struct">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id3">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#mouse">Mouse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id4">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id5">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id6">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id7">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#wheel">Wheel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id8">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id11">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id12">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id13">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#ui">UI</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id15">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id16">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id17">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id18">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#focus">Focus</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id21">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id22">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id24">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id25">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#device-orientation">Device orientation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id30">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id31">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id32">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id33">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#device-motion">Device motion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id35">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id36">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id38">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id39">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id42">Orientation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id43">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id44">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id46">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id47">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#fullscreen">Fullscreen</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id49">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id50">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id53">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id54">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#pointerlock">Pointerlock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id57">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id58">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id61">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id62">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#visibility">Visibility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id66">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id67">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id68">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id69">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#touch">Touch</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id70">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id71">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id72">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id73">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#gamepad">Gamepad</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id74">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id75">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id76">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id77">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#battery">Battery</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id78">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id79">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id81">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id82">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#vibration">Vibration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id84">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#page-unload">Page unload</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id86">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id87">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id88">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#webgl-context">WebGL context</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id90">Defines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id91">Struct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id92">Callback functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id93">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#css">CSS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id95">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id98">Animation and Timing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id99">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id100">Console</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id101">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/html5.h.html#id102">Throw</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/html5.h.html#id103">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#calling-compiled-c-functions-from-javascript">Calling compiled C functions from JavaScript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#accessing-memory">Accessing memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#conversion-functions-strings-pointers-and-arrays">Conversion functions — strings, pointers and arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#run-dependencies">Run dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#stack-trace">Stack trace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/preamble.js.html#type-accessors-for-the-memory-model">Type accessors for the memory model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#including-file-system-support">Including File System Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#setting-up-standard-i-o-devices">Setting up standard I/O devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#id2">File system API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-types">File types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#paths">Paths</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#persisting-data">Persisting data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#persisting-data-bytes-from-memory">Persisting data bytes from memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#deleting-a-file-from-indexeddb">Deleting a file from IndexedDB</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#synchronous-fetches">Synchronous Fetches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#waitable-fetches">Waitable Fetches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#tracking-progress">Tracking Progress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#managing-large-files">Managing Large Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#downloading-directly-to-indexeddb">Downloading directly to IndexedDB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#streaming-downloads">Streaming Downloads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#byte-range-downloads">Byte Range Downloads</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#todo-to-document">TODO To Document</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#affecting-execution">Affecting execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/module.html#other-methods">Other methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#how-to-use-this-api">How to use this API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/bind.h.html#defines">Defines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#policies">Policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#select-overload-and-select-const">select_overload and select_const</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#value-tuples">Value tuples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#value-structs">Value structs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#smart-pointers">Smart pointers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#vectors">Vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#maps">Maps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/bind.h.html#constants">Constants</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/trace.h.html#usage">Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#compiler-interaction">Compiler Interaction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#initialization-and-teardown">Initialization and Teardown</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#contexts">Contexts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#frames">Frames</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#annotating-allocations">Annotating Allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#overall-memory-usage">Overall Memory Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#logging-messages">Logging Messages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#tasks">Tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#reporting-errors">Reporting Errors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/trace.h.html#running-the-server">Running the Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/trace.h.html#design-notes">Design Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#client-server-design">Client / Server Design</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#data-batching">Data Batching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/trace.h.html#do-not-perturb-the-heap">Do Not Perturb The Heap</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/trace.h.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/vr.h.html">vr.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#test-example-code">Test/Example code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#initialization">Initialization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#api-queries">API Queries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#display-functions">Display Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#render-loop">Render Loop</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#defines">Defines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#types">Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#math">Math</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/fiber.h.html#api-reference">API Reference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fiber.h.html#types">Types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/fiber.h.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#settings-js">settings.js</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#preamble-js">preamble.js</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#advanced-file-system-api">Advanced File System API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#command-line-syntax">Command line syntax</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#arguments">Arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#tools-and-sdk-targets">Tools and SDK targets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-install-a-tool-sdk-version">How do I install a tool/SDK version?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-remove-a-tool-or-an-sdk">How do I remove a tool or an SDK?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-for-updates-to-the-emscripten-sdk">How do I check for updates to the Emscripten SDK?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-change-the-currently-active-sdk-version">How do I change the currently active SDK version?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-install-and-activate-old-emscripten-sdks-and-tools">How do I install and activate old Emscripten SDKs and tools?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-track-the-latest-emscripten-development-with-the-sdk">How do I track the latest Emscripten development with the SDK?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-my-own-emscripten-github-fork-with-the-sdk">How do I use my own Emscripten GitHub fork with the SDK?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emcc.html#command-line-syntax">Command line syntax</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../tools_reference/emcc.html#arguments">Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emcc.html#environment-variables">Environment variables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emcmdprompt.html#command-line-syntax">Command line syntax</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-emscripten-optimizes">How Emscripten optimizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#webassembly">WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#trading-off-code-size-and-performance">Trading off code size and performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#miscellaneous-code-size-tips">Miscellaneous code size tips</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#lto">LTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-exceptions">C++ exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#profiling">Profiling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#troubleshooting-poor-performance">Troubleshooting poor performance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#which-gl-mode-to-target">Which GL Mode To Target?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#how-to-profile-webgl">How To Profile WebGL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#avoid-redundant-calls">Avoid Redundant Calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#techniques-to-minimize-api-calls">Techniques To Minimize API Calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#avoid-gpu-cpu-sync-points">Avoid GPU-CPU Sync Points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#gpu-driver-friendly-memory-access-behavior">GPU Driver Friendly Memory Access Behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#when-the-gpu-is-the-bottleneck">When The GPU Is The Bottleneck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#optimizing-load-times-and-other-best-practices">Optimizing Load Times and Other Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html#migrating-to-webgl-2">Migrating To WebGL 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/CyberDWARF.html">CyberDWARF Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/CyberDWARF.html#building">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/CyberDWARF.html#using">Using</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/CyberDWARF.html#heap-pretty-printer">Heap Pretty Printer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/CyberDWARF.html#api">API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/Sanitizers.html#undefined-behaviour-sanitizer">Undefined Behaviour Sanitizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#catching-null-dereference">Catching Null Dereference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#minimal-runtime">Minimal Runtime</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/Sanitizers.html#address-sanitizer">Address Sanitizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#buffer-overflow">Buffer Overflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#use-after-free">Use After Free</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#memory-leaks">Memory Leaks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#use-after-return">Use After Return</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../debugging/Sanitizers.html#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../debugging/Sanitizers.html#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html">Manually building Fastcomp from source</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/building_fastcomp_manually_from_source.html#building-fastcomp">Building Fastcomp</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html#creating-the-compiler-configuration-file">Creating the compiler configuration file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html#locating-the-compiler-configuration-file-emscripten">Locating the compiler configuration file (.emscripten)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html#compiler-configuration-file-format">Compiler configuration file-format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html#editing-the-compiler-configuration-file">Editing the compiler configuration file</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html#testing-the-environment">Testing the environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#getting-started">Getting started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#setting-up">Setting up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#submitting-patches">Submitting patches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#code-reviews">Code reviews</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#compiler-overview">Compiler overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#emscripten-test-suite">Emscripten Test Suite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#quick-example">Quick Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#details">Details</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#profiling-tool-commands">Profiling Tool Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#instrumenting-python-scripts">Instrumenting Python Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html#python-profiling-blocks">Python Profiling Blocks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#searching-the-site">Searching the site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#reporting-bugs">Reporting bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#contributing-to-the-site">Contributing to the site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#building-the-site">Building the site</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#installing-sphinx">Installing Sphinx</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../site/about.html#ubuntu">Ubuntu</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#site-builds">Site builds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#sdk-builds">SDK Builds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#build-version">Build version</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#writing-and-updating-articles">Writing and updating articles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#style-guide">Style guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#how-to-link-to-a-document-or-heading">How to link to a document or heading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#recommended-section-heading-markup">Recommended section/heading markup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#working-in-markdown">Working in markdown</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#read-the-docs-theme">Read the docs theme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../site/about.html#site-license">Site license</a></li>
+</ul>
+</li>
+</ul>
+
+			<a class="toctree-l1" title="Index" href="../../genindex.html">Index</a>
+        
+      </div>
+      &nbsp;
+    </nav>
+	
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+         <i data-toggle="wy-nav-top" class="fa fa-bars"></i> 
+        <!-- <a href="../../index.html">Emscripten</a> -->
+		<a href="../../index.html"> <img src="../..//_static/Emscripten_logo_full.png" alt="Logo" /> </a>
+      </nav>
+
+	    
+	  
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+		
+		   <!--begin hamishw addition --> 
+   
+   <!--Nav bar defined as a document followed by short version of nav text and long version
+    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+	displayed.   -->
+   <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+  
+   <div class="main-nav-bar" style="">   
+   
+   <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
+   This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
+   
+	 <ul id="menu-options">
+        
+              <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
+        
+              <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
+        
+              <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
+        
+              <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
+           	
+     </ul>
+	 <!-- <div style="clear:both;"></div> -->
+	 <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Networking</div>
+  </div>
+ 
+</div>
+ 
+   </div>
+  
+   
+	
+   <!--end hamishw addition -->
+		
+          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Networking</div>
+  </div>
+ 
+</div> -->
+          <div role="main">
+            
+  <div class="section" id="networking">
+<h1>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten compiled applications have a number of ways to connect with online servers. Check the subtopics here to learn about the different strategies that are available.</p>
+<p>If you are familiar with networking concepts provided by different web APIs, such as XmlHttpRequest, Fetch, WebSockets and WebRTC, you can quickly get started by leveraging what you already know: by calling out from C/C++ code to JavaScript (see the “Connecting C++ and JavaScript” section), you can establish networked connections by writing regular JavaScript. For C/C++ developers, Emscripten provides a few approaches, described here.</p>
+<div class="section" id="emscripten-websockets-api">
+<h2>Emscripten WebSockets API<a class="headerlink" href="#emscripten-websockets-api" title="Permalink to this headline">¶</a></h2>
+<p>WebSockets API provides connection-oriented message-framed bidirectional asynchronous networking communication to the browser. It is the closest to TCP on the web that web sites can access, direct access to TCP sockets is not possible from web browsers.</p>
+<p>Emscripten provides a passthrough API for accessing the WebSockets API from C/C++ code. This is useful for developers who would prefer not to write any JavaScript code, or deal with the C/C++ and JavaScript language interop. See the system include file &lt;emscripten/websocket.h&gt; for details. One benefit that the Emscripten WebSockets API provides over manual WebSockets access in JavaScript is the ability to share access to a WebSocket handle across multiple threads, something that can be time consuming to develop from scratch.</p>
+<p>To target Emscripten WebSockets API, you must link it in with a “-lwebsocket.js” linker directive.</p>
+</div>
+<div class="section" id="emulated-posix-tcp-sockets-over-websockets">
+<h2>Emulated POSIX TCP Sockets over WebSockets<a class="headerlink" href="#emulated-posix-tcp-sockets-over-websockets" title="Permalink to this headline">¶</a></h2>
+<p>If you have existing TCP networking code written in C/C++ that utilizes the Posix Sockets API, by default Emscripten attempts to emulate such connections to take place over the WebSocket protocol instead. For this to work, you will need to use something like WebSockify on the server side to enable the TCP server stack to receive incoming WebSocket connections. This emulation is not very complete at the moment, it is likely that you will run into problems out of the box and need to adapt the code to work within the limitations that this emulation provides.</p>
+<p>This is the default build mode for POSIX sockets, no linker flags or option settings are needed to enable it.</p>
+</div>
+<div class="section" id="full-posix-sockets-over-websocket-proxy-server">
+<h2>Full POSIX Sockets over WebSocket Proxy Server<a class="headerlink" href="#full-posix-sockets-over-websocket-proxy-server" title="Permalink to this headline">¶</a></h2>
+<p>Emscripten provides a native POSIX Sockets proxy server program, located in directory tools/websocket_to_posix_proxy/, that allows full POSIX Sockets API access from a web browser. This support works by proxying all POSIX Sockets API calls from the browser to the Emscripten POSIX Sockets proxy server (via transparent use of WebSockets API), and the proxy server then performs the native TCP/UDP calls on behalf of the page. This allows a web browser page to run full TCP &amp; UDP connections, act as a server to accept incoming connections, and perform host name lookups and reverse lookups. Because all API calls are individually proxied, this support can be slow. This support is mostly useful for developing testing infrastructure and debugging.</p>
+<dl class="docutils">
+<dt>The following POSIX sockets functions are proxied in this manner:</dt>
+<dd><ul class="first last simple">
+<li><cite>socket()</cite>, <cite>socketpair()</cite>, <cite>shutdown()</cite>, <cite>bind()</cite>, <cite>connect()</cite>, <cite>listen()</cite>, <cite>accept()</cite>, <cite>getsockname()</cite>, <cite>getpeername()</cite>, <cite>send()</cite>, <cite>recv()</cite>, <cite>sendto()</cite>, <cite>recvfrom()</cite>, <cite>sendmsg()</cite>, <cite>recvmsg()</cite>, <cite>getsockopt()</cite>, <cite>setsockopt()</cite>, <cite>getaddrinfo(), `getnameinfo()</cite>.</li>
+</ul>
+</dd>
+<dt>The following POSIX sockets functions are currently not proxied (and will not work):</dt>
+<dd><ul class="first last simple">
+<li><cite>poll()</cite>, <cite>close()</cite> (use <cite>shutdown()</cite> instead), <cite>select()</cite></li>
+</ul>
+</dd>
+</dl>
+<p>To use POSIX sockets proxying, link the application with flags “-lwebsocket.js -s PROXY_POSIX_SOCKETS=1 -s USE_PTHREADS=1 -s PROXY_TO_PTHREAD=1”. That is, POSIX sockets proxying builds on top of the Emscripten WebSockets library, and requires multithreading and proxying the application main() to a pthread.</p>
+<p>For an example of how the POSIX Sockets proxy server works in an Emscripten client program, see the file tests/websocket/tcp_echo_client.cpp.</p>
+</div>
+<div class="section" id="xmlhttprequests-and-fetch-api">
+<h2>XmlHttpRequests and Fetch API<a class="headerlink" href="#xmlhttprequests-and-fetch-api" title="Permalink to this headline">¶</a></h2>
+<p>For HTTP transfers, one can use the browser built-in XmlHttpRequest (XHR) API and the newer Fetch API. These can be accessed directly from JavaScript. Emscripten also provides passthrough APIs to perform HTTP requests. For more information, see the emscripten_async_wget*() C API and the Emscripten Fetch API.</p>
+</div>
+<div class="section" id="webrtc-and-udp">
+<h2>WebRTC and UDP<a class="headerlink" href="#webrtc-and-udp" title="Permalink to this headline">¶</a></h2>
+<p>Direct UDP communication is not available in browsers, but as a close alternative, the WebRTC specification provides a mechanism to perform UDP-like communication with WebRTC Data Channels. Currently Emscripten does not provide a C/C++ API for interacting with WebRTC.</p>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="simd.html" class="btn btn-neutral float-right" title="Porting SIMD code targeting WebAssembly"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pthreads.html" class="btn btn-neutral" title="Pthreads support"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+     
+  <!--begin hamishw addition -->
+  
+    
+  
+  <!--  -->
+   
+   <!--Footer important links
+    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+	displayed.   -->
+
+	
+   <div class="footer-nav-bar" style="">
+     <div class="footer-options">
+   
+        
+              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
+        
+              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
+        
+              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
+         
+		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
+         
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
+        
+              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
+        
+              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
+        
+              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
+         
+				
+     </div>
+	 
+	
+ 
+   </div>
+  
+    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Networking</div>
+  </div>
+ 
+</div> -->
+  
+    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
+   <!--end hamishw addition -->
+  
+  
+	  
+<!-- end section moved here by hamishw -->
+  <div role="contentinfo" class="copyright-box">
+    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
+  <ul class="wy-breadcrumbs">
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+
+	  <li class="wy-breadcrumbs-aside">
+         <a href="../site/about.html">About site</a>
+      </li>
+	  
+	  <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Networking%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/networking&labels=bug">Page bug</a>
+      </li>
+  </ul>
+  
+    <p>
+        <!-- &copy; Copyright 2015, . -->
+		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
+		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
+    </p>
+	
+  </div>
+  
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.39.6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+</div>
+</body>
+</html>
