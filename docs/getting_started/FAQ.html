@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 1.39.6 documentation</title>
+  <title>FAQ &mdash; Emscripten 1.39.8 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.8 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -148,6 +148,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-program-stall-in-downloading-or-preparing">Why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-run-an-event-loop">How do I run an event loop?</a></li>
@@ -1163,6 +1164,25 @@
 <h2>Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?<a class="headerlink" href="#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5" title="Permalink to this headline">¶</a></h2>
 <p>LLVM and clang link libtinfo dynamically. On some recent Linuxes you may have only <code class="docutils literal notranslate"><span class="pre">libtinfo.so.6</span></code> (while our builders target the last Ubuntu LTS). To fix this, you can do something like <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libtinfo5</span></code> on Debian or Ubuntu, or on Fedora something like <code class="docutils literal notranslate"><span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">ncurses-compat-libs</span></code>.</p>
 </div>
+<div class="section" id="why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">
+<h2>Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?<a class="headerlink" href="#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking" title="Permalink to this headline">¶</a></h2>
+<p>The first error means the linker inputs did not contain wasm32 code - that is,
+they contain instructions in some other format, like native x86 or ARM or
+something like that. You can run the <code class="docutils literal notranslate"><span class="pre">file</span></code> command-line utility to see what
+they actually contain. Common issues are:</p>
+<ul class="simple">
+<li>LLVM IR from the old backend, if you built the project with a version before
+1.39.0 (which used the old backend by default), and are doing an incremental
+rebuild now. To fix that, do a complete rebuild from scratch of all your
+project’s files, including libraries (this error often happens if you have
+prebuilt libraries from a third party; those must be recompiled too with the
+new backend).</li>
+<li>The build system was run without emscripten integration, and emitted native
+code. To fix that, use emconfigure/emmake, see <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a>. In
+this case <code class="docutils literal notranslate"><span class="pre">emcc.py</span></code> will show that second error,
+“is not a valid input file”.</li>
+</ul>
+</div>
 <div class="section" id="why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">
 <h2>Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?<a class="headerlink" href="#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten cannot compile inline assembly code (because it is CPU specific, and Emscripten is not a CPU emulator).</p>
@@ -1573,7 +1593,7 @@ then compile the object to JavaScript, you need that option on the second comman
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.6',
+            VERSION:'1.39.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

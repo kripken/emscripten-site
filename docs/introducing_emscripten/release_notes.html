@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 1.39.6 documentation</title>
+  <title>Release Notes &mdash; Emscripten 1.39.8 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.8 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -148,6 +148,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-program-stall-in-downloading-or-preparing">Why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-an-event-loop">How do I run an event loop?</a></li>
@@ -1101,7 +1102,7 @@ these announcements include additional informal release notes and “highlights�
 information. The easiest way to find these posts is to use <a class="reference external" href="https://groups.google.com/forum/#!searchin/emscripten-discuss/%22Emscripten$20SDK%22$20$20AND$20(released$20OR$20out$20OR$20available)">this search</a>.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 1.39.6 (Feb 03, 2020) is listed below (incoming version
+<p>The ChangeLog for Emscripten 1.39.8 (Feb 20, 2020) is listed below (incoming version
 <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/incoming/ChangeLog.md">here</a>).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
@@ -1122,6 +1123,40 @@ See docs/process.md for how version tagging works.
 
 Current Trunk
 -------------
+- Updated of libc++abi and libc++ to llvm 9.0.0 (#10510)
+- Refactor syscall interface: Syscalls are no longer variadic (except those
+  that are inherantly such as open) and no longer take the syscall number as
+  arg0.  This should be invisible to most users but will effect any external
+  projects that try to implement/emulate the emscripten syscall interface.
+  See #10474
+- Removed src/library_vr.js, as it was outdated and nonfunctional, and the WebVR
+  specification has been obsoleted in favor of the upcoming WebXR specification.
+  (#10460)
+- Remove WASM_OBJECT_FILES settting.  There are many standard ways to enable
+  bitcode abjects (-flto, -flto=full, -flto=thin, -emit-llvm).
+- Removed EmscriptenWebGLContextAttributes::preferLowPowerToHighPerformance
+  option that has become unsupported by WebGL. Access
+  EmscriptenWebGLContextAttributes::powerPreference instead. (#10505)
+
+v1.39.8: 02/14/2020
+-------------------
+- Add LLD_REPORT_UNDEFINED option that should allow for more detailed
+  diagnostics when symbols are undefined at link time.  This currently has
+  some limitations and is not enabled by default. For example, EM_JS symbols
+  are reported as undefined at link time, as are `__invoke_*` functions.
+- wasm2js optimizations. See binaryen#2623.
+- WebGPU Compute fixes. Simple examples now work. See #10367.
+- Many DWARF debug info fixes. Emitting of DWARF is correct as far as we know,
+  including when optimizing (a few passes are disabled for now, but almost all
+  work). We still only generate it behind the `-gforce_dwarf` flag for now,
+  though (but that should be removed soon).
+
+v1.39.7: 02/03/2020
+-------------------
+- The checked-in copy of closure compiler was removed in favor of getting it
+  from npm.  This means that developers now need to run `npm install` after
+  checking out emscripten if they want to use closure (--closure).  emsdk users
+  are not effected because emsdk runs this as a post install step (#9989).
 - Added support for specifying JSDoc minification annotations for Closure in
   JS library, pre and post files. See
   https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler
@@ -1131,6 +1166,8 @@ Current Trunk
 - Added new linker option -s WASM=2 which produces a dual Wasm+JS build, which
   falls back to using a JavaScript version if WebAssembly is not supported in
   target browser/shell. (#10118)
+- Added new linker option -s CLOSURE_WARNINGS=quiet|warn|error that allows aborting
+  the build if Closure compiler produced any warnings.
 
 v1.39.6: 01/15/2020
 -------------------
@@ -4966,7 +5003,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.6',
+            VERSION:'1.39.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
