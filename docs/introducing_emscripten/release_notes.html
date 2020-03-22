@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 1.39.8 documentation</title>
+  <title>Release Notes &mdash; Emscripten 1.39.11 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.8 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.11 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -441,6 +441,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#reentrancy">Reentrancy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#starting-to-rewind-with-compiled-code-on-the-stack">Starting to rewind with compiled code on the stack</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
@@ -1102,7 +1103,7 @@ these announcements include additional informal release notes and “highlights�
 information. The easiest way to find these posts is to use <a class="reference external" href="https://groups.google.com/forum/#!searchin/emscripten-discuss/%22Emscripten$20SDK%22$20$20AND$20(released$20OR$20out$20OR$20available)">this search</a>.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 1.39.8 (Mar 02, 2020) is listed below.</p>
+<p>The ChangeLog for Emscripten 1.39.11 (Mar 22, 2020) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that in the compiler, version numbering is used as the mechanism to
@@ -1122,8 +1123,61 @@ See docs/process.md for how version tagging works.
 
 Current Trunk
 -------------
+- Program entry points without extensions are now shell scripts rather than
+  python programs. See #10729.  This means that `python emcc` no longer works.
+  However `emcc`, `emcc.py` and `python emcc.py` all continue to work.
+  The reason for this change is that `#!/usr/bin/env python` is no longer
+  portable since the python symlink was dropped from Ubuntu 20.04.
+- New EM_IMPORT macro to mark C/C++ symbols as imported from outside the module
+  (i.e. imported from JS).  Currently we still default to assuming that *all*
+  undefined symbols can come from JS, but in the future we hope to mark such
+  symbols explicitly to allow the linker to report on genuinely undefined
+  symbols.
+
+v1.39.11: 03/20/2020
+--------------------
+- The default c++ version is no longer fixed at c++03.  We now fall back to
+  clang&#39;s default which is currently c++14.
+- Remove arc4random function form library.js.  This is a BSD-only library
+  function.  Anyone requiring BSD compat should be able to use something like
+  https://libbsd.freedesktop.org/.
+- Change the meaning of `ASYNCIFY_IMPORTS`: it now contains only new imports
+  you add, and does not need to contain the list of default system imports like
+  `emscripten_sleep`. There is no harm in providing them, though, so this
+  is not a breaking change.
+- Enable DWARF support: When compiling with `-g`, normal DWARF emitting happens,
+  and when linking with `-g` we preserve that and update it. This is a change
+  from before, where we assumed DWARF was unneeded and did not emit it, so this
+  can increase the size of debug builds (i.e. builds compiling and/or linking
+  with -g). This change is necessary for full debugging support, that is, to
+  be able to build with `-g` and use a debugger. Before this change only the
+  `-gforce_dwarf` flag enabled DWARF; that flag is now removed. If you want
+  the old behavior, build your object files with `-gline-tables-only` (that will
+  only add line table info, which is just enough for things like source maps and
+  does not include full debug info). For more info and background see #10325.
+- Remove hacks from `memset` handling, in particular, in the wasm backend,
+  completely remove the JS version of memset from the JS library and from
+  `DEFAULT_LIBRARY_FUNCS_TO_INCLUDE`. The regular C version will be linked in
+  from compiler_rt normally. A noticeable difference you may see is that
+  a JS library cannot add a `__dep` to `memset` - deps only work for JS
+  library functions, but now we only have the regular C version. If you hit that
+  issue, just add `_memset` to `EXPORTED_FUNCTIONS` (or adjust
+  `deps_info.json`).
+- Minimal runtime code size optimizations, see #10725, #10724, #10663.
+- wasm2js fix for a long-existing but very rare correctness bug, see #10682.
+- Use atomics in musl lock/unlock in pthreads builds, which may fix very rare
+  pthreads + stdio issues (none have been reported though). See #10670.
+
+v1.39.10: 03/09/2020
+--------------------
+- Fix a SIMD regression in 1.39.9 (#10658).
+- Fix `emscripten_atomic_exchange_u8,16,32,64` (#10657).
+- Switch bzip2 to an emscripten-ports mirror.
+
+v1.39.9: 03/05/2020
+-------------------
 - Add support for -Wall, -Werror, -w, -Wno-error=, -Werror=, for controlling
-  internal emscripten errors. The behviour of these flags matches the gcc/clang
+  internal emscripten errors. The behavior of these flags matches the gcc/clang
   counterparts.
 - Rename `TOTAL_MEMORY` to `INITIAL_MEMORY` and `WASM_MEM_MAX` to `MAXIMUM_MEMORY`,
   which are more accurate and match wasm conventions. The old names are still
@@ -1137,13 +1191,20 @@ Current Trunk
 - Removed src/library_vr.js, as it was outdated and nonfunctional, and the WebVR
   specification has been obsoleted in favor of the upcoming WebXR specification.
   (#10460)
-- Remove WASM_OBJECT_FILES setting.  There are many standard ways to enable
-  bitcode abjects (-flto, -flto=full, -flto=thin, -emit-llvm).
+- Deprecate `WASM_OBJECT_FILES` setting.  There are many standard ways to enable
+  bitcode objects (-flto, -flto=full, -flto=thin, -emit-llvm).
 - Removed EmscriptenWebGLContextAttributes::preferLowPowerToHighPerformance
   option that has become unsupported by WebGL. Access
   EmscriptenWebGLContextAttributes::powerPreference instead. (#10505)
 - When implementing forwarding function aliases in JS libraries, either the
   alias or the target function must contain a signature annotation. (#10550)
+- Add an check in Asyncify builds with `ASSERTIONS` that we do not have
+  compiled code on the stack when starting to rewind, which is dangerous.
+- Implement libc system() for node.js (#10547).
+- Standalone mode improvements, time (#10530, #10536), sysconf (#10535),
+  getpagesize (#10533), _Exit (#10534)
+- Fix many closure compiler warnings (e.g. #10525).
+- Avoid unnecessary syscall proxying (#10511).
 
 v1.39.8: 02/14/2020
 -------------------
@@ -5011,7 +5072,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.8',
+            VERSION:'1.39.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

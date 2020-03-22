@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 1.39.8 documentation</title>
+  <title>Asyncify &mdash; Emscripten 1.39.11 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.8 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.11 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Emterpreter" href="emterpreter.html"/>
         <link rel="prev" title="Porting SIMD code targeting WebAssembly" href="simd.html"/> 
@@ -441,6 +441,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#stack-overflows">Stack overflows</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reentrancy">Reentrancy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#starting-to-rewind-with-compiled-code-on-the-stack">Starting to rewind with compiled code on the stack</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#migrating-from-older-apis">Migrating from older APIs</a></li>
@@ -1242,10 +1243,6 @@ library or <code class="docutils literal notranslate"><span class="pre">EM_JS</s
 module that the Asyncify instrumentation must be aware of. Giving it that list
 tells it that all other JS calls will <strong>not</strong> do an async operation, which lets
 it not add overhead where it isn’t needed.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code> list must contain <strong>all</strong> relevant imports, not just
-ones you add yourself, so it must contain things like <code class="docutils literal notranslate"><span class="pre">emscripten_sleep()</span></code>
-if you call them (by default the list will contain them, so you must only add
-them if you change the list).</p>
 </div>
 <div class="section" id="returning-values">
 <h2>Returning values<a class="headerlink" href="#returning-values" title="Permalink to this headline">¶</a></h2>
@@ -1340,6 +1337,20 @@ The first must complete before the second begins.</p>
 if a function uses a global and assumes nothing else can modify it until it
 returns, but if that function sleeps and an event causes other code to
 change that global, then bad things can happen.</p>
+</div>
+<div class="section" id="starting-to-rewind-with-compiled-code-on-the-stack">
+<h3>Starting to rewind with compiled code on the stack<a class="headerlink" href="#starting-to-rewind-with-compiled-code-on-the-stack" title="Permalink to this headline">¶</a></h3>
+<p>The examples above show <cite>wakeUp()</cite> being called from JS (after a callback,
+typically), and without any compiled code on the stack. If there <em>were</em> compiled
+code on the stack, then that could interfere with properly rewinding and
+resuming execution, in confusing ways, and therefore an assertion will be
+thrown in a build with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code>.</p>
+<p>(Specifically, the problem there is that while rewinding will work properly,
+if you later unwind again, that unwinding will also unwind through that extra
+compiled code that was on the stack - causing a later rewind to behave badly.)</p>
+<p>A simple workaround you may find useful is to do a setTimeout of 0, replacing
+<code class="docutils literal notranslate"><span class="pre">wakeUp()</span></code> with <code class="docutils literal notranslate"><span class="pre">setTimeout(wakeUp,</span> <span class="pre">0);</span></code>. That will run <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> in a
+later callback, when nothing else is on the stack.</p>
 </div>
 </div>
 <div class="section" id="migrating-from-older-apis">
@@ -1468,7 +1479,7 @@ see <code class="docutils literal notranslate"><span class="pre">src/library_asy
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.8',
+            VERSION:'1.39.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
