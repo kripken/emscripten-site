@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>html5.h &mdash; Emscripten 1.39.11 documentation</title>
+  <title>html5.h &mdash; Emscripten 1.39.13 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.11 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.13 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="preamble.js" href="preamble.js.html"/>
         <link rel="prev" title="emscripten.h" href="emscripten.h.html"/> 
@@ -284,6 +284,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#file-systems">File Systems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#browser-main-loop">Browser main loop</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#implementing-an-asynchronous-main-loop-in-c-c">Implementing an asynchronous main loop in C/C++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#using-asyncify-to-yield-to-the-browser">Using Asyncify to yield to the browser</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/emscripten-runtime-environment.html#execution-lifecycle">Execution lifecycle</a></li>
@@ -1118,7 +1119,7 @@
 </ul>
 </div></blockquote>
 <div class="contents local topic" id="table-of-contents">
-<p class="topic-title first">Table of Contents</p>
+<p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#how-to-use-this-api" id="id104">How to use this API</a></li>
 <li><a class="reference internal" href="#general-types" id="id105">General types</a></li>
@@ -1169,12 +1170,12 @@
 <p id="target-parameter-html5-api">The <code class="docutils literal notranslate"><span class="pre">target</span></code> parameter is the ID of the HTML element to which the callback registration is to be applied. This field has the following special meanings:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">NULL</span></code>: A default element is chosen automatically based on the event type, which should be reasonable most of the time.</li>
-<li><code class="docutils literal notranslate"><span class="pre">#window</span></code>: The event listener is applied to the JavaScript <code class="docutils literal notranslate"><span class="pre">window</span></code> object.</li>
-<li><code class="docutils literal notranslate"><span class="pre">#document</span></code>: The event listener is applied to the JavaScript <code class="docutils literal notranslate"><span class="pre">document</span></code> object.</li>
-<li><code class="docutils literal notranslate"><span class="pre">#screen</span></code>: The event listener is applied to the JavaScript <code class="docutils literal notranslate"><span class="pre">window.screen</span></code> object.</li>
-<li><code class="docutils literal notranslate"><span class="pre">#canvas</span></code>: The event listener is applied to the Emscripten default WebGL canvas element.</li>
-<li>Any other string <strong>without a leading hash “#”</strong> sign: The event listener is applied to the element on the page with the given ID.</li>
+<li><code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_EVENT_TARGET_WINDOW</span></code>: The event listener is applied to the JavaScript <code class="docutils literal notranslate"><span class="pre">window</span></code> object.</li>
+<li><code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_EVENT_TARGET_DOCUMENT</span></code>: The event listener is applied to the JavaScript <code class="docutils literal notranslate"><span class="pre">document</span></code> object.</li>
+<li><code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_EVENT_TARGET_SCREEN</span></code>: The event listener is applied to the JavaScript <code class="docutils literal notranslate"><span class="pre">window.screen</span></code> object.</li>
+<li><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">NULL</span></code>: If building with the option <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1</span></code> (default), <code class="docutils literal notranslate"><span class="pre">NULL</span></code> denotes an invalid element. If building with legacy option <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0</span></code> (not recommended), a default element is chosen automatically based on the event type.</li>
+<li><code class="docutils literal notranslate"><span class="pre">#canvas</span></code>: If building with legacy option <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0</span></code> (not recommended), the event listener is applied to the Emscripten default WebGL canvas element. If building with the option <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1</span></code> (default), <code class="docutils literal notranslate"><span class="pre">#canvas</span></code> is interpreted as a CSS query selector: “the first element with CSS ID ‘canvas’”.</li>
+<li>Any other string: A CSS selector lookup is performed to the DOM with the passed string, and the the event listener is applied to the first element that matches the query.</li>
 </ul>
 </div></blockquote>
 <p id="userdata-parameter-html5-api">The <code class="docutils literal notranslate"><span class="pre">userData</span></code> parameter is a user-defined value that is passed (unchanged) to the registered event callback. This can be used to, for example, pass a pointer to a C++ class or similarly to enclose the C API in a clean object-oriented manner.</p>
@@ -4006,7 +4007,7 @@ int <code class="descname">minorVersion</code><a class="headerlink" href="#c.Ems
 <dt id="c.EmscriptenWebGLContextAttributes.explicitSwapControl">
 <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="descname">explicitSwapControl</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.explicitSwapControl" title="Permalink to this definition">¶</a></dt>
 <dd><p>By default, when <code class="docutils literal notranslate"><span class="pre">explicitSwapControl</span></code> is in its default state <code class="docutils literal notranslate"><span class="pre">false</span></code>, rendered WebGL content is implicitly presented (displayed to the user) on the canvas when the event handler that renders with WebGL returns back to the browser event loop. If <code class="docutils literal notranslate"><span class="pre">explicitSwapControl</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, rendered content will not be displayed on screen automatically when event handler function finishes, but the control of swapping is given to the user to manage, via the <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_commit_frame()</span></code> function.</p>
-<p>In order to be able to set <code class="docutils literal notranslate"><span class="pre">explicitSwapControl==true</span></code>, support for it must explicitly be enabled either 1) via adding the <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> Emscripten linker flag, and enabling <code class="docutils literal notranslate"><span class="pre">renderViaOffscreenBackBuffer==1</span></code>, or 2) via adding the the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code>, and running in a browser that supports OffscreenCanvas.</p>
+<p>In order to be able to set <code class="docutils literal notranslate"><span class="pre">explicitSwapControl==true</span></code>, support for it must explicitly be enabled either 1) via adding the <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OFFSCREEN_FRAMEBUFFER=1</span></code> Emscripten linker flag, and enabling <code class="docutils literal notranslate"><span class="pre">renderViaOffscreenBackBuffer==1</span></code>, or 2) via adding the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OFFSCREENCANVAS_SUPPORT=1</span></code>, and running in a browser that supports OffscreenCanvas.</p>
 </dd></dl>
 
 <dl class="member">
@@ -4890,7 +4891,7 @@ normally.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.11',
+            VERSION:'1.39.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
