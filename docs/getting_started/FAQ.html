@@ -1284,6 +1284,17 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 <span class="p">});</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Be careful with using <code class="docutils literal notranslate"><span class="pre">Module.then()</span></code> inside <code class="docutils literal notranslate"><span class="pre">Promise.resolve()</span></code> or <code class="docutils literal notranslate"><span class="pre">await</span></code> statements. <code class="docutils literal notranslate"><span class="pre">Module.then()</span></code> resolves with <code class="docutils literal notranslate"><span class="pre">Module</span></code> which still has <code class="docutils literal notranslate"><span class="pre">then</span></code>, so the <code class="docutils literal notranslate"><span class="pre">await</span></code> statement loops indefinitely. If you need to use <code class="docutils literal notranslate"><span class="pre">Module.then()</span></code> with <code class="docutils literal notranslate"><span class="pre">await</span></code> statement, you can use this workaround:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">Module</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="n">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="n">delete</span> <span class="n">m</span><span class="p">[</span><span class="s1">&#39;then&#39;</span><span class="p">];</span>
+  <span class="n">resolve</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p class="last">For more information read <a class="reference external" href="https://github.com/emscripten-core/emscripten/pull/10697">this issue</a>.</p>
+</div>
 </div>
 <div class="section" id="what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">
 <span id="faq-no-exit-runtime"></span><h2>What does “exiting the runtime” mean? Why don’t <code class="docutils literal notranslate"><span class="pre">atexit()s</span></code> run?<a class="headerlink" href="#what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run" title="Permalink to this headline">¶</a></h2>
