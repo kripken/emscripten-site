@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.39.14 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1261,7 +1244,7 @@ otherwise the same as the wasm file but with suffix <code class="docutils litera
 <p>You normally don’t need to specify this option, as <code class="docutils literal notranslate"><span class="pre">-O</span></code> with an optimization level will set a good value.</p>
 <div class="last admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Some options might override this flag (e.g. <code class="docutils literal notranslate"><span class="pre">EMTERPRETIFY</span></code>, <code class="docutils literal notranslate"><span class="pre">DEAD_FUNCTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> and <code class="docutils literal notranslate"><span class="pre">SPLIT_MEMORY</span></code> override the value with <code class="docutils literal notranslate"><span class="pre">js-opts=1</span></code>), because they depend on the js-optimizer.</p>
+<p class="last">Some options might override this flag (e.g. <code class="docutils literal notranslate"><span class="pre">DEAD_FUNCTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> and <code class="docutils literal notranslate"><span class="pre">SPLIT_MEMORY</span></code> override the value with <code class="docutils literal notranslate"><span class="pre">js-opts=1</span></code>), because they depend on the js-optimizer.</p>
 </div>
 </dd>
 </dl>
@@ -1332,7 +1315,18 @@ otherwise the same as the wasm file but with suffix <code class="docutils litera
 </dl>
 <dl class="docutils" id="emcc-post-js">
 <dt><code class="docutils literal notranslate"><span class="pre">--post-js</span> <span class="pre">&lt;file&gt;</span></code></dt>
-<dd>Like <cite>–pre-js`</cite>, but emits a file <em>after</em> the emitted code.</dd>
+<dd>Like <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, but emits a file <em>after</em> the emitted code.</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt>
+<dd>Specify a file whose contents are prepended to the JavaScript output. This
+file is prepended to the final JavaScript output, <em>after</em> all other
+work has been done, including optimization, optional <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code>-ation,
+instrumentation like <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>, etc. This is the same as prepending
+this file after <code class="docutils literal notranslate"><span class="pre">emcc</span></code> finishes running, and is just a convenient
+way to do that. (For comparison, <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> and <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> optimize the
+code together with everything else, keep it in the same scope if running
+<cite>MODULARIZE</cite>, etc.).</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--extern-post-js</span> <span class="pre">&lt;file&gt;</span></code></dt>
+<dd>Like <code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span></code>, but appends to the end.</dd>
 </dl>
 <dl class="docutils" id="emcc-embed-file">
 <dt><code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">&lt;file&gt;</span></code></dt>
@@ -1417,20 +1411,31 @@ is used to store pre-built versions of <code class="docutils literal notranslate
 libraries.</p>
 <p>If using this in combination with <code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code>, be sure to specify
 this argument first.</p>
-<p class="last">The Emscripten cache defaults to being located in the path name stored
-in the <code class="docutils literal notranslate"><span class="pre">EM_CACHE</span></code> environment variable or <code class="docutils literal notranslate"><span class="pre">~/.emscripten_cache</span></code>.</p>
+<p class="last">The Emscripten cache defaults to <code class="docutils literal notranslate"><span class="pre">emscripten/cache</span></code> but can be overridden
+using the <code class="docutils literal notranslate"><span class="pre">EM_CACHE</span></code> environment variable or <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> config setting.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-clear-cache">
 <dt><code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code></dt>
-<dd><p class="first">Manually clears the cache of compiled Emscripten system libraries (libc++, libc++abi, libc).</p>
-<p class="last">This is normally handled automatically, but if you update LLVM in-place (instead of having a different directory for a new version), the caching mechanism can get confused. Clearing the cache can fix weird problems related to cache incompatibilities, like <em>Clang</em> failing to link with library files. This also clears other cached data. After the cache is cleared, this process will exit.</p>
+<dd><p class="first">Manually clears the cache of compiled Emscripten system libraries (libc++,
+libc++abi, libc).</p>
+<p>This is normally handled automatically, but if you update LLVM in-place
+(instead of having a different directory for a new version), the caching
+mechanism can get confused. Clearing the cache can fix weird problems related
+to cache incompatibilities, like <em>Clang</em> failing to link with library files.
+This also clears other cached data. After the cache is cleared, this process
+will exit.</p>
+<p class="last">By default this will also clear any download ports since the ports directory
+is usually within the cache directory.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-clear-ports">
 <dt><code class="docutils literal notranslate"><span class="pre">--clear-ports</span></code></dt>
-<dd><p class="first">Manually clears the local copies of ports from the Emscripten Ports repos (sdl2, etc.). This also clears the cache, to remove their builds.</p>
-<p class="last">You should only need to do this if a problem happens and you want all ports that you use to be downloaded and built from scratch. After this operation is complete, this process will exit.</p>
+<dd><p class="first">Manually clears the local copies of ports from the Emscripten Ports repos
+(sdl2, etc.). This also clears the cache, to remove their builds.</p>
+<p class="last">You should only need to do this if a problem happens and you want all ports
+that you use to be downloaded and built from scratch. After this operation is
+complete, this process will exit.</p>
 </dd>
 </dl>
 <dl class="docutils" id="emcc-show-ports">
@@ -1487,7 +1492,10 @@ in the <code class="docutils literal notranslate"><span class="pre">EM_CACHE</sp
 </dl>
 <dl class="docutils" id="emcc-config">
 <dt><code class="docutils literal notranslate"><span class="pre">--em-config</span></code></dt>
-<dd>Specifies the location of the <strong>.emscripten</strong> configuration file for the current compiler run. If not specified, the environment variable <code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code> is first read for this location. If neither are specified, the default location <strong>~/.emscripten</strong> is used.</dd>
+<dd>Specifies the location of the <strong>.emscripten</strong> configuration file.  If not
+specified emscripten will search for <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> first in the emscripten
+directory itself, and then in the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/.emscripten</span></code>).
+This can be overridden using the <code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code> environment variable.</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--default-obj-ext</span> <span class="pre">.ext</span></code></dt>
 <dd><p class="first">Specifies the file suffix to generate if the location of a directory name is passed to the <code class="docutils literal notranslate"><span class="pre">-o</span></code> directive.</p>
 <p>For example, consider the following command, which will by default generate an output name <strong>dir/a.o</strong>. With <code class="docutils literal notranslate"><span class="pre">--default-obj-ext</span> <span class="pre">.ext</span></code> the generated file has the custom suffix <em>dir/a.ext</em>.</p>
@@ -1656,7 +1664,7 @@ in the <code class="docutils literal notranslate"><span class="pre">EM_CACHE</sp
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

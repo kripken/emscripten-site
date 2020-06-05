@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten SDK (emsdk) &mdash; Emscripten 1.39.14 documentation</title>
+  <title>Emscripten SDK (emsdk) &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Compiler Frontend (emcc)" href="emcc.html"/>
         <link rel="prev" title="Tools Reference" href="index.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1155,7 +1138,9 @@
 <span class="o">./</span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">git</span><span class="o">-</span><span class="mf">1.8</span><span class="o">.</span><span class="mi">3</span> <span class="n">clang</span><span class="o">-</span><span class="n">incoming</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">node</span><span class="o">-</span><span class="mf">0.10</span><span class="o">.</span><span class="mi">17</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">python</span><span class="o">-</span><span class="mf">2.7</span><span class="o">.</span><span class="mf">5.3</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">java</span><span class="o">-</span><span class="mf">7.45</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span> <span class="n">emscripten</span><span class="o">-</span><span class="n">incoming</span>
 </pre></div>
 </div>
-<p>A particular installed SDK (or tool) can then be set as <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">active</span></a>, meaning that it will be used when Emscripten is run. The active “compiler configuration” is stored in a user-specific file (<em>~/.emscripten</em>), which is discussed in the next section.</p>
+<p>A particular installed SDK (or tool) can then be set as <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">active</span></a>, meaning that it will be used when Emscripten is run. The active
+“compiler configuration” is stored is a config file (<em>.emscripten</em>) within
+the emsdk directory.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The different tools and SDKs managed by <em>emsdk</em> are stored in different directories under the root folder you specified when you first installed an SDK, grouped by tool and version.</p>
@@ -1164,7 +1149,8 @@
 <div class="section" id="emscripten-compiler-configuration-file-emscripten">
 <span id="compiler-configuration-file"></span><h2>Emscripten Compiler Configuration File (.emscripten)<a class="headerlink" href="#emscripten-compiler-configuration-file-emscripten" title="Permalink to this headline">¶</a></h2>
 <p>The <em>Compiler Configuration File</em> stores the <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">active</span></a> configuration on behalf of the <em>emsdk</em>. The active configuration defines the specific set of tools that are used by default if Emscripten in called on the <a class="reference internal" href="emcmdprompt.html#emcmdprompt"><span class="std std-ref">Emscripten Command Prompt</span></a>.</p>
-<p>The configuration file is named <strong>.emscripten</strong>. It is user-specific, and is located in the user’s home directory (<strong>~/.emscripten</strong> on Linux).</p>
+<p>The configuration file is named <strong>.emscripten</strong>. It is emsdk-specific, so it
+won’t conflict with any config file the user might have in their home directory.</p>
 <p>The file should generally not be updated directly unless you’re <a class="reference internal" href="../building_from_source/index.html#installing-from-source"><span class="std std-ref">building Emscripten from source</span></a>. Instead use the <em>emsdk</em> to activate specific SDKs and tools as needed (<code class="docutils literal notranslate"><span class="pre">emsdk</span> <span class="pre">activate</span> <span class="pre">&lt;tool/SDK&gt;</span></code>).</p>
 <p>Below are typical <strong>.emscripten</strong> files created by <em>emsdk</em>. Note the variable names used to point to the different tools:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># .emscripten file from Windows SDK</span>
@@ -1252,7 +1238,8 @@
 </div>
 <div class="section" id="how-do-i-change-the-currently-active-sdk-version">
 <span id="emsdk-set-active-tools"></span><h3>How do I change the currently active SDK version?<a class="headerlink" href="#how-do-i-change-the-currently-active-sdk-version" title="Permalink to this headline">¶</a></h3>
-<p>Toggle between different tools and SDK versions using the <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">activate</span></a> command. This will set up <code class="docutils literal notranslate"><span class="pre">~/.emscripten</span></code> to point to that particular tool:</p>
+<p>Toggle between different tools and SDK versions using the <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">activate</span></a> command. This will set up <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> to point to that
+particular tool:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emsdk</span> <span class="n">activate</span> <span class="o">&lt;</span><span class="n">tool</span><span class="o">/</span><span class="n">sdk</span> <span class="n">name</span><span class="o">&gt;</span>
 
 <span class="c1"># On Linux and macOS, also set the environment variables.</span>
@@ -1427,7 +1414,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

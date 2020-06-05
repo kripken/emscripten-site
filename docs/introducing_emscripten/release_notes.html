@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 1.39.14 documentation</title>
+  <title>Release Notes &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1104,7 +1087,7 @@ these announcements include additional informal release notes and “highlights�
 information. The easiest way to find these posts is to use <a class="reference external" href="https://groups.google.com/forum/#!searchin/emscripten-discuss/%22Emscripten$20SDK%22$20$20AND$20(released$20OR$20out$20OR$20available)">this search</a>.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 1.39.14 (May 06, 2020) is listed below.</p>
+<p>The ChangeLog for Emscripten 1.39.17 (Jun 05, 2020) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that in the compiler, version numbering is used as the mechanism to
@@ -1124,6 +1107,99 @@ See docs/process.md for how version tagging works.
 
 Current Trunk
 -------------
+
+1.39.17: 06/05/2020
+-------------------
+- Use Promise polyfill for MODULARIZE when supporting legacy browsers. (#11320)
+- Fix minification of wasm2js output when using --emit-symbol-map. (#11279)
+- On first use, emscripten creates a sample config file.  This config file
+  is now created in the emscripten directory by default.  The traditional
+  `~/.emscripten` config file in the `$HOME` directory is still supported and
+  the sample config will still be written there in the case that the emscripten
+  root is read-only.
+- The default location for downloaded ports is now a directory called &quot;ports&quot;
+  within the cache directory.  In practice these means by default they live
+  in `cache/ports` inside the emscripten source directory.  This can be
+  controlled by setting the location of the cache directory, or for even more
+  fine grained control the `EM_PORTS` environment variable and the `PORTS`
+  config setting can be used.
+- Added support for compiling SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE 4.2 and
+  128-bit wide AVX intrinsics, emulated on top of Wasm SIMD instruction set.
+  (#11193, #11243, #11290, #11327). Pass -msimd128 -msse&lt;version&gt; to enable
+  targeting SSE.
+- Removed obsolete SIMD.js support (-s SIMD=1). Use -msimd128 to target Wasm
+  SIMD. (#11180)
+- Add warning about fastcomp deprecation (can be disabled via `-Wno-fastcomp`).
+- The mmap method of JavaScript filesystem drivers (based on library_fs.js) no
+  longer takes a target memory.  It&#39;s safer/cleaner/smaller to assume the target
+  is the global memory buffer.
+- Remove emterpreter and `EMTERPRETIFY` settings.  Emterpreter has largely
+  been replaced by asyncify and is fastcomp only so due for removing in
+  the near future anyway.
+- Upgrade various musl string functions to 1.2 to fix aliasing issues. (#11215)
+
+1.39.16: 05/15/2020
+-------------------
+- Add Math C API for direct access to JavaScript Math object (#11151).
+- Address Sanitizer support now includes JavaScript as well, that is, memory
+  access of HEAP\* arrays is checked by ASan. That allows errors to be found if
+  JS glue code does something wrong like forget to shift a pointer. To use this,
+  just build with ASan normally, `-fsanitize=address` at link (#11147).
+- Fix embind string conversions in multithreaded builds (#10844).
+- `ALLOW_MEMORY_GROWTH` used to silently disable `ABORTING_MALLOC`. It now
+  just changes the default, which means you can pass `-s ABORTING_MALLOC=1` to
+  override the default, which was not possible before. (If you pass the flag
+  and don&#39;t want that behavior, stop passing the flag.) (#11131)
+- Change the factory function created by using the `MODULARIZE` build option to
+  return a Promise instead of the module instance. That is, beforehand
+
+        Module()
+
+  would return an instance (which was perhaps not ready yet if startup was
+  async). In the new model, that returns a Promise which you can do `.then` or
+  `await` on to get notified when the instance is ready, and the callback
+  receives the instance. Note that both before and after this change
+  doing `Module()` creates and runs an instance, so the only change is
+  the return value from that call.
+  This fixes some long-standing bugs with that option which have been reported
+  multiple times, but is a breaking change - sorry about that. To reduce the
+  risk of confusing breakage, in a build with `ASSERTIONS` we will show a clear
+  warning on common errors. For more, see detailed examples for the current
+  usage in `src/settings.js` on `MODULARIZE`. (#10697)
+- A new `PRINTF_LONG_DOUBLE` option allows printf to print long doubles at full
+  float128 precision. (#11130)
+- `emscripten_async_queue_on_thread` has been renamed to
+  `emscripten_dispatch_to_thread` which no longer implies that it is async -
+  the operation is in fact only async if it is sent to another thread, while it
+  is sync if on the same one. A new `emscripten_dispatch_to_thread_async`
+  function is added which is always async.
+- The emscripten cache now lives in a directory called `cache` at the root
+  of the emscripten tree by default.  The `CACHE` config setting and the
+  `EM_CACHE` environment variable can be used to override this (#11126).
+- Honor `CACHE` setting in config file as an alternative to `EM_CACHE`
+  environment variable.
+- Remove `--cache` command line arg.  The `CACHE` config setting and the
+  `EM_CACHE` environment variable can be used to control this.
+- Compiling to a file with no suffix will now generate an executable (JS) rather
+  than an object file.  This means simple cases like `emcc -o foo foo.c` do the
+  expected thing and generate an executable.
+- System libraries such as libc and libc++ are now included by default at
+  link time rather than selectively included based on the symbols used in the
+  input object files.  For small programs that don&#39;t use any system libraries
+  this might result in slightly slower link times with the old fastcomp
+  backend.  In order to exclude these libraries build with `-nostdlib` and/or
+  `-nostdlib++`.
+
+1.39.15: 05/06/2020
+-------------------
+- Add `--extern-pre-js` and `--extern-post-js` emcc flags. Files provided there
+  are prepended/appended to the final JavaScript output, *after* all other
+  work has been done, including optimization, optional `MODULARIZE`-ation,
+  instrumentation like `SAFE_HEAP`, etc. They are the same as prepending/
+  appending those files after `emcc` finishes running, and are just a convenient
+  way to do that. (For comparison, `--pre-js` and `--post-js` optimize that code
+  together with everything else, keep it in the same scope if running
+  `MODULARIZE`, etc.).
 - Stop defining `FE_INEXACT` and other floating point exception macros in libc,
   since we don&#39;t support them. That also prevents musl from including code using
   pragmas that don&#39;t make sense for wasm. Ifdef out other uses of those pragmas
@@ -1135,7 +1211,10 @@ Current Trunk
   them are mandatory like setting the sbrk ptr).
 - Remove `MODULARIZE_INSTANCE` build option (#11037). This was a seldom used
   option that was complicating the logic for `MODULARIZE`. Module instances can
-  be created by using `MODULARIZE` and calling the factory function explicitly. 
+  be created by using `MODULARIZE` and calling the factory function explicitly.
+  See the new `--extern-post-js` option added in this release, which can help
+  code that used `MODULARIZE_INSTANCE` (you can add an extern post js which
+  does `Module = Module();` for example).
 
 1.39.14: 05/01/2020
 -------------------
@@ -1265,7 +1344,7 @@ v1.39.9: 03/05/2020
   EmscriptenWebGLContextAttributes::powerPreference instead. (#10505)
 - When implementing forwarding function aliases in JS libraries, either the
   alias or the target function must contain a signature annotation. (#10550)
-- Add an check in Asyncify builds with `ASSERTIONS` that we do not have
+- Add a check in Asyncify builds with `ASSERTIONS` that we do not have
   compiled code on the stack when starting to rewind, which is dangerous.
 - Implement libc system() for node.js (#10547).
 - Standalone mode improvements, time (#10530, #10536), sysconf (#10535),
@@ -1493,6 +1572,12 @@ v1.38.41: 08/07/2019
    print for parse error reporting. (#9088)
  - Internal API update: one can now specialize embind&#39;s (un)marshalling for a
    group of types via SFINAE, instead of a single type. (#9089)
+ - Options passed on the `Module` object during startup, like `Module.arguments`,
+   are now copied to a local (in order to avoid writing `Module.*` everywhere,
+   which wastes space). You can still provide them as always, but you can&#39;t
+   modify `Module.arguments` and other things *after* startup (which is now
+   after we&#39;ve finished processing them). In a build with assertions enabled you
+   will get an error if you access those properties after startup. (#9072)
 
 v1.38.40: 07/24/2019
 --------------------
@@ -5139,7 +5224,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

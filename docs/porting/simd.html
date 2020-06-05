@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 1.39.14 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1103,27 +1086,1488 @@
 <p>Separate documentation for the intrinsics header is a work in progress, but its usage is straightforward and its source can be found at <a class="reference external" href="https://github.com/llvm/llvm-project/blob/master/clang/lib/Headers/wasm_simd128.h">wasm_simd128.h</a>. These intrinsics are under active development in parallel with the SIMD proposal and should not be considered any more stable than the proposal itself. Note that most engines will also require an extra flag to enable SIMD. For example, Node requires <cite>–experimental-wasm-simd</cite>.</p>
 <p>WebAssembly SIMD is not supported when using the Fastcomp backend.</p>
 </div>
-<div class="section" id="porting-simd-code-targeting-asm-js">
-<h1>Porting SIMD code targeting asm.js<a class="headerlink" href="#porting-simd-code-targeting-asm-js" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten utilizes a polyfill of the <a class="reference external" href="https://tc39.github.io/ecmascript_simd/">SIMD.js specification</a> to enable support for building SIMD code. Note that no modern JS engine supports SIMD.js natively, so using Emscripten’s SIMD.js support will almost always be slower than building without SIMD. As such, Emscripten’s SIMD.js support should be considered deprecated and may be removed in a future release.</p>
-<p>There are two different ways to generate code using the SIMD.js polyfill:</p>
-<ul class="simple">
-<li>The easiest way is to utilize LLVM autovectorization support. This does not require any code changes and it is the most straightforward option to try for codebases that have not explicitly been written to target SIMD. To enable autovectorization, pass the linker flag -s SIMD=1 both when compiling and linking output files.</li>
-<li>Emscripten supports the GCC/Clang compiler specific <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a>. These constructs do not require any changes to the command line build flags, but any code that utilizes the vector built-ins will always unconditionally emit SIMD.js vector instructions.</li>
-</ul>
-</div>
 <div class="section" id="limitations-and-behavioral-differences">
 <h1>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this headline">¶</a></h1>
-<p>When porting native SIMD code, it should be noted that because of portability concerns, neither the WebAssembly SIMD proposal nor SIMD.js expose the full native instruction sets. In particular the following changes exist:</p>
+<p>When porting native SIMD code, it should be noted that because of portability concerns, the WebAssembly SIMD specification does not expose the full native instruction sets. In particular the following changes exist:</p>
 <blockquote>
 <div><ul class="simple">
 <li>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, so all code should be written to use SIMD intrinsic functions or compiler vector extensions.</li>
-<li>WebAssembly SIMD and SIMD.js do not have control over managing floating point rounding modes or handling denormals.</li>
-<li>Cache line prefetch instructions are not available, and calls to these functions will compile, but be treated as no-ops.</li>
+<li>WebAssembly SIMD does not have control over managing floating point rounding modes or handling denormals.</li>
+<li>Cache line prefetch instructions are not available, and calls to these functions will compile, but are treated as no-ops.</li>
 <li>Asymmetric memory fence operations are not available, but will be implemented as fully synchronous memory fences when SharedArrayBuffer is enabled (-s USE_PTHREADS=1) or as no-ops when multithreading is not enabled (default, -s USE_PTHREADS=0).</li>
 </ul>
 </div></blockquote>
 <p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
+</div>
+<div class="section" id="compiling-simd-code-targeting-x86-sse-instruction-set">
+<h1>Compiling SIMD code targeting x86 SSE instruction set<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-set" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten supports compiling existing codebases that use x86 SSE by passing the <cite>-msse</cite> directive to the compiler, and including the header <cite>&lt;xmmintrin.h&gt;</cite>.</p>
+<p>Currently only the SSE1 and SSE2 instruction sets are supported.</p>
+<p>The following table highlights the availability and expected performance of different SSE1 intrinsics. Even if you are directly targeting the native Wasm SIMD opcodes via wasm_simd128.h header, this table can be useful for understanding the performance limitations that the Wasm SIMD specification has when running on x86 hardware.</p>
+<p>For detailed information on each SSE intrinsic function, visit the excellent <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE">Intel Intrinsics Guide on SSE1</a>.</p>
+<dl class="docutils">
+<dt>The following legend is used to highlight the expected performance of various instructions:</dt>
+<dd><ul class="first last simple">
+<li>✅ Wasm SIMD has a native opcode that matches the x86 SSE instruction, should yield native performance</li>
+<li>💡 while the Wasm SIMD spec does not provide a proper performance guarantee, given a suitably smart enough compiler and a runtime VM path, this intrinsic should be able to generate the identical native SSE instruction.</li>
+<li>🟡 there is some information missing (e.g. type or alignment information) for a Wasm VM to be guaranteed to be able to reconstruct the intended x86 SSE opcode. This might cause a penalty depending on the target CPU hardware family, especially on older CPU generations.</li>
+<li>⚠️ the underlying x86 SSE instruction is not available, but it is emulated via at most few other Wasm SIMD instructions, causing a small penalty.</li>
+<li>❌ the underlying x86 SSE instruction is not exposed by the Wasm SIMD specification, so it must be emulated via a slow path, e.g. a sequence of several slower SIMD instructions, or a scalar implementation.</li>
+<li>💣 the underlying x86 SSE opcode is not available in Wasm SIMD, and the implementation must resort to such a slow emulated path, that a workaround rethinking the algorithm at a higher level is advised.</li>
+<li>💭 the given SSE intrinsic is available to let applications compile, but does nothing.</li>
+<li>⚫ the given SSE intrinsic is not available. Referencing the intrinsic will cause a compiler error.</li>
+</ul>
+</dd>
+</dl>
+<p>Certain intrinsics in the table below are marked “virtual”. This means that there does not actually exist a native x86 SSE instruction set opcode to implement them, but native compilers offer the function as a convenience. Different compilers might generate a different instruction sequence for these.</p>
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_set_ps</td>
+<td>✅ wasm_f32x4_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_setr_ps</td>
+<td>✅ wasm_f32x4_make</td>
+</tr>
+<tr class="row-even"><td>_mm_set_ss</td>
+<td>💡 emulated with wasm_f32x4_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_set_ps1 (_mm_set1_ps)</td>
+<td>✅ wasm_f32x4_splat</td>
+</tr>
+<tr class="row-even"><td>_mm_setzero_ps</td>
+<td>💡 emulated with wasm_f32x4_const(0)</td>
+</tr>
+<tr class="row-odd"><td>_mm_load_ps</td>
+<td>🟡 wasm_v128_load. VM must guess type. <span class="raw-html"><br /></span> Unaligned load on x86 CPUs.</td>
+</tr>
+<tr class="row-even"><td>_mm_loadl_pi</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with scalar loads + shuffle.</td>
+</tr>
+<tr class="row-odd"><td>_mm_loadh_pi</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with scalar loads + shuffle.</td>
+</tr>
+<tr class="row-even"><td>_mm_loadr_ps</td>
+<td>💡 Virtual. Simd load + shuffle.</td>
+</tr>
+<tr class="row-odd"><td>_mm_loadu_ps</td>
+<td>🟡 wasm_v128_load. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_load_ps1 (_mm_load1_ps)</td>
+<td>🟡 Virtual. Simd load + shuffle.</td>
+</tr>
+<tr class="row-odd"><td>_mm_load_ss</td>
+<td>❌ emulated with wasm_f32x4_make</td>
+</tr>
+<tr class="row-even"><td>_mm_storel_pi</td>
+<td>❌ scalar stores</td>
+</tr>
+<tr class="row-odd"><td>_mm_storeh_pi</td>
+<td>❌ shuffle + scalar stores</td>
+</tr>
+<tr class="row-even"><td>_mm_store_ps</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> Unaligned store on x86 CPUs.</td>
+</tr>
+<tr class="row-odd"><td>_mm_stream_ps</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> No cache control in Wasm SIMD.</td>
+</tr>
+<tr class="row-even"><td>_mm_prefetch</td>
+<td>💭 No-op.</td>
+</tr>
+<tr class="row-odd"><td>_mm_sfence</td>
+<td>⚠️ A full barrier in multithreaded builds.</td>
+</tr>
+<tr class="row-even"><td>_mm_shuffle_ps</td>
+<td>🟡 wasm_v32x4_shuffle. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_storer_ps</td>
+<td>💡 Virtual. Shuffle + Simd store.</td>
+</tr>
+<tr class="row-even"><td>_mm_store_ps1 (_mm_store1_ps)</td>
+<td>🟡 Virtual. Emulated with shuffle. <span class="raw-html"><br /></span> Unaligned store on x86 CPUs.</td>
+</tr>
+<tr class="row-odd"><td>_mm_store_ss</td>
+<td>💡 emulated with scalar store</td>
+</tr>
+<tr class="row-even"><td>_mm_storeu_ps</td>
+<td>🟡 wasm_v128_store. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_storeu_si16</td>
+<td>💡 emulated with scalar store</td>
+</tr>
+<tr class="row-even"><td>_mm_storeu_si64</td>
+<td>💡 emulated with scalar store</td>
+</tr>
+<tr class="row-odd"><td>_mm_movemask_ps</td>
+<td>💣 No Wasm SIMD support. Emulated in scalar. <a class="reference external" href="https://github.com/WebAssembly/simd/issues/131">simd/#131</a></td>
+</tr>
+<tr class="row-even"><td>_mm_move_ss</td>
+<td>💡 emulated with a shuffle. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_add_ps</td>
+<td>✅ wasm_f32x4_add</td>
+</tr>
+<tr class="row-even"><td>_mm_add_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_sub_ps</td>
+<td>✅ wasm_f32x4_sub</td>
+</tr>
+<tr class="row-even"><td>_mm_sub_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_mul_ps</td>
+<td>✅ wasm_f32x4_mul</td>
+</tr>
+<tr class="row-even"><td>_mm_mul_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_div_ps</td>
+<td>✅ wasm_f32x4_div</td>
+</tr>
+<tr class="row-even"><td>_mm_div_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_min_ps</td>
+<td>TODO: pmin once it works</td>
+</tr>
+<tr class="row-even"><td>_mm_min_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_max_ps</td>
+<td>TODO: pmax once it works</td>
+</tr>
+<tr class="row-even"><td>_mm_max_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_rcp_ps</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with full precision div. <a class="reference external" href="https://github.com/WebAssembly/simd/issues/3">simd/#3</a></td>
+</tr>
+<tr class="row-even"><td>_mm_rcp_ss</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with full precision div+shuffle <a class="reference external" href="https://github.com/WebAssembly/simd/issues/3">simd/#3</a></td>
+</tr>
+<tr class="row-odd"><td>_mm_sqrt_ps</td>
+<td>✅ wasm_f32x4_sqrt</td>
+</tr>
+<tr class="row-even"><td>_mm_sqrt_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_rsqrt_ps</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with full precision div+sqrt. <a class="reference external" href="https://github.com/WebAssembly/simd/issues/3">simd/#3</a></td>
+</tr>
+<tr class="row-even"><td>_mm_rsqrt_ss</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with full precision div+sqrt+shuffle. <a class="reference external" href="https://github.com/WebAssembly/simd/issues/3">simd/#3</a></td>
+</tr>
+<tr class="row-odd"><td>_mm_unpackhi_ps</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_unpacklo_ps</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_movehl_ps</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_movelh_ps</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_MM_TRANSPOSE4_PS</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmplt_ps</td>
+<td>✅ wasm_f32x4_lt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmplt_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmple_ps</td>
+<td>✅ wasm_f32x4_le</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmple_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpeq_ps</td>
+<td>✅ wasm_f32x4_eq</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpeq_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpge_ps</td>
+<td>✅ wasm_f32x4_ge</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpge_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpgt_ps</td>
+<td>✅ wasm_f32x4_gt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpgt_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpord_ps</td>
+<td>❌ emulated with 2xcmp+and</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpord_ss</td>
+<td>❌ emulated with 2xcmp+and+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpunord_ps</td>
+<td>❌ emulated with 2xcmp+or</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpunord_ss</td>
+<td>❌ emulated with 2xcmp+or+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_and_ps</td>
+<td>🟡 wasm_v128_and. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_andnot_ps</td>
+<td>🟡 wasm_v128_andnot. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_or_ps</td>
+<td>🟡 wasm_v128_or. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_xor_ps</td>
+<td>🟡 wasm_v128_xor. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpneq_ps</td>
+<td>✅ wasm_f32x4_ne</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpneq_ss</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpnge_ps</td>
+<td>⚠️ emulated with not+ge</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpnge_ss</td>
+<td>⚠️ emulated with not+ge+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpngt_ps</td>
+<td>⚠️ emulated with not+gt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpngt_ss</td>
+<td>⚠️ emulated with not+gt+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpnle_ps</td>
+<td>⚠️ emulated with not+le</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpnle_ss</td>
+<td>⚠️ emulated with not+le+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpnlt_ps</td>
+<td>⚠️ emulated with not+lt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpnlt_ss</td>
+<td>⚠️ emulated with not+lt+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_comieq_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_comige_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_comigt_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_comile_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_comilt_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_comineq_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ucomieq_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ucomige_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ucomigt_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ucomile_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ucomilt_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ucomineq_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsi32_ss (_mm_cvt_si2ss)</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtss_si32 (_mm_cvt_ss2si)</td>
+<td>💣 scalar with complex emulated semantics</td>
+</tr>
+<tr class="row-even"><td>_mm_cvttss_si32 (_mm_cvtt_ss2si)</td>
+<td>💣 scalar with complex emulated semantics</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtsi64_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtss_si64</td>
+<td>💣 scalar with complex emulated semantics</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvttss_si64</td>
+<td>💣 scalar with complex emulated semantics</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtss_f32</td>
+<td>💡 scalar get</td>
+</tr>
+<tr class="row-odd"><td>_mm_malloc</td>
+<td>✅ Allocates memory with specified alignment.</td>
+</tr>
+<tr class="row-even"><td>_mm_free</td>
+<td>✅ Aliases to free().</td>
+</tr>
+<tr class="row-odd"><td>_MM_GET_EXCEPTION_MASK</td>
+<td>✅ Always returns all exceptions masked (0x1f80).</td>
+</tr>
+<tr class="row-even"><td>_MM_GET_EXCEPTION_STATE</td>
+<td>❌ Exception state is not tracked. Always returns 0.</td>
+</tr>
+<tr class="row-odd"><td>_MM_GET_FLUSH_ZERO_MODE</td>
+<td>✅ Always returns _MM_FLUSH_ZERO_OFF.</td>
+</tr>
+<tr class="row-even"><td>_MM_GET_ROUNDING_MODE</td>
+<td>✅ Always returns _MM_ROUND_NEAREST.</td>
+</tr>
+<tr class="row-odd"><td>_mm_getcsr</td>
+<td>✅ Always returns _MM_FLUSH_ZERO_OFF <span class="raw-html"><br /></span> | _MM_ROUND_NEAREST | all exceptions masked (0x1f80).</td>
+</tr>
+<tr class="row-even"><td>_MM_SET_EXCEPTION_MASK</td>
+<td>⚫ Not available. Fixed to all exceptions masked.</td>
+</tr>
+<tr class="row-odd"><td>_MM_SET_EXCEPTION_STATE</td>
+<td>⚫ Not available. Fixed to zero/clear state.</td>
+</tr>
+<tr class="row-even"><td>_MM_SET_FLUSH_ZERO_MODE</td>
+<td>⚫ Not available. Fixed to _MM_FLUSH_ZERO_OFF.</td>
+</tr>
+<tr class="row-odd"><td>_MM_SET_ROUNDING_MODE</td>
+<td>⚫ Not available. Fixed to _MM_ROUND_NEAREST.</td>
+</tr>
+<tr class="row-even"><td>_mm_setcsr</td>
+<td>⚫ Not available.</td>
+</tr>
+<tr class="row-odd"><td>_mm_undefined_ps</td>
+<td>✅ Virtual</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>⚫ The following extensions that SSE1 instruction set brought to 64-bit wide MMX registers are not available:</dt>
+<dd><ul class="first last simple">
+<li>_mm_avg_pu8, _mm_avg_pu16, _mm_cvt_pi2ps, _mm_cvt_ps2pi, _mm_cvt_pi16_ps, _mm_cvt_pi32_ps, _mm_cvt_pi32x2_ps, _mm_cvt_pi8_ps, _mm_cvt_ps_pi16, _mm_cvt_ps_pi32, _mm_cvt_ps_pi8, _mm_cvt_pu16_ps, _mm_cvt_pu8_ps, _mm_cvtt_ps2pi, _mm_cvtt_pi16_ps, _mm_cvttps_pi32, _mm_extract_pi16, _mm_insert_pi16, _mm_maskmove_si64, _m_maskmovq, _mm_max_pi16, _mm_max_pu8, _mm_min_pi16, _mm_min_pu8, _mm_movemask_pi8, _mm_mulhi_pu16, _m_pavgb, _m_pavgw, _m_pextrw, _m_pinsrw, _m_pmaxsw, _m_pmaxub, _m_pminsw, _m_pminub, _m_pmovmskb, _m_pmulhuw, _m_psadbw, _m_pshufw, _mm_sad_pu8, _mm_shuffle_pi16 and _mm_stream_pi.</li>
+</ul>
+</dd>
+</dl>
+<p>Any code referencing these intrinsics will not compile.</p>
+<p>The following table highlights the availability and expected performance of different SSE2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE2">Intel Intrinsics Guide on SSE2</a>.</p>
+<table border="1" class="colwidths-given docutils" id="id5">
+<caption><span class="caption-text">x86 SSE2 intrinsics available via #include &lt;emmintrin.h&gt;</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_add_epi16</td>
+<td>✅ wasm_i16x8_add</td>
+</tr>
+<tr class="row-odd"><td>_mm_add_epi32</td>
+<td>✅ wasm_i32x4_add</td>
+</tr>
+<tr class="row-even"><td>_mm_add_epi64</td>
+<td>✅ wasm_i64x2_add</td>
+</tr>
+<tr class="row-odd"><td>_mm_add_epi8</td>
+<td>✅ wasm_i8x16_add</td>
+</tr>
+<tr class="row-even"><td>_mm_add_pd</td>
+<td>✅ wasm_f64x2_add</td>
+</tr>
+<tr class="row-odd"><td>_mm_add_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_adds_epi16</td>
+<td>✅ wasm_i16x8_add_saturate</td>
+</tr>
+<tr class="row-odd"><td>_mm_adds_epi8</td>
+<td>✅ wasm_i8x16_add_saturate</td>
+</tr>
+<tr class="row-even"><td>_mm_adds_epu16</td>
+<td>✅ wasm_u16x8_add_saturate</td>
+</tr>
+<tr class="row-odd"><td>_mm_adds_epu8</td>
+<td>✅ wasm_u8x16_add_saturate</td>
+</tr>
+<tr class="row-even"><td>_mm_and_pd</td>
+<td>🟡 wasm_v128_and. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_and_si128</td>
+<td>🟡 wasm_v128_and. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_andnot_pd</td>
+<td>🟡 wasm_v128_andnot. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_andnot_si128</td>
+<td>🟡 wasm_v128_andnot. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_avg_epu16</td>
+<td>✅ wasm_u16x8_avgr</td>
+</tr>
+<tr class="row-odd"><td>_mm_avg_epu8</td>
+<td>✅ wasm_u8x16_avgr</td>
+</tr>
+<tr class="row-even"><td>_mm_castpd_ps</td>
+<td>✅ no-op</td>
+</tr>
+<tr class="row-odd"><td>_mm_castpd_si128</td>
+<td>✅ no-op</td>
+</tr>
+<tr class="row-even"><td>_mm_castps_pd</td>
+<td>✅ no-op</td>
+</tr>
+<tr class="row-odd"><td>_mm_castps_si128</td>
+<td>✅ no-op</td>
+</tr>
+<tr class="row-even"><td>_mm_castsi128_pd</td>
+<td>✅ no-op</td>
+</tr>
+<tr class="row-odd"><td>_mm_castsi128_ps</td>
+<td>✅ no-op</td>
+</tr>
+<tr class="row-even"><td>_mm_clflush</td>
+<td>💭 No-op. No cache hinting in Wasm SIMD.</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpeq_epi16</td>
+<td>✅ wasm_i16x8_eq</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpeq_epi32</td>
+<td>✅ wasm_i32x4_eq</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpeq_epi8</td>
+<td>✅ wasm_i8x16_eq</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpeq_pd</td>
+<td>✅ wasm_f64x2_eq</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpeq_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpge_pd</td>
+<td>✅ wasm_f64x2_ge</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpge_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpgt_epi16</td>
+<td>✅ wasm_i16x8_gt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpgt_epi32</td>
+<td>✅ wasm_i32x4_gt</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpgt_epi8</td>
+<td>✅ wasm_i8x16_gt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpgt_pd</td>
+<td>✅ wasm_f64x2_gt</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpgt_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmple_pd</td>
+<td>✅ wasm_f64x2_le</td>
+</tr>
+<tr class="row-even"><td>_mm_cmple_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmplt_epi16</td>
+<td>✅ wasm_i16x8_lt</td>
+</tr>
+<tr class="row-even"><td>_mm_cmplt_epi32</td>
+<td>✅ wasm_i32x4_lt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmplt_epi8</td>
+<td>✅ wasm_i8x16_lt</td>
+</tr>
+<tr class="row-even"><td>_mm_cmplt_pd</td>
+<td>✅ wasm_f64x2_lt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmplt_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpneq_pd</td>
+<td>✅ wasm_f64x2_ne</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpneq_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpnge_pd</td>
+<td>⚠️ emulated with not+ge</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpnge_sd</td>
+<td>⚠️ emulated with not+ge+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpngt_pd</td>
+<td>⚠️ emulated with not+gt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpngt_sd</td>
+<td>⚠️ emulated with not+gt+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpnle_pd</td>
+<td>⚠️ emulated with not+le</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpnle_sd</td>
+<td>⚠️ emulated with not+le+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpnlt_pd</td>
+<td>⚠️ emulated with not+lt</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpnlt_sd</td>
+<td>⚠️ emulated with not+lt+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpord_pd</td>
+<td>❌ emulated with 2xcmp+and</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpord_sd</td>
+<td>❌ emulated with 2xcmp+and+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpunord_pd</td>
+<td>❌ emulated with 2xcmp+or</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmpunord_sd</td>
+<td>❌ emulated with 2xcmp+or+shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_comieq_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_comige_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_comigt_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_comile_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_comilt_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_comineq_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepi32_pd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepi32_ps</td>
+<td>✅ wasm_f32x4_convert_i32x4</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtpd_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtpd_ps</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtps_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtps_pd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsd_f64</td>
+<td>✅ wasm_f64x2_extract_lane</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtsd_si32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsd_si64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtsd_si64x</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsd_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtsi128_si32</td>
+<td>✅ wasm_i32x4_extract_lane</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsi128_si64 (_mm_cvtsi128_si64x)</td>
+<td>✅ wasm_i64x2_extract_lane</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtsi32_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsi32_si128</td>
+<td>💡 emulated with wasm_i32x4_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtsi64_sd (_mm_cvtsi64x_sd)</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtsi64_si128 (_mm_cvtsi64x_si128)</td>
+<td>💡 emulated with wasm_i64x2_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtss_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvttpd_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvttps_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvttsd_si32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvttsd_si64 (_mm_cvttsd_si64x)</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_div_pd</td>
+<td>✅ wasm_f64x2_div</td>
+</tr>
+<tr class="row-odd"><td>_mm_div_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_extract_epi16</td>
+<td>✅ wasm_u16x8_extract_lane</td>
+</tr>
+<tr class="row-odd"><td>_mm_insert_epi16</td>
+<td>✅ wasm_i16x8_replace_lane</td>
+</tr>
+<tr class="row-even"><td>_mm_lfence</td>
+<td>⚠️ A full barrier in multithreaded builds.</td>
+</tr>
+<tr class="row-odd"><td>_mm_load_pd</td>
+<td>🟡 wasm_v128_load. VM must guess type. <span class="raw-html"><br /></span> Unaligned load on x86 CPUs.</td>
+</tr>
+<tr class="row-even"><td>_mm_load1_pd (_mm_load_pd1)</td>
+<td>🟡 Virtual. v64x2.load_splat, VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_load_sd</td>
+<td>❌ emulated with wasm_f64x2_make</td>
+</tr>
+<tr class="row-even"><td>_mm_load_si128</td>
+<td>🟡 wasm_v128_load. VM must guess type. <span class="raw-html"><br /></span> Unaligned load on x86 CPUs.</td>
+</tr>
+<tr class="row-odd"><td>_mm_loadh_pd</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with scalar loads + shuffle.</td>
+</tr>
+<tr class="row-even"><td>_mm_loadl_epi64</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with scalar loads + shuffle.</td>
+</tr>
+<tr class="row-odd"><td>_mm_loadl_pd</td>
+<td>❌ No Wasm SIMD support. <span class="raw-html"><br /></span> Emulated with scalar loads + shuffle.</td>
+</tr>
+<tr class="row-even"><td>_mm_loadr_pd</td>
+<td>💡 Virtual. Simd load + shuffle.</td>
+</tr>
+<tr class="row-odd"><td>_mm_loadu_pd</td>
+<td>🟡 wasm_v128_load. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_loadu_si128</td>
+<td>🟡 wasm_v128_load. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_loadu_si32</td>
+<td>❌ emulated with wasm_i32x4_make</td>
+</tr>
+<tr class="row-even"><td>_mm_madd_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_maskmoveu_si128</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_max_epi16</td>
+<td>✅ wasm_i16x8_max</td>
+</tr>
+<tr class="row-odd"><td>_mm_max_epu8</td>
+<td>✅ wasm_u8x16_max</td>
+</tr>
+<tr class="row-even"><td>_mm_max_pd</td>
+<td>TODO: migrate to wasm_f64x2_pmax</td>
+</tr>
+<tr class="row-odd"><td>_mm_max_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_mfence</td>
+<td>⚠️ A full barrier in multithreaded builds.</td>
+</tr>
+<tr class="row-odd"><td>_mm_min_epi16</td>
+<td>✅ wasm_i16x8_min</td>
+</tr>
+<tr class="row-even"><td>_mm_min_epu8</td>
+<td>✅ wasm_u8x16_min</td>
+</tr>
+<tr class="row-odd"><td>_mm_min_pd</td>
+<td>TODO: migrate to wasm_f64x2_pmin</td>
+</tr>
+<tr class="row-even"><td>_mm_min_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_move_epi64</td>
+<td>💡 emulated with a shuffle. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_move_sd</td>
+<td>💡 emulated with a shuffle. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_movemask_epi8</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_movemask_pd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_mul_epu32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_mul_pd</td>
+<td>✅ wasm_f64x2_mul</td>
+</tr>
+<tr class="row-odd"><td>_mm_mul_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_mulhi_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_mulhi_epu16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_mullo_epi16</td>
+<td>✅ wasm_i16x8_mul</td>
+</tr>
+<tr class="row-odd"><td>_mm_or_pd</td>
+<td>🟡 wasm_v128_or. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_or_si128</td>
+<td>🟡 wasm_v128_or. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_packs_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_packs_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_packus_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_pause</td>
+<td>💭 No-op.</td>
+</tr>
+<tr class="row-odd"><td>_mm_sad_epu8</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_set_epi16</td>
+<td>✅ wasm_i16x8_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_set_epi32</td>
+<td>✅ wasm_i32x4_make</td>
+</tr>
+<tr class="row-even"><td>_mm_set_epi64 (_mm_set_epi64x)</td>
+<td>✅ wasm_i64x2_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_set_epi8</td>
+<td>✅ wasm_i8x16_make</td>
+</tr>
+<tr class="row-even"><td>_mm_set_pd</td>
+<td>✅ wasm_f64x2_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_set_sd</td>
+<td>💡 emulated with wasm_f64x2_make</td>
+</tr>
+<tr class="row-even"><td>_mm_set1_epi16</td>
+<td>✅ wasm_i16x8_splat</td>
+</tr>
+<tr class="row-odd"><td>_mm_set1_epi32</td>
+<td>✅ wasm_i32x4_splat</td>
+</tr>
+<tr class="row-even"><td>_mm_set1_epi64 (_mm_set1_epi64x)</td>
+<td>✅ wasm_i64x2_splat</td>
+</tr>
+<tr class="row-odd"><td>_mm_set1_epi8</td>
+<td>✅ wasm_i8x16_splat</td>
+</tr>
+<tr class="row-even"><td>_mm_set1_pd (_mm_set_pd1)</td>
+<td>✅ wasm_f64x2_splat</td>
+</tr>
+<tr class="row-odd"><td>_mm_setr_epi16</td>
+<td>✅ wasm_i16x8_make</td>
+</tr>
+<tr class="row-even"><td>_mm_setr_epi32</td>
+<td>✅ wasm_i32x4_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_setr_epi64</td>
+<td>✅ wasm_i64x2_make</td>
+</tr>
+<tr class="row-even"><td>_mm_setr_epi8</td>
+<td>✅ wasm_i8x16_make</td>
+</tr>
+<tr class="row-odd"><td>_mm_setr_pd</td>
+<td>✅ wasm_f64x2_make</td>
+</tr>
+<tr class="row-even"><td>_mm_setzero_pd</td>
+<td>💡 emulated with wasm_f64x2_const</td>
+</tr>
+<tr class="row-odd"><td>_mm_setzero_si128</td>
+<td>💡 emulated with wasm_i64x2_const</td>
+</tr>
+<tr class="row-even"><td>_mm_shuffle_epi32</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_shuffle_pd</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_shufflehi_epi16</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_shufflelo_epi16</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_sll_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_sll_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_sll_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_slli_epi16</td>
+<td>💡 wasm_i16x8_shl <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-even"><td>_mm_slli_epi32</td>
+<td>💡 wasm_i32x4_shl <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-odd"><td>_mm_slli_epi64</td>
+<td>💡 wasm_i64x2_shl <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-even"><td>_mm_slli_si128 (_mm_bslli_si128)</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_sqrt_pd</td>
+<td>✅ wasm_f64x2_sqrt</td>
+</tr>
+<tr class="row-even"><td>_mm_sqrt_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_sra_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_sra_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_srai_epi16</td>
+<td>💡 wasm_i16x8_shr <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-even"><td>_mm_srai_epi32</td>
+<td>💡 wasm_i32x4_shr <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-odd"><td>_mm_srl_epi16</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_srl_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_srl_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_srli_epi16</td>
+<td>💡 wasm_u16x8_shr <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-odd"><td>_mm_srli_epi32</td>
+<td>💡 wasm_u32x4_shr <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-even"><td>_mm_srli_epi64</td>
+<td>💡 wasm_u64x2_shr <span class="raw-html"><br /></span> ✅ if shift count is immediate constant.</td>
+</tr>
+<tr class="row-odd"><td>_mm_srli_si128 (_mm_bsrli_si128)</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_store_pd</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> Unaligned store on x86 CPUs.</td>
+</tr>
+<tr class="row-odd"><td>_mm_store_sd</td>
+<td>💡 emulated with scalar store</td>
+</tr>
+<tr class="row-even"><td>_mm_store_si128</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> Unaligned store on x86 CPUs.</td>
+</tr>
+<tr class="row-odd"><td>_mm_store1_pd (_mm_store_pd1)</td>
+<td>🟡 Virtual. Emulated with shuffle. <span class="raw-html"><br /></span> Unaligned store on x86 CPUs.</td>
+</tr>
+<tr class="row-even"><td>_mm_storeh_pd</td>
+<td>❌ shuffle + scalar stores</td>
+</tr>
+<tr class="row-odd"><td>_mm_storel_epi64</td>
+<td>❌ scalar store</td>
+</tr>
+<tr class="row-even"><td>_mm_storel_pd</td>
+<td>❌ scalar store</td>
+</tr>
+<tr class="row-odd"><td>_mm_storer_pd</td>
+<td>❌ shuffle + scalar stores</td>
+</tr>
+<tr class="row-even"><td>_mm_storeu_pd</td>
+<td>🟡 wasm_v128_store. VM must guess type.</td>
+</tr>
+<tr class="row-odd"><td>_mm_storeu_si128</td>
+<td>🟡 wasm_v128_store. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_storeu_si32</td>
+<td>💡 emulated with scalar store</td>
+</tr>
+<tr class="row-odd"><td>_mm_stream_pd</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> No cache control in Wasm SIMD.</td>
+</tr>
+<tr class="row-even"><td>_mm_stream_si128</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> No cache control in Wasm SIMD.</td>
+</tr>
+<tr class="row-odd"><td>_mm_stream_si32</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> No cache control in Wasm SIMD.</td>
+</tr>
+<tr class="row-even"><td>_mm_stream_si64</td>
+<td>🟡 wasm_v128_store. VM must guess type. <span class="raw-html"><br /></span> No cache control in Wasm SIMD.</td>
+</tr>
+<tr class="row-odd"><td>_mm_sub_epi16</td>
+<td>✅ wasm_i16x8_sub</td>
+</tr>
+<tr class="row-even"><td>_mm_sub_epi32</td>
+<td>✅ wasm_i32x4_sub</td>
+</tr>
+<tr class="row-odd"><td>_mm_sub_epi64</td>
+<td>✅ wasm_i64x2_sub</td>
+</tr>
+<tr class="row-even"><td>_mm_sub_epi8</td>
+<td>✅ wasm_i8x16_sub</td>
+</tr>
+<tr class="row-odd"><td>_mm_sub_pd</td>
+<td>✅ wasm_f64x2_sub</td>
+</tr>
+<tr class="row-even"><td>_mm_sub_sd</td>
+<td>⚠️ emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_subs_epi16</td>
+<td>✅ wasm_i16x8_sub_saturate</td>
+</tr>
+<tr class="row-even"><td>_mm_subs_epi8</td>
+<td>✅ wasm_i8x16_sub_saturate</td>
+</tr>
+<tr class="row-odd"><td>_mm_subs_epu16</td>
+<td>✅ wasm_u16x8_sub_saturate</td>
+</tr>
+<tr class="row-even"><td>_mm_subs_epu8</td>
+<td>✅ wasm_u8x16_sub_saturate</td>
+</tr>
+<tr class="row-odd"><td>_mm_ucomieq_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ucomige_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ucomigt_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ucomile_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ucomilt_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ucomineq_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_undefined_pd</td>
+<td>✅ Virtual</td>
+</tr>
+<tr class="row-even"><td>_mm_undefined_si128</td>
+<td>✅ Virtual</td>
+</tr>
+<tr class="row-odd"><td>_mm_unpackhi_epi16</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_unpackhi_epi32</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_unpackhi_epi64</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_unpackhi_epi8</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_unpachi_pd</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_unpacklo_epi16</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_unpacklo_epi32</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_unpacklo_epi64</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_unpacklo_epi8</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_unpacklo_pd</td>
+<td>💡 emulated with a shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_xor_pd</td>
+<td>🟡 wasm_v128_or. VM must guess type.</td>
+</tr>
+<tr class="row-even"><td>_mm_xor_si128</td>
+<td>🟡 wasm_v128_or. VM must guess type.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>⚫ The following extensions that SSE2 instruction set brought to 64-bit wide MMX registers are not available:</dt>
+<dd><ul class="first last simple">
+<li>_mm_add_si64, _mm_movepi64_pi64, _mm_movpi64_epi64, _mm_mul_su32, _mm_sub_si64, _mm_cvtpd_pi32, _mm_cvtpi32_pd, _mm_cvttpd_pi32</li>
+</ul>
+</dd>
+</dl>
+<p>Any code referencing these intrinsics will not compile.</p>
+<p>The following table highlights the availability and expected performance of different SSE3 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE3">Intel Intrinsics Guide on SSE3</a>.</p>
+<table border="1" class="colwidths-given docutils" id="id6">
+<caption><span class="caption-text">x86 SSE3 intrinsics available via #include &lt;pmmintrin.h&gt;</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_lddqu_si128</td>
+<td>✅ wasm_v128_load.</td>
+</tr>
+<tr class="row-odd"><td>_mm_addsub_ps</td>
+<td>⚠️ emulated with a SIMD add+mul+const</td>
+</tr>
+<tr class="row-even"><td>_mm_hadd_ps</td>
+<td>⚠️ emulated with a SIMD add+two shuffles</td>
+</tr>
+<tr class="row-odd"><td>_mm_hsub_ps</td>
+<td>⚠️ emulated with a SIMD sub+two shuffles</td>
+</tr>
+<tr class="row-even"><td>_mm_movehdup_ps</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_moveldup_ps</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_addsub_pd</td>
+<td>⚠️ emulated with a SIMD add+mul+const</td>
+</tr>
+<tr class="row-odd"><td>_mm_hadd_pd</td>
+<td>⚠️ emulated with a SIMD add+two shuffles</td>
+</tr>
+<tr class="row-even"><td>_mm_hsub_pd</td>
+<td>⚠️ emulated with a SIMD add+two shuffles</td>
+</tr>
+<tr class="row-odd"><td>_mm_loaddup_pd</td>
+<td>🟡 Scalar load + splat.</td>
+</tr>
+<tr class="row-even"><td>_mm_movedup_pd</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_MM_GET_DENORMALS_ZERO_MODE</td>
+<td>✅ Always returns _MM_DENORMALS_ZERO_ON. I.e. denormals are available.</td>
+</tr>
+<tr class="row-even"><td>_MM_SET_DENORMALS_ZERO_MODE</td>
+<td>⚫ Not available. Fixed to _MM_DENORMALS_ZERO_ON.</td>
+</tr>
+<tr class="row-odd"><td>_mm_monitor</td>
+<td>⚫ Not available.</td>
+</tr>
+<tr class="row-even"><td>_mm_mwait</td>
+<td>⚫ Not available.</td>
+</tr>
+</tbody>
+</table>
+<p>The following table highlights the availability and expected performance of different SSSE3 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSSE3">Intel Intrinsics Guide on SSSE3</a>.</p>
+<table border="1" class="colwidths-given docutils" id="id7">
+<caption><span class="caption-text">x86 SSSE3 intrinsics available via #include &lt;tmmintrin.h&gt;</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_abs_epi8</td>
+<td>⚠️ emulated with a SIMD shift+xor+add</td>
+</tr>
+<tr class="row-odd"><td>_mm_abs_epi16</td>
+<td>⚠️ emulated with a SIMD shift+xor+add</td>
+</tr>
+<tr class="row-even"><td>_mm_abs_epi32</td>
+<td>⚠️ emulated with a SIMD shift+xor+add</td>
+</tr>
+<tr class="row-odd"><td>_mm_alignr_epi8</td>
+<td>⚠️ emulated with a SIMD or+two shifts</td>
+</tr>
+<tr class="row-even"><td>_mm_hadd_epi16</td>
+<td>⚠️ emulated with a SIMD add+two shuffles</td>
+</tr>
+<tr class="row-odd"><td>_mm_hadd_epi32</td>
+<td>⚠️ emulated with a SIMD add+two shuffles</td>
+</tr>
+<tr class="row-even"><td>_mm_hadds_epi16</td>
+<td>⚠️ emulated with a SIMD adds+two shuffles</td>
+</tr>
+<tr class="row-odd"><td>_mm_hsub_epi16</td>
+<td>⚠️ emulated with a SIMD sub+two shuffles</td>
+</tr>
+<tr class="row-even"><td>_mm_hsub_epi32</td>
+<td>⚠️ emulated with a SIMD sub+two shuffles</td>
+</tr>
+<tr class="row-odd"><td>_mm_hsubs_epi16</td>
+<td>⚠️ emulated with a SIMD subs+two shuffles</td>
+</tr>
+<tr class="row-even"><td>_mm_maddubs_epi16</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_mulhrs_epi16</td>
+<td>💣 scalarized (TODO: emulatable in SIMD?)</td>
+</tr>
+<tr class="row-even"><td>_mm_shuffle_epi8</td>
+<td>💣 scalarized (TODO: use wasm_v8x16_swizzle when available)</td>
+</tr>
+<tr class="row-odd"><td>_mm_sign_epi8</td>
+<td>⚠️ emulated with a SIMD complex shuffle+cmp+xor+andnot</td>
+</tr>
+<tr class="row-even"><td>_mm_sign_epi16</td>
+<td>⚠️ emulated with a SIMD shr+cmp+xor+andnot</td>
+</tr>
+<tr class="row-odd"><td>_mm_sign_epi32</td>
+<td>⚠️ emulated with a SIMD shr+cmp+xor+andnot</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>⚫ The SSSE3 functions that deal with 64-bit wide MMX registers are not available:</dt>
+<dd><ul class="first last simple">
+<li>_mm_abs_pi8, _mm_abs_pi16, _mm_abs_pi32, _mm_alignr_pi8, _mm_hadd_pi16, _mm_hadd_pi32, _mm_hadds_pi16, _mm_hsub_pi16, _mm_hsub_pi32, _mm_hsubs_pi16, _mm_maddubs_pi16, _mm_mulhrs_pi16, _mm_shuffle_pi8, _mm_sign_pi8, _mm_sign_pi16 and _mm_sign_pi32</li>
+</ul>
+</dd>
+</dl>
+<p>Any code referencing these intrinsics will not compile.</p>
+<p>The following table highlights the availability and expected performance of different SSE4.1 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_1">Intel Intrinsics Guide on SSE4.1</a>.</p>
+<table border="1" class="colwidths-given docutils" id="id8">
+<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt;</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_blend_epi16</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_blend_pd</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_blend_ps</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_blendv_epi8</td>
+<td>⚠️ emulated with a SIMD shr+and+andnot+or</td>
+</tr>
+<tr class="row-even"><td>_mm_blendv_pd</td>
+<td>⚠️ emulated with a SIMD shr+and+andnot+or</td>
+</tr>
+<tr class="row-odd"><td>_mm_blendv_ps</td>
+<td>⚠️ emulated with a SIMD shr+and+andnot+or</td>
+</tr>
+<tr class="row-even"><td>_mm_ceil_pd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ceil_ps</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_ceil_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_ceil_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cmpeq_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepi16_epi32</td>
+<td>✅ wasm_i32x4_widen_low_i16x8</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepi16_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepi32_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepi8_epi16</td>
+<td>✅ wasm_i16x8_widen_low_i8x16</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepi8_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepi8_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepu16_epi32</td>
+<td>✅ wasm_i32x4_widen_low_u16x8</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepu16_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepu32_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepu8_epi16</td>
+<td>✅ wasm_i16x8_widen_low_u8x16</td>
+</tr>
+<tr class="row-odd"><td>_mm_cvtepu8_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_cvtepu8_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_dp_pd</td>
+<td>⚠️ emulated with SIMD mul+add+setzero+2xblend</td>
+</tr>
+<tr class="row-even"><td>_mm_dp_ps</td>
+<td>⚠️ emulated with SIMD mul+add+setzero+2xblend</td>
+</tr>
+<tr class="row-odd"><td>_mm_extract_epi32</td>
+<td>✅ wasm_i32x4_extract_lane</td>
+</tr>
+<tr class="row-even"><td>_mm_extract_epi64</td>
+<td>✅ wasm_i64x2_extract_lane</td>
+</tr>
+<tr class="row-odd"><td>_mm_extract_epi8</td>
+<td>✅ wasm_u8x16_extract_lane</td>
+</tr>
+<tr class="row-even"><td>_mm_extract_ps</td>
+<td>✅ wasm_i32x4_extract_lane</td>
+</tr>
+<tr class="row-odd"><td>_mm_floor_pd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_floor_ps</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_floor_sd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_floor_ss</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_insert_epi32</td>
+<td>✅ wasm_i32x4_replace_lane</td>
+</tr>
+<tr class="row-even"><td>_mm_insert_epi64</td>
+<td>✅ wasm_i64x2_replace_lane</td>
+</tr>
+<tr class="row-odd"><td>_mm_insert_epi8</td>
+<td>✅ wasm_i8x16_replace_lane</td>
+</tr>
+<tr class="row-even"><td>_mm_insert_ps</td>
+<td>⚠️ emulated with generic non-SIMD-mapping shuffles</td>
+</tr>
+<tr class="row-odd"><td>_mm_max_epi32</td>
+<td>✅ wasm_i32x4_max</td>
+</tr>
+<tr class="row-even"><td>_mm_max_epi8</td>
+<td>✅ wasm_i8x16_max</td>
+</tr>
+<tr class="row-odd"><td>_mm_max_epu16</td>
+<td>✅ wasm_u16x8_max</td>
+</tr>
+<tr class="row-even"><td>_mm_max_epu32</td>
+<td>✅ wasm_u32x4_max</td>
+</tr>
+<tr class="row-odd"><td>_mm_min_epi32</td>
+<td>✅ wasm_i32x4_min</td>
+</tr>
+<tr class="row-even"><td>_mm_min_epi8</td>
+<td>✅ wasm_i8x16_min</td>
+</tr>
+<tr class="row-odd"><td>_mm_min_epu16</td>
+<td>✅ wasm_u16x8_min</td>
+</tr>
+<tr class="row-even"><td>_mm_min_epu32</td>
+<td>✅ wasm_u32x4_min</td>
+</tr>
+<tr class="row-odd"><td>_mm_minpos_epu16</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_mpsadbw_epu8</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_mul_epi32</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_mullo_epi32</td>
+<td>✅ wasm_i32x4_mul</td>
+</tr>
+<tr class="row-odd"><td>_mm_packus_epi32</td>
+<td>✅ wasm_u16x8_narrow_i32x4</td>
+</tr>
+<tr class="row-even"><td>_mm_round_pd</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_round_ps</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_round_sd</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_round_ss</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_stream_load_si128</td>
+<td>🟡 wasm_v128_load. VM must guess type. <span class="raw-html"><br /></span> Unaligned load on x86 CPUs.</td>
+</tr>
+<tr class="row-odd"><td>_mm_test_all_ones</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_test_all_zeros</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_test_mix_ones_zeros</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_testc_si128</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_test_nzc_si128</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_testz_si128</td>
+<td>❌ scalarized</td>
+</tr>
+</tbody>
+</table>
+<p>The following table highlights the availability and expected performance of different SSE4.2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_2">Intel Intrinsics Guide on SSE4.2</a>.</p>
+<table border="1" class="colwidths-given docutils" id="id9">
+<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt;</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_cmpgt_epi64</td>
+<td>❌ scalarized</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>⚫ The SSE4.2 functions that deal with string comparisons and CRC calculations are not available:</dt>
+<dd><ul class="first last simple">
+<li>_mm_cmpestra, _mm_cmpestrc, _mm_cmpestri, _mm_cmpestrm, _mm_cmpestro, _mm_cmpestrs, _mm_cmpestrz, _mm_cmpistra, _mm_cmpistrc, _mm_cmpistri, _mm_cmpistrm, _mm_cmpistro, _mm_cmpistrs, _mm_cmpistrz, _mm_crc32_u16, _mm_crc32_u32, _mm_crc32_u64, _mm_crc32_u8</li>
+</ul>
+</dd>
+</dl>
+<p>Any code referencing these intrinsics will not compile.</p>
+<p>The following table highlights the availability and expected performance of different AVX intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=AVX">Intel Intrinsics Guide on AVX</a>.</p>
+<table border="1" class="colwidths-given docutils" id="id10">
+<caption><span class="caption-text">x86 AVX intrinsics available via #include &lt;immintrin.h&gt;</span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Intrinsic name</th>
+<th class="head">WebAssembly SIMD support</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_mm_broadcast_ss</td>
+<td>✅ wasm_v32x4_load_splat</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmp_pd</td>
+<td>⚠️ emulated with 1-2 SIMD cmp+and/or</td>
+</tr>
+<tr class="row-even"><td>_mm_cmp_ps</td>
+<td>⚠️ emulated with 1-2 SIMD cmp+and/or</td>
+</tr>
+<tr class="row-odd"><td>_mm_cmp_sd</td>
+<td>⚠️ emulated with 1-2 SIMD cmp+and/or+move</td>
+</tr>
+<tr class="row-even"><td>_mm_cmp_ss</td>
+<td>⚠️ emulated with 1-2 SIMD cmp+and/or+move</td>
+</tr>
+<tr class="row-odd"><td>_mm_maskload_pd</td>
+<td>⚠️ emulated with SIMD load+shift+and</td>
+</tr>
+<tr class="row-even"><td>_mm_maskload_ps</td>
+<td>⚠️ emulated with SIMD load+shift+and</td>
+</tr>
+<tr class="row-odd"><td>_mm_maskstore_pd</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_maskstore_ps</td>
+<td>❌ scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_permute_pd</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-even"><td>_mm_permute_ps</td>
+<td>💡 emulated with a general shuffle</td>
+</tr>
+<tr class="row-odd"><td>_mm_permutevar_pd</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-even"><td>_mm_permutevar_ps</td>
+<td>💣 scalarized</td>
+</tr>
+<tr class="row-odd"><td>_mm_testc_pd</td>
+<td>💣 emulated with complex SIMD+scalar sequence</td>
+</tr>
+<tr class="row-even"><td>_mm_testc_ps</td>
+<td>💣 emulated with complex SIMD+scalar sequence</td>
+</tr>
+<tr class="row-odd"><td>_mm_testnzc_pd</td>
+<td>💣 emulated with complex SIMD+scalar sequence</td>
+</tr>
+<tr class="row-even"><td>_mm_testnzc_ps</td>
+<td>💣 emulated with complex SIMD+scalar sequence</td>
+</tr>
+<tr class="row-odd"><td>_mm_testz_pd</td>
+<td>💣 emulated with complex SIMD+scalar sequence</td>
+</tr>
+<tr class="row-even"><td>_mm_testz_ps</td>
+<td>💣 emulated with complex SIMD+scalar sequence</td>
+</tr>
+</tbody>
+</table>
+<p>Only the 128-bit wide instructions from AVX instruction set are available. 256-bit wide AVX instructions are not provided.</p>
 </div>
 
 
@@ -1237,7 +2681,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

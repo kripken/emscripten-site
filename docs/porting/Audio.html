@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Audio &mdash; Emscripten 1.39.14 documentation</title>
+  <title>Audio &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Debugging" href="Debugging.html"/>
         <link rel="prev" title="OpenGL support in Emscripten" href="multimedia_and_graphics/OpenGL-support.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1293,7 +1276,7 @@ Currently, Emscripten provides no direct way for applications to access this val
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 1.39.14 documentation</title>
+  <title>Interacting with code &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/FAQ.html#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1170,10 +1153,13 @@ to prevent C++ name mangling.</p>
 </div>
 <p>To compile this code run the following command in the Emscripten
 home directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s1">&#39;[&quot;_int_sqrt&quot;]&#39;</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXTRA_EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="s1">&#39;[&quot;ccall&quot;, &quot;cwrap&quot;]&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s1">&#39;[&quot;_int_sqrt&quot;]&#39;</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="s1">&#39;[&quot;ccall&quot;, &quot;cwrap&quot;]&#39;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> tells the compiler what we want to be accessible from the compiled code (everything else might be removed if it is not used), and <code class="docutils literal notranslate"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code> tells the compiler that we want to use the runtime functions <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> (otherwise, it will remove them if it does not see they are used).</p>
+<p><code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> tells the compiler what we want to be accessible from the
+compiled code (everything else might be removed if it is not used), and
+<code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code> tells the compiler that we want to use the runtime
+functions <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> (otherwise, it will not include them).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last"><cite>EXPORTED_FUNCTIONS</cite> affects compilation to JavaScript. If you first compile to an object file,
@@ -1251,8 +1237,8 @@ or <code class="docutils literal notranslate"><span class="pre">--post-js</span>
 didn’t see, like another script tag on the HTML or in the JS console like
 we did in this tutorial, then because of optimizations
 and minification you should export ccall from the runtime, using
-<code class="docutils literal notranslate"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code>, for example using
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">'EXTRA_EXPORTED_RUNTIME_METHODS=[&quot;ccall&quot;,</span> <span class="pre">&quot;cwrap&quot;]'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code>, for example using
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">'EXPORTED_RUNTIME_METHODS=[&quot;ccall&quot;,</span> <span class="pre">&quot;cwrap&quot;]'</span></code>,
 and call it on <code class="docutils literal notranslate"><span class="pre">Module</span></code> (which contains
 everything exported, in a safe way that is not influenced by minification
 or optimizations).</li>
@@ -1278,17 +1264,26 @@ or optimizations).</li>
 </pre></div>
 </div>
 <p>Compile the library with emcc:</p>
-<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">api_example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> <span class="n">api_example</span><span class="o">.</span><span class="n">js</span>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">api_example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> <span class="n">api_example</span><span class="o">.</span><span class="n">js</span> <span class="o">-</span><span class="n">s</span> <span class="n">MODULARIZE</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ccall&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Require the library and call its procedures from node:</p>
-<div class="code javascript highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">em_module</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;./api_example.js&#39;</span><span class="p">);</span>
+<div class="code javascript highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;./a.out.js&#39;</span><span class="p">);</span>
 
-<span class="n">em_module</span><span class="o">.</span><span class="n">_sayHi</span><span class="p">();</span> <span class="o">//</span> <span class="n">direct</span> <span class="n">calling</span> <span class="n">works</span>
-<span class="n">em_module</span><span class="o">.</span><span class="n">ccall</span><span class="p">(</span><span class="s2">&quot;sayHi&quot;</span><span class="p">);</span> <span class="o">//</span> <span class="n">using</span> <span class="n">ccall</span> <span class="n">etc</span><span class="o">.</span> <span class="n">also</span> <span class="n">work</span>
-<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">em_module</span><span class="o">.</span><span class="n">_daysInWeek</span><span class="p">());</span> <span class="o">//</span> <span class="n">values</span> <span class="n">can</span> <span class="n">be</span> <span class="n">returned</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+<span class="n">factory</span><span class="p">()</span><span class="o">.</span><span class="n">then</span><span class="p">((</span><span class="n">instance</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="n">instance</span><span class="o">.</span><span class="n">_sayHi</span><span class="p">();</span> <span class="o">//</span> <span class="n">direct</span> <span class="n">calling</span> <span class="n">works</span>
+  <span class="n">instance</span><span class="o">.</span><span class="n">ccall</span><span class="p">(</span><span class="s2">&quot;sayHi&quot;</span><span class="p">);</span> <span class="o">//</span> <span class="n">using</span> <span class="n">ccall</span> <span class="n">etc</span><span class="o">.</span> <span class="n">also</span> <span class="n">work</span>
+  <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">_daysInWeek</span><span class="p">());</span> <span class="o">//</span> <span class="n">values</span> <span class="n">can</span> <span class="n">be</span> <span class="n">returned</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+<span class="p">});</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> option makes <code class="docutils literal notranslate"><span class="pre">emcc</span></code> emit code in a modular format that is
+easy to import and use with <code class="docutils literal notranslate"><span class="pre">require()</span></code>: <code class="docutils literal notranslate"><span class="pre">require()</span></code> of the module returns
+a factory function that can instantiate the compiled code, returning a
+<code class="docutils literal notranslate"><span class="pre">Promise</span></code> to tell us when it is ready, and giving us the instance of the
+module as a parameter.</p>
+<p>(Note that we use <code class="docutils literal notranslate"><span class="pre">ccall</span></code> here, so we need to add it to the exported runtime
+methods, as before.)</p>
 </div>
 <div class="section" id="call-compiled-c-c-code-directly-from-javascript">
 <span id="interacting-with-code-direct-function-calls"></span><h2>Call compiled C/C++ code “directly” from JavaScript<a class="headerlink" href="#call-compiled-c-c-code-directly-from-javascript" title="Permalink to this headline">¶</a></h2>
@@ -1908,7 +1903,7 @@ natural fit for the project and its build system.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

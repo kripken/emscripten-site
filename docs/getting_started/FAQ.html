@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 1.39.14 documentation</title>
+  <title>FAQ &mdash; Emscripten 1.39.17 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -147,7 +147,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-can-i-reduce-startup-time">How can I reduce startup time?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing">How do I run a local webserver for testing / why does my program stall in “Downloading…” or “Preparing…”?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected">What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">Why does my code fail to compile with an error message about inline assembly (or <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;:&quot;asm&quot;}</span></code>)?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-does-my-html-app-hang">Why does my HTML app hang?</a></li>
@@ -398,6 +397,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -431,8 +431,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#porting-simd-code-targeting-asm-js">Porting SIMD code targeting asm.js</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -446,23 +446,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/emterpreter.html">Emterpreter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#general-usage">General Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#specific-use-cases">Specific Use Cases</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-1-swapping">Improving Startup 1: Swapping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#improving-startup-2-set-aside-cold-code">Improving Startup 2: Set Aside Cold Code</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#emterpreter-async-run-synchronous-code">Emterpreter-Async: Run Synchronous Code</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#semantics">Semantics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#deciding-on-which-methods-to-emterpret-for-async">Deciding on which methods to Emterpret for async</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/emterpreter.html#comparison-to-asyncify">Comparison to ASYNCIFY</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#debugging">Debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/emterpreter.html#bytecode-design">Bytecode Design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1166,10 +1149,6 @@ in Python 2. After doing that, you can visit <code class="docutils literal notra
 <h2>What is “No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead” or “no native wasm support detected”?<a class="headerlink" href="#what-is-no-webassembly-support-found-build-with-s-wasm-0-to-target-javascript-instead-or-no-native-wasm-support-detected" title="Permalink to this headline">¶</a></h2>
 <p>Those errors indicate that WebAssembly support is not present in the VM you are trying to run the code in. Compile with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=0</span></code> to disable WebAssembly (and emit asm.js instead) if you want your code to run in such environments (all modern browsers support WebAssembly, but in some cases you may want to reach 100% of browsers, including legacy ones).</p>
 </div>
-<div class="section" id="why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5">
-<h2>Why do I get <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">while</span> <span class="pre">loading</span> <span class="pre">shared</span> <span class="pre">libraries:</span> <span class="pre">libtinfo.so.5</span></code>?<a class="headerlink" href="#why-do-i-get-error-while-loading-shared-libraries-libtinfo-so-5" title="Permalink to this headline">¶</a></h2>
-<p>LLVM and clang link libtinfo dynamically. On some recent Linuxes you may have only <code class="docutils literal notranslate"><span class="pre">libtinfo.so.6</span></code> (while our builders target the last Ubuntu LTS). To fix this, you can do something like <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">libtinfo5</span></code> on Debian or Ubuntu, or on Fedora something like <code class="docutils literal notranslate"><span class="pre">dnf</span> <span class="pre">install</span> <span class="pre">ncurses-compat-libs</span></code>.</p>
-</div>
 <div class="section" id="why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking">
 <h2>Why do I get <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">type</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">wasm32</span></code> or <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> during linking?<a class="headerlink" href="#why-do-i-get-machine-type-must-be-wasm32-or-is-not-a-valid-input-file-during-linking" title="Permalink to this headline">¶</a></h2>
 <p>The first error means the linker inputs did not contain wasm32 code - that is,
@@ -1250,7 +1229,7 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 </div>
 <div class="section" id="how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions">
 <span id="faq-when-safe-to-call-compiled-functions"></span><h2>How can I tell when the page is fully loaded and it is safe to call compiled functions?<a class="headerlink" href="#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions" title="Permalink to this headline">¶</a></h2>
-<p>(You may need this answer if you see an error saying something like <code class="docutils literal notranslate"><span class="pre">you</span> <span class="pre">need</span> <span class="pre">to</span> <span class="pre">wait</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">runtime</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">ready</span> <span class="pre">(e.g.</span> <span class="pre">wait</span> <span class="pre">for</span> <span class="pre">main()</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">called)</span></code>, which is a check enabled in <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> builds.)</p>
+<p>(You may need this answer if you see an error saying something like <code class="docutils literal notranslate"><span class="pre">native</span> <span class="pre">function</span> <span class="pre">`x`</span> <span class="pre">called</span> <span class="pre">before</span> <span class="pre">runtime</span> <span class="pre">initialization</span></code>, which is a check enabled in <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> builds.)</p>
 <p>Calling a compiled function before a page has fully loaded can result in an error, if the function relies on files that may not be present (for example the <a class="reference internal" href="../tools_reference/emcc.html#emcc-memory-init-file"><span class="std std-ref">.mem</span></a> file and <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preloaded</span></a> files are loaded asynchronously, and therefore if you just place some JS that calls compiled code in a <code class="docutils literal notranslate"><span class="pre">--post-js</span></code>, that code will be called synchronously at the end of the combined JS file, potentially before the asynchronous event happens, which is bad).</p>
 <p>The easiest way to find out when loading is complete is to add a <code class="docutils literal notranslate"><span class="pre">main()</span></code> function, and within it call a JavaScript function to notify your code that loading is complete.</p>
 <div class="admonition note">
@@ -1282,22 +1261,11 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 </pre></div>
 </div>
 <p>The crucial thing is that <code class="docutils literal notranslate"><span class="pre">Module</span></code> exists, and has the property <code class="docutils literal notranslate"><span class="pre">onRuntimeInitialized</span></code>, before the script containing emscripten output (<code class="docutils literal notranslate"><span class="pre">my_project.js</span></code> in this example) is loaded.</p>
-<p>Another option is to use the <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> option, using <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span></code>. That will put all of the generated JavaScript in a function, which you can call to create an instance. The instance has a promise-like <cite>.then()</cite> method, so if you build with say <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span> <span class="pre">-s</span> <span class="pre">'EXPORT_NAME=&quot;MyCode&quot;'</span></code> (see details in settings.js), then you can do something like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MyCode</span><span class="p">()</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">Module</span><span class="p">)</span> <span class="p">{</span>
-  <span class="o">//</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">reached</span> <span class="n">when</span> <span class="n">everything</span> <span class="ow">is</span> <span class="n">ready</span><span class="p">,</span> <span class="ow">and</span> <span class="n">you</span> <span class="n">can</span> <span class="n">call</span> <span class="n">methods</span> <span class="n">on</span> <span class="n">Module</span>
+<p>Another option is to use the <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> option, using <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span></code>. That puts all of the generated JavaScript into a factory function, which you can call to create an instance of your module. The factory function returns a Promise that resolves with the module instance. The promise is resolved once it’s safe to call the compiled code, i.e. after the compiled code has been downloaded and instantiated. For example, if you build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span> <span class="pre">-s</span> <span class="pre">'EXPORT_NAME=&quot;createMyModule&quot;'</span></code> (see details in settings.js), then you can do this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">createMyModule</span><span class="p">()</span><span class="o">.</span><span class="n">then</span><span class="p">((</span><span class="n">myModule</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="o">//</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">reached</span> <span class="n">when</span> <span class="n">everything</span> <span class="ow">is</span> <span class="n">ready</span><span class="p">,</span> <span class="ow">and</span> <span class="n">you</span> <span class="n">can</span> <span class="n">call</span> <span class="n">methods</span> <span class="n">on</span> <span class="n">myModule</span>
 <span class="p">});</span>
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p>Be careful with using <code class="docutils literal notranslate"><span class="pre">Module.then()</span></code> inside <code class="docutils literal notranslate"><span class="pre">Promise.resolve()</span></code> or <code class="docutils literal notranslate"><span class="pre">await</span></code> statements. <code class="docutils literal notranslate"><span class="pre">Module.then()</span></code> resolves with <code class="docutils literal notranslate"><span class="pre">Module</span></code> which still has <code class="docutils literal notranslate"><span class="pre">then</span></code>, so the <code class="docutils literal notranslate"><span class="pre">await</span></code> statement loops indefinitely. If you need to use <code class="docutils literal notranslate"><span class="pre">Module.then()</span></code> with <code class="docutils literal notranslate"><span class="pre">await</span></code> statement, you can use this workaround:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">Module</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="n">m</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="n">delete</span> <span class="n">m</span><span class="p">[</span><span class="s1">&#39;then&#39;</span><span class="p">];</span>
-  <span class="n">resolve</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
-</div>
-<p class="last">For more information read <a class="reference external" href="https://github.com/emscripten-core/emscripten/pull/10697">this issue</a>.</p>
 </div>
 </div>
 <div class="section" id="what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">
@@ -1610,7 +1578,7 @@ then compile the object to JavaScript, you need that option on the second comman
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.14',
+            VERSION:'1.39.17',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
