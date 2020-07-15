@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 1.39.17 documentation</title>
+  <title>emscripten.h &mdash; Emscripten 1.39.19 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.19 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
@@ -3080,6 +3081,11 @@ void <code class="descname">emscripten_scan_registers</code><span class="sig-par
 that means data stored in locals, including locals in functions higher up
 the stack - the wasm VM has spilled them, but none of that is observable to
 user code).</p>
+<p>Note that this function scans wasm locals. Depending on the LLVM
+optimization level, this may not scan the original locals in your source
+code. For example in <code class="docutils literal notranslate"><span class="pre">-O0</span></code> locals may be stored on the stack. To make
+sure you scan everything necessary, you can also do
+<code class="docutils literal notranslate"><span class="pre">emscripten_scan_stack</span></code>.</p>
 <p>This function requires Asyncify - it relies on that option to spill the
 local state all the way up the stack. As a result, it will add overhead
 to your program.</p>
@@ -3247,7 +3253,7 @@ to constantly check for after any wasm code runs. See
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.17',
+            VERSION:'1.39.19',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

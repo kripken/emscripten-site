@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 1.39.17 documentation</title>
+  <title>Debugging &mdash; Emscripten 1.39.19 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.19 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="Audio" href="Audio.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="asyncify.html#stack-overflows">Stack overflows</a></li>
@@ -1287,7 +1288,7 @@ distinguish between them:</p>
 <p class="first admonition-title">Warning</p>
 <p class="last">This option is primarily intended for Emscripten core developers.</p>
 </div>
-<p>The <em>AutoDebugger</em> will rewrite the LLVM bitcode so it prints out each store to memory. This is useful because you can compare the output for different compiler settings in order to detect regressions, or compare the output of JavaScript and LLVM bitcode compiled using <a class="reference internal" href="../site/glossary.html#term-llvm-nativizer"><span class="xref std std-term">LLVM Nativizer</span></a> or <a class="reference internal" href="../site/glossary.html#term-llvm-interpreter"><span class="xref std std-term">LLVM interpreter</span></a>.</p>
+<p>The <em>AutoDebugger</em> will rewrite the output so it prints out each store to memory. This is useful because you can compare the output for different compiler settings in order to detect regressions.</p>
 <p>The <em>AutoDebugger</em> can potentially find <strong>any</strong> problem in the generated code, so it is strictly more powerful than the <code class="docutils literal notranslate"><span class="pre">CHECK_*</span></code> settings and <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>. One use of the <em>AutoDebugger</em> is to quickly emit lots of logging output, which can then be reviewed for odd behavior. The <em>AutoDebugger</em> is also particularly useful for <a class="reference internal" href="#debugging-autodebugger-regressions"><span class="std std-ref">debugging regressions</span></a>.</p>
 <p>The <em>AutoDebugger</em> has some limitations:</p>
 <ul class="simple">
@@ -1316,15 +1317,8 @@ emcc tests/hello_world.cpp -o hello.html
 <p>Any difference between the outputs is likely to be caused by the bug.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">False positives can be caused by calls to <code class="docutils literal notranslate"><span class="pre">clock()</span></code>, which will differ slightly between runs.</p>
-</div>
-<p>You can also make native builds using the <a class="reference internal" href="../site/glossary.html#term-llvm-nativizer"><span class="xref std std-term">LLVM Nativizer</span></a> tool. This can be run on the autodebugged <strong>.ll</strong> file, which will be emitted in <code class="docutils literal notranslate"><span class="pre">/tmp/emscripten_temp</span></code> when <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span></code> is set.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>The native build created using the <a class="reference internal" href="../site/glossary.html#term-llvm-nativizer"><span class="xref std std-term">LLVM Nativizer</span></a> will use native system libraries. Direct comparisons of output with Emscripten-compiled code can therefore be misleading.</li>
-<li>Attempting to interpret code compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code> using the <em>LLVM Nativizer</em> or <a class="reference internal" href="../site/glossary.html#term-lli"><span class="xref std std-term">lli</span></a> may crash, so you may need to build once without <code class="docutils literal notranslate"><span class="pre">-g</span></code> for these tools, then build again with <code class="docutils literal notranslate"><span class="pre">-g</span></code>. Another option is to use <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tools/exec_llvm.py">tools/exec_llvm.py</a> in Emscripten, which will run <em>lli</em> after cleaning out debug info.</li>
-</ul>
+<p class="last">You may want to use <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DETERMINISTIC</span></code> which will ensure that timing
+and other issues don’t cause false positives.</p>
 </div>
 </div>
 </div>
@@ -1453,7 +1447,7 @@ emcc tests/hello_world.cpp -o hello.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.17',
+            VERSION:'1.39.19',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

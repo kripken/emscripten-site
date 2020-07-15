@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Audio &mdash; Emscripten 1.39.17 documentation</title>
+  <title>Audio &mdash; Emscripten 1.39.19 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.19 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Debugging" href="Debugging.html"/>
         <link rel="prev" title="OpenGL support in Emscripten" href="multimedia_and_graphics/OpenGL-support.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="asyncify.html#stack-overflows">Stack overflows</a></li>
@@ -1102,14 +1103,26 @@
 </div>
 <div class="section" id="guidelines-for-audio-on-emscripten">
 <span id="audio-guidelines-g"></span><h2>Guidelines for Audio on Emscripten<a class="headerlink" href="#guidelines-for-audio-on-emscripten" title="Permalink to this headline">¶</a></h2>
-<p>Know that your application needs to yield to the Javascript main loop for audio processing to take place (See <a class="reference internal" href="emscripten-runtime-environment.html#emscripten-runtime-environment-main-loop"><span class="std std-ref">Browser main loop</span></a>).</p>
-<p>Put simply, this kind of code will block indefinitely :</p>
+<p>Know that your application needs to yield to the Javascript main loop for audio
+processing to take place
+(See <a class="reference internal" href="emscripten-runtime-environment.html#emscripten-runtime-environment-main-loop"><span class="std std-ref">Browser main loop</span></a>). Put
+simply, this kind of code will block indefinitely:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">while</span><span class="p">(</span><span class="n">nframes</span> <span class="o">&lt;</span> <span class="n">THE_NUMBER_OF_FRAMES_WE_WANT</span><span class="p">)</span>
     <span class="n">alcGetIntegerv</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">ALC_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nframes</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>The above snippet usually works in native applications because most OpenAL implementations own and manage one or more separate threads. This is <strong>not</strong> the case in Emscripten.</p>
-<p>What you must do instead is perform each such query only once per “main loop iteration” (i.e the callback you provide via <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> or <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a>).</p>
+<p>The above snippet usually works in native applications because most OpenAL
+implementations own and manage one or more separate threads. This is <strong>not</strong> the
+case in Emscripten. What you must do instead is perform each such query only
+once per “main loop iteration” (i.e the callback you provide via
+<a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> or <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a>).</p>
+<p>Another issue you may experience is that browsers will not allow audio to play
+before user input. This prevents pages from auto-playing media, which can be
+annoying if you didn’t want that. Emscripten’s OpenAL implementation (and also
+SDL1) will automatically listen for a user click or keypress on the document
+and the canvas, and resume audio for you. That means that audio should start
+to play once the user does something on the page. (See
+<code class="docutils literal notranslate"><span class="pre">autoResumeAudioContext()</span></code> for how this is done internally.)</p>
 </div>
 <div class="section" id="emscripten-specific-capture-behavior">
 <span id="audio-openal-capture-behavior-g"></span><h2>Emscripten-specific capture behavior<a class="headerlink" href="#emscripten-specific-capture-behavior" title="Permalink to this headline">¶</a></h2>
@@ -1276,7 +1289,7 @@ Currently, Emscripten provides no direct way for applications to access this val
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.17',
+            VERSION:'1.39.19',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

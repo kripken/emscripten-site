@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fetch API &mdash; Emscripten 1.39.17 documentation</title>
+  <title>Fetch API &mdash; Emscripten 1.39.19 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.19 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="File System API" href="Filesystem-API.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
@@ -1404,8 +1405,35 @@ downloads on them. This initiates an XHR or IndexedDB transfer that only fetches
 the desired subrange of the whole file. This is useful for example when a large
 package file contains multiple smaller ones at certain seek offsets, which can
 be dealt with separately.</p>
-<p>TODO: Example about how to perform HTTP Byte Range Requests to obtain parts of
-files.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;emscripten/fetch.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">downloadSucceeded</span><span class="p">(</span><span class="n">emscripten_fetch_t</span> <span class="o">*</span><span class="n">fetch</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span> <span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span>
+  <span class="c1">// The data is now available at fetch-&gt;data[0] through fetch-&gt;data[fetch-&gt;numBytes-1];</span>
+  <span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span> <span class="c1">// Free data associated with the fetch.</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">downloadFailed</span><span class="p">(</span><span class="n">emscripten_fetch_t</span> <span class="o">*</span><span class="n">fetch</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span> <span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span>
+  <span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span> <span class="c1">// Also free data on failure.</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">emscripten_fetch_attr_t</span> <span class="n">attr</span><span class="p">;</span>
+  <span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span> <span class="s">&quot;GET&quot;</span><span class="p">);</span>
+  <span class="n">attr</span><span class="p">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span>
+  <span class="c1">// Make a Range request to only fetch bytes 10 to 20</span>
+  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">headers</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;Range&quot;</span><span class="p">,</span> <span class="s">&quot;bytes=10-20&quot;</span><span class="p">};</span>
+  <span class="n">attr</span><span class="p">.</span><span class="n">requestHeaders</span> <span class="o">=</span> <span class="n">headers</span><span class="p">;</span>
+  <span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span> <span class="o">=</span> <span class="n">downloadSucceeded</span><span class="p">;</span>
+  <span class="n">attr</span><span class="p">.</span><span class="n">onerror</span> <span class="o">=</span> <span class="n">downloadFailed</span><span class="p">;</span>
+  <span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="todo-to-document">
@@ -1546,7 +1574,7 @@ load.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.17',
+            VERSION:'1.39.19',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

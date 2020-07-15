@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 1.39.17 documentation</title>
+  <title>File System API &mdash; Emscripten 1.39.19 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.17 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.19 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Fetch API" href="fetch.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
@@ -2222,6 +2223,45 @@ For example, consider a symlink <code class="docutils literal notranslate"><span
 </dd></dl>
 
 <dl class="function">
+<dt id="FS.analyzePath">
+<code class="descclassname">FS.</code><code class="descname">analyzePath</code><span class="sig-paren">(</span><em>path</em>, <em>dontResolveLastLink</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.analyzePath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks up the incoming path and returns an object containing information about
+file stats and nodes. Built on top of <code class="docutils literal notranslate"><span class="pre">FS.lookupPath</span></code> and provides more
+information about given path and its parent. If any error occurs it won’t
+throw but returns an <code class="docutils literal notranslate"><span class="pre">error</span></code> property.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>string</em>) – The incoming path.</li>
+<li><strong>dontResolveLastLink</strong> (<em>boolean</em>) – If true, don’t follow the last component
+if it is a symlink.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>an object with the format:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nx">isRoot</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">,</span>
+  <span class="nx">exists</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">,</span>
+  <span class="nx">error</span><span class="o">:</span> <span class="nb">Error</span><span class="p">,</span>
+  <span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">path</span><span class="o">:</span> <span class="nx">resolved_path</span><span class="p">,</span>
+  <span class="nx">object</span><span class="o">:</span> <span class="nx">resolved_node</span><span class="p">,</span>
+  <span class="nx">parentExists</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">,</span>
+  <span class="nx">parentPath</span><span class="o">:</span> <span class="nx">resolved_parent_path</span><span class="p">,</span>
+  <span class="nx">parentObject</span><span class="o">:</span> <span class="nx">resolved_parent_node</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="FS.getPath">
 <code class="descclassname">FS.</code><code class="descname">getPath</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.getPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the absolute path to <code class="docutils literal notranslate"><span class="pre">node</span></code>, accounting for mounts.</p>
@@ -2355,7 +2395,7 @@ For example, consider a symlink <code class="docutils literal notranslate"><span
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.17',
+            VERSION:'1.39.19',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
