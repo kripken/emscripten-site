@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging with Sanitizers &mdash; Emscripten 1.39.19 documentation</title>
+  <title>Debugging with Sanitizers &mdash; Emscripten 1.39.20 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.19 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="CyberDWARF Debugging" href="CyberDWARF.html"/> 
 
@@ -907,6 +907,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#comparison-to-safe-heap">Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1088,16 +1089,15 @@ both codegen and system libraries.</p>
 <div class="section" id="catching-null-dereference">
 <h3>Catching Null Dereference<a class="headerlink" href="#catching-null-dereference" title="Permalink to this headline">¶</a></h3>
 <p>By default, with Emscripten, dereferencing a null pointer does not immediately
-cause a segmentation fault, unlike traditional platforms. Instead, it checks
-a magic cookie stored at address 0 at the end of the program execution.</p>
-<p>This only detects null pointer writes, and not reads, and it’s rather difficult
-to find where the null pointer write occurred.</p>
-<p>Emscripten provides a <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> mode, which can be activated by running
-<code class="docutils literal notranslate"><span class="pre">emcc</span></code> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span></code>. This will catch both null pointer reads and
-writes, and causes an exception, but it is slower, and does not tell you the
-exact line numbers unless you compile with <code class="docutils literal notranslate"><span class="pre">-g</span></code>.</p>
-<p>UBSan will tell you exactly where the null deference happened, and works for
-both reads and writes, with much less performance penalty than <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>.</p>
+cause a segmentation fault, unlike traditional platforms, as 0 is just a normal
+address in a WebAssembly memory. 0 is also a normal location in a
+JavaScript Typed Array, which is an issue in the JavaScript alongside the
+WebAssembly (runtime support code, JS library methods, <code class="docutils literal notranslate"><span class="pre">EM_ASM/EM_JS</span></code>, etc.),
+and also for the compiled code if you build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=0</span></code>.</p>
+<p>In builds with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> enabled, a magic cookie stored at address 0 is
+checked at the end of the program execution. That is, it will notify you if
+anything wrote to that location while the program ran. This only detects writes,
+not reads, and does not help to find where the bad write actually is.</p>
 <p>Consider the following program, <code class="docutils literal notranslate"><span class="pre">null-assign.c</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -1105,7 +1105,7 @@ both reads and writes, with much less performance penalty than <code class="docu
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Without UBSan or <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>, you get an error when the program exits:</p>
+<p>Without UBSan you get an error when the program exits:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> emcc null-assign.c
 <span class="gp">$</span> node a.out.js
 <span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
@@ -1125,7 +1125,7 @@ both reads and writes, with much less performance penalty than <code class="docu
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Without UBSan or <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>, there is no feedback:</p>
+<p>Without UBSan there is no feedback:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> emcc null-read.c
 <span class="gp">$</span> node a.out.js
 <span class="gp">$</span>
@@ -1173,7 +1173,9 @@ with  -s INITIAL_MEMORY=X  with X higher than the current value 50331648, (2)
 compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at
 runtime, or (3) if you want malloc to return NULL (0) instead of this abort,
 compile with  -s ABORTING_MALLOC=0</div></blockquote>
-<p>ASan fully supports multi-thread environments.</p>
+<p>ASan fully supports multi-thread environments. ASan also operates on the JS
+support code, that is, if JS tries to read from a memory address that is not
+valid, it will be caught, just like if that access happened from wasm.</p>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Here are some examples of how AddressSanitizer can be used to help find bugs.</p>
@@ -1286,17 +1288,23 @@ compile with  -s ABORTING_MALLOC=0</div></blockquote>
 </pre></div>
 </div>
 <p>Note that since leak checks take place at program exit, you must use
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXIT_RUNTIME</span></code>, or invoke <code class="docutils literal notranslate"><span class="pre">__lsan::DoLeakCheck</span></code> manually.</p>
-<p>You can detect that AddressSanitizer is enabled and run <code class="docutils literal notranslate"><span class="pre">__lsan::DoLeakCheck</span></code>
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXIT_RUNTIME</span></code>, or invoke <code class="docutils literal notranslate"><span class="pre">__lsan_do_leak_check</span></code> or
+<code class="docutils literal notranslate"><span class="pre">__lsan_do_recoverable_leak_check</span></code> manually.</p>
+<p>You can detect that AddressSanitizer is enabled and run <code class="docutils literal notranslate"><span class="pre">__lsan_do_leak_check</span></code>
 by doing:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#if defined(__has_feature)</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;sanitizer/lsan_interface.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#if defined(__has_feature)</span>
 <span class="cp">#if __has_feature(address_sanitizer)</span>
   <span class="c1">// code for ASan-enabled builds</span>
-  <span class="n">__lsan</span><span class="o">::</span><span class="n">DoLeakCheck</span><span class="p">();</span>
+  <span class="n">__lsan_do_leak_check</span><span class="p">();</span>
 <span class="cp">#endif</span>
 <span class="cp">#endif</span>
 </pre></div>
 </div>
+<p>This will be fatal if there are memory leaks. To check for memory leaks
+and allow the process to continue running, use
+<code class="docutils literal notranslate"><span class="pre">__lsan_do_recoverable_leak_check</span></code>.</p>
 <p>Also, if you only want to check for memory leaks, you may use
 <code class="docutils literal notranslate"><span class="pre">-fsanitize=leak</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code>. <code class="docutils literal notranslate"><span class="pre">-fsanitize=leak</span></code>
 does not instrument all memory accesses, and as a result is much faster than
@@ -1372,10 +1380,58 @@ option <code class="docutils literal notranslate"><span class="pre">malloc_conte
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span> <span class="o">=</span> <span class="s1">&#39;malloc_context_size=0&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>This prevents ASan from reporting the location of memory leaks, as well as
-offer insight into where the memory for a heap-based memory error originated,
+<p>This prevents ASan from reporting the location of memory leaks or offering
+insight into where the memory for a heap-based memory error originated,
 but may provide tremendous speed ups.</p>
 </div>
+</div>
+<div class="section" id="comparison-to-safe-heap">
+<h3>Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code><a class="headerlink" href="#comparison-to-safe-heap" title="Permalink to this headline">¶</a></h3>
+<p>Emscripten provides a <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> mode, which can be activated by running
+<code class="docutils literal notranslate"><span class="pre">emcc</span></code> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SAFE_HEAP</span></code>. This does several things, some of which overlap
+with sanitizers.</p>
+<p>In general, <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> focuses on the specific pain points that come up when
+targeting wasm. The sanitizers on the other hand focus on the specific pain points that are
+involved with using languages like C/C++. Those two sets overlap, but are not
+identical. Which you should use depends on which types of problems you are
+looking for. You may want to test with all sanitizers and with <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>
+for maximal coverage, but you may need to build separately for each mode, since
+not all sanitizers are compatible with each other, and not all of them are
+compatible with <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> (because the sanitizers do some pretty radical
+things!). You will get a compiler error if there is an issue with the flags you
+passed. A reasonable set of separate test builds to do might be: ASan, UBsan,
+and <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>.</p>
+<p>The specific things <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> errors on include:</p>
+<ul class="simple">
+<li><strong>NULL pointer (address 0) reads or writes</strong>. As mentioned earlier, this is
+annoying in WebAssembly and JavaScript because 0 is just a normal address, so
+you don’t get an immediate segfault, which can be confusing.</li>
+<li><strong>Unaligned reads or writes</strong>. These work in WebAssembly, but on some platforms
+an incorrectly-aligned read or write may be much slower, and with wasm2js
+(<code class="docutils literal notranslate"><span class="pre">WASM=0</span></code>) it will be incorrect, as JavaScript Typed Arrays do not allow
+unaligned operations.</li>
+<li><strong>Reads or writes past the top of valid memory</strong> as managed by <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>, that is,
+memory that was not properly allocated by <code class="docutils literal notranslate"><span class="pre">malloc()</span></code>. This is not specific
+to wasm, however, in JavaScript if the address is big enough to be outside the
+Typed Array, <code class="docutils literal notranslate"><span class="pre">undefined</span></code> is returned which can be very confusing, which is
+why this was added (in wasm at least an error is thrown; <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> still
+helps with wasm though, by checking the area between the top of <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>’s
+memory and the end of the wasm Memory).</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> does these checks by instrumenting every single load and store.
+That has the cost of slowing things down, but it does give a simple guarantee
+of finding <em>all</em> such problems. It can also be done after compilation, on an
+arbitrary wasm binary, while the sanitizers must be done when compiling from
+source.</p>
+<p>In comparison, UBSan can also find null pointer reads and writes. It does not
+instrument every single load and store, however, as it is done during
+compilation of the source code, so the checks are added where clang knows they
+are needed. This is much more efficient, but there is a risk of codegen and
+optimizations changing something, or clang missing a specific location.</p>
+<p>ASan can find reads or writes of unallocated memory, which includes addresses
+above the <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>-managed memory. It may be more efficient than <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>
+in some cases: while it also checks every load and store, the LLVM
+optimizer is run after it adds those checks, which can remove some of them.</p>
 </div>
 </div>
 </div>
@@ -1489,7 +1545,7 @@ but may provide tremendous speed ups.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.19',
+            VERSION:'1.39.20',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
