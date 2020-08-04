@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WebIDL Binder &mdash; Emscripten 1.39.20 documentation</title>
+  <title>WebIDL Binder &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Files and File Systems" href="../files/index.html"/>
         <link rel="prev" title="Embind" href="embind.html"/> 
@@ -1087,16 +1087,16 @@
 <p>The binder supports the subset of C++ types that can be expressed in WebIDL. This subset is more than sufficient for most use cases — examples of projects that have been ported using the binder include the <a class="reference external" href="https://github.com/kripken/box2d.js/#box2djs">Box2D</a> and <a class="reference external" href="https://github.com/kripken/ammo.js/#ammojs">Bullet</a> physics engines.</p>
 <p>This topic shows how bind and use C++ classes, functions and other types using IDL.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">An alternative to the <em>WebIDL Binder</em> is to use <a class="reference internal" href="embind.html#embind"><span class="std std-ref">Embind</span></a>. For more information see <a class="reference internal" href="Interacting-with-code.html#interacting-with-code-binding-cpp"><span class="std std-ref">Binding C++ and JavaScript — WebIDL Binder and Embind</span></a>.</p>
+<p class="admonition-title">Note</p>
+<p>An alternative to the <em>WebIDL Binder</em> is to use <a class="reference internal" href="embind.html#embind"><span class="std std-ref">Embind</span></a>. For more information see <a class="reference internal" href="Interacting-with-code.html#interacting-with-code-binding-cpp"><span class="std std-ref">Binding C++ and JavaScript — WebIDL Binder and Embind</span></a>.</p>
 </div>
 <div class="section" id="a-quick-example">
 <h2>A quick example<a class="headerlink" href="#a-quick-example" title="Permalink to this headline">¶</a></h2>
 <p>Binding using the <em>WebIDL Binder</em> is a three-stage process:</p>
 <ul class="simple">
-<li>Create a WebIDL file that describes the C++ interface.</li>
-<li>Use the binder to generate C++ and JavaScript “glue” code.</li>
-<li>Compile this glue code with the Emscripten project.</li>
+<li><p>Create a WebIDL file that describes the C++ interface.</p></li>
+<li><p>Use the binder to generate C++ and JavaScript “glue” code.</p></li>
+<li><p>Compile this glue code with the Emscripten project.</p></li>
 </ul>
 <div class="section" id="defining-the-webidl-file">
 <h3>Defining the WebIDL file<a class="headerlink" href="#defining-the-webidl-file" title="Permalink to this headline">¶</a></h3>
@@ -1131,13 +1131,13 @@ interface Bar {
 <p>The mapping between the IDL definition and the C++ is fairly obvious. The main things to notice are:</p>
 <blockquote>
 <div><ul class="simple">
-<li>The IDL class definitions include a function returning <code class="docutils literal notranslate"><span class="pre">void</span></code> that has the same name as the interface. This constructor allows you to create the object from JavaScript, and must be defined in IDL even if the C++ uses the default constructor (see <code class="docutils literal notranslate"><span class="pre">Foo</span></code> above).</li>
-<li>The type names in WebIDL are not identical to those in C++ (for example, <code class="docutils literal notranslate"><span class="pre">int</span></code> maps to <code class="docutils literal notranslate"><span class="pre">long</span></code> above). For more information about the mappings see <a class="reference internal" href="#webidl-binder-type-name"><span class="std std-ref">WebIDL types</span></a>.</li>
+<li><p>The IDL class definitions include a function returning <code class="docutils literal notranslate"><span class="pre">void</span></code> that has the same name as the interface. This constructor allows you to create the object from JavaScript, and must be defined in IDL even if the C++ uses the default constructor (see <code class="docutils literal notranslate"><span class="pre">Foo</span></code> above).</p></li>
+<li><p>The type names in WebIDL are not identical to those in C++ (for example, <code class="docutils literal notranslate"><span class="pre">int</span></code> maps to <code class="docutils literal notranslate"><span class="pre">long</span></code> above). For more information about the mappings see <a class="reference internal" href="#webidl-binder-type-name"><span class="std std-ref">WebIDL types</span></a>.</p></li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal notranslate"><span class="pre">structs</span></code> are defined in the same way as the classes above — using the <code class="docutils literal notranslate"><span class="pre">interface</span></code> keyword.</p>
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">structs</span></code> are defined in the same way as the classes above — using the <code class="docutils literal notranslate"><span class="pre">interface</span></code> keyword.</p>
 </div>
 </div>
 <div class="section" id="generating-the-bindings-glue-code">
@@ -1152,8 +1152,8 @@ interface Bar {
 <h3>Compiling the project (using the bindings glue code)<a class="headerlink" href="#compiling-the-project-using-the-bindings-glue-code" title="Permalink to this headline">¶</a></h3>
 <p>To use the glue code files (<code class="docutils literal notranslate"><span class="pre">glue.cpp</span></code> and <code class="docutils literal notranslate"><span class="pre">glue.js</span></code>) in a project:</p>
 <ol class="arabic simple">
-<li>Add <code class="docutils literal notranslate"><span class="pre">--post-js</span> <span class="pre">glue.js</span></code> in your final <em>emcc</em> command. The <a class="reference internal" href="../../tools_reference/emcc.html#emcc-post-js"><span class="std std-ref">post-js</span></a> option adds the glue code at the end of the compiled output.</li>
-<li>Create a file called something like <strong>my_glue_wrapper.cpp</strong> to <code class="docutils literal notranslate"><span class="pre">#include</span></code> the headers of the classes you are binding and <em>glue.cpp</em>. This might have the following content:</li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">--post-js</span> <span class="pre">glue.js</span></code> in your final <em>emcc</em> command. The <a class="reference internal" href="../../tools_reference/emcc.html#emcc-post-js"><span class="std std-ref">post-js</span></a> option adds the glue code at the end of the compiled output.</p></li>
+<li><p>Create a file called something like <strong>my_glue_wrapper.cpp</strong> to <code class="docutils literal notranslate"><span class="pre">#include</span></code> the headers of the classes you are binding and <em>glue.cpp</em>. This might have the following content:</p></li>
 </ol>
 <blockquote>
 <div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;...&gt; // Where &quot;...&quot; represents the headers for the classes we are binding.</span><span class="cp"></span>
@@ -1161,12 +1161,12 @@ interface Bar {
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The C++ glue code emitted by the <em>bindings generator</em> does not include the headers for the classes it binds because they are not present in the Web IDL file. The step above makes these available to the glue code. Another alternative would be to include the headers at the top of <strong>glue.cpp</strong>, but then they would be overwritten every time the IDL file is recompiled.</p>
+<p class="admonition-title">Note</p>
+<p>The C++ glue code emitted by the <em>bindings generator</em> does not include the headers for the classes it binds because they are not present in the Web IDL file. The step above makes these available to the glue code. Another alternative would be to include the headers at the top of <strong>glue.cpp</strong>, but then they would be overwritten every time the IDL file is recompiled.</p>
 </div>
 </div></blockquote>
 <ol class="arabic simple">
-<li>Add <strong>my_glue_wrapper.cpp</strong> to the final <em>emcc</em> command.</li>
+<li><p>Add <strong>my_glue_wrapper.cpp</strong> to the final <em>emcc</em> command.</p></li>
 </ol>
 <p>The final <em>emcc</em> command includes both the C++ and JavaScript glue code, which are built to work together:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc my_classes.cpp my_glue_wrapper.cpp --post-js glue.js -o output.js
@@ -1206,13 +1206,13 @@ global scope, and in some cases you want to create more than one.</p>
 </pre></div>
 </div>
 <div class="admonition important">
-<p class="first admonition-title">Important</p>
+<p class="admonition-title">Important</p>
 <p>Always access objects through the <a class="reference internal" href="../../api_reference/module.html#module"><span class="std std-ref">Module object</span></a> object, as shown above.</p>
-<p class="last">While the objects are also available in the global namespace by default, there are cases where they will not be (for example, if you use the <a class="reference internal" href="../../site/glossary.html#term-closure-compiler"><span class="xref std std-term">closure compiler</span></a> to minify code or wrap compiled code in a function to avoid polluting the global namespace). You can of course use whatever name you like for the module by assigning it to a new variable: <code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">MyModuleName</span> <span class="pre">=</span> <span class="pre">Module;</span></code>.</p>
+<p>While the objects are also available in the global namespace by default, there are cases where they will not be (for example, if you use the <a class="reference internal" href="../../site/glossary.html#term-closure-compiler"><span class="xref std std-term">closure compiler</span></a> to minify code or wrap compiled code in a function to avoid polluting the global namespace). You can of course use whatever name you like for the module by assigning it to a new variable: <code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">MyModuleName</span> <span class="pre">=</span> <span class="pre">Module;</span></code>.</p>
 </div>
 <div class="admonition important">
-<p class="first admonition-title">Important</p>
-<p class="last">You can only use this code when it is <a class="reference internal" href="../../getting_started/FAQ.html#faq-when-safe-to-call-compiled-functions"><span class="std std-ref">safe to call compiled code</span></a>, see more details in that FAQ entry.</p>
+<p class="admonition-title">Important</p>
+<p>You can only use this code when it is <a class="reference internal" href="../../getting_started/FAQ.html#faq-when-safe-to-call-compiled-functions"><span class="std std-ref">safe to call compiled code</span></a>, see more details in that FAQ entry.</p>
 </div>
 <p>JavaScript will automatically garbage collect any of the wrapped C++ objects when there are no more references. If the C++ object doesn’t require specific clean up (i.e. it doesn’t have a destructor) then no other action needs to be taken.</p>
 <p>If a C++ object does need to be cleaned up, you must explicitly call <a class="reference internal" href="../../api_reference/module.html#Module.destroy" title="Module.destroy"><code class="xref js js-func docutils literal notranslate"><span class="pre">Module.destroy(obj)</span></code></a> to invoke its destructor — then drop all references to the object so that it can be garbage collected. For example, if <code class="docutils literal notranslate"><span class="pre">Bar</span></code> were to allocate memory that requires cleanup:</p>
@@ -1222,9 +1222,9 @@ global scope, and in some cases you want to create more than one.</p>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>The C++ constructor is called transparently when a C++ object is created in JavaScript. There is no way, however, to tell if a JavaScript object is about to be garbage collected, so the binder glue code can’t automatically call the destructor.</p>
-<p class="last">You will usually need to destroy the objects which you create, but this depends on the library being ported.</p>
+<p>You will usually need to destroy the objects which you create, but this depends on the library being ported.</p>
 </div>
 </div>
 <div class="section" id="attributes">
@@ -1272,8 +1272,8 @@ MyClass process(MyClass input);
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If <code class="docutils literal notranslate"><span class="pre">[Ref]</span></code> is omitted on a reference, the generated glue C++ will not compile (it fails when it tries to convert the reference — which it thinks is a pointer — to an object).</p>
+<p class="admonition-title">Note</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">[Ref]</span></code> is omitted on a reference, the generated glue C++ will not compile (it fails when it tries to convert the reference — which it thinks is a pointer — to an object).</p>
 </div>
 <p>If the C++ returns an object (rather than a reference or a pointer) then the return type should be decorated using <code class="docutils literal notranslate"><span class="pre">[Value]</span></code>. This will allocate a static (singleton) instance of that class and return it. You should use it immediately, and drop any references to it after use.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
@@ -1308,8 +1308,8 @@ readonly attribute <span class="nb">long</span> numericalConstant;
 </div>
 <p>This will generate a <code class="docutils literal notranslate"><span class="pre">get_numericalConstant()</span></code> method in the bindings, but not a corresponding setter. The attribute will also be defined as read-only in JavaScript, meaning that trying to set it will have no effect on the value, and will throw an error in strict mode.</p>
 <div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">It is possible for a return type to have multiple specifiers. For example, a method that returns a constant reference would be marked up in the IDL using <code class="docutils literal notranslate"><span class="pre">[Ref,</span> <span class="pre">Const]</span></code>.</p>
+<p class="admonition-title">Tip</p>
+<p>It is possible for a return type to have multiple specifiers. For example, a method that returns a constant reference would be marked up in the IDL using <code class="docutils literal notranslate"><span class="pre">[Ref,</span> <span class="pre">Const]</span></code>.</p>
 </div>
 </div>
 <div class="section" id="un-deletable-classes-nodelete">
@@ -1340,10 +1340,10 @@ interface Inner {
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>The operator name can be anything (<code class="docutils literal notranslate"><span class="pre">add</span></code> is just an example).</li>
-<li>Support is currently limited to operators that contain <code class="docutils literal notranslate"><span class="pre">=</span></code>: <code class="docutils literal notranslate"><span class="pre">+=</span></code>, <code class="docutils literal notranslate"><span class="pre">*=</span></code>, <code class="docutils literal notranslate"><span class="pre">-=</span></code> etc., and to the array indexing operator <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</li>
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The operator name can be anything (<code class="docutils literal notranslate"><span class="pre">add</span></code> is just an example).</p></li>
+<li><p>Support is currently limited to operators that contain <code class="docutils literal notranslate"><span class="pre">=</span></code>: <code class="docutils literal notranslate"><span class="pre">+=</span></code>, <code class="docutils literal notranslate"><span class="pre">*=</span></code>, <code class="docutils literal notranslate"><span class="pre">-=</span></code> etc., and to the array indexing operator <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
 </ul>
 </div>
 </div>
@@ -1424,10 +1424,10 @@ interface ImplJS {
 </div>
 <p>When C++ code has a pointer to a <code class="docutils literal notranslate"><span class="pre">Base</span></code> instance and calls <code class="docutils literal notranslate"><span class="pre">virtualFunc()</span></code>, that call will reach the JavaScript code defined above.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>You <em>must</em> implement all the methods you mentioned in the IDL of the <code class="docutils literal notranslate"><span class="pre">JSImplementation</span></code> class (<code class="docutils literal notranslate"><span class="pre">ImplJS</span></code>) or compilation will fail with an error.</li>
-<li>You will also need to provide an interface definition for the <code class="docutils literal notranslate"><span class="pre">Base</span></code> class in the IDL file.</li>
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>You <em>must</em> implement all the methods you mentioned in the IDL of the <code class="docutils literal notranslate"><span class="pre">JSImplementation</span></code> class (<code class="docutils literal notranslate"><span class="pre">ImplJS</span></code>) or compilation will fail with an error.</p></li>
+<li><p>You will also need to provide an interface definition for the <code class="docutils literal notranslate"><span class="pre">Base</span></code> class in the IDL file.</p></li>
 </ul>
 </div>
 </div>
@@ -1435,23 +1435,20 @@ interface ImplJS {
 <h2>Pointers and comparisons<a class="headerlink" href="#pointers-and-comparisons" title="Permalink to this headline">¶</a></h2>
 <p>All the binding functions expect to receive wrapper objects (which contain a raw pointer) rather than a raw pointer. You shouldn’t normally need to deal with raw pointers (these are simply memory addresses/integers). If you do, the following functions in the compiled code can be useful:</p>
 <ul>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">wrapPointer(ptr,</span> <span class="pre">Class)</span></code> — Given a raw pointer (an integer), returns a wrapped object.</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">wrapPointer(ptr,</span> <span class="pre">Class)</span></code> — Given a raw pointer (an integer), returns a wrapped object.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you do not pass the <code class="docutils literal notranslate"><span class="pre">Class</span></code>, it will be assumed to be the root class — this probably isn’t what you want!</p>
+<p class="admonition-title">Note</p>
+<p>If you do not pass the <code class="docutils literal notranslate"><span class="pre">Class</span></code>, it will be assumed to be the root class — this probably isn’t what you want!</p>
 </div>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">getPointer(object)</span></code> — Returns a raw pointer.</p>
-</li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">castObject(object,</span> <span class="pre">Class)</span></code> — Returns a wrapping of the same pointer but to another class.</p>
-</li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">compare(object1,</span> <span class="pre">object2)</span></code> — Compares two objects’ pointers.</p>
-</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getPointer(object)</span></code> — Returns a raw pointer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">castObject(object,</span> <span class="pre">Class)</span></code> — Returns a wrapping of the same pointer but to another class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compare(object1,</span> <span class="pre">object2)</span></code> — Compares two objects’ pointers.</p></li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>There is always a <em>single</em> wrapped object for a certain pointer to a certain class. This allows you to add data on that object and use it elsewhere using normal JavaScript syntax (<code class="docutils literal notranslate"><span class="pre">object.attribute</span> <span class="pre">=</span> <span class="pre">someData</span></code> etc.)</p>
-<p class="last"><code class="docutils literal notranslate"><span class="pre">compare()</span></code> should be used instead of direct pointer comparison because it is possible to have different wrapped objects with the same pointer if one class is a subclass of the other.</p>
+<p><code class="docutils literal notranslate"><span class="pre">compare()</span></code> should be used instead of direct pointer comparison because it is possible to have different wrapped objects with the same pointer if one class is a subclass of the other.</p>
 </div>
 </div>
 <div class="section" id="null">
@@ -1467,61 +1464,61 @@ interface ImplJS {
 <div class="section" id="webidl-types">
 <span id="webidl-binder-type-name"></span><h2>WebIDL types<a class="headerlink" href="#webidl-types" title="Permalink to this headline">¶</a></h2>
 <p>The type names in WebIDL are not identical to those in C++. This section shows the mapping for the more common types you’ll encounter.</p>
-<table border="1" class="colwidths-given docutils">
+<table class="colwidths-given docutils align-default">
 <colgroup>
-<col width="50%" />
-<col width="50%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">C++</th>
-<th class="head">IDL</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>C++</p></th>
+<th class="head"><p>IDL</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">bool</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">boolean</span></code></td>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">float</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">float</span></code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">double</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">double</span></code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">char</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">byte</span></code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">char</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">byte</span></code></p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">char*</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">DOMString</span></code> (represents a JavaScript string)</td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">char*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DOMString</span></code> (represents a JavaScript string)</p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">octet</span></code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">octet</span></code></p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">int</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">long</span></code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">long</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">long</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">long</span></code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">long</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">long</span></code></p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">long</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">long</span></code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">long</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">long</span></code></p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">long</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">long</span></code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">long</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">long</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">void</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">void</span></code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">void</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">void</span></code></p></td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">void*</span></code></td>
-<td><code class="docutils literal notranslate"><span class="pre">any</span></code> or <code class="docutils literal notranslate"><span class="pre">VoidPtr</span></code> (see <a class="reference internal" href="#webidl-binder-voidstar"><span class="std std-ref">void*</span></a>)</td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">void*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">any</span></code> or <code class="docutils literal notranslate"><span class="pre">VoidPtr</span></code> (see <a class="reference internal" href="#webidl-binder-voidstar"><span class="std std-ref">void*</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The WebIDL types are fully documented in <a class="reference external" href="http://www.w3.org/TR/WebIDL/">this W3C specification</a>.</p>
+<p class="admonition-title">Note</p>
+<p>The WebIDL types are fully documented in <a class="reference external" href="http://www.w3.org/TR/WebIDL/">this W3C specification</a>.</p>
 </div>
 </div>
 <div class="section" id="test-and-example-code">
@@ -1644,7 +1641,7 @@ interface ImplJS {
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>val.h (under-construction) &mdash; Emscripten 1.39.20 documentation</title>
+  <title>val.h (under-construction) &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="bind.h (under-construction)" href="bind.h.html"/>
         <link rel="prev" title="Module object" href="module.html"/> 
@@ -1082,390 +1082,327 @@
 <p>Guide material for this class can be found in <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-val-guide"><span class="std std-ref">Using val to transliterate JavaScript to C++</span></a>.</p>
 <dl class="class">
 <dt id="_CPPv4N10emscripten10emscripten3valE">
-<span id="_CPPv3N10emscripten10emscripten3valE"></span><span id="_CPPv2N10emscripten10emscripten3valE"></span><span id="emscripten::emscripten::val"></span><em class="property">class </em><code class="descclassname">emscripten<code class="descclassname">::</code></code><code class="descname">val</code><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3valE"></span><span id="_CPPv2N10emscripten10emscripten3valE"></span><span id="emscripten::emscripten::val"></span><em class="property">class </em><code class="sig-prename descclassname">emscripten<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">val</code><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>This class is a C++ data type that can be used to represent (and provide convenient access to) any JavaScript object. You can use it to call a JavaScript object, read and write its properties, or coerce it to a C++ value like a <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, or <code class="docutils literal notranslate"><span class="pre">std::string</span></code>.</p>
 <p>For example, the code below shows some simple JavaScript for making an XHR request on a URL:</p>
-<div class="code javascript highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">xhr</span> <span class="o">=</span> <span class="n">new</span> <span class="n">XMLHttpRequest</span><span class="p">;</span>
-<span class="n">xhr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;http://url&quot;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">;</span>
+<span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;http://url&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>This same code can be written in C++, using <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3val6globalEPKc" title="emscripten::emscripten::val::global"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">global()</span></code></a> to get the symbol for the global <code class="docutils literal notranslate"><span class="pre">XMLHttpRequest</span></code> object and then using it to open a URL.</p>
-<div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">val</span> <span class="n">xhr</span> <span class="o">=</span> <span class="n">val</span><span class="p">::</span><span class="k">global</span><span class="p">(</span><span class="s2">&quot;XMLHttpRequest&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">new_</span><span class="p">();</span>
-<span class="n">xhr</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">string</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">),</span> <span class="n">std</span><span class="p">::</span><span class="n">string</span><span class="p">(</span><span class="s2">&quot;http://url&quot;</span><span class="p">));</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">val</span> <span class="n">xhr</span> <span class="o">=</span> <span class="n">val</span><span class="o">::</span><span class="n">global</span><span class="p">(</span><span class="s">&quot;XMLHttpRequest&quot;</span><span class="p">).</span><span class="n">new_</span><span class="p">();</span>
+<span class="n">xhr</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s">&quot;open&quot;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;http://url&quot;</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>You can test whether the <code class="docutils literal notranslate"><span class="pre">open</span></code> method call was successful using <a class="reference internal" href="#_CPPv4NK10emscripten10emscripten3valixERK1T" title="emscripten::emscripten::val::operator[]"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">operator[]()</span></code></a> to read an object property, then <a class="reference internal" href="#_CPPv4NK10emscripten10emscripten3val2asEv" title="emscripten::emscripten::val::as"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">as()</span></code></a> to coerce the type:</p>
-<div class="code cpp highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">const</span> <span class="n">char</span><span class="o">*</span> <span class="n">state</span><span class="p">;</span>
-<span class="n">switch</span> <span class="p">(</span><span class="n">xhr</span><span class="p">[</span><span class="s2">&quot;readyState&quot;</span><span class="p">]</span><span class="o">.</span><span class="k">as</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
-<span class="n">case</span> <span class="mi">0</span><span class="p">:</span>
-  <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;UNSENT&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-<span class="n">case</span> <span class="mi">1</span><span class="p">:</span>
-  <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;OPENED&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
-<span class="n">default</span><span class="p">:</span>
-  <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;etc&quot;</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">state</span><span class="p">;</span>
+<span class="k">switch</span> <span class="p">(</span><span class="n">xhr</span><span class="p">[</span><span class="s">&quot;readyState&quot;</span><span class="p">].</span><span class="n">as</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
+<span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
+  <span class="n">state</span> <span class="o">=</span> <span class="s">&quot;UNSENT&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+  <span class="n">state</span> <span class="o">=</span> <span class="s">&quot;OPENED&quot;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+<span class="k">default</span><span class="o">:</span>
+  <span class="n">state</span> <span class="o">=</span> <span class="s">&quot;etc&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-val-guide"><span class="std std-ref">Using val to transliterate JavaScript to C++</span></a> for other examples.</p>
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val5arrayEv">
-<span id="_CPPv3N10emscripten10emscripten3val5arrayEv"></span><span id="_CPPv2N10emscripten10emscripten3val5arrayEv"></span><span id="emscripten::emscripten::val::array"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val5arrayEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val5arrayEv"></span><span id="_CPPv2N10emscripten10emscripten3val5arrayEv"></span><span id="emscripten::emscripten::val::array"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val5arrayEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates and returns a new <code class="docutils literal notranslate"><span class="pre">Array</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The new <code class="docutils literal notranslate"><span class="pre">Array</span></code>.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The new <code class="docutils literal notranslate"><span class="pre">Array</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val6objectEv">
-<span id="_CPPv3N10emscripten10emscripten3val6objectEv"></span><span id="_CPPv2N10emscripten10emscripten3val6objectEv"></span><span id="emscripten::emscripten::val::object"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val6objectEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val6objectEv"></span><span id="_CPPv2N10emscripten10emscripten3val6objectEv"></span><span id="emscripten::emscripten::val::object"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val6objectEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates and returns a new <code class="docutils literal notranslate"><span class="pre">Object</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The new <code class="docutils literal notranslate"><span class="pre">Object</span></code>.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The new <code class="docutils literal notranslate"><span class="pre">Object</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val9undefinedEv">
-<span id="_CPPv3N10emscripten10emscripten3val9undefinedEv"></span><span id="_CPPv2N10emscripten10emscripten3val9undefinedEv"></span><span id="emscripten::emscripten::val::undefined"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">undefined</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val9undefinedEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val9undefinedEv"></span><span id="_CPPv2N10emscripten10emscripten3val9undefinedEv"></span><span id="emscripten::emscripten::val::undefined"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">undefined</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val9undefinedEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates a <code class="docutils literal notranslate"><span class="pre">val</span></code> that represents <code class="docutils literal notranslate"><span class="pre">undefined</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The <code class="docutils literal notranslate"><span class="pre">val</span></code> that represents <code class="docutils literal notranslate"><span class="pre">undefined</span></code>.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <code class="docutils literal notranslate"><span class="pre">val</span></code> that represents <code class="docutils literal notranslate"><span class="pre">undefined</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val4nullEv">
-<span id="_CPPv3N10emscripten10emscripten3val4nullEv"></span><span id="_CPPv2N10emscripten10emscripten3val4nullEv"></span><span id="emscripten::emscripten::val::null"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">null</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val4nullEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val4nullEv"></span><span id="_CPPv2N10emscripten10emscripten3val4nullEv"></span><span id="emscripten::emscripten::val::null"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">null</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val4nullEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates a <code class="docutils literal notranslate"><span class="pre">val</span></code> that represents <code class="docutils literal notranslate"><span class="pre">null</span></code>. <code class="docutils literal notranslate"><span class="pre">val::undefined()</span></code> is the same, but for undefined.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <code class="docutils literal notranslate"><span class="pre">val</span></code> that represents <code class="docutils literal notranslate"><span class="pre">null</span></code>.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A <code class="docutils literal notranslate"><span class="pre">val</span></code> that represents <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE">
-<span id="_CPPv3N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE"></span><span id="_CPPv2N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE"></span><span id="emscripten::emscripten::val::take_ownership__internal::EM_VAL"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">take_ownership</code><span class="sig-paren">(</span>internal::EM_VAL <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE"></span><span id="_CPPv2N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE"></span><span id="emscripten::emscripten::val::take_ownership__internal::EM_VAL"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">take_ownership</code><span class="sig-paren">(</span>internal::EM_VAL <em>e</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val14take_ownershipEN8internal6EM_VALE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val6globalEPKc">
-<span id="_CPPv3N10emscripten10emscripten3val6globalEPKc"></span><span id="_CPPv2N10emscripten10emscripten3val6globalEPKc"></span><span id="emscripten::emscripten::val::global__cCP"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">global</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val6globalEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val6globalEPKc"></span><span id="_CPPv2N10emscripten10emscripten3val6globalEPKc"></span><span id="emscripten::emscripten::val::global__cCP"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">global</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val6globalEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Looks up a global symbol.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>const char* name</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>const char* name</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val15module_propertyEPKc">
-<span id="_CPPv3N10emscripten10emscripten3val15module_propertyEPKc"></span><span id="_CPPv2N10emscripten10emscripten3val15module_propertyEPKc"></span><span id="emscripten::emscripten::val::module_property__cCP"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">module_property</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val15module_propertyEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val15module_propertyEPKc"></span><span id="_CPPv2N10emscripten10emscripten3val15module_propertyEPKc"></span><span id="emscripten::emscripten::val::module_property__cCP"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">module_property</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val15module_propertyEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Looks up a symbol on the emscripten Module object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>const char* name</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>const char* name</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val3valERR1T">
-<span id="_CPPv3N10emscripten10emscripten3val3valERR1T"></span><span id="_CPPv2N10emscripten10emscripten3val3valERR1T"></span><span id="emscripten::emscripten::val::val__TRR"></span><em class="property">explicit</em> <code class="descname">val</code><span class="sig-paren">(</span>T &amp;&amp;<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valERR1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val3valERR1T"></span><span id="_CPPv2N10emscripten10emscripten3val3valERR1T"></span><span id="emscripten::emscripten::val::val__TRR"></span><em class="property">explicit</em> <code class="sig-name descname">val</code><span class="sig-paren">(</span>T &amp;&amp;<em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valERR1T" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Constructor.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">val</span></code> can be constructed by explicit construction from any C++ type. For example, <code class="docutils literal notranslate"><span class="pre">val(true)</span></code> or <code class="docutils literal notranslate"><span class="pre">val(std::string(&quot;foo&quot;))</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>T&amp;&amp; value</strong> – Any C++ type.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>T&amp;&amp; value</strong> – Any C++ type.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <p><strong>HamishW</strong> Don’t know how following “floating statement works”. Leaving here for discussion
 <code class="docutils literal notranslate"><span class="pre">val()</span> <span class="pre">=</span> <span class="pre">delete;</span></code></p>
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val3valEPKc">
-<span id="_CPPv3N10emscripten10emscripten3val3valEPKc"></span><span id="_CPPv2N10emscripten10emscripten3val3valEPKc"></span><span id="emscripten::emscripten::val::val__cCP"></span><em class="property">explicit</em> <code class="descname">val</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val3valEPKc"></span><span id="_CPPv2N10emscripten10emscripten3val3valEPKc"></span><span id="emscripten::emscripten::val::val__cCP"></span><em class="property">explicit</em> <code class="sig-name descname">val</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>const char* v</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>const char* v</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val3valERR3val">
-<span id="_CPPv3N10emscripten10emscripten3val3valERR3val"></span><span id="_CPPv2N10emscripten10emscripten3val3valERR3val"></span><span id="emscripten::emscripten::val::val__valRR"></span><code class="descname">val</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3val3valERR1T" title="emscripten::emscripten::val::val">val</a> &amp;&amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valERR3val" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val3valERR3val"></span><span id="_CPPv2N10emscripten10emscripten3val3valERR3val"></span><span id="emscripten::emscripten::val::val__valRR"></span><code class="sig-name descname">val</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3val3valERR1T" title="emscripten::emscripten::val::val">val</a> &amp;&amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valERR3val" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val&amp;&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>val&amp;&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val3valERK3val">
-<span id="_CPPv3N10emscripten10emscripten3val3valERK3val"></span><span id="_CPPv2N10emscripten10emscripten3val3valERK3val"></span><span id="emscripten::emscripten::val::val__valCR"></span><code class="descname">val</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3val3valERR1T" title="emscripten::emscripten::val::val">val</a> &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valERK3val" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val3valERK3val"></span><span id="_CPPv2N10emscripten10emscripten3val3valERK3val"></span><span id="emscripten::emscripten::val::val__valCR"></span><code class="sig-name descname">val</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3val3valERR1T" title="emscripten::emscripten::val::val">val</a> &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3valERK3val" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>const val&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>const val&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3valD0Ev">
-<span id="_CPPv3N10emscripten10emscripten3valD0Ev"></span><span id="_CPPv2N10emscripten10emscripten3valD0Ev"></span><span id="emscripten::emscripten::val::~val"></span><code class="descname">~val</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3valD0Ev"></span><span id="_CPPv2N10emscripten10emscripten3valD0Ev"></span><span id="emscripten::emscripten::val::~val"></span><code class="sig-name descname">~val</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valD0Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Destructor. <strong>HamishW</strong>-Replace with further description or delete comment.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3valaSERR3val">
-<span id="_CPPv3N10emscripten10emscripten3valaSERR3val"></span><span id="_CPPv2N10emscripten10emscripten3valaSERR3val"></span><span id="emscripten::emscripten::val::assign-operator__valRR"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<code class="descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;&amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valaSERR3val" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3valaSERR3val"></span><span id="_CPPv2N10emscripten10emscripten3valaSERR3val"></span><span id="emscripten::emscripten::val::assign-operator__valRR"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<code class="sig-name descname">operator=</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;&amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valaSERR3val" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val&amp;&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>val&amp;&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3valaSERK3val">
-<span id="_CPPv3N10emscripten10emscripten3valaSERK3val"></span><span id="_CPPv2N10emscripten10emscripten3valaSERK3val"></span><span id="emscripten::emscripten::val::assign-operator__valCR"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<code class="descname">operator=</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valaSERK3val" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3valaSERK3val"></span><span id="_CPPv2N10emscripten10emscripten3valaSERK3val"></span><span id="emscripten::emscripten::val::assign-operator__valCR"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<code class="sig-name descname">operator=</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valaSERK3val" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val&amp;&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>val&amp;&amp; v</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK10emscripten10emscripten3val14hasOwnPropertyEPKc">
-<span id="_CPPv3NK10emscripten10emscripten3val14hasOwnPropertyEPKc"></span><span id="_CPPv2NK10emscripten10emscripten3val14hasOwnPropertyEPKc"></span><span id="emscripten::emscripten::val::hasOwnProperty__cCPC"></span>bool <code class="descname">hasOwnProperty</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val14hasOwnPropertyEPKc" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK10emscripten10emscripten3val14hasOwnPropertyEPKc"></span><span id="_CPPv2NK10emscripten10emscripten3val14hasOwnPropertyEPKc"></span><span id="emscripten::emscripten::val::hasOwnProperty__cCPC"></span>bool <code class="sig-name descname">hasOwnProperty</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val14hasOwnPropertyEPKc" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Test whether … <strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>const char* key</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>const char* key</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val4new_Ev">
-<span id="_CPPv3N10emscripten10emscripten3val4new_Ev"></span><span id="_CPPv2N10emscripten10emscripten3val4new_Ev"></span><span id="emscripten::emscripten::val::new_"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">new_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val4new_Ev" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val4new_Ev"></span><span id="_CPPv2N10emscripten10emscripten3val4new_Ev"></span><span id="emscripten::emscripten::val::new_"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">new_</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val4new_Ev" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>prototype:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span><span class="o">...</span> <span class="n">Args</span><span class="o">&gt;</span>
 <span class="n">val</span> <span class="n">new_</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;...</span> <span class="n">args</span><span class="p">)</span> <span class="n">const</span>
 </pre></div>
 </div>
 <p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Args&amp;&amp;... args</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Args&amp;&amp;... args</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK10emscripten10emscripten3valixERK1T">
-<span id="_CPPv3NK10emscripten10emscripten3valixERK1T"></span><span id="_CPPv2NK10emscripten10emscripten3valixERK1T"></span><span id="emscripten::emscripten::val::subscript-operator__TCRC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">operator[]</code><span class="sig-paren">(</span><em class="property">const</em> T &amp;<em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3valixERK1T" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK10emscripten10emscripten3valixERK1T"></span><span id="_CPPv2NK10emscripten10emscripten3valixERK1T"></span><span id="emscripten::emscripten::val::subscript-operator__TCRC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">operator[]</code><span class="sig-paren">(</span><em class="property">const</em> T &amp;<em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3valixERK1T" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>const T&amp; key</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>const T&amp; key</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val3setERK1KRK3val">
-<span id="_CPPv3N10emscripten10emscripten3val3setERK1KRK3val"></span><span id="_CPPv2N10emscripten10emscripten3val3setERK1KRK3val"></span><span id="emscripten::emscripten::val::set__KCR.valCR"></span>void <code class="descname">set</code><span class="sig-paren">(</span><em class="property">const</em> K &amp;<em>key</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3setERK1KRK3val" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val3setERK1KRK3val"></span><span id="_CPPv2N10emscripten10emscripten3val3setERK1KRK3val"></span><span id="emscripten::emscripten::val::set__KCR.valCR"></span>void <code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="property">const</em> K &amp;<em>key</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> &amp;<em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val3setERK1KRK3val" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set the specified (<code class="docutils literal notranslate"><span class="pre">key</span></code>) property of a JavaScript object (accessed through a <code class="docutils literal notranslate"><span class="pre">val</span></code>) with the value <code class="docutils literal notranslate"><span class="pre">v</span></code>. <strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>const K&amp; key</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</li>
-<li><strong>const val&amp; v</strong> – <strong>HamishW</strong>-Replace with description.   Note that this is a templated value.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>const K&amp; key</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</p></li>
+<li><p><strong>const val&amp; v</strong> – <strong>HamishW</strong>-Replace with description.   Note that this is a templated value.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3valclEDpRR4Args">
-<span id="_CPPv3N10emscripten10emscripten3valclEDpRR4Args"></span><span id="_CPPv2N10emscripten10emscripten3valclEDpRR4Args"></span><span id="emscripten::emscripten::val::call-operator__ArgsRRDp"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">operator()</code><span class="sig-paren">(</span>Args&amp;&amp;... <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valclEDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3valclEDpRR4Args"></span><span id="_CPPv2N10emscripten10emscripten3valclEDpRR4Args"></span><span id="emscripten::emscripten::val::call-operator__ArgsRRDp"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">operator()</code><span class="sig-paren">(</span>Args&amp;&amp;... <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3valclEDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Args&amp;&amp;... args</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Args&amp;&amp;... args</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK10emscripten10emscripten3val4callEPKcDpRR4Args">
-<span id="_CPPv3NK10emscripten10emscripten3val4callEPKcDpRR4Args"></span><span id="_CPPv2NK10emscripten10emscripten3val4callEPKcDpRR4Args"></span><span id="emscripten::emscripten::val::call__cCP.ArgsRRDpC"></span>ReturnValue <code class="descname">call</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em>, Args&amp;&amp;... <em>args</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val4callEPKcDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK10emscripten10emscripten3val4callEPKcDpRR4Args"></span><span id="_CPPv2NK10emscripten10emscripten3val4callEPKcDpRR4Args"></span><span id="emscripten::emscripten::val::call__cCP.ArgsRRDpC"></span>ReturnValue <code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em>, Args&amp;&amp;... <em>args</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val4callEPKcDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>const char* name</strong> – <strong>HamishW</strong>-Replace with description.</li>
-<li><strong>Args&amp;&amp;... args</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>const char* name</strong> – <strong>HamishW</strong>-Replace with description.</p></li>
+<li><p><strong>Args&amp;&amp;... args</strong> – <strong>HamishW</strong>-Replace with description. Note that this is a templated value.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK10emscripten10emscripten3val2asEv">
-<span id="_CPPv3NK10emscripten10emscripten3val2asEv"></span><span id="_CPPv2NK10emscripten10emscripten3val2asEv"></span><span id="emscripten::emscripten::val::asC"></span>T <code class="descname">as</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val2asEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK10emscripten10emscripten3val2asEv"></span><span id="_CPPv2NK10emscripten10emscripten3val2asEv"></span><span id="emscripten::emscripten::val::asC"></span>T <code class="sig-name descname">as</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val2asEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description. Note that this is a templated value.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>HamishW</strong>-Replace with description. Note that this is a templated value.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK10emscripten10emscripten3val6typeofEv">
-<span id="_CPPv3NK10emscripten10emscripten3val6typeofEv"></span><span id="_CPPv2NK10emscripten10emscripten3val6typeofEv"></span><span id="emscripten::emscripten::val::typeofC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">typeof</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val6typeofEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK10emscripten10emscripten3val6typeofEv"></span><span id="_CPPv2NK10emscripten10emscripten3val6typeofEv"></span><span id="emscripten::emscripten::val::typeofC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">typeof</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val6typeofEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4N10emscripten10emscripten3val14vecFromJSArrayE3val">
-<span id="_CPPv3N10emscripten10emscripten3val14vecFromJSArrayE3val"></span><span id="_CPPv2N10emscripten10emscripten3val14vecFromJSArrayE3val"></span><span id="emscripten::emscripten::val::vecFromJSArray__val"></span>std::vector&lt;T&gt; <code class="descname">vecFromJSArray</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val14vecFromJSArrayE3val" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3N10emscripten10emscripten3val14vecFromJSArrayE3val"></span><span id="_CPPv2N10emscripten10emscripten3val14vecFromJSArrayE3val"></span><span id="emscripten::emscripten::val::vecFromJSArray__val"></span>std::vector&lt;T&gt; <code class="sig-name descname">vecFromJSArray</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10emscripten10emscripten3val14vecFromJSArrayE3val" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><strong>HamishW</strong>-Replace with description.</p>
 <p><strong>HamishW</strong>. I believe NOT internal. Please confirm.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val v</strong> – <strong>HamishW</strong>-Replace with description.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>HamishW</strong>-Replace with description.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>val v</strong> – <strong>HamishW</strong>-Replace with description.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>HamishW</strong>-Replace with description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK10emscripten10emscripten3val5awaitEv">
-<span id="_CPPv3NK10emscripten10emscripten3val5awaitEv"></span><span id="_CPPv2NK10emscripten10emscripten3val5awaitEv"></span><span id="emscripten::emscripten::val::awaitC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="descname">await</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val5awaitEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK10emscripten10emscripten3val5awaitEv"></span><span id="_CPPv2NK10emscripten10emscripten3val5awaitEv"></span><span id="emscripten::emscripten::val::awaitC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">await</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val5awaitEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Pauses the C++ to <code class="docutils literal notranslate"><span class="pre">await</span></code> the <code class="docutils literal notranslate"><span class="pre">Promise</span></code> / thenable.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The fulfilled value.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The fulfilled value.</p>
+</dd>
+</dl>
 <p>This method requires <a class="reference internal" href="../porting/asyncify.html#asyncify"><span class="std std-ref">Asyncify</span></a> to be enabled.</p>
 </dd></dl>
 
@@ -1584,7 +1521,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

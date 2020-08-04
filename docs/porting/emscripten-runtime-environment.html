@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Runtime Environment &mdash; Emscripten 1.39.20 documentation</title>
+  <title>Emscripten Runtime Environment &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Connecting C++ and JavaScript" href="connecting_cpp_and_javascript/index.html"/>
         <link rel="prev" title="Specific Browser Limitations" href="guidelines/browser_limitations.html"/> 
@@ -1086,8 +1086,8 @@
 <p>In addition, we have more limited support for <em>glut</em>, <em>glfw</em>, <em>glew</em> and <em>xlib</em>.</p>
 <p>Applications that do not use <em>SDL</em> or the other APIs can use the Emscripten-specific APIs for input and output:</p>
 <ul class="simple">
-<li><a class="reference internal" href="../api_reference/html5.h.html#html5-h"><span class="std std-ref">html5.h</span></a>, which defines the Emscripten low-level glue bindings to interact with HTML5 events from native code, including access to keys, mouse, wheel, device orientation, battery levels, vibration, etc.</li>
-<li><a class="reference internal" href="multimedia_and_graphics/index.html#multimedia-and-graphics-index"><span class="std std-ref">Multimedia and Graphics</span></a> APIs, including <a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-support"><span class="std std-ref">OpenGL</span></a> and <a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#egl-support-in-emscripten"><span class="std std-ref">EGL</span></a>.</li>
+<li><p><a class="reference internal" href="../api_reference/html5.h.html#html5-h"><span class="std std-ref">html5.h</span></a>, which defines the Emscripten low-level glue bindings to interact with HTML5 events from native code, including access to keys, mouse, wheel, device orientation, battery levels, vibration, etc.</p></li>
+<li><p><a class="reference internal" href="multimedia_and_graphics/index.html#multimedia-and-graphics-index"><span class="std std-ref">Multimedia and Graphics</span></a> APIs, including <a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html#opengl-support"><span class="std std-ref">OpenGL</span></a> and <a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html#egl-support-in-emscripten"><span class="std std-ref">EGL</span></a>.</p></li>
 </ul>
 </div>
 <div class="section" id="file-systems">
@@ -1095,8 +1095,8 @@
 <p>A lot of C/C++ code uses the synchronous file system APIs in <em>libc</em> and <em>libcxx</em> to access code in the local file system. This is problematic because the browser prevents code from directly accessing files on the host system, and because JavaScript only supports asynchronous file access outside of web workers.</p>
 <p>Emscripten provides an implementation of <em>libc</em> and <em>libcxx</em> and a <em>virtual file system</em> so that normal C/C++ code can be compiled and run without change. Most developers need only specify the set of files to be <a class="reference internal" href="files/packaging_files.html#packaging-files"><span class="std std-ref">packaged</span></a> for preloading into the virtual file system at runtime.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Using a virtual file system bypasses the limitations listed above. The file data is packaged at compile time and downloaded into the file system using <em>asynchronous</em> JavaScript APIs before the compiled code is allowed to run. The compiled code then makes “file” calls that are really just calls into program memory.</p>
+<p class="admonition-title">Note</p>
+<p>Using a virtual file system bypasses the limitations listed above. The file data is packaged at compile time and downloaded into the file system using <em>asynchronous</em> JavaScript APIs before the compiled code is allowed to run. The compiled code then makes “file” calls that are really just calls into program memory.</p>
 </div>
 <p>The default file system (<a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-memfs"><span class="std std-ref">MEMFS</span></a>) stores files in-memory, so that any changes are lost when the page is reloaded. If file changes need to be stored more permanently then developers can mount the <a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs"><span class="std std-ref">IDBFS</span></a> file system, which allows data to be persisted in the browser. When running code in <em>node.js</em>, developers can mount <a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-nodefs"><span class="std std-ref">NODEFS</span></a> to give code direct access to the local file system.</p>
 <p>Emscripten also has an API to support <a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-h-asynchronous-file-system-api"><span class="std std-ref">asynchronous file access</span></a>.</p>
@@ -1146,20 +1146,20 @@ iterations and the browser does not hang.</p>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">A more full-featured API is provided in
+<p class="admonition-title">Note</p>
+<p>A more full-featured API is provided in
 <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>, which lets you specify the
 frequency at which to call the function, and other things.</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="docutils">
-<dt>When using SDL you will often need to set the main loop, unless you</dt>
-<dd>are just rendering a single frame and halting. You should also note:</dd>
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>When using SDL you will often need to set the main loop, unless you</dt><dd><p>are just rendering a single frame and halting. You should also note:</p>
+</dd>
 </dl>
-<ul class="last simple">
-<li>The current Emscripten implementation of <code class="docutils literal notranslate"><span class="pre">SDL_QUIT</span></code> will work if you use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>. As the page is shut, it will force a final direct call to the main loop, giving it a chance to notice the <code class="docutils literal notranslate"><span class="pre">SDL_QUIT</span></code> event. If you do not use a main loop, your app will close before you have had an opportunity to notice this event.</li>
-<li>There are limitations to what you can do as the page shuts (in <code class="docutils literal notranslate"><span class="pre">onunload</span></code>). Some actions like showing alerts are banned by browsers at this point.</li>
+<ul class="simple">
+<li><p>The current Emscripten implementation of <code class="docutils literal notranslate"><span class="pre">SDL_QUIT</span></code> will work if you use <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>. As the page is shut, it will force a final direct call to the main loop, giving it a chance to notice the <code class="docutils literal notranslate"><span class="pre">SDL_QUIT</span></code> event. If you do not use a main loop, your app will close before you have had an opportunity to notice this event.</p></li>
+<li><p>There are limitations to what you can do as the page shuts (in <code class="docutils literal notranslate"><span class="pre">onunload</span></code>). Some actions like showing alerts are banned by browsers at this point.</p></li>
 </ul>
 </div>
 </div>
@@ -1177,19 +1177,17 @@ as described earlier do not.</p>
 <p>When an Emscripten-compiled application is loaded, it starts by preparing data in the <code class="docutils literal notranslate"><span class="pre">preloading</span></code> phase. Files you marked for <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preloading</span></a> (using <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">--preload-file</span></code>, or manually from JavaScript with <a class="reference internal" href="../api_reference/Filesystem-API.html#FS.createPreloadedFile" title="FS.createPreloadedFile"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.createPreloadedFile()</span></code></a>) are set up at this stage.</p>
 <p>You can add additional operations with <a class="reference internal" href="../api_reference/preamble.js.html#addRunDependency" title="addRunDependency"><code class="xref js js-func docutils literal notranslate"><span class="pre">addRunDependency()</span></code></a>, which is a counter of all dependencies to be executed before compiled code can run. As these are completed you can call <a class="reference internal" href="../api_reference/preamble.js.html#removeRunDependency" title="removeRunDependency"><code class="xref js js-func docutils literal notranslate"><span class="pre">removeRunDependency()</span></code></a> to remove the completed dependencies.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Generally it is not necessary to add additional operations — preloading is suitable for almost all use cases.</p>
+<p class="admonition-title">Note</p>
+<p>Generally it is not necessary to add additional operations — preloading is suitable for almost all use cases.</p>
 </div>
 <p>When all dependencies are met, Emscripten will call <code class="docutils literal notranslate"><span class="pre">run()</span></code>, which proceeds to call your <code class="docutils literal notranslate"><span class="pre">main()</span></code> function. The <code class="docutils literal notranslate"><span class="pre">main()</span></code> function should be used to perform initialization tasks, and will often call <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> (as <a class="reference internal" href="#emscripten-runtime-environment-howto-main-loop"><span class="std std-ref">described above</span></a>). The main loop function will be then be called at the requested frequency.</p>
 <p>You can affect the operation of the main loop in several ways:</p>
 <ul>
-<li><p class="first"><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_push_main_loop_blocker" title="emscripten_push_main_loop_blocker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_push_main_loop_blocker()</span></code></a> adds a function that <strong>blocks</strong> the main loop until the blocker completes.</p>
+<li><p><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_push_main_loop_blocker" title="emscripten_push_main_loop_blocker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_push_main_loop_blocker()</span></code></a> adds a function that <strong>blocks</strong> the main loop until the blocker completes.</p>
 <p>This is useful, for example, to manage loading new game levels. After a level completes, you can push blockers for each action involved (unpacking the file, generate the data structures, etc.) When all the blockers have completed the main loop will resume and the game should run the new level. You can also use this function in conjunction with <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop_expected_blockers" title="emscripten_set_main_loop_expected_blockers"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_expected_blockers()</span></code></a> to keep the user informed of progress.</p>
 </li>
-<li><p class="first"><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_pause_main_loop" title="emscripten_pause_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_pause_main_loop()</span></code></a> pauses the main loop, and <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_resume_main_loop" title="emscripten_resume_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_resume_main_loop()</span></code></a> resumes it. These are low level (less recommended) alternatives to the blocker functions.</p>
-</li>
-<li><p class="first"><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_async_call" title="emscripten_async_call"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_call()</span></code></a> lets you call a function after some specific interval. This will use <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> (by default) or <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> if a specific interval was requested.</p>
-</li>
+<li><p><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_pause_main_loop" title="emscripten_pause_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_pause_main_loop()</span></code></a> pauses the main loop, and <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_resume_main_loop" title="emscripten_resume_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_resume_main_loop()</span></code></a> resumes it. These are low level (less recommended) alternatives to the blocker functions.</p></li>
+<li><p><a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_async_call" title="emscripten_async_call"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_call()</span></code></a> lets you call a function after some specific interval. This will use <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> (by default) or <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> if a specific interval was requested.</p></li>
 </ul>
 <p>The <a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-h-browser-execution-environment"><span class="std std-ref">browser execution environment reference (emscripten.h)</span></a> describes a number of other methods for controlling execution.</p>
 </div>
@@ -1312,7 +1310,7 @@ as described earlier do not.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 1.39.20 documentation</title>
+  <title>FAQ &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -1094,9 +1094,9 @@
 <p>Some general steps that might help figure things out:</p>
 <blockquote>
 <div><ul class="simple">
-<li>See if the problem happens without optimizations (<cite>-O0</cite>, or not specifying any optimization level). Without optimizations, emscripten enables many assertions at compile and runtime, which may catch a problem and display an error message with a suggestion for how to fix it.</li>
-<li>Search the documentation on this site.</li>
-<li>Check if there is a test for the failing functionality in the <a class="reference internal" href="test-suite.html#emscripten-test-suite"><span class="std std-ref">Emscripten test suite</span></a> (run <code class="docutils literal notranslate"><span class="pre">grep</span> <span class="pre">-r</span></code> in <strong>tests/</strong>). They should all pass (with only rare exceptions), so they provide concrete “known-good” examples of how various options and code are used.</li>
+<li><p>See if the problem happens without optimizations (<cite>-O0</cite>, or not specifying any optimization level). Without optimizations, emscripten enables many assertions at compile and runtime, which may catch a problem and display an error message with a suggestion for how to fix it.</p></li>
+<li><p>Search the documentation on this site.</p></li>
+<li><p>Check if there is a test for the failing functionality in the <a class="reference internal" href="test-suite.html#emscripten-test-suite"><span class="std std-ref">Emscripten test suite</span></a> (run <code class="docutils literal notranslate"><span class="pre">grep</span> <span class="pre">-r</span></code> in <strong>tests/</strong>). They should all pass (with only rare exceptions), so they provide concrete “known-good” examples of how various options and code are used.</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -1108,15 +1108,16 @@
 <h2>Why is code compilation slow?<a class="headerlink" href="#why-is-code-compilation-slow" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten makes some trade-offs that make the generated code faster and smaller, at the cost of longer compilation times. For example, we build parts of the standard library along with your code, which enables some additional optimizations, but takes a little longer to compile.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You can determine what compilation steps take longest by compiling with <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span></code> in the environment and then reviewing the debug logs (by default in <code class="docutils literal notranslate"><span class="pre">/tmp/emscripten_temp</span></code>). Note that compiling in debug mode takes longer than normal, because we print out a lot of intermediate steps to disk, so it’s useful for debugging but not for actual compiling.</p>
+<p class="admonition-title">Note</p>
+<p>You can determine what compilation steps take longest by compiling with <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span></code> in the environment and then reviewing the debug logs (by default in <code class="docutils literal notranslate"><span class="pre">/tmp/emscripten_temp</span></code>). Note that compiling in debug mode takes longer than normal, because we print out a lot of intermediate steps to disk, so it’s useful for debugging but not for actual compiling.</p>
 </div>
 <p>The main tips for improving build time are:</p>
 <ul class="simple">
-<li>Use <code class="docutils literal notranslate"><span class="pre">-O0</span></code> for fast iteration builds. You can still compile with higher optimization levels, but specifying <code class="docutils literal notranslate"><span class="pre">-O0</span></code> during link will make the link step much faster.</li>
-<li>Compile on a machine with more cores:<ul>
-<li>For compiling your source files, use a parallel build system (for example, in <code class="docutils literal notranslate"><span class="pre">make</span></code> you can do something like <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-j8</span></code> to run using 8 cores).</li>
-<li>For the link step, Emscripten can run some optimizations in parallel (specifically, Binaryen optimizations for wasm, and our JavaScript optimizations). Increasing the number of cores results in an almost linear improvement. Emscripten will automatically use more cores if they are available, but you can control that with <code class="docutils literal notranslate"><span class="pre">EMCC_CORES=N</span></code> in the environment (which is useful if you have many cores but relatively less memory).</li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">-O0</span></code> for fast iteration builds. You can still compile with higher optimization levels, but specifying <code class="docutils literal notranslate"><span class="pre">-O0</span></code> during link will make the link step much faster.</p></li>
+<li><p>Compile on a machine with more cores:</p>
+<ul>
+<li><p>For compiling your source files, use a parallel build system (for example, in <code class="docutils literal notranslate"><span class="pre">make</span></code> you can do something like <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-j8</span></code> to run using 8 cores).</p></li>
+<li><p>For the link step, Emscripten can run some optimizations in parallel (specifically, Binaryen optimizations for wasm, and our JavaScript optimizations). Increasing the number of cores results in an almost linear improvement. Emscripten will automatically use more cores if they are available, but you can control that with <code class="docutils literal notranslate"><span class="pre">EMCC_CORES=N</span></code> in the environment (which is useful if you have many cores but relatively less memory).</p></li>
 </ul>
 </li>
 </ul>
@@ -1158,16 +1159,16 @@ they contain instructions in some other format, like native x86 or ARM or
 something like that. You can run the <code class="docutils literal notranslate"><span class="pre">file</span></code> command-line utility to see what
 they actually contain. Common issues are:</p>
 <ul class="simple">
-<li>LLVM IR from the old backend, if you built the project with a version before
+<li><p>LLVM IR from the old backend, if you built the project with a version before
 1.39.0 (which used the old backend by default), and are doing an incremental
 rebuild now. To fix that, do a complete rebuild from scratch of all your
 project’s files, including libraries (this error often happens if you have
 prebuilt libraries from a third party; those must be recompiled too with the
-new backend).</li>
-<li>The build system was run without emscripten integration, and emitted native
+new backend).</p></li>
+<li><p>The build system was run without emscripten integration, and emitted native
 code. To fix that, use emconfigure/emmake, see <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a>. In
 this case <code class="docutils literal notranslate"><span class="pre">emcc.py</span></code> will show that second error,
-“is not a valid input file”.</li>
+“is not a valid input file”.</p></li>
 </ul>
 </div>
 <div class="section" id="why-does-my-code-fail-to-compile-with-an-error-message-about-inline-assembly-or-text-asm">
@@ -1175,9 +1176,9 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 <p>Emscripten cannot compile inline assembly code (because it is CPU specific, and Emscripten is not a CPU emulator).</p>
 <p>You will need to find where inline assembly is used, and disable it or replace it with platform-independent code.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>Emscripten automatically unsets the following <code class="docutils literal notranslate"><span class="pre">#define</span></code> values, as these are commonly set in projects to enable platform dependent code (inline assembly):</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#undef __i386__</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#undef __i386__</span>
 <span class="c1">#undef __x86_64__</span>
 </pre></div>
 </div>
@@ -1207,10 +1208,10 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 <p>There is a set of libraries ported to Emscripten for convenient use, Emscripten Ports. See <a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a></p>
 <p>Another option is to implement needed C APIs as JavaScript libraries (see <code class="docutils literal notranslate"><span class="pre">--js-library</span></code> in <a class="reference internal" href="../tools_reference/emcc.html#emcc-js-library"><span class="std std-ref">emcc</span></a> and <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-c-in-javascript"><span class="std std-ref">Implement a C API in JavaScript</span></a>). Emscripten itself does this for <em>libc</em> (not including <em>malloc</em>) and <a class="reference internal" href="../site/glossary.html#term-sdl"><span class="xref std std-term">SDL</span></a> (but not <em>libc++</em> or <em>malloc</em>).</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>Unlike other compilers, you don’t need <code class="docutils literal notranslate"><span class="pre">-lSDL</span></code> to include SDL (specifying it will do no harm).</li>
-<li>In the specific case of <em>Boost</em>, if you only need the boost headers then you don’t need to compile anything.</li>
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Unlike other compilers, you don’t need <code class="docutils literal notranslate"><span class="pre">-lSDL</span></code> to include SDL (specifying it will do no harm).</p></li>
+<li><p>In the specific case of <em>Boost</em>, if you only need the boost headers then you don’t need to compile anything.</p></li>
 </ul>
 </div>
 </div>
@@ -1235,8 +1236,8 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 <p>Calling a compiled function before a page has fully loaded can result in an error, if the function relies on files that may not be present (for example the <a class="reference internal" href="../tools_reference/emcc.html#emcc-memory-init-file"><span class="std std-ref">.mem</span></a> file and <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preloaded</span></a> files are loaded asynchronously, and therefore if you just place some JS that calls compiled code in a <code class="docutils literal notranslate"><span class="pre">--post-js</span></code>, that code will be called synchronously at the end of the combined JS file, potentially before the asynchronous event happens, which is bad).</p>
 <p>The easiest way to find out when loading is complete is to add a <code class="docutils literal notranslate"><span class="pre">main()</span></code> function, and within it call a JavaScript function to notify your code that loading is complete.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The <code class="docutils literal notranslate"><span class="pre">main()</span></code> function is called after startup is complete as a signal that it is safe to call any compiled method.</p>
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">main()</span></code> function is called after startup is complete as a signal that it is safe to call any compiled method.</p>
 </div>
 <p>For example, if <code class="docutils literal notranslate"><span class="pre">allReady()</span></code> is a JavaScript function you want called when everything is ready, you can do:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;emscripten.h&gt;</span>
@@ -1293,12 +1294,12 @@ this case <code class="docutils literal notranslate"><span class="pre">emcc.py</
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><cite>_main</cite> should be in the export list, as in that example, if you have a <cite>main()</cite> function. Otherwise, it will be removed as dead code; there is no special logic to keep <cite>main()</cite> alive by default.</p>
+<p class="admonition-title">Note</p>
+<p><cite>_main</cite> should be in the export list, as in that example, if you have a <cite>main()</cite> function. Otherwise, it will be removed as dead code; there is no special logic to keep <cite>main()</cite> alive by default.</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><cite>EXPORTED_FUNCTIONS</cite> affects compilation to JavaScript. If you first compile to an object file,
+<p class="admonition-title">Note</p>
+<p><cite>EXPORTED_FUNCTIONS</cite> affects compilation to JavaScript. If you first compile to an object file,
 then compile the object to JavaScript, you need that option on the second command.</p>
 </div>
 <p>If your function is used in other functions, LLVM may inline it and it will not appear as a unique function in the JavaScript. Prevent inlining by defining the function with <a class="reference internal" href="../api_reference/emscripten.h.html#c.EMSCRIPTEN_KEEPALIVE" title="EMSCRIPTEN_KEEPALIVE"><code class="xref c c-type docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code></a>:</p>
@@ -1307,18 +1308,18 @@ then compile the object to JavaScript, you need that option on the second comman
 </div>
 <p><cite>EMSCRIPTEN_KEEPALIVE</cite> also exports the function, as if it were on <cite>EXPORTED_FUNCTIONS</cite>.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>All functions not kept alive through <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> or <a class="reference internal" href="../api_reference/emscripten.h.html#c.EMSCRIPTEN_KEEPALIVE" title="EMSCRIPTEN_KEEPALIVE"><code class="xref c c-type docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code></a> will potentially be removed. Make sure you keep the things you need alive using one or both of those methods.</li>
-<li>Exported functions need to be C functions (to avoid C++ name mangling).</li>
-<li>Decorating your code with <a class="reference internal" href="../api_reference/emscripten.h.html#c.EMSCRIPTEN_KEEPALIVE" title="EMSCRIPTEN_KEEPALIVE"><code class="xref c c-type docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code></a> can be useful if you don’t want to have to keep track of functions to export explicitly, and when these exports do not change. It is not necessarily suitable for exporting functions from other libraries — for example it is not a good idea to decorate and recompile the source code of the C standard library. If you build the same source in multiple ways and change what is exported, then managing exports on the command line is easier.</li>
-<li>Running <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">LINKABLE=1</span></code> will also disable link-time optimizations and dead code elimination. This is not recommended as it makes the code larger and less optimized.</li>
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>All functions not kept alive through <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> or <a class="reference internal" href="../api_reference/emscripten.h.html#c.EMSCRIPTEN_KEEPALIVE" title="EMSCRIPTEN_KEEPALIVE"><code class="xref c c-type docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code></a> will potentially be removed. Make sure you keep the things you need alive using one or both of those methods.</p></li>
+<li><p>Exported functions need to be C functions (to avoid C++ name mangling).</p></li>
+<li><p>Decorating your code with <a class="reference internal" href="../api_reference/emscripten.h.html#c.EMSCRIPTEN_KEEPALIVE" title="EMSCRIPTEN_KEEPALIVE"><code class="xref c c-type docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code></a> can be useful if you don’t want to have to keep track of functions to export explicitly, and when these exports do not change. It is not necessarily suitable for exporting functions from other libraries — for example it is not a good idea to decorate and recompile the source code of the C standard library. If you build the same source in multiple ways and change what is exported, then managing exports on the command line is easier.</p></li>
+<li><p>Running <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">LINKABLE=1</span></code> will also disable link-time optimizations and dead code elimination. This is not recommended as it makes the code larger and less optimized.</p></li>
 </ul>
 </div>
 <p>Another possible cause of missing code is improper linking of <code class="docutils literal notranslate"><span class="pre">.a</span></code> files. The <code class="docutils literal notranslate"><span class="pre">.a</span></code> files link only the internal object files needed by previous files on the command line, so the order of files matters, and this can be surprising. If you are linking <code class="docutils literal notranslate"><span class="pre">.a</span></code> files, make sure they are at the end of the list of files, and in the right order amongst themselves. Alternatively, just use <code class="docutils literal notranslate"><span class="pre">.so</span></code> files instead in your project.</p>
 <div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">It can be useful to compile with <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span></code> set for the environment (<code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span> <span class="pre">emcc</span> <span class="pre">...</span></code> on Linux, <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">EMMCC_DEBUG=1</span></code> on Windows). This splits up the compilation steps and saves them in <code class="docutils literal notranslate"><span class="pre">/tmp/emscripten_temp</span></code>. You can then see at what stage the code vanishes (you will need to do <code class="docutils literal notranslate"><span class="pre">llvm-dis</span></code> on the bitcode  stages to read them, or <code class="docutils literal notranslate"><span class="pre">llvm-nm</span></code>, etc.).</p>
+<p class="admonition-title">Tip</p>
+<p>It can be useful to compile with <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span></code> set for the environment (<code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span> <span class="pre">emcc</span> <span class="pre">...</span></code> on Linux, <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">EMMCC_DEBUG=1</span></code> on Windows). This splits up the compilation steps and saves them in <code class="docutils literal notranslate"><span class="pre">/tmp/emscripten_temp</span></code>. You can then see at what stage the code vanishes (you will need to do <code class="docutils literal notranslate"><span class="pre">llvm-dis</span></code> on the bitcode  stages to read them, or <code class="docutils literal notranslate"><span class="pre">llvm-nm</span></code>, etc.).</p>
 </div>
 </div>
 <div class="section" id="why-is-the-file-system-api-is-not-available-when-i-build-with-closure">
@@ -1354,12 +1355,12 @@ then compile the object to JavaScript, you need that option on the second comman
 </div></blockquote>
 <p>will export <code class="docutils literal notranslate"><span class="pre">ccall</span></code>. In both cases you can then access the exported function on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You can use runtime methods directly, without exporting them, if the compiler can see them used. For example, you can use <code class="docutils literal notranslate"><span class="pre">getValue</span></code> in <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code, or a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, by calling it directly. The optimizer will not remove that JS runtime method because it sees it is used. You only need to use <code class="docutils literal notranslate"><span class="pre">Module.getValue</span></code> if you want to call that method from outside the JS code the compiler can see, and then you need to export it.</p>
+<p class="admonition-title">Note</p>
+<p>You can use runtime methods directly, without exporting them, if the compiler can see them used. For example, you can use <code class="docutils literal notranslate"><span class="pre">getValue</span></code> in <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code, or a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, by calling it directly. The optimizer will not remove that JS runtime method because it sees it is used. You only need to use <code class="docutils literal notranslate"><span class="pre">Module.getValue</span></code> if you want to call that method from outside the JS code the compiler can see, and then you need to export it.</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Emscripten used to export many runtime methods by default. This increased code size, and for that reason we’ve changed that default. If you depend on something that used to be exported, you should see a warning pointing you to the solution, in an unoptimized build, or a build with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> enabled, which we hope will minimize any annoyance. See <code class="docutils literal notranslate"><span class="pre">ChangeLog.md</span></code> for details.</p>
+<p class="admonition-title">Note</p>
+<p>Emscripten used to export many runtime methods by default. This increased code size, and for that reason we’ve changed that default. If you depend on something that used to be exported, you should see a warning pointing you to the solution, in an unoptimized build, or a build with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> enabled, which we hope will minimize any annoyance. See <code class="docutils literal notranslate"><span class="pre">ChangeLog.md</span></code> for details.</p>
 </div>
 </div>
 <div class="section" id="why-does-runtime-no-longer-exist-why-do-i-get-an-error-trying-to-access-runtime-something">
@@ -1377,8 +1378,8 @@ then compile the object to JavaScript, you need that option on the second comman
 </div>
 </div></blockquote>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The above will work for code in a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> or JS library, that is, code that is compiled together with the emscripten output. If you try to access <code class="docutils literal notranslate"><span class="pre">Runtime.*</span></code> methods from outside the compiled code, then you must export that function (using <code class="docutils literal notranslate"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code>), and use it on the Module object, see <a class="reference internal" href="#faq-export-stuff"><span class="std std-ref">that FAQ entry</span></a>.</p>
+<p class="admonition-title">Note</p>
+<p>The above will work for code in a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> or JS library, that is, code that is compiled together with the emscripten output. If you try to access <code class="docutils literal notranslate"><span class="pre">Runtime.*</span></code> methods from outside the compiled code, then you must export that function (using <code class="docutils literal notranslate"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code>), and use it on the Module object, see <a class="reference internal" href="#faq-export-stuff"><span class="std std-ref">that FAQ entry</span></a>.</p>
 </div>
 </div>
 <div class="section" id="why-do-i-get-a-nameerror-or-a-problem-occurred-in-evaluating-content-after-a-s-when-i-use-a-s-option">
@@ -1413,16 +1414,16 @@ then compile the object to JavaScript, you need that option on the second comman
 <p>See also</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/6000">https://github.com/emscripten-core/emscripten/issues/6000</a></li>
-<li><a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/5700">https://github.com/emscripten-core/emscripten/issues/5700</a></li>
+<li><p><a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/6000">https://github.com/emscripten-core/emscripten/issues/6000</a></p></li>
+<li><p><a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/5700">https://github.com/emscripten-core/emscripten/issues/5700</a></p></li>
 </ul>
 </div></blockquote>
 </div>
 <div class="section" id="why-does-running-llvm-bitcode-generated-by-emcc-through-lli-break-with-errors-about-impure-ptr">
 <h2>Why does running LLVM bitcode generated by emcc through <strong>lli</strong> break with errors about <code class="docutils literal notranslate"><span class="pre">impure_ptr</span></code>?<a class="headerlink" href="#why-does-running-llvm-bitcode-generated-by-emcc-through-lli-break-with-errors-about-impure-ptr" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><a class="reference internal" href="../site/glossary.html#term-lli"><span class="xref std std-term">lli</span></a> is not maintained, and has odd errors and crashes. We do include <strong>tools/nativize_llvm.py</strong> (which compiles bitcode to a native executable) but it will also hit the <code class="docutils literal notranslate"><span class="pre">impure_ptr</span></code> error.</p>
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="../site/glossary.html#term-lli"><span class="xref std std-term">lli</span></a> is not maintained, and has odd errors and crashes. We do include <strong>tools/nativize_llvm.py</strong> (which compiles bitcode to a native executable) but it will also hit the <code class="docutils literal notranslate"><span class="pre">impure_ptr</span></code> error.</p>
 </div>
 <p>The issue is that <em>newlib</em> uses <code class="docutils literal notranslate"><span class="pre">impure_ptr</span></code> code, while <em>glibc</em> uses something else. The result is that bitcode built with the Emscripten will not run locally unless your machine uses <em>newlib</em> (basically, only embedded systems).</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">impure_ptr</span></code> error only occurs during explicit use of <code class="docutils literal notranslate"><span class="pre">stdout</span></code> etc., so <code class="docutils literal notranslate"><span class="pre">printf(..)</span></code> will work, but <code class="docutils literal notranslate"><span class="pre">fprintf(stdout,</span> <span class="pre">..)</span></code> will not. <strong>Usually it is simple to modify your code to avoid this problem.</strong></p>
@@ -1581,7 +1582,7 @@ then compile the object to JavaScript, you need that option on the second comman
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

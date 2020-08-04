@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging with Sanitizers &mdash; Emscripten 1.39.20 documentation</title>
+  <title>Debugging with Sanitizers &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="CyberDWARF Debugging" href="CyberDWARF.html"/> 
 
@@ -1074,8 +1074,8 @@
   <div class="section" id="debugging-with-sanitizers">
 <span id="sanitizers"></span><h1>Debugging with Sanitizers<a class="headerlink" href="#debugging-with-sanitizers" title="Permalink to this headline">¶</a></h1>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Sanitizers can only be used with the upstream wasm backend. If you are
+<p class="admonition-title">Warning</p>
+<p>Sanitizers can only be used with the upstream wasm backend. If you are
 using fastcomp, you need to upgrade before sanitizers will work.
 See <a class="reference external" href="https://v8.dev/blog/emscripten-llvm-wasm#testing">here</a> for instructions.</p>
 </div>
@@ -1168,11 +1168,12 @@ as it affects both codegen and system libraries.</p>
 <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ALLOW_MEMORY_GROWTH</span></code> so that ASan has enough memory to start. Otherwise,
 you will receive an error message that looks something like:</p>
 <blockquote>
-<div>Cannot enlarge memory arrays to size 55152640 bytes (OOM). Either (1) compile
+<div><p>Cannot enlarge memory arrays to size 55152640 bytes (OOM). Either (1) compile
 with  -s INITIAL_MEMORY=X  with X higher than the current value 50331648, (2)
 compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at
 runtime, or (3) if you want malloc to return NULL (0) instead of this abort,
-compile with  -s ABORTING_MALLOC=0</div></blockquote>
+compile with  -s ABORTING_MALLOC=0</p>
+</div></blockquote>
 <p>ASan fully supports multi-thread environments. ASan also operates on the JS
 support code, that is, if JS tries to read from a memory address that is not
 valid, it will be caught, just like if that access happened from wasm.</p>
@@ -1403,20 +1404,20 @@ passed. A reasonable set of separate test builds to do might be: ASan, UBsan,
 and <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>.</p>
 <p>The specific things <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> errors on include:</p>
 <ul class="simple">
-<li><strong>NULL pointer (address 0) reads or writes</strong>. As mentioned earlier, this is
+<li><p><strong>NULL pointer (address 0) reads or writes</strong>. As mentioned earlier, this is
 annoying in WebAssembly and JavaScript because 0 is just a normal address, so
-you don’t get an immediate segfault, which can be confusing.</li>
-<li><strong>Unaligned reads or writes</strong>. These work in WebAssembly, but on some platforms
+you don’t get an immediate segfault, which can be confusing.</p></li>
+<li><p><strong>Unaligned reads or writes</strong>. These work in WebAssembly, but on some platforms
 an incorrectly-aligned read or write may be much slower, and with wasm2js
 (<code class="docutils literal notranslate"><span class="pre">WASM=0</span></code>) it will be incorrect, as JavaScript Typed Arrays do not allow
-unaligned operations.</li>
-<li><strong>Reads or writes past the top of valid memory</strong> as managed by <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>, that is,
+unaligned operations.</p></li>
+<li><p><strong>Reads or writes past the top of valid memory</strong> as managed by <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>, that is,
 memory that was not properly allocated by <code class="docutils literal notranslate"><span class="pre">malloc()</span></code>. This is not specific
 to wasm, however, in JavaScript if the address is big enough to be outside the
 Typed Array, <code class="docutils literal notranslate"><span class="pre">undefined</span></code> is returned which can be very confusing, which is
 why this was added (in wasm at least an error is thrown; <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> still
 helps with wasm though, by checking the area between the top of <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>’s
-memory and the end of the wasm Memory).</li>
+memory and the end of the wasm Memory).</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> does these checks by instrumenting every single load and store.
 That has the cost of slowing things down, but it does give a simple guarantee
@@ -1545,7 +1546,7 @@ optimizer is run after it adds those checks, which can remove some of them.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

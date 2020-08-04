@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 1.39.20 documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="next" title="Optimizing WebGL" href="Optimizing-WebGL.html"/>
         <link rel="prev" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="../tools_reference/emcmdprompt.html"/> 
 
@@ -1084,17 +1084,17 @@
 <p>The higher optimization levels introduce progressively more aggressive optimization, resulting in improved performance and code size at the cost of increased compilation time. The levels can also highlight different issues related to undefined behavior in code.</p>
 <p>The optimization level you should use depends mostly on the current stage of development:</p>
 <ul class="simple">
-<li>When first porting code, run <em>emcc</em> on your code using the default settings (without optimization). Check that your code works and <a class="reference internal" href="../porting/Debugging.html#debugging"><span class="std std-ref">debug</span></a> and fix any issues before continuing.</li>
-<li>Build with lower optimization levels during development for a shorter compile/test iteration cycle (<code class="docutils literal notranslate"><span class="pre">-O0</span></code> or <code class="docutils literal notranslate"><span class="pre">-O1</span></code>).</li>
-<li>Build with <code class="docutils literal notranslate"><span class="pre">-O2</span></code> to get a well-optimized build.</li>
-<li>Building with <code class="docutils literal notranslate"><span class="pre">-O3</span></code> or <code class="docutils literal notranslate"><span class="pre">-Os</span></code> can produce an ever better build than <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, and are worth considering for release builds. <code class="docutils literal notranslate"><span class="pre">-O3</span></code> builds are even more optimized than <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but at the cost of significantly longer compilation time and potentially larger code size. <code class="docutils literal notranslate"><span class="pre">-Os</span></code> is similar in increasing compile times, but focuses on reducing code size while doing additional optimization. It’s worth trying these different optimization options to see what works best for your application.</li>
-<li>Other optimizations are discussed in the following sections.</li>
+<li><p>When first porting code, run <em>emcc</em> on your code using the default settings (without optimization). Check that your code works and <a class="reference internal" href="../porting/Debugging.html#debugging"><span class="std std-ref">debug</span></a> and fix any issues before continuing.</p></li>
+<li><p>Build with lower optimization levels during development for a shorter compile/test iteration cycle (<code class="docutils literal notranslate"><span class="pre">-O0</span></code> or <code class="docutils literal notranslate"><span class="pre">-O1</span></code>).</p></li>
+<li><p>Build with <code class="docutils literal notranslate"><span class="pre">-O2</span></code> to get a well-optimized build.</p></li>
+<li><p>Building with <code class="docutils literal notranslate"><span class="pre">-O3</span></code> or <code class="docutils literal notranslate"><span class="pre">-Os</span></code> can produce an ever better build than <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, and are worth considering for release builds. <code class="docutils literal notranslate"><span class="pre">-O3</span></code> builds are even more optimized than <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but at the cost of significantly longer compilation time and potentially larger code size. <code class="docutils literal notranslate"><span class="pre">-Os</span></code> is similar in increasing compile times, but focuses on reducing code size while doing additional optimization. It’s worth trying these different optimization options to see what works best for your application.</p></li>
+<li><p>Other optimizations are discussed in the following sections.</p></li>
 </ul>
 <p>In addition to the <code class="docutils literal notranslate"><span class="pre">-Ox</span></code> options, there are separate compiler options that can be used to control the JavaScript optimizer (<a class="reference internal" href="../tools_reference/emcc.html#emcc-js-opts"><span class="std std-ref">js-opts</span></a>), LLVM optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-opts"><span class="std std-ref">llvm-opts</span></a>) and LLVM link-time optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><span class="std std-ref">llvm-lto</span></a>).</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>The meanings of the <em>emcc</em> optimization flags (<code class="docutils literal notranslate"><span class="pre">-O1,</span> <span class="pre">-O2</span></code> etc.) are similar to <em>gcc</em>, <em>clang</em>, and other compilers, but also different because optimizing asm.js and WebAssembly includes some additional types of optimizations. The mapping of the <em>emcc</em> levels to the LLVM bitcode optimization levels is documented in the reference.</li>
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The meanings of the <em>emcc</em> optimization flags (<code class="docutils literal notranslate"><span class="pre">-O1,</span> <span class="pre">-O2</span></code> etc.) are similar to <em>gcc</em>, <em>clang</em>, and other compilers, but also different because optimizing asm.js and WebAssembly includes some additional types of optimizations. The mapping of the <em>emcc</em> levels to the LLVM bitcode optimization levels is documented in the reference.</p></li>
 </ul>
 </div>
 </div>
@@ -1102,10 +1102,10 @@
 <h2>How Emscripten optimizes<a class="headerlink" href="#how-emscripten-optimizes" title="Permalink to this headline">¶</a></h2>
 <p>Compiling source files to object files works as you’d expect in a native build system that uses clang and LLVM. When linking object files to the final executable, Emscripten does additional optimizations as well depending on the optimization level:</p>
 <ul class="simple">
-<li>For wasm, the Binaryen optimizer is run. Binaryen does both general-purpose optimizations to the wasm that LLVM does not, and also does some whole-program optimization. (Note that Binaryen’s whole-program optimizations may do things like inlining, which can be surprising in some cases as LLVM IR attributes like <code class="docutils literal notranslate"><span class="pre">noinline</span></code> have been lost at this point.)</li>
-<li>For asm.js, the Emscripten asm.js optimizer is run.</li>
-<li>JavaScript is generated at this phase, and is optimized by Emscripten’s JS optimizer. Optionally you can also run <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><span class="std std-ref">the closure compiler</span></a>, which is highly recommended for code size.</li>
-<li>Emscripten also optimizes the combined wasm+JS, by minifying imports and exports between them, and by running meta-dce which removes unused code in cycles that span the two worlds.</li>
+<li><p>For wasm, the Binaryen optimizer is run. Binaryen does both general-purpose optimizations to the wasm that LLVM does not, and also does some whole-program optimization. (Note that Binaryen’s whole-program optimizations may do things like inlining, which can be surprising in some cases as LLVM IR attributes like <code class="docutils literal notranslate"><span class="pre">noinline</span></code> have been lost at this point.)</p></li>
+<li><p>For asm.js, the Emscripten asm.js optimizer is run.</p></li>
+<li><p>JavaScript is generated at this phase, and is optimized by Emscripten’s JS optimizer. Optionally you can also run <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><span class="std std-ref">the closure compiler</span></a>, which is highly recommended for code size.</p></li>
+<li><p>Emscripten also optimizes the combined wasm+JS, by minifying imports and exports between them, and by running meta-dce which removes unused code in cycles that span the two worlds.</p></li>
 </ul>
 <p>To skip extra optimization work at link time, link with <code class="docutils literal notranslate"><span class="pre">-O0</span></code> (or no optimization level), which works regardless of how the source files were compiled and optimized. Linking in this way with <code class="docutils literal notranslate"><span class="pre">-O0</span></code> is useful for fast iteration builds, while final release builds may want something like <code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">--closure</span> <span class="pre">1</span></code>.</p>
 </div>
@@ -1129,16 +1129,16 @@
 <h3>Miscellaneous code size tips<a class="headerlink" href="#miscellaneous-code-size-tips" title="Permalink to this headline">¶</a></h3>
 <p>In addition to the above, the following tips can help to reduce code size:</p>
 <ul class="simple">
-<li>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><span class="std std-ref">the closure compiler</span></a> on the non-compiled code: <code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">1</span></code>. This can hugely reduce the size of the support JavaScript code, and is highly recommended. However, if you add your own additional JavaScript code (in a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, for example) then you need to make sure it uses <a class="reference external" href="https://developers.google.com/closure/compiler/docs/api-tutorial3">closure annotations properly</a>.</li>
-<li><a class="reference external" href="http://floooh.github.io/2016/08/27/asmjs-diet.html">Floh’s blogpost on this topic</a> is very helpful.</li>
-<li>Make sure to use gzip compression on your webserver, which all browsers now support.</li>
+<li><p>Use <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><span class="std std-ref">the closure compiler</span></a> on the non-compiled code: <code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">1</span></code>. This can hugely reduce the size of the support JavaScript code, and is highly recommended. However, if you add your own additional JavaScript code (in a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, for example) then you need to make sure it uses <a class="reference external" href="https://developers.google.com/closure/compiler/docs/api-tutorial3">closure annotations properly</a>.</p></li>
+<li><p><a class="reference external" href="http://floooh.github.io/2016/08/27/asmjs-diet.html">Floh’s blogpost on this topic</a> is very helpful.</p></li>
+<li><p>Make sure to use gzip compression on your webserver, which all browsers now support.</p></li>
 </ul>
 <p>The following compiler settings can help (see <code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code> for more details):</p>
 <ul class="simple">
-<li>Disable inlining when possible, using <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></code>. Compiling with -Os or -Oz generally avoids inlining too. (Inlining can make code faster, though, so use this carefully.)</li>
-<li>You can use the <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">FILESYSTEM=0</span></code> option to disable bundling of filesystem support code (the compiler should optimize it out if not used, but may not always succeed). This can be useful if you are building a pure computational library, for example.</li>
-<li>The <code class="docutils literal notranslate"><span class="pre">ENVIRONMENT</span></code> flag lets you specify that the output will only run on the web, or only run in node.js, etc. This prevents the compiler from emitting code to support all possible runtime environments, saving ~2KB.</li>
-<li>You can use <code class="docutils literal notranslate"><span class="pre">ELIMINATE_DUPLICATE_FUNCTIONS</span></code> to remove duplicate functions, which C++ templates often create. (This is already done by default for wasm, in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> and above.)</li>
+<li><p>Disable inlining when possible, using <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">INLINING_LIMIT=1</span></code>. Compiling with -Os or -Oz generally avoids inlining too. (Inlining can make code faster, though, so use this carefully.)</p></li>
+<li><p>You can use the <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">FILESYSTEM=0</span></code> option to disable bundling of filesystem support code (the compiler should optimize it out if not used, but may not always succeed). This can be useful if you are building a pure computational library, for example.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ENVIRONMENT</span></code> flag lets you specify that the output will only run on the web, or only run in node.js, etc. This prevents the compiler from emitting code to support all possible runtime environments, saving ~2KB.</p></li>
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">ELIMINATE_DUPLICATE_FUNCTIONS</span></code> to remove duplicate functions, which C++ templates often create. (This is already done by default for wasm, in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> and above.)</p></li>
 </ul>
 </div>
 </div>
@@ -1168,9 +1168,8 @@ backend LTO should be used carefully.</p>
 <p>You can also do this manually, as follows:</p>
 <blockquote>
 <div><ul>
-<li><p class="first">Run <code class="docutils literal notranslate"><span class="pre">tools/separate_asm.py</span></code>. This receives as inputs the filename of the full project, and two filenames to emit: the asm.js file and a file for everything else.</p>
-</li>
-<li><p class="first">Load the asm.js script first, then after a turn of the event loop, the other one, for example using code like this in your HTML file:</p>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">tools/separate_asm.py</span></code>. This receives as inputs the filename of the full project, and two filenames to emit: the asm.js file and a file for everything else.</p></li>
+<li><p>Load the asm.js script first, then after a turn of the event loop, the other one, for example using code like this in your HTML file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">script</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">);</span>
 <span class="n">script</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="s2">&quot;the_asm.js&quot;</span><span class="p">;</span>
 <span class="n">script</span><span class="o">.</span><span class="n">onload</span> <span class="o">=</span> <span class="n">function</span><span class="p">()</span> <span class="p">{</span>
@@ -1196,8 +1195,8 @@ backend LTO should be used carefully.</p>
 <p>Aggressive variable elimination is an asm.js feature (not relevant for wasm) that attempts to remove variables whenever possible, even at the cost of increasing code size by duplicating expressions. This can improve speed in cases where you have extremely large functions. For example it can make sqlite (which has a huge interpreter loop with thousands of lines in it) 7% faster.</p>
 <p>You can enable aggressive variable elimination with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">AGGRESSIVE_VARIABLE_ELIMINATION=1</span></code>.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This setting can be harmful in some cases. Test before using it.</p>
+<p class="admonition-title">Note</p>
+<p>This setting can be harmful in some cases. Test before using it.</p>
 </div>
 </div>
 </div>
@@ -1208,12 +1207,12 @@ backend LTO should be used carefully.</p>
 <p>Catching C++ exceptions (specifically, emitting catch blocks) is turned off by default in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> (and above). Due to how asm.js/wasm currently implement exceptions, this makes the code much smaller and faster (eventually, wasm should gain native support for exceptions, and not have this issue).</p>
 <p>To re-enable exceptions in optimized code, run <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></code> (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/settings.js">src/settings.js</a>).</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">When exception catching is disabled, a thrown exception terminates the application. In other words, an exception is still thrown, but it isn’t caught.</p>
+<p class="admonition-title">Note</p>
+<p>When exception catching is disabled, a thrown exception terminates the application. In other words, an exception is still thrown, but it isn’t caught.</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Even with catch blocks not being emitted, there is some code size overhead unless you build your source files with <code class="docutils literal notranslate"><span class="pre">-fno-exceptions</span></code>, which will omit all exceptions support code (for example, it will avoid creating proper C++ exception objects in errors in std::vector, and just abort the application if they occur)</p>
+<p class="admonition-title">Note</p>
+<p>Even with catch blocks not being emitted, there is some code size overhead unless you build your source files with <code class="docutils literal notranslate"><span class="pre">-fno-exceptions</span></code>, which will omit all exceptions support code (for example, it will avoid creating proper C++ exception objects in errors in std::vector, and just abort the application if they occur)</p>
 </div>
 </div>
 <div class="section" id="c-rtti">
@@ -1233,8 +1232,8 @@ backend LTO should be used carefully.</p>
 <span id="optimizing-code-unsafe-optimisations"></span><h2>Unsafe optimizations<a class="headerlink" href="#unsafe-optimizations" title="Permalink to this headline">¶</a></h2>
 <p>A few <strong>UNSAFE</strong> optimizations you might want to try are:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">1</span></code>: This can help with reducing the size of the non-generated (support/glue) JS code, and with startup. However it can break if you do not do proper <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> annotations and exports. But it’s worth it!</li>
-<li><code class="docutils literal notranslate"><span class="pre">--llvm-lto</span> <span class="pre">1</span></code>: This enables LLVM’s link-time optimizations, which can help in some cases. However there are known issues with these optimizations, so code must be extensively tested. See <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><span class="std std-ref">llvm-lto</span></a> for information about the other modes.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">1</span></code>: This can help with reducing the size of the non-generated (support/glue) JS code, and with startup. However it can break if you do not do proper <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> annotations and exports. But it’s worth it!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--llvm-lto</span> <span class="pre">1</span></code>: This enables LLVM’s link-time optimizations, which can help in some cases. However there are known issues with these optimizations, so code must be extensively tested. See <a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-lto"><span class="std std-ref">llvm-lto</span></a> for information about the other modes.</p></li>
 </ul>
 </div>
 <div class="section" id="profiling">
@@ -1249,9 +1248,9 @@ backend LTO should be used carefully.</p>
 <h2>Troubleshooting poor performance<a class="headerlink" href="#troubleshooting-poor-performance" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten-compiled code can currently achieve approximately half the speed of a native build. If the performance is significantly poorer than expected, you can also run through the additional troubleshooting steps below:</p>
 <ul class="simple">
-<li><a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a> is a two-stage process: compiling source code files to LLVM <strong>and</strong> generating JavaScript from LLVM. Did you build using the same optimization values in <strong>both</strong> steps (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> or <code class="docutils literal notranslate"><span class="pre">-O3</span></code>)?</li>
-<li>Test on multiple browsers. If performance is acceptable on one browser and significantly poorer on another, then <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><span class="std std-ref">file a bug report</span></a>, noting the problem browser and other relevant information.</li>
-<li>Does the code <em>validate</em> in Firefox (look for “Successfully compiled asm.js code” in the web console). If you see a validation error when using an up-to-date version of Firefox and Emscripten then please <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><span class="std std-ref">file a bug report</span></a>.</li>
+<li><p><a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a> is a two-stage process: compiling source code files to LLVM <strong>and</strong> generating JavaScript from LLVM. Did you build using the same optimization values in <strong>both</strong> steps (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> or <code class="docutils literal notranslate"><span class="pre">-O3</span></code>)?</p></li>
+<li><p>Test on multiple browsers. If performance is acceptable on one browser and significantly poorer on another, then <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><span class="std std-ref">file a bug report</span></a>, noting the problem browser and other relevant information.</p></li>
+<li><p>Does the code <em>validate</em> in Firefox (look for “Successfully compiled asm.js code” in the web console). If you see a validation error when using an up-to-date version of Firefox and Emscripten then please <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><span class="std std-ref">file a bug report</span></a>.</p></li>
 </ul>
 </div>
 </div>
@@ -1365,7 +1364,7 @@ backend LTO should be used carefully.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

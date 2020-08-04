@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building to WebAssembly &mdash; Emscripten 1.39.20 documentation</title>
+  <title>Building to WebAssembly &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Building Projects" href="Building-Projects.html"/> 
@@ -1081,26 +1081,26 @@
 <p>WebAssembly is a binary format for executing code on the web, allowing fast start times (smaller download and much faster parsing in browsers when compared to JS or asm.js). Emscripten compiles to WebAssembly by default, but you can also compile to JS for older browsers.</p>
 <p>For some historical background, see</p>
 <ul class="simple">
-<li><a class="reference external" href="https://kripken.github.io/talks/wasm.html">these slides</a> and</li>
-<li><a class="reference external" href="https://hacks.mozilla.org/2015/12/compiling-to-webassembly-its-happening/">this blogpost</a>.</li>
+<li><p><a class="reference external" href="https://kripken.github.io/talks/wasm.html">these slides</a> and</p></li>
+<li><p><a class="reference external" href="https://hacks.mozilla.org/2015/12/compiling-to-webassembly-its-happening/">this blogpost</a>.</p></li>
 </ul>
 <div class="section" id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly is emitted by default, without the need for any special flags.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you <strong>don’t</strong> want WebAssembly, you can disable it with something like</p>
+<p class="admonition-title">Note</p>
+<p>If you <strong>don’t</strong> want WebAssembly, you can disable it with something like</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="p">[</span><span class="o">..</span><span class="n">args</span><span class="o">..</span><span class="p">]</span> <span class="o">-</span><span class="n">s</span> <span class="n">WASM</span><span class="o">=</span><span class="mi">0</span>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Emscripten’s WebAssembly support depends on <a class="reference external" href="https://github.com/WebAssembly/binaryen">Binaryen</a>, which is provided by the emsdk (if you don’t use the emsdk, you need to build it and set it up in your <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> file).</p>
+<p class="admonition-title">Note</p>
+<p>Emscripten’s WebAssembly support depends on <a class="reference external" href="https://github.com/WebAssembly/binaryen">Binaryen</a>, which is provided by the emsdk (if you don’t use the emsdk, you need to build it and set it up in your <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> file).</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Deciding to compile to wasm or JS can be done at the linking stage: it doesn’t affect the object files.</p>
+<p class="admonition-title">Note</p>
+<p>Deciding to compile to wasm or JS can be done at the linking stage: it doesn’t affect the object files.</p>
 </div>
 <div class="section" id="backends">
 <h3>Backends<a class="headerlink" href="#backends" title="Permalink to this headline">¶</a></h3>
@@ -1112,54 +1112,55 @@ instead of <code class="docutils literal notranslate"><span class="pre">1.39.0</
 <p>There are some differences you may notice between the two backends, if you
 upgrade from fastcomp to upstream:</p>
 <ul class="simple">
-<li>The wasm backend is strict about linking files with different features sets -
+<li><p>The wasm backend is strict about linking files with different features sets -
 for example, if one file was built with atomics but another was not, it will
 error at link time. This prevents possible bugs, but may mean you need to make
-some build system fixes.</li>
-<li><code class="docutils literal notranslate"><span class="pre">WASM=0</span></code> behaves differently in the two backends. In fastcomp we emit
+some build system fixes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WASM=0</span></code> behaves differently in the two backends. In fastcomp we emit
 asm.js, while in upstream we emit JS (since not all wasm constructs can be
 expressed in asm.js). Also, the JS support implements the same external
 <code class="docutils literal notranslate"><span class="pre">WebAssembly.*</span></code> API, so in particular startup will be async just like wasm
 by default, and you can control that with <code class="docutils literal notranslate"><span class="pre">WASM_ASYNC_COMPILATION</span></code> (even
-though <code class="docutils literal notranslate"><span class="pre">WASM=0</span></code>).</li>
-<li>The wasm backend uses wasm object files by default. That means that it does
+though <code class="docutils literal notranslate"><span class="pre">WASM=0</span></code>).</p></li>
+<li><p>The wasm backend uses wasm object files by default. That means that it does
 codegen at the compile step, which makes the link step much faster - like a
 normal native compiler. For comparison, in fastcomp the compile step emits
-LLVM IR in object files.<ul>
-<li>You normally wouldn’t notice this, but some compiler flags affect codegen,
+LLVM IR in object files.</p>
+<ul>
+<li><p>You normally wouldn’t notice this, but some compiler flags affect codegen,
 like <code class="docutils literal notranslate"><span class="pre">DISABLE_EXCEPTION_CATCHING</span></code>. Such flags must be passed during
 codegen. The simple and safe thing is to pass all <code class="docutils literal notranslate"><span class="pre">-s</span></code> flags at both
-compile and link time.</li>
-<li>You can enable Link Time Optimization (LTO) with the usual llvm flags
+compile and link time.</p></li>
+<li><p>You can enable Link Time Optimization (LTO) with the usual llvm flags
 (<code class="docutils literal notranslate"><span class="pre">-flto</span></code>, <code class="docutils literal notranslate"><span class="pre">-flto=full</span></code>, <code class="docutils literal notranslate"><span class="pre">-flto=thin</span></code>, at both compile and link times).
-These flags will make the wasm backend behave more like fastcomp.</li>
-<li>With fastcomp LTO optimization passes will not be run by default;
+These flags will make the wasm backend behave more like fastcomp.</p></li>
+<li><p>With fastcomp LTO optimization passes will not be run by default;
 for that you must pass <code class="docutils literal notranslate"><span class="pre">--llvm-lto</span> <span class="pre">1</span></code>.  With the llvm backend
-LTO passes will be run on any object files that are in bitcode format.</li>
-<li>Another thing you might notice is that fastcomp’s link stage is able to
+LTO passes will be run on any object files that are in bitcode format.</p></li>
+<li><p>Another thing you might notice is that fastcomp’s link stage is able to
 perform some minor types of link time optimization even without LTO being
-set. The LLVM backend requires actually setting LTO for those things.</li>
+set. The LLVM backend requires actually setting LTO for those things.</p></li>
 </ul>
 </li>
-<li><cite>wasm-ld</cite>, the linker used by the wasm backend, requires libraries (<cite>.a</cite>
+<li><p><cite>wasm-ld</cite>, the linker used by the wasm backend, requires libraries (<cite>.a</cite>
 archives) to contain symbol indexes.  This matches the behaviour the native
 GNU linker.  While <cite>emar</cite> will create such indexes by default, native tools
 such as GNU <cite>ar</cite> and GNU <cite>strip</cite> are not aware of the WebAssembly object
 format and cannot create archive indexes.  In particular, if you run GNU
 <cite>strip</cite> on an archive file that contains WebAssembly object files it will
-remove the index which makes the archive unusable at link time.</li>
-<li>Fastcomp emits asm.js and so has some limitations on function pointers. For
+remove the index which makes the archive unusable at link time.</p></li>
+<li><p>Fastcomp emits asm.js and so has some limitations on function pointers. For
 example, the <code class="docutils literal notranslate"><span class="pre">RESERVED_FUNCTION_POINTERS</span></code> setting exists there to work
 around the fact that we can’t grow the table. In the upstream backend table
-growth is easy, and you can just enable <code class="docutils literal notranslate"><span class="pre">ALLOW_TABLE_GROWTH</span></code>.</li>
-<li>Fastcomp and upstream use very different LLVM and clang versions (fastcomp
+growth is easy, and you can just enable <code class="docutils literal notranslate"><span class="pre">ALLOW_TABLE_GROWTH</span></code>.</p></li>
+<li><p>Fastcomp and upstream use very different LLVM and clang versions (fastcomp
 has been stuck on LLVM 6, upstream is many releases after). This affects
 optimizations, usually by making the upstream version faster and smaller.
 However, in rare cases you may see a regression (for example, in some cases
 <em>UN</em>-optimized code may be
 <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/10753#issuecomment-603486677">less optimal in upstream</a>,
-so make sure to optimize both when compiling and when linking).</li>
-<li>Also see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/projects/1">blocker bugs on the wasm backend</a>, and the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?utf8=✓&amp;q=is%3Aissue+is%3Aopen+label%3A&quot;LLVM+wasm+backend&quot;">wasm backend tagged issues</a>.</li>
+so make sure to optimize both when compiling and when linking).</p></li>
+<li><p>Also see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/projects/1">blocker bugs on the wasm backend</a>, and the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?utf8=✓&amp;q=is%3Aissue+is%3Aopen+label%3A&quot;LLVM+wasm+backend&quot;">wasm backend tagged issues</a>.</p></li>
 </ul>
 </div>
 </div>
@@ -1189,7 +1190,7 @@ so make sure to optimize both when compiling and when linking).</li>
 <h2>Compiler output<a class="headerlink" href="#compiler-output" title="Permalink to this headline">¶</a></h2>
 <p>When using <code class="docutils literal notranslate"><span class="pre">emcc</span></code> to build to WebAssembly, you will see a <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file containing that code, as well as the usual <code class="docutils literal notranslate"><span class="pre">.js</span></code> file that is the main target of compilation. Those two are built to work together: run the <code class="docutils literal notranslate"><span class="pre">.js</span></code> (or <code class="docutils literal notranslate"><span class="pre">.html</span></code>, if that’s what you asked for) file, and it will load and set up the WebAssembly code for you, properly setting up imports and exports for it, etc. Basically, you don’t need to care about whether the compiled code is asm.js or WebAssembly, it’s just a compiler flag, and otherwise everything should just work (except the WebAssembly should be faster).</p>
 <ul class="simple">
-<li>Note that the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file is not standalone - it’s not easy to manually run it without that <code class="docutils literal notranslate"><span class="pre">.js</span></code> code, as it depends on getting the proper imports that integrate with JS. For example, it receives imports for syscalls so that it can do things like print to the console. There is work in progress towards ways to create standalone <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files, see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone">WebAssembly Standalone page</a>.</li>
+<li><p>Note that the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file is not standalone - it’s not easy to manually run it without that <code class="docutils literal notranslate"><span class="pre">.js</span></code> code, as it depends on getting the proper imports that integrate with JS. For example, it receives imports for syscalls so that it can do things like print to the console. There is work in progress towards ways to create standalone <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files, see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone">WebAssembly Standalone page</a>.</p></li>
 </ul>
 <p>You may also see additional files generated, like a <code class="docutils literal notranslate"><span class="pre">.data</span></code> file if you are preloading files into the virtual filesystem. All that is exactly the same as when building to asm.js. One difference you may notice is the lack of a <code class="docutils literal notranslate"><span class="pre">.mem</span> <span class="pre">file</span></code>, which for asm.js contains the static memory initialization data, which in WebAssembly we can pack more efficiently into the WebAssembly binary itself.</p>
 </div>
@@ -1201,12 +1202,12 @@ so make sure to optimize both when compiling and when linking).</li>
 <h2>Debugging<a class="headerlink" href="#debugging" title="Permalink to this headline">¶</a></h2>
 <p>asm.js support is considered very stable now, and you can change between it and wasm with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=0</span></code>, so if you see something odd in a wasm build, comparing to a parallel asm.js build can help. In general, any difference between the two could be a compiler bug or browser bug, but there are a few legitimate causes of different behavior between the two, that you may want to rule out:</p>
 <ul class="simple">
-<li>wasm allows unaligned accesses, i.e. it will load 4 bytes from an unaligned address the same way x86 does (it doesn’t care it’s unaligned). asm.js works more like ARM CPUs which mostly don’t accept such things (but they often trap, while asm.js just returns a wrong result). To rule this out, you can build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span></code>, that will catch all such invalid accesses.</li>
-<li>Timing issues - wasm might run faster or slower. To some extent you can mitigate that by building with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DETERMINISTIC=1</span></code>.</li>
-<li>Trap mode. As mentioned above, we can generate wasm that traps or that avoids traps. Make sure the trap mode is <code class="docutils literal notranslate"><span class="pre">&quot;js&quot;</span></code> when comparing builds. The <code class="docutils literal notranslate"><span class="pre">&quot;js&quot;</span></code> trap mode is also useful in a single build, as otherwise operations like division or float-to-int may trap, and the optimizer may happen to change whether a trap occurs or not, which can be confusing (for example, enabling <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> may prevent some optimizations, and a trap may start to occur). Instead, in the <code class="docutils literal notranslate"><span class="pre">&quot;js&quot;</span></code> trap mode there are no traps and all operations are deterministically defined as identical to JavaScript.</li>
-<li>Minor libc and runtime differences exist between wasm and asm.js. We used to have a way to emit more compatable builds (<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">&quot;BINARYEN_METHOD='asmjs,native-wasm'&quot;</span></code> etc.) but due to its complexity and low value it was removed.</li>
-<li>Floating-point behavior: WebAssembly uses 32-bit floats in a standard way, while asm.js by default implements floats using doubles. That can lead to differences in the precision of results. You can force 32-bit float behavior in asm.js with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PRECISE_F32=1</span></code>, in which case it should be identical to wasm.</li>
-<li>Browser instability: It’s worth testing multiple browsers, as one might have a wasm bug that another doesn’t. You can also test the Binaryen interpreter (e.g. using the <code class="docutils literal notranslate"><span class="pre">interpret-binary</span></code> method, as discussed above).</li>
+<li><p>wasm allows unaligned accesses, i.e. it will load 4 bytes from an unaligned address the same way x86 does (it doesn’t care it’s unaligned). asm.js works more like ARM CPUs which mostly don’t accept such things (but they often trap, while asm.js just returns a wrong result). To rule this out, you can build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SAFE_HEAP=1</span></code>, that will catch all such invalid accesses.</p></li>
+<li><p>Timing issues - wasm might run faster or slower. To some extent you can mitigate that by building with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DETERMINISTIC=1</span></code>.</p></li>
+<li><p>Trap mode. As mentioned above, we can generate wasm that traps or that avoids traps. Make sure the trap mode is <code class="docutils literal notranslate"><span class="pre">&quot;js&quot;</span></code> when comparing builds. The <code class="docutils literal notranslate"><span class="pre">&quot;js&quot;</span></code> trap mode is also useful in a single build, as otherwise operations like division or float-to-int may trap, and the optimizer may happen to change whether a trap occurs or not, which can be confusing (for example, enabling <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> may prevent some optimizations, and a trap may start to occur). Instead, in the <code class="docutils literal notranslate"><span class="pre">&quot;js&quot;</span></code> trap mode there are no traps and all operations are deterministically defined as identical to JavaScript.</p></li>
+<li><p>Minor libc and runtime differences exist between wasm and asm.js. We used to have a way to emit more compatable builds (<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">&quot;BINARYEN_METHOD='asmjs,native-wasm'&quot;</span></code> etc.) but due to its complexity and low value it was removed.</p></li>
+<li><p>Floating-point behavior: WebAssembly uses 32-bit floats in a standard way, while asm.js by default implements floats using doubles. That can lead to differences in the precision of results. You can force 32-bit float behavior in asm.js with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PRECISE_F32=1</span></code>, in which case it should be identical to wasm.</p></li>
+<li><p>Browser instability: It’s worth testing multiple browsers, as one might have a wasm bug that another doesn’t. You can also test the Binaryen interpreter (e.g. using the <code class="docutils literal notranslate"><span class="pre">interpret-binary</span></code> method, as discussed above).</p></li>
 </ul>
 <p>If you find that an asm.js build has the same behavior as a wasm one, then it is currently easier to debug the asm.js build: you can edit the source easily (add debug printouts, etc.), there is debug info and source maps support, etc.</p>
 <div class="section" id="debugging-webassembly">
@@ -1234,7 +1235,7 @@ so make sure to optimize both when compiling and when linking).</li>
 <p>WebAssembly code is prepared somewhat differently than asm.js. asm.js can be bundled inside the main JS file, while as mentioned earlier WebAssembly is a binary file on the side, so you will have more than one file to distribute.</p>
 <p>Another noticeable effect is that WebAssembly is compiled asynchronously by default, which means you must wait for compilation to complete before calling compiled code (by waiting for <code class="docutils literal notranslate"><span class="pre">main()</span></code>, or the <code class="docutils literal notranslate"><span class="pre">onRuntimeInitialized</span></code> callback, etc., which you also need to do when you have anything else that makes startup async, like a <code class="docutils literal notranslate"><span class="pre">.mem</span></code> file for asm.js, or preloaded file data, etc.). You can turn off async compilation by setting <code class="docutils literal notranslate"><span class="pre">WASM_ASYNC_COMPILATION=0</span></code>, but that may not work in Chrome due to current limitations there.</p>
 <ul class="simple">
-<li>Note that even with async compilation turned off, fetching the WebAssembly binary may need to be an asynchronous operation (since the Web does not allow synchronous binary downloads on the main thread). If you can fetch the binary yourself, you can set <code class="docutils literal notranslate"><span class="pre">Module['wasmBinary']</span></code> and it will be used from there, and then (with async compilation off) compilation should be synchronous.</li>
+<li><p>Note that even with async compilation turned off, fetching the WebAssembly binary may need to be an asynchronous operation (since the Web does not allow synchronous binary downloads on the main thread). If you can fetch the binary yourself, you can set <code class="docutils literal notranslate"><span class="pre">Module['wasmBinary']</span></code> and it will be used from there, and then (with async compilation off) compilation should be synchronous.</p></li>
 </ul>
 </div>
 <div class="section" id="web-server-setup">
@@ -1370,7 +1371,7 @@ AddType application/wasm .wasm
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

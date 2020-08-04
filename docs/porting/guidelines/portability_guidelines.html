@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Portability Guidelines &mdash; Emscripten 1.39.20 documentation</title>
+  <title>Portability Guidelines &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Code Portability and Limitations" href="index.html"/>
         <link rel="next" title="API Limitations" href="api_limitations.html"/>
         <link rel="prev" title="Code Portability and Limitations" href="index.html"/> 
@@ -1087,45 +1087,45 @@
 <div class="section" id="current-web-limitations">
 <h2>Current Web limitations<a class="headerlink" href="#current-web-limitations" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Multithreading depends on SharedArrayBuffer, which is still being standardized and implemented by browsers. Emscripten has working support for threads, which you can try in development browsers by setting the proper preference.</li>
-<li>SIMD is also in the process of standardization and implementation.</li>
+<li><p>Multithreading depends on SharedArrayBuffer, which is still being standardized and implemented by browsers. Emscripten has working support for threads, which you can try in development browsers by setting the proper preference.</p></li>
+<li><p>SIMD is also in the process of standardization and implementation.</p></li>
 </ul>
 </div>
 <div class="section" id="code-that-cannot-be-compiled">
 <h2>Code that cannot be compiled<a class="headerlink" href="#code-that-cannot-be-compiled" title="Permalink to this headline">¶</a></h2>
 <p>The following types of code would need to be re-written in order to work with Emscripten. (While in theory it might be possible for Emscripten to work around these issues using emulation, it would be very slow.)</p>
 <ul class="simple">
-<li>Code relying on a big-endian architecture. Emscripten-compiled code currently requires a little-endian host to run on, which accounts for 99% of machines connected to the internet. This is because JavaScript typed arrays (used for views on memory) obey the host byte ordering and LLVM needs to know which endianness to target.</li>
-<li>Code that uses low-level features of the native environment, for example native stack manipulation in conjunction with <code class="docutils literal notranslate"><span class="pre">setjmp</span></code>/<code class="docutils literal notranslate"><span class="pre">longjmp</span></code> (we support proper <code class="docutils literal notranslate"><span class="pre">setjmp</span></code>/<code class="docutils literal notranslate"><span class="pre">longjmp</span></code>, i.e., jumping down the stack, but not jumping up to an unwound stack, which is undefined behavior).</li>
-<li>Code that scans registers or the stack. This won’t work because a variable in a register or on the stack may be held in a JavaScript local variable (which cannot be scanned).</li>
+<li><p>Code relying on a big-endian architecture. Emscripten-compiled code currently requires a little-endian host to run on, which accounts for 99% of machines connected to the internet. This is because JavaScript typed arrays (used for views on memory) obey the host byte ordering and LLVM needs to know which endianness to target.</p></li>
+<li><p>Code that uses low-level features of the native environment, for example native stack manipulation in conjunction with <code class="docutils literal notranslate"><span class="pre">setjmp</span></code>/<code class="docutils literal notranslate"><span class="pre">longjmp</span></code> (we support proper <code class="docutils literal notranslate"><span class="pre">setjmp</span></code>/<code class="docutils literal notranslate"><span class="pre">longjmp</span></code>, i.e., jumping down the stack, but not jumping up to an unwound stack, which is undefined behavior).</p></li>
+<li><p>Code that scans registers or the stack. This won’t work because a variable in a register or on the stack may be held in a JavaScript local variable (which cannot be scanned).</p></li>
 </ul>
 <blockquote>
 <div><div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Code of this type might be used for conservative garbage collection. You can do conservative scanning when there is no other code on the stack, e.g. from an iteration of the main event loop. Other solutions include the SpillPointers pass in Binaryen.</p>
+<p class="admonition-title">Note</p>
+<p>Code of this type might be used for conservative garbage collection. You can do conservative scanning when there is no other code on the stack, e.g. from an iteration of the main event loop. Other solutions include the SpillPointers pass in Binaryen.</p>
 </div>
 </div></blockquote>
 <ul class="simple">
-<li>Code with architecture-specific inline assembly (like an <code class="docutils literal notranslate"><span class="pre">asm()</span></code> containing x86 code) is not portable. That code would need to be replaced with portable C or C++. Sometimes a codebase will have both portable code and optional inline assembly as an optimization, so you might find an option to disable the inline assembly.</li>
+<li><p>Code with architecture-specific inline assembly (like an <code class="docutils literal notranslate"><span class="pre">asm()</span></code> containing x86 code) is not portable. That code would need to be replaced with portable C or C++. Sometimes a codebase will have both portable code and optional inline assembly as an optimization, so you might find an option to disable the inline assembly.</p></li>
 </ul>
 </div>
 <div class="section" id="code-that-compiles-but-might-run-slowly">
 <h2>Code that compiles but might run slowly<a class="headerlink" href="#code-that-compiles-but-might-run-slowly" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Understanding these issues can be helpful when optimising code.</p>
+<p class="admonition-title">Note</p>
+<p>Understanding these issues can be helpful when optimising code.</p>
 </div>
 <p>The following types of code will compile, but may not run as fast as expected:</p>
 <ul class="simple">
-<li>In asm.js (but not WebAssembly), 64-bit <code class="docutils literal notranslate"><span class="pre">int</span></code> variables. Mathematical operations (+, -, *, /) are slow because they are emulated (bitwise operations are reasonably fast). JavaScript does not have a native 64-bit <code class="docutils literal notranslate"><span class="pre">int</span></code> type so this is unavoidable.</li>
-<li>C++ Exceptions. In JavaScript such code generally makes the JavaScript engine turn off various optimizations. For that reason exceptions are turned off by default in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> and above. To re-enable them, run <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></code> (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/src/settings.js#L298">src/settings.js</a>).</li>
-<li><code class="docutils literal notranslate"><span class="pre">setjmp</span></code> also prevents <a class="reference internal" href="../../site/glossary.html#term-relooping"><span class="xref std std-term">relooping</span></a> around it, forcing us to emulate control flow using a less efficient approach.</li>
+<li><p>In asm.js (but not WebAssembly), 64-bit <code class="docutils literal notranslate"><span class="pre">int</span></code> variables. Mathematical operations (+, -, *, /) are slow because they are emulated (bitwise operations are reasonably fast). JavaScript does not have a native 64-bit <code class="docutils literal notranslate"><span class="pre">int</span></code> type so this is unavoidable.</p></li>
+<li><p>C++ Exceptions. In JavaScript such code generally makes the JavaScript engine turn off various optimizations. For that reason exceptions are turned off by default in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> and above. To re-enable them, run <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></code> (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/src/settings.js#L298">src/settings.js</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setjmp</span></code> also prevents <a class="reference internal" href="../../site/glossary.html#term-relooping"><span class="xref std std-term">relooping</span></a> around it, forcing us to emulate control flow using a less efficient approach.</p></li>
 </ul>
 </div>
 <div class="section" id="other-issues">
 <h2>Other issues<a class="headerlink" href="#other-issues" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Code that relies on x86 alignment behavior. x86 allows unaligned reads and writes (so for example you can read a 16-bit value from a non-even address), but other architectures do not (32-bit ARM will raise <code class="docutils literal notranslate"><span class="pre">SIGILL</span></code>). For asm.js loads and stores are forced to aligned offsets; for WebAssembly unaligned loads and stores will work but may be slow depending on the underlying CPU. If you build your code with <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP=1</span></code> then you will get a clear runtime exception, see <a class="reference internal" href="../Debugging.html#debugging"><span class="std std-ref">Debugging</span></a>.</li>
+<li><p>Code that relies on x86 alignment behavior. x86 allows unaligned reads and writes (so for example you can read a 16-bit value from a non-even address), but other architectures do not (32-bit ARM will raise <code class="docutils literal notranslate"><span class="pre">SIGILL</span></code>). For asm.js loads and stores are forced to aligned offsets; for WebAssembly unaligned loads and stores will work but may be slow depending on the underlying CPU. If you build your code with <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP=1</span></code> then you will get a clear runtime exception, see <a class="reference internal" href="../Debugging.html#debugging"><span class="std std-ref">Debugging</span></a>.</p></li>
 </ul>
 </div>
 </div>
@@ -1243,7 +1243,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

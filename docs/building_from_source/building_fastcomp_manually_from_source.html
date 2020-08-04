@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Manually building Fastcomp from source &mdash; Emscripten 1.39.20 documentation</title>
+  <title>Manually building Fastcomp from source &mdash; Emscripten 1.40.1 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 1.39.20 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 1.40.1 documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Configuring Emscripten Settings when Manually Building from Source" href="configuring_emscripten_settings.html"/>
         <link rel="prev" title="Emscripten Toolchain Requirements" href="toolchain_what_is_needed.html"/> 
@@ -1080,8 +1080,8 @@
 <span id="building-fastcomp-from-source"></span><h1>Manually building Fastcomp from source<a class="headerlink" href="#manually-building-fastcomp-from-source" title="Permalink to this headline">¶</a></h1>
 <p>Fastcomp is the second compiler core used in Emscripten, after the original JS compiler and before the new LLVM wasm backend. We recommend the LLVM wasm backend, but fastcomp is still useful in some cases, and is installable using the emsdk. This article explains how you can build Fastcomp’s sources using a fully manual process.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you are building a large project, you will need to create a 64-bit build of LLVM and Clang. Compiling and optimizing can take more memory than is available to the 32-bit build.</p>
+<p class="admonition-title">Note</p>
+<p>If you are building a large project, you will need to create a 64-bit build of LLVM and Clang. Compiling and optimizing can take more memory than is available to the 32-bit build.</p>
 </div>
 <div class="section" id="what-you-ll-need">
 <h2>What you’ll need<a class="headerlink" href="#what-you-ll-need" title="Permalink to this headline">¶</a></h2>
@@ -1092,7 +1092,7 @@
 <span id="building-fastcomp-from-source-building"></span><h2>Building Fastcomp<a class="headerlink" href="#building-fastcomp" title="Permalink to this headline">¶</a></h2>
 <p>To build the Fastcomp code from source:</p>
 <ul class="simple">
-<li>Create a directory to store the build. It doesn’t matter where, because Emscripten gets the information from the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">compiler configuration file (.emscripten)</span></a>. We show how to update this file later in these instructions:</li>
+<li><p>Create a directory to store the build. It doesn’t matter where, because Emscripten gets the information from the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">compiler configuration file (.emscripten)</span></a>. We show how to update this file later in these instructions:</p></li>
 </ul>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">myfastcomp</span>
@@ -1101,58 +1101,58 @@
 </div>
 </div></blockquote>
 <ul>
-<li><p class="first">Clone the fastcomp LLVM repository (<a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp">https://github.com/emscripten-core/emscripten-fastcomp</a>):</p>
+<li><p>Clone the fastcomp LLVM repository (<a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp">https://github.com/emscripten-core/emscripten-fastcomp</a>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">emscripten</span><span class="o">-</span><span class="n">core</span><span class="o">/</span><span class="n">emscripten</span><span class="o">-</span><span class="n">fastcomp</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first">Clone the <a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp-clang">emscripten-core/emscripten-fastcomp-clang</a> repository into <strong>emscripten-fastcomp/tools/clang</strong>:</p>
+<li><p>Clone the <a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp-clang">emscripten-core/emscripten-fastcomp-clang</a> repository into <strong>emscripten-fastcomp/tools/clang</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">emscripten</span><span class="o">-</span><span class="n">fastcomp</span>
 <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">emscripten</span><span class="o">-</span><span class="n">core</span><span class="o">/</span><span class="n">emscripten</span><span class="o">-</span><span class="n">fastcomp</span><span class="o">-</span><span class="n">clang</span> <span class="n">tools</span><span class="o">/</span><span class="n">clang</span>
 </pre></div>
 </div>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">You <strong>must</strong> clone it into a directory named <strong>clang</strong> as shown, so that <a class="reference internal" href="../site/glossary.html#term-clang"><span class="xref std std-term">Clang</span></a> is present in <strong>tools/clang</strong>!</p>
+<p class="admonition-title">Warning</p>
+<p>You <strong>must</strong> clone it into a directory named <strong>clang</strong> as shown, so that <a class="reference internal" href="../site/glossary.html#term-clang"><span class="xref std std-term">Clang</span></a> is present in <strong>tools/clang</strong>!</p>
 </div>
 </li>
-<li><p class="first">Create a <em>build</em> directory (inside the <strong>emscripten-fastcomp</strong> directory) and then navigate into it:</p>
+<li><p>Create a <em>build</em> directory (inside the <strong>emscripten-fastcomp</strong> directory) and then navigate into it:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">build</span>
 <span class="n">cd</span> <span class="n">build</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first">Configure the build using <em>cmake</em>:</p>
+<li><p>Configure the build using <em>cmake</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cmake</span> <span class="o">..</span> <span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="o">=</span><span class="n">Release</span> <span class="o">-</span><span class="n">DLLVM_TARGETS_TO_BUILD</span><span class="o">=</span><span class="s2">&quot;host;JSBackend&quot;</span> <span class="o">-</span><span class="n">DLLVM_INCLUDE_EXAMPLES</span><span class="o">=</span><span class="n">OFF</span> <span class="o">-</span><span class="n">DLLVM_INCLUDE_TESTS</span><span class="o">=</span><span class="n">OFF</span> <span class="o">-</span><span class="n">DCLANG_INCLUDE_TESTS</span><span class="o">=</span><span class="n">OFF</span>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">On Windows you will need Visual Studio 2015 or newer to build.</p>
+<p class="admonition-title">Note</p>
+<p>On Windows you will need Visual Studio 2015 or newer to build.</p>
 </div>
 </li>
-<li><p class="first">Determine the number of available cores on your system (Emscripten can run many operations in parallel, so using more cores may have a significant impact on compilation time):</p>
+<li><p>Determine the number of available cores on your system (Emscripten can run many operations in parallel, so using more cores may have a significant impact on compilation time):</p>
 <ul class="simple">
-<li>On macOS you can get the number of cores using: <strong>Apple menu | About this mac | More info | System report</strong>. The <strong>Hardware overview</strong> on the resulting dialog includes a <em>Total number of cores</em> entry.</li>
-<li>On Linux you can find the number of cores by entering the following command on the terminal: <code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/proc/cpuinfo</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">&quot;^cpu</span> <span class="pre">cores&quot;</span> <span class="pre">|</span> <span class="pre">uniq</span></code>.</li>
-<li>On Windows the number of cores is listed on the <strong>Task Manager | Performance Tab</strong>. You can open the <em>Task Manager</em> by entering <strong>Ctrl + Shift + Esc</strong> from the Desktop.</li>
+<li><p>On macOS you can get the number of cores using: <strong>Apple menu | About this mac | More info | System report</strong>. The <strong>Hardware overview</strong> on the resulting dialog includes a <em>Total number of cores</em> entry.</p></li>
+<li><p>On Linux you can find the number of cores by entering the following command on the terminal: <code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/proc/cpuinfo</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">&quot;^cpu</span> <span class="pre">cores&quot;</span> <span class="pre">|</span> <span class="pre">uniq</span></code>.</p></li>
+<li><p>On Windows the number of cores is listed on the <strong>Task Manager | Performance Tab</strong>. You can open the <em>Task Manager</em> by entering <strong>Ctrl + Shift + Esc</strong> from the Desktop.</p></li>
 </ul>
 </li>
-<li><p class="first">Call <em>make</em> to build the sources, specifying the number of available cores:</p>
+<li><p>Call <em>make</em> to build the sources, specifying the number of available cores:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="o">-</span><span class="n">j4</span>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If the build completes successfully, <em>clang</em>, <em>clang++</em>, and a number of other files will be created in the release directory (<strong>&lt;LLVM root&gt;/build/Release/bin</strong>).</p>
+<p class="admonition-title">Note</p>
+<p>If the build completes successfully, <em>clang</em>, <em>clang++</em>, and a number of other files will be created in the release directory (<strong>&lt;LLVM root&gt;/build/Release/bin</strong>).</p>
 </div>
 </li>
 </ul>
 <ul id="llvm-update-compiler-configuration-file">
-<li><p class="first">The final step is to update the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">.emscripten</span></a> file, specifying the location of <em>fastcomp</em> in the <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> variable.</p>
+<li><p>The final step is to update the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">.emscripten</span></a> file, specifying the location of <em>fastcomp</em> in the <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> variable.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you’re building the <strong>whole</strong> of Emscripten from source, following the platform-specific instructions in <a class="reference internal" href="index.html#installing-from-source"><span class="std std-ref">Building Emscripten from Source</span></a>, you won’t yet have Emscripten installed. In this case, skip this step and return to those instructions.</p>
+<p class="admonition-title">Note</p>
+<p>If you’re building the <strong>whole</strong> of Emscripten from source, following the platform-specific instructions in <a class="reference internal" href="index.html#installing-from-source"><span class="std std-ref">Building Emscripten from Source</span></a>, you won’t yet have Emscripten installed. In this case, skip this step and return to those instructions.</p>
 </div>
 <p>If you already have an Emscripten environment (for example if you’re building Fastcomp using the SDK), then set <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> to the location of the <em>clang</em> binary under the <strong>build</strong> directory. This will be something like <strong>&lt;LLVM root&gt;/build/Release/bin</strong> or <strong>&lt;LLVM root&gt;/build/bin</strong>:</p>
 <blockquote>
@@ -1166,23 +1166,23 @@
 <span id="building-fastcomp-from-source-branches"></span><h3>Branches<a class="headerlink" href="#branches" title="Permalink to this headline">¶</a></h3>
 <p>You should use the <strong>same</strong> branch (<em>incoming</em>, or <em>master</em>) for building all three repositories:</p>
 <ul class="simple">
-<li>Emscripten: <a class="reference external" href="https://github.com/emscripten-core/emscripten">emscripten</a>.</li>
-<li>Emscripten’s LLVM fork: <a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp">emscripten-fastcomp</a>.</li>
-<li>Emscripten’s <em>Clang</em> fork <a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp-clang">emscripten-fastcomp-clang</a>.</li>
+<li><p>Emscripten: <a class="reference external" href="https://github.com/emscripten-core/emscripten">emscripten</a>.</p></li>
+<li><p>Emscripten’s LLVM fork: <a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp">emscripten-fastcomp</a>.</p></li>
+<li><p>Emscripten’s <em>Clang</em> fork <a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp-clang">emscripten-fastcomp-clang</a>.</p></li>
 </ul>
 <p>Mixing <em>incoming</em> and <em>master</em> branches may result in errors when building the three repositories.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-v</span></code> to check if the branches are synchronized.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-v</span></code> checks the code in the repositories, not the builds. Before building make sure that you fetch the latest changes to LLVM and Clang.</p>
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-v</span></code> checks the code in the repositories, not the builds. Before building make sure that you fetch the latest changes to LLVM and Clang.</p>
 </div>
 <div class="section" id="version-numbers">
 <h4>Version numbers<a class="headerlink" href="#version-numbers" title="Permalink to this headline">¶</a></h4>
 <p>Bisecting across multiple git trees can be hard. We use version numbers to help synchronize points between them:</p>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/emscripten-version.txt">emscripten-version.txt</a> in Emscripten</li>
-<li><a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp/blob/master/emscripten-version.txt">emscripten-version.txt</a> in fastcomp (llvm)</li>
-<li><a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp-clang/blob/master/emscripten-version.txt">emscripten-version.txt</a> in fastcomp-clang (clang)</li>
+<li><p><a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/emscripten-version.txt">emscripten-version.txt</a> in Emscripten</p></li>
+<li><p><a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp/blob/master/emscripten-version.txt">emscripten-version.txt</a> in fastcomp (llvm)</p></li>
+<li><p><a class="reference external" href="https://github.com/emscripten-core/emscripten-fastcomp-clang/blob/master/emscripten-version.txt">emscripten-version.txt</a> in fastcomp-clang (clang)</p></li>
 </ul>
 <p>Version numbers are typically <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> where.</p>
 </div>
@@ -1305,7 +1305,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.39.20',
+            VERSION:'1.40.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
