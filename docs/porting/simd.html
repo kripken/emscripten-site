@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.0 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.2 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.2 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -209,16 +209,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#backends">Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#binaryen-codegen-options">Binaryen codegen options</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#trapping">Trapping</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#trapping">Trapping</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#compiler-output">Compiler output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#testing-native-webassembly-in-browsers">Testing native WebAssembly in browsers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#debugging">Debugging</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/WebAssembly.html#debugging-webassembly">Debugging WebAssembly</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#wasm-files-and-compilation"><code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files and compilation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/WebAssembly.html#web-server-setup">Web server setup</a></li>
 </ul>
@@ -399,7 +392,6 @@
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#manual-print-debugging">Manual print debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
@@ -434,6 +426,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Porting SIMD code targeting WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -855,7 +848,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#avoid-memory-spikes-by-separating-out-asm-js">Avoid memory spikes by separating out asm.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#aggressive-variable-elimination">Aggressive variable elimination</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -2567,6 +2559,435 @@
 </table>
 <p>Only the 128-bit wide instructions from AVX instruction set are available. 256-bit wide AVX instructions are not provided.</p>
 </div>
+<div class="section" id="compiling-simd-code-targeting-arm-neon-instruction-set">
+<h1>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten supports compiling existing codebases that use ARM NEON by
+passing the <cite>-mfpu=neon</cite> directive to the compiler, and including the
+header <cite>&lt;arm_neon.h&gt;</cite>.</p>
+<p>In terms of performance, it is very important to note that only
+instructions which operate on 128-bit wide vectors are supported
+cleanly. This means that nearly any instruction which is not of a “q”
+variant (i.e. “vaddq” as opposed to “vadd”) will be scalarized.</p>
+<p>These are pulled from <a class="reference external" href="https://github.com/simd-everywhere/simde">SIMDe repository on Github</a>. To update emscripten
+with the latest SIMDe version, run <cite>tools/simde_update.py</cite>.</p>
+<p>The following table highlights the availability of various 128-bit
+wide intrinsics.</p>
+<dl class="simple">
+<dt>Similarly to above, the following legend is used:</dt><dd><ul class="simple">
+<li><p>✅ Wasm SIMD has a native opcode that matches the NEON instruction, should yield native performance</p></li>
+<li><p>💡 while the Wasm SIMD spec does not provide a proper performance guarantee, given a suitably smart enough compiler and a runtime VM path, this intrinsic should be able to generate the identical native NEON instruction.</p></li>
+<li><p>⚠️ the underlying NEON instruction is not available, but it is emulated via at most few other Wasm SIMD instructions, causing a small penalty.</p></li>
+<li><p>❌ the underlying NEON instruction is not exposed by the Wasm SIMD specification, so it must be emulated via a slow path, e.g. a sequence of several slower SIMD instructions, or a scalar implementation.</p></li>
+<li><p>⚫ the given NEON intrinsic is not available. Referencing the intrinsic will cause a compiler error.</p></li>
+</ul>
+</dd>
+</dl>
+<p>For detailed information on each intrinsic function, refer to <a class="reference external" href="https://developer.arm.com/architectures/instruction-sets/simd-isas/neon/intrinsics">NEON Intrinsics Reference</a>.</p>
+<table class="colwidths-given docutils align-default" id="id11">
+<caption><span class="caption-text">NEON Intrinsics</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Intrinsic name</p></th>
+<th class="head"><p>Wasm SIMD Support</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>vaba</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vabal</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vabd</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vabdl</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vabs</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vadd</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vaddl</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vaddlv</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vaddv</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vaddw</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vand</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vbic</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vbsl</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vcagt</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vceq</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vceqz</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vcge</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vcgez</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vcgt</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vcgtz</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vcle</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vclez</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vcls</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vclt</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vcltz</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vcnt</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vclz</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vcombine</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vcreate</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vdot</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vdot_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vdup</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vdup_n</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>veor</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vext</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vget_lane</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vhadd</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vhsub</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vld1</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vld2</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vld3</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vld4</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-even"><td><p>vmax</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmaxv</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vmin</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vminv</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vmla</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmlal</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vmls</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmlsl</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vmovl</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmul</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vmul_n</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmull</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vmull_n</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmull_high</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vmvn</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vneg</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vorn</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vorr</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vpadal</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vpadd</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vpaddl</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vpmax</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vpmin</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vpminnm</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqabs</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqabsb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqadd</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqaddb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqdmulh</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqneg</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqnegb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqrdmulh</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqrshl</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqrshlb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqshl</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqshlb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqsub</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqsubb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbl1</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbl2</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbl3</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbl4</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbx1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbx2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbx3</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbx4</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vrbit</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vreinterpret</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-even"><td><p>vrev16</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrev32</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vrev64</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrhadd</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vrshl</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrshr_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vrsra_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vset_lane</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vshl</p></td>
+<td><p>scalaried</p></td>
+</tr>
+<tr class="row-odd"><td><p>vshl_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vshr_n</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vsra_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vst1</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vst1_lane</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-even"><td><p>vst2</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vst3</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-even"><td><p>vst4</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vsub</p></td>
+<td><p>native</p></td>
+</tr>
+<tr class="row-even"><td><p>vsubl</p></td>
+<td><p>⚠ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vsubw</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vtbl1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vtbl2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vtbl3</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vtbl4</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vtbx1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vtbx2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vtbx3</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vtbx4</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vtrn</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vtrn1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vtrn2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vtst</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vuqadd</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-odd"><td><p>vuqaddb</p></td>
+<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+</tr>
+<tr class="row-even"><td><p>vuzp</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vuzp1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vuzp2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vzip</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vzip1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vzip2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 
 
           </div>
@@ -2679,7 +3100,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.0',
+            VERSION:'2.0.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

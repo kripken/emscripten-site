@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 2.0.0 documentation</title>
+  <title>Debugging &mdash; Emscripten 2.0.2 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.2 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="Audio" href="Audio.html"/> 
@@ -392,7 +392,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#manual-print-debugging">Manual print debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#function-pointer-issues">Function Pointer Issues</a></li>
@@ -427,6 +426,7 @@
 <li class="toctree-l2"><a class="reference internal" href="simd.html">Porting SIMD code targeting WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -1129,7 +1129,17 @@ directory (e.g. <strong>/tmp</strong> on UNIX).</p>
 <li><p id="debugging-safe-heap"><code class="docutils literal notranslate"><span class="pre">SAFE_HEAP=1</span></code> adds additional memory access checks, and will give clear errors for problems like dereferencing 0 and memory alignment issues.</p>
 <p>You can also set <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP_LOG</span></code> to log <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> operations.</p>
 </li>
-<li><p id="debugging-stack-overflow-check">Passing the <code class="docutils literal notranslate"><span class="pre">STACK_OVERFLOW_CHECK=1</span></code> linker flag adds a runtime magic token value at the end of the stack, which is checked in certain locations to verify that the user code does not accidentally write past the end of the stack. While overrunning the Emscripten stack is not a security issue (JavaScript is sandboxed already), writing past the stack causes memory corruption in global data and dynamically allocated memory sections in the Emscripten HEAP, which makes the application fail in unexpected ways. The value <code class="docutils literal notranslate"><span class="pre">STACK_OVERFLOW_CHECK=2</span></code> enables slightly more detailed stack guard checks, which can give a more precise callstack at the expense of some performance. Default value is 2 if <code class="docutils literal notranslate"><span class="pre">ASSERTIONS=1</span></code> is set, and disabled otherwise.</p>
+<li><p id="debugging-stack-overflow-check">Passing the <code class="docutils literal notranslate"><span class="pre">STACK_OVERFLOW_CHECK=1</span></code> linker flag adds a runtime magic
+token value at the end of the stack, which is checked in certain locations
+to verify that the user code does not accidentally write past the end of the
+stack. While overrunning the Emscripten stack is not a security issue for
+JavaScript (which is unaffected), writing past the stack causes memory
+corruption in global data and dynamically allocated memory sections in the
+Emscripten HEAP, which makes the application fail in unexpected ways. The
+value <code class="docutils literal notranslate"><span class="pre">STACK_OVERFLOW_CHECK=2</span></code> enables slightly more detailed stack guard
+checks, which can give a more precise callstack at the expense of some
+performance. Default value is 1 if <code class="docutils literal notranslate"><span class="pre">ASSERTIONS=1</span></code> is set, and disabled
+otherwise.</p>
 </li>
 <li><p id="debugging-demangle-support"><code class="docutils literal notranslate"><span class="pre">DEMANGLE_SUPPORT=1</span></code> links in code to automatically demangle stack traces, that is, emit human-readable C++ function names instead of <code class="docutils literal notranslate"><span class="pre">_ZN..</span></code> ones.</p>
 </li>
@@ -1204,22 +1214,6 @@ distinguish between them:</p>
   <span class="k">return</span> <span class="k">typeof</span> <span class="nx">exception</span> <span class="o">===</span> <span class="s1">&#39;number&#39;</span>
     <span class="o">?</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span>
     <span class="o">:</span> <span class="nx">exception</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="disabling-optimizations">
-<h2>Disabling optimizations<a class="headerlink" href="#disabling-optimizations" title="Permalink to this headline">¶</a></h2>
-<p>It can sometimes be useful to compile with either LLVM optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-llvm-opts"><span class="std std-ref">llvm-opts</span></a>) or JavaScript optimizations (<a class="reference internal" href="../tools_reference/emcc.html#emcc-js-opts"><span class="std std-ref">js-opts</span></a>) disabled.</p>
-<p>For example, the following command enables <a class="reference internal" href="#debugging-debug-information-g"><span class="std std-ref">Debug information</span></a> and <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a> optimization (for both LLVM and JavaScript), but then explicitly turns off the JavaScript optimizer.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc -O2 --js-opts <span class="m">0</span> -g4 tests/hello_world_loop.cpp
-</pre></div>
-</div>
-<p>The result is code that can be more useful for debugging issues related to LLVM-optimized code:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">_main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">label</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="kd">var</span> <span class="nx">$puts</span><span class="o">=</span><span class="nx">_puts</span><span class="p">(((</span><span class="mi">8</span><span class="p">)</span><span class="o">|</span><span class="mi">0</span><span class="p">));</span> <span class="c1">//@line 4 &quot;tests/hello_world.c&quot;</span>
-  <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">//@line 5 &quot;tests/hello_world.c&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1441,7 +1435,7 @@ and other issues don’t cause false positives.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.0',
+            VERSION:'2.0.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

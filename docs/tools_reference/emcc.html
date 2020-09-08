@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.0 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.2 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.2 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -392,7 +392,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#disabling-optimizations">Disabling optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
@@ -427,6 +426,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -1150,8 +1150,8 @@ should link with something higher.)</p>
 </pre></div>
 </div>
 </div>
-<p>You can also specify that the value of an option will be read from a specified JSON-formatted file. For example, the following option sets the <code class="docutils literal notranslate"><span class="pre">DEAD_FUNCTIONS</span></code> option with the contents of the file at <strong>path/to/file</strong>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">s</span> <span class="n">DEAD_FUNCTIONS</span><span class="o">=@/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">file</span>
+<p>You can also specify that the value of an option will be read from a specified JSON-formatted file. For example, the following option sets the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> option with the contents of the file at <strong>path/to/file</strong>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=@/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">file</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1228,21 +1228,6 @@ you want to host it on a different server, for example).</p>
 </div>
 </dd>
 </dl>
-<dl id="emcc-js-opts">
-<dt><code class="docutils literal notranslate"><span class="pre">--js-opts</span> <span class="pre">&lt;level&gt;</span></code></dt><dd><p>Enables JavaScript optimizations, relevant when we generate JavaScript. Possible <code class="docutils literal notranslate"><span class="pre">level</span></code> values are:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: Prevent JavaScript optimizer from running.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>: Use JavaScript optimizer (default).</p></li>
-</ul>
-</div></blockquote>
-<p>You normally don’t need to specify this option, as <code class="docutils literal notranslate"><span class="pre">-O</span></code> with an optimization level will set a good value.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Some options might override this flag (e.g. <code class="docutils literal notranslate"><span class="pre">DEAD_FUNCTIONS</span></code>, <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> and <code class="docutils literal notranslate"><span class="pre">SPLIT_MEMORY</span></code> override the value with <code class="docutils literal notranslate"><span class="pre">js-opts=1</span></code>), because they depend on the js-optimizer.</p>
-</div>
-</dd>
-</dl>
 <dl id="emcc-llvm-opts">
 <dt><code class="docutils literal notranslate"><span class="pre">--llvm-opts</span> <span class="pre">&lt;level&gt;</span></code></dt><dd><p>Enables LLVM optimizations, relevant when we call the LLVM optimizer (which is done when building source files to object files / bitcode). Possible <code class="docutils literal notranslate"><span class="pre">level</span></code> values are:</p>
 <blockquote>
@@ -1279,7 +1264,7 @@ you want to host it on a different server, for example).</p>
 <li><p>Consider using <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MODULARIZE=1</span></code> when using closure, as it minifies globals to names that might conflict with others in the global scope. <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> puts all the output into a function (see <code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code>).</p></li>
 <li><p>Closure will minify the name of <cite>Module</cite> itself, by default! Using <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> will solve that as well. Another solution is to make sure a global variable called <cite>Module</cite> already exists before the closure-compiled code runs, because then it will reuse that variable.</p></li>
 <li><p>If closure compiler hits an out-of-memory, try adjusting <code class="docutils literal notranslate"><span class="pre">JAVA_HEAP_SIZE</span></code> in the environment (for example, to 4096m for 4GB).</p></li>
-<li><p>Closure is only run if JavaScript opts are being done (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> or above, or <code class="docutils literal notranslate"><span class="pre">--js-opts</span> <span class="pre">1</span></code>).</p></li>
+<li><p>Closure is only run if JavaScript opts are being done (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> or above).</p></li>
 </ul>
 </div>
 </dd>
@@ -1625,7 +1610,7 @@ local system headers etc. which we need to avoid when cross-compiling).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.0',
+            VERSION:'2.0.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
