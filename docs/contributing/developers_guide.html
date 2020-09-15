@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Developer&#39;s Guide &mdash; Emscripten 2.0.2 documentation</title>
+  <title>Developer’s Guide &mdash; Emscripten 2.0.2 documentation</title>
   
 
   
@@ -931,13 +931,14 @@
 <li class="toctree-l3"><a class="reference internal" href="contributing.html#next-steps">Next steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Developer's Guide</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Developer’s Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#submitting-patches">Submitting patches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#code-reviews">Code reviews</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#compiler-overview">Compiler overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-test-suite">Emscripten Test Suite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bisecting">Bisecting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#see-also">See also</a></li>
 </ul>
 </li>
@@ -1035,7 +1036,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Contributing to Emscripten</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Developer's Guide</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Developer’s Guide</div>
   </div>
  
 </div>
@@ -1053,24 +1054,24 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Contributing to Emscripten</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Developer's Guide</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Developer’s Guide</div>
   </div>
  
 </div> -->
           <div role="main">
             
   <div class="section" id="developer-s-guide">
-<span id="id1"></span><h1>Developer's Guide<a class="headerlink" href="#developer-s-guide" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Developer’s Guide<a class="headerlink" href="#developer-s-guide" title="Permalink to this headline">¶</a></h1>
 <p>This article provides information that is relevant to people who want to
 contribute to Emscripten. We welcome contributions from anyone that is
 interested in helping out!</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The information will be less relevant if you're just using Emscripten, but may still be of interest.</p>
+<p>The information will be less relevant if you’re just using Emscripten, but may still be of interest.</p>
 </div>
 <div class="section" id="setting-up">
 <span id="developers-guide-setting-up"></span><h2>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this headline">¶</a></h2>
-<p>For contributing to core Emscripten code, such as <code class="docutils literal notranslate"><span class="pre">emcc.py</span></code>, you don't need to
+<p>For contributing to core Emscripten code, such as <code class="docutils literal notranslate"><span class="pre">emcc.py</span></code>, you don’t need to
 build any binaries as <code class="docutils literal notranslate"><span class="pre">emcc.py</span></code> is in Python, and the core JS generation is
 in JavaScript. You do still need binaries for LLVM and Binaryen, which you can
 get using the emsdk:</p>
@@ -1078,7 +1079,7 @@ get using the emsdk:</p>
 <span class="n">emsdk</span> <span class="n">activate</span> <span class="n">tot</span><span class="o">-</span><span class="n">upstream</span>
 </pre></div>
 </div>
-<p>That gets a &quot;tip-of-tree&quot; build of the very latest binaries. You can use those
+<p>That gets a “tip-of-tree” build of the very latest binaries. You can use those
 binaries with a checkout of the core Emscripten repository, simply by calling
 <code class="docutils literal notranslate"><span class="pre">emcc.py</span></code> from that checkout, and it will use the binaries from the emsdk.</p>
 <p>If you do want to contribute to LLVM or Binaryen, or to test modifications
@@ -1094,22 +1095,24 @@ and Binaryen, which Emscripten invokes, and
 </div>
 <div class="section" id="submitting-patches">
 <span id="developers-guide-submitting-patches"></span><h2>Submitting patches<a class="headerlink" href="#submitting-patches" title="Permalink to this headline">¶</a></h2>
-<p>Patches should be submitted as <em>pull requests</em> to the <strong>master</strong> branch.</p>
+<p>Patches should be submitted as <em>pull requests</em> in the normal way on GitHub.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Before submitting your first patch, add yourself to the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/AUTHORS">AUTHORS</a> file. By doing so, you agree to license your code under the project's <a class="reference internal" href="../introducing_emscripten/emscripten_license.html#emscripten-license"><span class="std std-ref">open source licenses (MIT/LLVM)</span></a>.</p>
+<p>Together with your first patch, add yourself to the
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/AUTHORS">AUTHORS</a>
+file. By doing so, you agree to license your code under the project’s
+<a class="reference internal" href="../introducing_emscripten/emscripten_license.html#emscripten-license"><span class="std std-ref">open source licenses (MIT/LLVM)</span></a>.</p>
 </div>
 <p>When submitting patches, please:</p>
 <ul class="simple">
-<li><p>Make pull requests to <strong>master</strong>.</p></li>
 <li><p>Add an automatic test if you add any new functionality or fix a bug. Search
 in <code class="docutils literal notranslate"><span class="pre">tests/*.py</span></code> for related tests, as often the simplest thing is to add to
-an existing one. If you're not sure how to test your code, feel free to ask
+an existing one. If you’re not sure how to test your code, feel free to ask
 for help.</p></li>
 <li><p>We normally squash and merge PRs, which means the PR turns into a single
-commit on the target branch. Because of that, it's ok to have merge commits
+commit on the target branch. Because of that, it’s ok to have merge commits
 in the PR itself, as they get removed. Please put a good description for
-the final commit in the PR description, and we'll use it when squashing.</p></li>
+the final commit in the PR description, and we’ll use it when squashing.</p></li>
 </ul>
 </div>
 <div class="section" id="code-reviews">
@@ -1139,8 +1142,41 @@ emitted alongside the wasm.</p></li>
 <p>Emscripten has a <a class="reference internal" href="../getting_started/test-suite.html#emscripten-test-suite"><span class="std std-ref">comprehensive test suite</span></a>, which
 covers virtually all Emscripten functionality. These tests are run on CI
 automatically when you create a pull request, and they should all pass. If you
-run into trouble with a test failure you can't fix, please let the developers
+run into trouble with a test failure you can’t fix, please let the developers
 know.</p>
+</div>
+<div class="section" id="bisecting">
+<h2>Bisecting<a class="headerlink" href="#bisecting" title="Permalink to this headline">¶</a></h2>
+<p>If you find a regression, bisection is often the fastest way to figure out what
+went wrong. This is true not just for finding an actual regression in Emscripten
+but also if your project stopped working when you upgrade, and you need to
+investigate if it’s an Emscripten regression or something else.</p>
+<p>The normal <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">bisect</span></code> workflow can work if you just need to bisect a single
+repository. For example, you can bisect only on the emscripten repo if you are on
+a range that all works with the same versions of LLVM and Binaryen (which was
+mentioned earlier, are two separate codebases that are depended on).</p>
+<p>If you have a large bisection range, you generally can’t bisect a single repo.
+You can still bisect, though! To do that you need the emsdk and to understand
+how the
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/docs/process.md#release-processes">release process</a>
+works for all the repos together. The key “trick” is that:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">tot</span>
+</pre></div>
+</div>
+<p>can install an arbitrary build of emscripten: it installs the one identified
+in <code class="docutils literal notranslate"><span class="pre">emscripten-releases-tot.txt</span></code>. You can therefore bisect on the
+<a class="reference external" href="https://chromium.googlesource.com/emscripten-releases">releases repo</a> which
+has a DEPS file that specifies what version of all the various repos are
+in which release. At each bisection step in this repo the git hash identifies a
+particular <cite>tot</cite> release (which when it was built, was tip-of-tree).</p>
+<p>For the actual bisection you can use
+<a class="reference external" href="https://git-scm.com/docs/git-bisect">git bisect</a>. Each step in will download
+a complete build which is not a trivial download. However, at least the number
+of such steps will be logarithmic!</p>
+<p>This bisects down to a single commit in the releases repo. That commit will
+generally update a single sub-repo from one commit to another. That will often
+be a very short list or even a single commit. If it’s more than one, you can
+bisect there while using a fixed build for the other repos.</p>
 </div>
 <div class="section" id="see-also">
 <h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
@@ -1211,7 +1247,7 @@ know.</p>
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Contributing to Emscripten</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Developer's Guide</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Developer’s Guide</div>
   </div>
  
 </div> -->
@@ -1234,7 +1270,7 @@ know.</p>
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Developer%27s%20Guide%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/contributing/developers_guide&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Developer%E2%80%99s%20Guide%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/contributing/developers_guide&labels=bug">Page bug</a>
       </li>
   </ul>
   
