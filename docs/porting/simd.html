@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.4 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.5 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.4 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.5 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -182,7 +182,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-linker-output-files">Emscripten linker output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -444,7 +444,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#integrating-with-a-build-system">Integrating with a build system</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-build-output-files">Emscripten build output files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#emscripten-linker-output-files">Emscripten linker output files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-optimizations">Building projects with optimizations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-libraries">Using libraries</a></li>
@@ -1734,7 +1734,7 @@
 <td><p>🟡 wasm_v128_load. VM must guess type. <span class="raw-html"><br /></span> Unaligned load on x86 CPUs.</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_load1_pd (_mm_load_pd1)</p></td>
-<td><p>🟡 Virtual. v64x2.load_splat, VM must guess type.</p></td>
+<td><p>🟡 Virtual. wasm_v64x2_load_splat, VM must guess type.</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_load_sd</p></td>
 <td><p>❌ emulated with wasm_f64x2_make</p></td>
@@ -2158,7 +2158,7 @@
 <td><p>⚠️ emulated with a SIMD add+two shuffles</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_loaddup_pd</p></td>
-<td><p>🟡 Scalar load + splat.</p></td>
+<td><p>🟡 Virtual. wasm_v64x2_load_splat, VM must guess type.</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_movedup_pd</p></td>
 <td><p>💡 emulated with a general shuffle</p></td>
@@ -3085,7 +3085,7 @@ wide intrinsics.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.4',
+            VERSION:'2.0.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
