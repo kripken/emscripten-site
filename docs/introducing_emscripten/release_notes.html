@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 2.0.5 documentation</title>
+  <title>Release Notes &mdash; Emscripten 2.0.6 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.5 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.6 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -199,6 +199,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -461,6 +462,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1065,7 +1067,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 2.0.5 (Sep 28, 2020) is listed below.</p>
+<p>The ChangeLog for Emscripten 2.0.6 (Oct 06, 2020) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that in the compiler, version numbering is used as the mechanism to
@@ -1085,6 +1087,23 @@ See docs/process.md for how version tagging works.
 
 Current Trunk
 -------------
+- IDBFS now persists files whenever their timestamp changes; previously it acted
+  on sync only if the timestamp increased and ignored the file changes otherwise.
+- When `-s SUPPORT_LONGJMP=0` is passed to disable longjmp, do not run the LLVM
+  wasm backend path that handles longjmp. Before this only affected linking, and
+  now the flag gives you the ability to affect codegen at compile time too. This
+  is necessary if one does not want any invokes generated for longjmp at all.
+  (#12394)
+
+2.0.6: 10/02/2020
+-----------------
+- Add new `COMPILER_WRAPPER` settings (with corresponding `EM_COMPILER_WRAPPER`
+  environment variable.  This replaces the existing `EMMAKEN_COMPILER`
+  environment variable which is deprecated, but still works for the time being.
+  The main differences is that `EM_COMPILER_WRAPPER` only wrapps the configured
+  version of clang rather than replacing it.
+- ASAN_SHADOW_SIZE is deprecated. When using AddressSanitizer, the correct
+  amount of shadow memory will now be calculated automatically.
 
 2.0.5: 09/28/2020
 -----------------
@@ -5382,7 +5401,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.5',
+            VERSION:'2.0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

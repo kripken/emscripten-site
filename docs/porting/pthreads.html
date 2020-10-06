@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 2.0.5 documentation</title>
+  <title>Pthreads support &mdash; Emscripten 2.0.6 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.5 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.6 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Networking" href="networking.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -199,6 +199,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -461,6 +462,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1069,7 +1071,7 @@ by default and you don’t need to flip any flags.</p>
 <h2>Compiling with pthreads enabled<a class="headerlink" href="#compiling-with-pthreads-enabled" title="Permalink to this headline">¶</a></h2>
 <p>By default, support for pthreads is not enabled. To enable code generation for pthreads, the following command line flags exist:</p>
 <ul class="simple">
-<li><p>Pass the compiler flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code> when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</p></li>
+<li><p>Pass the compiler flag <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</p></li>
 <li><p>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code> to specify a predefined pool of web workers to populate at page preRun time before application main() is called. This is important because if the workers do not already exist then we may need to wait for the next browser event iteration for certain things, see below.</p></li>
 </ul>
 <p>There should be no other changes required. In C/C++ code, the preprocessor check <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__EMSCRIPTEN_PTHREADS__</span></code> can be used to detect whether Emscripten is currently targeting pthreads.</p>
@@ -1088,7 +1090,9 @@ without threads, and pick between them at runtime.</p>
 a new one that creates a pthread and runs the original <code class="docutils literal notranslate"><span class="pre">main()</span></code> on it. As a
 result, your application’s <code class="docutils literal notranslate"><span class="pre">main()</span></code> is run off the browser main (UI) thread,
 which is good for responsiveness. The browser main thread does still run code
-when things are proxied to it, for example to handle events, rendering, etc.</p></li>
+when things are proxied to it, for example to handle events, rendering, etc.
+The main thread also does things like create pthreads for you, so that you
+can depend on them synchronously.</p></li>
 </ul>
 <p>Note that Emscripten has the
 <code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code> <a class="reference internal" href="../tools_reference/emcc.html#proxy-to-worker"><span class="std std-ref">linker flag</span></a> which sounds similar
@@ -1161,7 +1165,24 @@ your application to be refactored to use asynchronous events, perhaps through
 <h2>Special considerations<a class="headerlink" href="#special-considerations" title="Permalink to this headline">¶</a></h2>
 <p>The Emscripten implementation for the pthreads API should follow the POSIX standard closely, but some behavioral differences do exist:</p>
 <ul class="simple">
-<li><p>When the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code> is not specified and <code class="docutils literal notranslate"><span class="pre">pthread_create()</span></code> is called, the new thread will not start until control is yielded back to the browser’s main event loop, because the web worker cannot be created while JS or wasm code is running. This is a violation of POSIX behavior and will break common code which creates a thread and immediately joins it or otherwise synchronously waits to observe an effect such as a memory write. Using a pool creates the web workers before main is called, allowing thread creation to be synchronous.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">pthread_create()</span></code> is called, if we need to create a new Web Worker,
+then that requires returning the main event loop. That is, you cannot call
+<code class="docutils literal notranslate"><span class="pre">pthread_create</span></code> and then keep running code synchronously that expects the
+worker to start running - it will only run after you return to the event loop.
+This is a violation of POSIX behavior and will break common code which creates
+a thread and immediately joins it or otherwise synchronously waits to observe
+an effect such as a memory write. There are several solutions to this:</p>
+<ol class="arabic simple">
+<li><p>Return to the main event loop (for example, use
+<code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop</span></code>, or Asyncify).</p></li>
+<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code>. Using a pool
+creates the Web Workers before main is called, so they can just be used
+when <code class="docutils literal notranslate"><span class="pre">pthread_create</span></code> is called.</p></li>
+<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PROXY_TO_PTHREAD</span></code>, which will run <code class="docutils literal notranslate"><span class="pre">main()</span></code> on
+a worker for you. When doing so, <code class="docutils literal notranslate"><span class="pre">pthread_create</span></code> is proxied to the
+main browser thread, where it can return to the main event loop as needed.</p></li>
+</ol>
+</li>
 <li><p>The Emscripten implementation does not support <a class="reference external" href="http://man7.org/linux/man-pages/man7/signal.7.html">POSIX signals</a>, which are sometimes used in conjunction with pthreads. This is because it is not possible to send signals to web workers and pre-empt their execution. The only exception to this is pthread_kill() which can be used as normal to forcibly terminate a running thread.</p></li>
 <li><p>The Emscripten implementation does also not support multiprocessing via <code class="docutils literal notranslate"><span class="pre">fork()</span></code> and <code class="docutils literal notranslate"><span class="pre">join()</span></code>.</p></li>
 <li><p>For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref “dom.workers.maxPerDomain”.</p></li>
@@ -1294,7 +1315,7 @@ your application to be refactored to use asynchronous events, perhaps through
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.5',
+            VERSION:'2.0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

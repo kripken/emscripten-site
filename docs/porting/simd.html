@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.5 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.6 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.5 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.6 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -199,6 +199,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -461,6 +462,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1818,10 +1820,10 @@
 <td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_mulhi_epi16</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a SIMD four widen+two mul+generic shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_mulhi_epu16</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a SIMD four widen+two mul+generic shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_mullo_epi16</p></td>
 <td><p>✅ wasm_i16x8_mul</p></td>
@@ -1845,7 +1847,7 @@
 <td><p>💭 No-op.</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_sad_epu8</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with eleven SIMD instructions+const</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_set_epi16</p></td>
 <td><p>✅ wasm_i16x8_make</p></td>
@@ -2191,13 +2193,13 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_mm_abs_epi8</p></td>
-<td><p>⚠️ emulated with a SIMD shift+xor+add</p></td>
+<td><p>✅ wasm_i8x16_abs</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_abs_epi16</p></td>
-<td><p>⚠️ emulated with a SIMD shift+xor+add</p></td>
+<td><p>✅ wasm_i16x8_abs</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_abs_epi32</p></td>
-<td><p>⚠️ emulated with a SIMD shift+xor+add</p></td>
+<td><p>✅ wasm_i32x4_abs</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_alignr_epi8</p></td>
 <td><p>⚠️ emulated with a SIMD or+two shifts</p></td>
@@ -2221,22 +2223,22 @@
 <td><p>⚠️ emulated with a SIMD subs+two shuffles</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_maddubs_epi16</p></td>
-<td><p>💣 scalarized</p></td>
+<td><p>⚠️ emulated with SIMD saturated add+four shifts+two muls+and+const</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_mulhrs_epi16</p></td>
-<td><p>💣 scalarized (TODO: emulatable in SIMD?)</p></td>
+<td><p>⚠️ emulated with SIMD four widen+two muls+four adds+complex shuffle+const</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_shuffle_epi8</p></td>
-<td><p>💣 scalarized (TODO: use wasm_v8x16_swizzle when available)</p></td>
+<td><p>⚠️ emulated with a SIMD swizzle+and+const</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_sign_epi8</p></td>
-<td><p>⚠️ emulated with a SIMD complex shuffle+cmp+xor+andnot</p></td>
+<td><p>⚠️ emulated with SIMD two cmp+two logical+add</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_sign_epi16</p></td>
-<td><p>⚠️ emulated with a SIMD shr+cmp+xor+andnot</p></td>
+<td><p>⚠️ emulated with SIMD two cmp+two logical+add</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_sign_epi32</p></td>
-<td><p>⚠️ emulated with a SIMD shr+cmp+xor+andnot</p></td>
+<td><p>⚠️ emulated with SIMD two cmp+two logical+add</p></td>
 </tr>
 </tbody>
 </table>
@@ -2291,43 +2293,43 @@
 <td><p>❌ scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cmpeq_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a SIMD cmp+and+shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepi16_epi32</p></td>
 <td><p>✅ wasm_i32x4_widen_low_i16x8</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepi16_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a SIMD widen+const+cmp+shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepi32_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with SIMD const+cmp+shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepi8_epi16</p></td>
 <td><p>✅ wasm_i16x8_widen_low_i8x16</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepi8_epi32</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with two SIMD widens</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepi8_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with two SIMD widens+const+cmp+shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepu16_epi32</p></td>
 <td><p>✅ wasm_i32x4_widen_low_u16x8</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepu16_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with SIMD const+two shuffles</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepu32_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with SIMD const+shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepu8_epi16</p></td>
 <td><p>✅ wasm_i16x8_widen_low_u8x16</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepu8_epi32</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with two SIMD widens</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepu8_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with SIMD const+three shuffles</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_dp_pd</p></td>
 <td><p>⚠️ emulated with SIMD mul+add+setzero+2xblend</p></td>
@@ -3085,7 +3087,7 @@ wide intrinsics.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.5',
+            VERSION:'2.0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

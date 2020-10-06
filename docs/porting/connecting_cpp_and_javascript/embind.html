@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 2.0.5 documentation</title>
+  <title>Embind &mdash; Emscripten 2.0.6 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.5 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.6 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -199,6 +199,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -461,6 +462,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1250,6 +1252,11 @@ converted to and from JavaScript Arrays and <a class="reference internal" href="
     <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
 <span class="p">};</span>
 
+    <span class="c1">// Array fields are treated as if they were std::array&lt;type,size&gt;</span>
+    <span class="k">struct</span> <span class="n">ArrayInStruct</span> <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+    <span class="p">};</span>
+
 <span class="n">PersonRecord</span> <span class="nf">findPersonAtLocation</span><span class="p">(</span><span class="n">Point2f</span><span class="p">);</span>
 
 <span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">my_value_example</span><span class="p">)</span> <span class="p">{</span>
@@ -1262,6 +1269,16 @@ converted to and from JavaScript Arrays and <a class="reference internal" href="
         <span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">PersonRecord</span><span class="o">::</span><span class="n">name</span><span class="p">)</span>
         <span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">PersonRecord</span><span class="o">::</span><span class="n">age</span><span class="p">)</span>
         <span class="p">;</span>
+
+            <span class="n">value_object</span><span class="o">&lt;</span><span class="n">ArrayInStruct</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;ArrayInStruct&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">&quot;field&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ArrayInStruct</span><span class="o">::</span><span class="n">field</span><span class="p">)</span> <span class="c1">// Need to register the array type</span>
+                    <span class="p">;</span>
+
+            <span class="c1">// Register std::array&lt;int, 2&gt; because ArrayInStruct::field is interpreted as such</span>
+            <span class="n">value_array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;array_int_2&quot;</span><span class="p">)</span>
+                    <span class="p">.</span><span class="n">element</span><span class="p">(</span><span class="n">index</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">())</span>
+                    <span class="p">.</span><span class="n">element</span><span class="p">(</span><span class="n">index</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">())</span>
+                    <span class="p">;</span>
 
     <span class="n">function</span><span class="p">(</span><span class="s">&quot;findPersonAtLocation&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">findPersonAtLocation</span><span class="p">);</span>
 <span class="p">}</span>
@@ -2003,7 +2020,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.0.5',
+            VERSION:'2.0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
