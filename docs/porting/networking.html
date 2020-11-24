@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Networking &mdash; Emscripten 2.0.7 documentation</title>
+  <title>Networking &mdash; Emscripten 2.0.9 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.7 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.9 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Porting SIMD code targeting WebAssembly" href="simd.html"/>
         <link rel="prev" title="Pthreads support" href="pthreads.html"/> 
@@ -288,7 +288,7 @@
 <li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &quot;directly&quot; from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
@@ -833,6 +833,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-emscripten-optimizes">How Emscripten optimizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#link-times">Link Times</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#webassembly">WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a><ul>
@@ -896,7 +897,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -922,7 +923,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#next-steps">Next steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer's Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#submitting-patches">Submitting patches</a></li>
@@ -1054,17 +1055,17 @@
   <div class="section" id="networking">
 <h1>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten compiled applications have a number of ways to connect with online servers. Check the subtopics here to learn about the different strategies that are available.</p>
-<p>If you are familiar with networking concepts provided by different web APIs, such as XmlHttpRequest, Fetch, WebSockets and WebRTC, you can quickly get started by leveraging what you already know: by calling out from C/C++ code to JavaScript (see the &quot;Connecting C++ and JavaScript&quot; section), you can establish networked connections by writing regular JavaScript. For C/C++ developers, Emscripten provides a few approaches, described here.</p>
+<p>If you are familiar with networking concepts provided by different web APIs, such as XmlHttpRequest, Fetch, WebSockets and WebRTC, you can quickly get started by leveraging what you already know: by calling out from C/C++ code to JavaScript (see the “Connecting C++ and JavaScript” section), you can establish networked connections by writing regular JavaScript. For C/C++ developers, Emscripten provides a few approaches, described here.</p>
 <div class="section" id="emscripten-websockets-api">
 <h2>Emscripten WebSockets API<a class="headerlink" href="#emscripten-websockets-api" title="Permalink to this headline">¶</a></h2>
 <p>WebSockets API provides connection-oriented message-framed bidirectional asynchronous networking communication to the browser. It is the closest to TCP on the web that web sites can access, direct access to TCP sockets is not possible from web browsers.</p>
 <p>Emscripten provides a passthrough API for accessing the WebSockets API from C/C++ code. This is useful for developers who would prefer not to write any JavaScript code, or deal with the C/C++ and JavaScript language interop. See the system include file &lt;emscripten/websocket.h&gt; for details. One benefit that the Emscripten WebSockets API provides over manual WebSockets access in JavaScript is the ability to share access to a WebSocket handle across multiple threads, something that can be time consuming to develop from scratch.</p>
-<p>To target Emscripten WebSockets API, you must link it in with a &quot;-lwebsocket.js&quot; linker directive.</p>
+<p>To target Emscripten WebSockets API, you must link it in with a “-lwebsocket.js” linker directive.</p>
 </div>
 <div class="section" id="emulated-posix-tcp-sockets-over-websockets">
 <h2>Emulated POSIX TCP Sockets over WebSockets<a class="headerlink" href="#emulated-posix-tcp-sockets-over-websockets" title="Permalink to this headline">¶</a></h2>
 <p>If you have existing TCP networking code written in C/C++ that utilizes the Posix Sockets API, by default Emscripten attempts to emulate such connections to take place over the WebSocket protocol instead. For this to work, you will need to use something like WebSockify on the server side to enable the TCP server stack to receive incoming WebSocket connections. This emulation is not very complete at the moment, it is likely that you will run into problems out of the box and need to adapt the code to work within the limitations that this emulation provides.</p>
-<p>This is the default build mode for Emscripten. Use the linker flag <cite>-s WEBSOCKET_URL</cite> or <cite>Module['websocket']['url]</cite> to specify the WebSocket URL to connect to, and the linker flag <cite>-s WEBSOCKET_SUBPROTOCOL</cite> or <cite>Module['websocket']['subprotocol']</cite> to control the connection type ('binary' or 'text').</p>
+<p>This is the default build mode for Emscripten. Use the linker flag <cite>-s WEBSOCKET_URL</cite> or <cite>Module[‘websocket’][‘url]</cite> to specify the WebSocket URL to connect to, and the linker flag <cite>-s WEBSOCKET_SUBPROTOCOL</cite> or <cite>Module[‘websocket’][‘subprotocol’]</cite> to control the connection type (‘binary’ or ‘text’).</p>
 </div>
 <div class="section" id="full-posix-sockets-over-websocket-proxy-server">
 <h2>Full POSIX Sockets over WebSocket Proxy Server<a class="headerlink" href="#full-posix-sockets-over-websocket-proxy-server" title="Permalink to this headline">¶</a></h2>
@@ -1079,7 +1080,7 @@
 </ul>
 </dd>
 </dl>
-<p>To use POSIX sockets proxying, link the application with flags &quot;-lwebsocket.js -s PROXY_POSIX_SOCKETS=1 -s USE_PTHREADS=1 -s PROXY_TO_PTHREAD=1&quot;. That is, POSIX sockets proxying builds on top of the Emscripten WebSockets library, and requires multithreading and proxying the application main() to a pthread.</p>
+<p>To use POSIX sockets proxying, link the application with flags “-lwebsocket.js -s PROXY_POSIX_SOCKETS=1 -s USE_PTHREADS=1 -s PROXY_TO_PTHREAD=1”. That is, POSIX sockets proxying builds on top of the Emscripten WebSockets library, and requires multithreading and proxying the application main() to a pthread.</p>
 <p>For an example of how the POSIX Sockets proxy server works in an Emscripten client program, see the file tests/websocket/tcp_echo_client.cpp.</p>
 </div>
 <div class="section" id="xmlhttprequests-and-fetch-api">
@@ -1203,7 +1204,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.7',
+            VERSION:'2.0.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

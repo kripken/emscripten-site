@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.7 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.9 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.7 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.9 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -288,7 +288,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &quot;directly&quot; from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
@@ -833,6 +833,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-emscripten-optimizes">How Emscripten optimizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#link-times">Link Times</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#webassembly">WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a><ul>
@@ -896,7 +897,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -922,7 +923,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#next-steps">Next steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer's Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#submitting-patches">Submitting patches</a></li>
@@ -1060,7 +1061,8 @@
 </pre></div>
 </div>
 <p>(Note that you will need <code class="docutils literal notranslate"><span class="pre">./emcc</span></code> if you want to run emcc from your current directory.)</p>
-<p>The input file(s) can be either source code files that <em>Clang</em> can handle (C or C++), LLVM bitcode in binary form, or LLVM assembly files in human-readable form.</p>
+<p>The input file(s) can be either source code files that <em>Clang</em> can handle (C or
+C++), object files (produced by <cite>emcc -c</cite>), or LLVM assembly files.</p>
 <div class="section" id="arguments">
 <h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
 <p>Most <a class="reference external" href="http://linux.die.net/man/1/clang">clang options</a> will work, as will <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html#Option-Summary">gcc options</a>, for example:</p>
@@ -1206,12 +1208,12 @@ you want to host it on a different server, for example).</p>
 <dt><code class="docutils literal notranslate"><span class="pre">--emit-symbol-map</span></code></dt><dd><p>Save a map file between the minified global names and the original function names. This allows you, for example, to reconstruct meaningful stack traces.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This is only relevant when <a class="reference internal" href="../site/glossary.html#term-minifying"><span class="xref std std-term">minifying</span></a> global names, which happens in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and above, and when no <code class="docutils literal notranslate"><span class="pre">-g</span></code> option was specified to prevent minification.</p>
+<p>This is only relevant when <a class="reference internal" href="../site/glossary.html#term-Minifying"><span class="xref std std-term">minifying</span></a> global names, which happens in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and above, and when no <code class="docutils literal notranslate"><span class="pre">-g</span></code> option was specified to prevent minification.</p>
 </div>
 </dd>
 </dl>
 <dl id="emcc-llvm-opts">
-<dt><code class="docutils literal notranslate"><span class="pre">--llvm-opts</span> <span class="pre">&lt;level&gt;</span></code></dt><dd><p>Enables LLVM optimizations, relevant when we call the LLVM optimizer (which is done when building source files to object files / bitcode). Possible <code class="docutils literal notranslate"><span class="pre">level</span></code> values are:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--llvm-opts</span> <span class="pre">&lt;level&gt;</span></code></dt><dd><p>Enables LLVM optimizations, relevant when we call the LLVM optimizer (which is done when building source files to object code). Possible <code class="docutils literal notranslate"><span class="pre">level</span></code> values are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: No LLVM optimizations (default in -O0).</p></li>
@@ -1232,7 +1234,7 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl id="emcc-closure">
-<dt><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">&lt;on&gt;</span></code></dt><dd><p>Runs the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible <code class="docutils literal notranslate"><span class="pre">on</span></code> values are:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">&lt;on&gt;</span></code></dt><dd><p>Runs the <a class="reference internal" href="../site/glossary.html#term-Closure-Compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible <code class="docutils literal notranslate"><span class="pre">on</span></code> values are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: No closure compiler (default in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and below).</p></li>
@@ -1286,7 +1288,7 @@ code together with everything else, keep it in the same scope if running
 <p>Preloaded files are stored in <strong>filename.data</strong>, where <strong>filename.html</strong> is the main file you are compiling to. To run your code, you will need both the <strong>.html</strong> and the <strong>.data</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>, except that it is only relevant when generating HTML (it uses asynchronous binary <a class="reference internal" href="../site/glossary.html#term-xhr"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
+<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>, except that it is only relevant when generating HTML (it uses asynchronous binary <a class="reference internal" href="../site/glossary.html#term-XHR"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
 </div>
 <p><em>emcc</em> runs <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tools/file_packager.py">tools/file_packager.py</a> to do the actual packaging of embedded and preloaded files. You can run the file packager yourself if you want (see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files-file-packager"><span class="std std-ref">Packaging using the file packager tool</span></a>). You should then put the output of the file packager in an emcc <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, so that it executes before your main compiled code.</p>
 <p>For more information about the <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> options, see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
@@ -1436,17 +1438,17 @@ local system headers etc. which we need to avoid when cross-compiling).</p>
 </dd>
 </dl>
 <dl id="emcc-o-target">
-<dt><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">&lt;target&gt;</span></code></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">target</span></code> file name extension defines the output type to be generated:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">&lt;target&gt;</span></code></dt><dd><p>When linking an executable, the <code class="docutils literal notranslate"><span class="pre">target</span></code> file name extension defines the output type to be generated:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>&lt;name&gt; <strong>.js</strong> : JavaScript (+ separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly). (default)</p></li>
 <li><p>&lt;name&gt; <strong>.mjs</strong> : ES6 JavaScript module (+ separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly).</p></li>
 <li><p>&lt;name&gt; <strong>.html</strong> : HTML + separate JavaScript file (<strong>&lt;name&gt;.js</strong>; + separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly).</p></li>
-<li><p>&lt;name&gt; <strong>.bc</strong> : LLVM bitcode.</p></li>
-<li><p>&lt;name&gt; <strong>.o</strong> : WebAssembly object file (unless -flto is used in which case it will be in LLVM bitcode format).</p></li>
 <li><p>&lt;name&gt; <strong>.wasm</strong> : WebAssembly without JavaScript support code (“standalone wasm”; this enables <code class="docutils literal notranslate"><span class="pre">STANDALONE_WASM</span></code>).</p></li>
 </ul>
 </div></blockquote>
+<p>These rules only apply when linking.  When compiling to object code (See <cite>-c</cite>
+below) the name of the output file is irrelevant.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">--memory-init-file</span></code> is used, a <strong>.mem</strong> file will be created in addition to the generated <strong>.js</strong> and/or <strong>.html</strong> file.</p>
@@ -1454,11 +1456,11 @@ local system headers etc. which we need to avoid when cross-compiling).</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-c">
-<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code></dt><dd><p>Tells <em>emcc</em> to generate LLVM bitcode (which can then be linked with other bitcode files), instead of compiling all the way to JavaScript.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code></dt><dd><p>Tells <em>emcc</em> to emit an object file which can then be linked with other object files to produce an executable.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--output_eol</span> <span class="pre">windows|linux</span></code></dt><dd><p>Specifies the line ending to generate for the text files that are outputted. If “–output_eol windows” is passed, the final output files will have Windows rn line endings in them. With “–output_eol linux”, the final generated files will be written with Unix n line endings.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--cflags</span></code></dt><dd><p>Prints out the flags <code class="docutils literal notranslate"><span class="pre">emcc</span></code> would pass to <code class="docutils literal notranslate"><span class="pre">clang</span></code> to compile source code to object/bitcode form. You can use this to invoke clang yourself, and then run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> on those outputs just for the final linking+conversion to JS.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--cflags</span></code></dt><dd><p>Prints out the flags <code class="docutils literal notranslate"><span class="pre">emcc</span></code> would pass to <code class="docutils literal notranslate"><span class="pre">clang</span></code> to compile source code to object form. You can use this to invoke clang yourself, and then run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> on those outputs just for the final linking+conversion to JS.</p>
 </dd>
 </dl>
 </div>
@@ -1589,7 +1591,7 @@ local system headers etc. which we need to avoid when cross-compiling).</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.7',
+            VERSION:'2.0.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

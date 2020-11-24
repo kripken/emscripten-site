@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Function Pointer Issues &mdash; Emscripten 2.0.7 documentation</title>
+  <title>Function Pointer Issues &mdash; Emscripten 2.0.9 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.7 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.9 documentation" href="../../../index.html"/>
         <link rel="up" title="Code Portability and Limitations" href="index.html"/>
         <link rel="next" title="Specific Browser Limitations" href="browser_limitations.html"/>
         <link rel="prev" title="API Limitations" href="api_limitations.html"/> 
@@ -288,7 +288,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &quot;directly&quot; from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
@@ -833,6 +833,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#how-emscripten-optimizes">How Emscripten optimizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#link-times">Link Times</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#webassembly">WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#code-size">Code size</a><ul>
@@ -896,7 +897,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -922,7 +923,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/contributing.html#next-steps">Next steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../contributing/developers_guide.html">Developer's Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing/developers_guide.html">Developer’s Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#submitting-patches">Submitting patches</a></li>
@@ -1070,7 +1071,7 @@
 </div>
 <p>This may be related to a function pointer cast problem as implicit declarations may have a different type than how you call them. However, in general the compiler cannot warn about this, and you will only see a problem at runtime.</p>
 </li>
-<li><p>Older versions of <a class="reference internal" href="../../site/glossary.html#term-clang"><span class="xref std std-term">clang</span></a> can generate different code for C and C++ calls when a structure is passed <strong>by value</strong> (for completeness, one convention is <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">byval</span></code> and the other is <code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></code>). The two formats are incompatible with each other, and you may get a warning.</p>
+<li><p>Older versions of <a class="reference internal" href="../../site/glossary.html#term-Clang"><span class="xref std std-term">clang</span></a> can generate different code for C and C++ calls when a structure is passed <strong>by value</strong> (for completeness, one convention is <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">byval</span></code> and the other is <code class="docutils literal notranslate"><span class="pre">field</span> <span class="pre">a,</span> <span class="pre">field</span> <span class="pre">b</span></code>). The two formats are incompatible with each other, and you may get a warning.</p>
 <p>The workaround is to pass the structure by reference, or simply not mix C and C++ in that location (for example, rename the <strong>.c</strong> file to <strong>.cpp</strong>).</p>
 </li>
 </ol>
@@ -1127,7 +1128,7 @@
 </pre></div>
 </div>
 <p>The code defines three functions with different signatures: <code class="docutils literal notranslate"><span class="pre">voidReturn</span></code> of type <code class="docutils literal notranslate"><span class="pre">vi</span></code> (<code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">(int)</span></code>), <code class="docutils literal notranslate"><span class="pre">intReturn</span></code> of type <code class="docutils literal notranslate"><span class="pre">ii</span></code>, and <code class="docutils literal notranslate"><span class="pre">voidReturnNoParam</span></code> of type <code class="docutils literal notranslate"><span class="pre">v</span></code>. These function pointers are cast to type <code class="docutils literal notranslate"><span class="pre">vi</span></code> and added to a list. The functions are then called using the function pointers in the list.</p>
-<p>The code runs (and works) when compiled to native machine code (on all major platforms). You can try it by saving the code as <strong>main.c</strong> and executing <strong>cc main.c</strong> and then <strong>./a.out</strong>. You'll see this output:</p>
+<p>The code runs (and works) when compiled to native machine code (on all major platforms). You can try it by saving the code as <strong>main.c</strong> and executing <strong>cc main.c</strong> and then <strong>./a.out</strong>. You’ll see this output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">voidReturn</span><span class="p">:</span> <span class="n">hello</span> <span class="n">world</span>
 <span class="n">intReturn</span><span class="p">:</span> <span class="n">hello</span> <span class="n">world</span>
 <span class="n">voidReturnNoParam</span><span class="p">:</span>
@@ -1289,7 +1290,7 @@ Build with ASSERTIONS=2 for more info.
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.0.7',
+            VERSION:'2.0.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

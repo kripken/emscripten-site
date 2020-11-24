@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fetch API &mdash; Emscripten 2.0.7 documentation</title>
+  <title>Fetch API &mdash; Emscripten 2.0.9 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.7 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.9 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="File System API" href="Filesystem-API.html"/> 
@@ -288,7 +288,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &quot;directly&quot; from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
@@ -833,6 +833,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-emscripten-optimizes">How Emscripten optimizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#link-times">Link Times</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#webassembly">WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a><ul>
@@ -896,7 +897,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -922,7 +923,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#next-steps">Next steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer's Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#submitting-patches">Submitting patches</a></li>
@@ -1055,7 +1056,7 @@
 <span id="id1"></span><h1>Fetch API<a class="headerlink" href="#fetch-api" title="Permalink to this headline">¶</a></h1>
 <p>The Emscripten Fetch API allows native code to transfer files via XHR (HTTP GET,
 PUT, POST) from remote servers, and to persist the downloaded files locally in
-browser's IndexedDB storage, so that they can be reaccessed locally on
+browser’s IndexedDB storage, so that they can be reaccessed locally on
 subsequent page visits. The Fetch API is callable from multiple threads, and the
 network requests can be run either synchronously or asynchronously as desired.</p>
 <div class="admonition note">
@@ -1109,9 +1110,9 @@ success or the failure callback will be invoked.</p>
 caching behavior. These caches are transient (temporary) so there is no
 guarantee that the data will persist in the cache for a given period of time.
 Additionally, if the files are somewhat large (multiple megabytes), browsers
-typically don't cache the downloads at all.</p>
+typically don’t cache the downloads at all.</p>
 <p>To enable a more explicit control for persisting the downloaded files, the Fetch
-API interacts with the browser's IndexedDB API, which can load and store large
+API interacts with the browser’s IndexedDB API, which can load and store large
 data files that are available on subsequent visits to the page. To enable
 IndexedDB storage, pass the EMSCRIPTEN_FETCH_PERSIST_FILE flag in the fetch
 attributes:</p>
@@ -1131,7 +1132,7 @@ tests/fetch/example_async_xhr_to_memory_via_indexeddb.cpp.</p>
 <h3>Persisting data bytes from memory<a class="headerlink" href="#persisting-data-bytes-from-memory" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it is useful to persist a range of bytes from application memory to
 IndexedDB (without having to perform any XHRs). This is possible with the
-Emscripten Fetch API by passing the special HTTP action verb &quot;EM_IDB_STORE&quot; to
+Emscripten Fetch API by passing the special HTTP action verb “EM_IDB_STORE” to
 the Emscripten Fetch operation.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span> <span class="o">*</span><span class="n">fetch</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;IDB store succeeded.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
@@ -1168,7 +1169,7 @@ the Emscripten Fetch operation.</p>
 </div>
 <div class="section" id="deleting-a-file-from-indexeddb">
 <h3>Deleting a file from IndexedDB<a class="headerlink" href="#deleting-a-file-from-indexeddb" title="Permalink to this headline">¶</a></h3>
-<p>Files can be cleaned up from IndexedDB by using the HTTP action verb &quot;EM_IDB_DELETE&quot;:</p>
+<p>Files can be cleaned up from IndexedDB by using the HTTP action verb “EM_IDB_DELETE”:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span> <span class="o">*</span><span class="n">fetch</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Deleting file from IDB succeeded.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
   <span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
@@ -1223,11 +1224,11 @@ emscripten_fetch() returns.</p>
 restrictions, depending on which Emscripten build mode (linker flags) is used:</p>
 <ul class="simple">
 <li><p><strong>No flags</strong>: Only asynchronous Fetch operations are available.</p></li>
-<li><p><strong>--proxy-to-worker</strong>: Synchronous Fetch operations are allowed for fetches
+<li><p><strong>–proxy-to-worker</strong>: Synchronous Fetch operations are allowed for fetches
 that only do an XHR but do not interact with IndexedDB.</p></li>
 <li><p><strong>-s USE_PTHREADS=1</strong>: Synchronous Fetch operations are available on
 pthreads, but not on the main thread.</p></li>
-<li><p><strong>--proxy-to-worker</strong> + <strong>-s USE_PTHREADS=1</strong>: Synchronous Fetch operations
+<li><p><strong>–proxy-to-worker</strong> + <strong>-s USE_PTHREADS=1</strong>: Synchronous Fetch operations
 are available both on the main thread and pthreads.</p></li>
 </ul>
 </div>
@@ -1269,10 +1270,10 @@ issuing thread can perform some other work until the fetch completes.</p>
 <p class="admonition-title">Note</p>
 <p>Waitable fetches are available only in certain build modes:</p>
 <ul class="simple">
-<li><p><strong>No flags</strong> or <strong>--proxy-to-worker</strong>: Waitable fetches are not available.</p></li>
+<li><p><strong>No flags</strong> or <strong>–proxy-to-worker</strong>: Waitable fetches are not available.</p></li>
 <li><p><strong>-s USE_PTHREADS=1</strong>: Waitable fetches are available on pthreads, but not
 on the main thread.</p></li>
-<li><p><strong>--proxy-to-worker</strong> + <strong>-s USE_PTHREADS=1</strong>: Waitable fetches are
+<li><p><strong>–proxy-to-worker</strong> + <strong>-s USE_PTHREADS=1</strong>: Waitable fetches are
 available on all threads.</p></li>
 </ul>
 </div>
@@ -1321,7 +1322,7 @@ which causes emscripten_fetch() to populate the downloaded file in full in
 memory in the onsuccess() callback. This is convenient when the whole file is to
 be immediately accessed afterwards, but for large files, this can be a wasteful
 strategy in terms of memory usage. If the file is very large, it might not even
-fit inside the application's heap area.</p>
+fit inside the application’s heap area.</p>
 <p>The following subsections provide ways to manage large fetches in a memory
 efficient manner.</p>
 <div class="section" id="downloading-directly-to-indexeddb">
@@ -1337,7 +1338,7 @@ size, but will not contain the data bytes to the file.</p>
 </div>
 <div class="section" id="streaming-downloads">
 <h3>Streaming Downloads<a class="headerlink" href="#streaming-downloads" title="Permalink to this headline">¶</a></h3>
-<p>Note: This currently only works in Firefox as it uses 'moz-chunked-arraybuffer'.</p>
+<p>Note: This currently only works in Firefox as it uses ‘moz-chunked-arraybuffer’.</p>
 <p>If the application does not need random seek access to the file, but is able to
 process the file in a streaming manner, it can use the
 EMSCRIPTEN_FETCH_STREAM_DATA flag to stream through the bytes in the file as
@@ -1430,7 +1431,7 @@ Emscripten_fetch_t and #defines.</p></li>
 <li><p>Example about loading only from IndexedDB without XHRing.</p></li>
 <li><p>Example about overriding an existing file in IndexedDB with a new XHR.</p></li>
 <li><p>Example how to preload a whole filesystem to IndexedDB for easy replacement
-of --preload-file.</p></li>
+of –preload-file.</p></li>
 <li><p>Example how to persist content as gzipped to IndexedDB and decompress on
 load.</p></li>
 <li><p>Example how to abort and resume partial transfers to IndexedDB.</p></li>
@@ -1550,7 +1551,7 @@ load.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.7',
+            VERSION:'2.0.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

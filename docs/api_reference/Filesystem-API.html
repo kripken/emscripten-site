@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 2.0.7 documentation</title>
+  <title>File System API &mdash; Emscripten 2.0.9 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.7 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.9 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Fetch API" href="fetch.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -288,7 +288,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code &quot;directly&quot; from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
@@ -833,6 +833,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-to-optimize-code">How to optimize code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#how-emscripten-optimizes">How Emscripten optimizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#link-times">Link Times</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#advanced-compiler-settings">Advanced compiler settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#webassembly">WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#code-size">Code size</a><ul>
@@ -896,7 +897,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -922,7 +923,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/contributing.html#next-steps">Next steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer's Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#repositories-and-branches-of-interest">Repositories and branches of interest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#submitting-patches">Submitting patches</a></li>
@@ -1053,7 +1054,7 @@
             
   <div class="section" id="file-system-api">
 <span id="filesystem-api"></span><h1>File System API<a class="headerlink" href="#file-system-api" title="Permalink to this headline">¶</a></h1>
-<p>File operations in Emscripten are provided by the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/library_fs.js">FS</a> library. It is used internally for all of Emscripten's <strong>libc</strong> and <strong>libcxx</strong> file I/O.</p>
+<p>File operations in Emscripten are provided by the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/library_fs.js">FS</a> library. It is used internally for all of Emscripten’s <strong>libc</strong> and <strong>libcxx</strong> file I/O.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The API is <em>inspired</em> by the Linux/POSIX <a class="reference external" href="http://linux.die.net/man/2/">File System API</a>, with each presenting a very similar interface.</p>
@@ -1067,14 +1068,14 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <p>A high level overview of the way File Systems work in Emscripten-ported code is provided in the <a class="reference internal" href="../porting/files/file_systems_overview.html#file-system-overview"><span class="std std-ref">File System Overview</span></a>.</p>
 <div class="section" id="including-file-system-support">
 <h2>Including File System Support<a class="headerlink" href="#including-file-system-support" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten decides whether to include file system support automatically. Many programs don't need files, and file system support is not negligible in size, so Emscripten avoids including it when it doesn't see a reason to. That means that if your C/C++ code does not access files, then  the <code class="docutils literal notranslate"><span class="pre">FS</span></code> object and other file system APIs will not be included in the output. And, on the other hand, if your C/C++ code does use files, then file system support will be automatically included. So normally things will &quot;just work&quot; and you don't need to think about this at all.</p>
-<p>However, if your C/C++ code doesn't use files, but you want to use them from JavaScript, then you can build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">FORCE_FILESYSTEM=1</span></code>, which will make the compiler include file system support even though it doesn't see it being used.</p>
+<p>Emscripten decides whether to include file system support automatically. Many programs don’t need files, and file system support is not negligible in size, so Emscripten avoids including it when it doesn’t see a reason to. That means that if your C/C++ code does not access files, then  the <code class="docutils literal notranslate"><span class="pre">FS</span></code> object and other file system APIs will not be included in the output. And, on the other hand, if your C/C++ code does use files, then file system support will be automatically included. So normally things will “just work” and you don’t need to think about this at all.</p>
+<p>However, if your C/C++ code doesn’t use files, but you want to use them from JavaScript, then you can build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">FORCE_FILESYSTEM=1</span></code>, which will make the compiler include file system support even though it doesn’t see it being used.</p>
 <p>On the other hand, if you want to <strong>not</strong> include any filesystem support code (which may be included even due to printf or iostreams, due to how musl and libc++ are structured), you can build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">FILESYSTEM=0</span></code>. Very simple stdout support will be included if necessary in such a case, enough for printf and such to work, but no filesystem code will be added, which can save a significant amount of code size.</p>
 </div>
 <div class="section" id="persistent-data">
 <span id="filesystem-api-persist-data"></span><h2>Persistent data<a class="headerlink" href="#persistent-data" title="Permalink to this headline">¶</a></h2>
 <p>Applications compiled with Emscripten usually expect synchronous I/O, so Emscripten itself provides file systems with completely synchronous interfaces.</p>
-<p>However, due to JavaScript's event-driven nature, most <em>persistent</em> storage options offer only asynchronous interfaces. Emscripten offers <a class="reference internal" href="#filesystem-api-filesystems"><span class="std std-ref">multiple file systems</span></a> that can be mounted with <a class="reference internal" href="#FS.mount" title="FS.mount"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.mount()</span></code></a> to help deal with persistence depending on the execution context.</p>
+<p>However, due to JavaScript’s event-driven nature, most <em>persistent</em> storage options offer only asynchronous interfaces. Emscripten offers <a class="reference internal" href="#filesystem-api-filesystems"><span class="std std-ref">multiple file systems</span></a> that can be mounted with <a class="reference internal" href="#FS.mount" title="FS.mount"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.mount()</span></code></a> to help deal with persistence depending on the execution context.</p>
 </div>
 <div class="section" id="file-systems">
 <span id="filesystem-api-filesystems"></span><h2>File systems<a class="headerlink" href="#file-systems" title="Permalink to this headline">¶</a></h2>
@@ -1090,9 +1091,9 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <span id="filesystem-api-nodefs"></span><h3>NODEFS<a class="headerlink" href="#nodefs" title="Permalink to this headline">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This file system is only for use when running inside <a class="reference internal" href="../site/glossary.html#term-node-js"><span class="xref std std-term">node.js</span></a>.</p>
+<p>This file system is only for use when running inside <a class="reference internal" href="../site/glossary.html#term-node.js"><span class="xref std std-term">node.js</span></a>.</p>
 </div>
-<p>This file system lets a program in <em>node</em> map directories (via a mount operation) on the host filesystem to directories in Emscripten's virtual filesystem. It uses node's synchronous <a class="reference external" href="http://nodejs.org/api/fs.html">FS API</a> to immediately persist any data written to the Emscripten file system to your local disk.</p>
+<p>This file system lets a program in <em>node</em> map directories (via a mount operation) on the host filesystem to directories in Emscripten’s virtual filesystem. It uses node’s synchronous <a class="reference external" href="http://nodejs.org/api/fs.html">FS API</a> to immediately persist any data written to the Emscripten file system to your local disk.</p>
 <p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/fs/test_nodefs_rw.c">this test</a> for an example.</p>
 </div>
 <div class="section" id="filesystem-api-idbfs">
@@ -1121,29 +1122,29 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <p class="admonition-title">Note</p>
 <p>Every device is different and unique. While common file operations like <code class="docutils literal notranslate"><span class="pre">open</span></code>, <code class="docutils literal notranslate"><span class="pre">close</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code>, and <code class="docutils literal notranslate"><span class="pre">write</span></code> are typically supported (and inherited by file streams to provide a layer of abstraction for the equivalent <em>libc</em> functions to call), each device should implement whatever callbacks it needs based on its unique characteristics.</p>
 </div>
-<dl class="function">
+<dl class="js function">
 <dt id="FS.makedev">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">makedev</code><span class="sig-paren">(</span><em class="sig-param">ma</em>, <em class="sig-param">mi</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.makedev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a major and minor number into a single unique integer. This is used as an id to represent the device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ma</strong> -- Major number.</p></li>
-<li><p><strong>mi</strong> -- Minor number.</p></li>
+<li><p><strong>ma</strong> – Major number.</p></li>
+<li><p><strong>mi</strong> – Minor number.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.registerDevice">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">registerDevice</code><span class="sig-paren">(</span><em class="sig-param">dev</em>, <em class="sig-param">ops</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.registerDevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers the specified device driver with a set of callbacks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dev</strong> -- The specific device driver id, created using <a class="reference internal" href="#FS.makedev" title="FS.makedev"><code class="xref js js-func docutils literal notranslate"><span class="pre">makedev()</span></code></a>.</p></li>
-<li><p><strong>ops</strong> (<em>object</em>) -- The set of callbacks required by the device. For an example, see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/src/library_nodefs.js#L213">NODEFS default callbacks</a>.</p></li>
+<li><p><strong>dev</strong> – The specific device driver id, created using <a class="reference internal" href="#FS.makedev" title="FS.makedev"><code class="xref js js-func docutils literal notranslate"><span class="pre">makedev()</span></code></a>.</p></li>
+<li><p><strong>ops</strong> (<em>object</em>) – The set of callbacks required by the device. For an example, see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/src/library_nodefs.js#L213">NODEFS default callbacks</a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1163,7 +1164,7 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <p class="admonition-title">Note</p>
 <p>All the configuration should be done before the main <code class="docutils literal notranslate"><span class="pre">run()</span></code> method is executed, typically by implementing <a class="reference internal" href="module.html#Module.preRun" title="Module.preRun"><code class="xref js js-attr docutils literal notranslate"><span class="pre">Module.preRun</span></code></a>. See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code"><span class="std std-ref">Interacting with code</span></a> for more information.</p>
 </div>
-<dl class="function">
+<dl class="js function">
 <dt id="FS.init">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">input</em>, <em class="sig-param">output</em>, <em class="sig-param">error</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets up standard I/O devices for <code class="docutils literal notranslate"><span class="pre">stdin</span></code>, <code class="docutils literal notranslate"><span class="pre">stdout</span></code>, and <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
@@ -1171,9 +1172,9 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input</strong> -- Input callback. This will be called with no parameters whenever the program attempts to read from <code class="docutils literal notranslate"><span class="pre">stdin</span></code>. It should return an ASCII character code when data is available, or <code class="docutils literal notranslate"><span class="pre">null</span></code> when it isn't.</p></li>
-<li><p><strong>output</strong> -- Output callback. This will be called with an ASCII character code whenever the program writes to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>. It may also be called with <code class="docutils literal notranslate"><span class="pre">null</span></code> to flush the output.</p></li>
-<li><p><strong>error</strong> -- Error callback. This is similar to <code class="docutils literal notranslate"><span class="pre">output</span></code>, except it is called when data is written to <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p></li>
+<li><p><strong>input</strong> – Input callback. This will be called with no parameters whenever the program attempts to read from <code class="docutils literal notranslate"><span class="pre">stdin</span></code>. It should return an ASCII character code when data is available, or <code class="docutils literal notranslate"><span class="pre">null</span></code> when it isn’t.</p></li>
+<li><p><strong>output</strong> – Output callback. This will be called with an ASCII character code whenever the program writes to <code class="docutils literal notranslate"><span class="pre">stdout</span></code>. It may also be called with <code class="docutils literal notranslate"><span class="pre">null</span></code> to flush the output.</p></li>
+<li><p><strong>error</strong> – Error callback. This is similar to <code class="docutils literal notranslate"><span class="pre">output</span></code>, except it is called when data is written to <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1182,15 +1183,15 @@ group permissions are defined but ignored in <a class="reference internal" href=
 </div>
 <div class="section" id="id2">
 <h2>File system API<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="js function">
 <dt id="FS.mount">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">mount</code><span class="sig-paren">(</span><em class="sig-param">type</em>, <em class="sig-param">opts</em>, <em class="sig-param">mountpoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.mount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mounts the FS object specified by <code class="docutils literal notranslate"><span class="pre">type</span></code> to the directory specified by <code class="docutils literal notranslate"><span class="pre">mountpoint</span></code>. The <code class="docutils literal notranslate"><span class="pre">opts</span></code> object is specific to each file system type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> -- The <a class="reference internal" href="#filesystem-api-filesystems"><span class="std std-ref">file system type</span></a>: <code class="docutils literal notranslate"><span class="pre">MEMFS</span></code>, <code class="docutils literal notranslate"><span class="pre">NODEFS</span></code>, <code class="docutils literal notranslate"><span class="pre">IDBFS</span></code> or <code class="docutils literal notranslate"><span class="pre">WORKERFS</span></code>.</p></li>
-<li><p><strong>opts</strong> (<em>object</em>) -- <p>A generic settings object used by the underlying file system.</p>
+<li><p><strong>type</strong> – The <a class="reference internal" href="#filesystem-api-filesystems"><span class="std std-ref">file system type</span></a>: <code class="docutils literal notranslate"><span class="pre">MEMFS</span></code>, <code class="docutils literal notranslate"><span class="pre">NODEFS</span></code>, <code class="docutils literal notranslate"><span class="pre">IDBFS</span></code> or <code class="docutils literal notranslate"><span class="pre">WORKERFS</span></code>.</p></li>
+<li><p><strong>opts</strong> (<em>object</em>) – <p>A generic settings object used by the underlying file system.</p>
 <p><code class="docutils literal notranslate"><span class="pre">NODFES</span></code> uses the <cite>root</cite> parameter to map the Emscripten directory to the physical directory. For example, to mount the current folder as a NODEFS instance:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span>
 <span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">NODEFS</span><span class="p">,</span> <span class="p">{</span> <span class="nx">root</span><span class="o">:</span> <span class="s1">&#39;.&#39;</span> <span class="p">},</span> <span class="s1">&#39;/working&#39;</span><span class="p">);</span>
@@ -1215,26 +1216,26 @@ provide the metadata as a JSON object, and the data as a blob:</p>
 </pre></div>
 </div>
 </p></li>
-<li><p><strong>mountpoint</strong> (<em>string</em>) -- A path to an existing local Emscripten directory where the file system is to be mounted. It can be either an absolute path, or something relative to the current directory.</p></li>
+<li><p><strong>mountpoint</strong> (<em>string</em>) – A path to an existing local Emscripten directory where the file system is to be mounted. It can be either an absolute path, or something relative to the current directory.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.unmount">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">unmount</code><span class="sig-paren">(</span><em class="sig-param">mountpoint</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.unmount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unmounts the specified <code class="docutils literal notranslate"><span class="pre">mountpoint</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mountpoint</strong> (<em>string</em>) -- The directory to unmount.</p></li>
+<li><p><strong>mountpoint</strong> (<em>string</em>) – The directory to unmount.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.syncfs">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">syncfs</code><span class="sig-paren">(</span><em class="sig-param">populate</em>, <em class="sig-param">callback</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.syncfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Responsible for iterating and synchronizing all mounted file systems in an
@@ -1243,11 +1244,11 @@ asynchronous fashion.</p>
 <p class="admonition-title">Note</p>
 <p>Currently, only the <a class="reference internal" href="#filesystem-api-idbfs"><span class="std std-ref">IDBFS</span></a> file system implements the
 interfaces needed for synchronization. All other file systems are completely
-synchronous and don't require synchronization.</p>
+synchronous and don’t require synchronization.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">populate</span></code> flag is used to control the intended direction of the
 underlying synchronization between Emscripten`s internal data, and the file
-system's persistent data.</p>
+system’s persistent data.</p>
 <p>For example:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">myAppStartup</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">);</span>
@@ -1269,14 +1270,14 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>populate</strong> (<em>bool</em>) -- <code class="docutils literal notranslate"><span class="pre">true</span></code> to initialize Emscripten's file system data with the data from the file system's persistent source, and <code class="docutils literal notranslate"><span class="pre">false</span></code> to save Emscripten`s file system data to the file system's persistent source.</p></li>
-<li><p><strong>callback</strong> -- A notification callback function that is invoked on completion of the synchronization. If an error occurred, it will be provided as a parameter to this function.</p></li>
+<li><p><strong>populate</strong> (<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">true</span></code> to initialize Emscripten’s file system data with the data from the file system’s persistent source, and <code class="docutils literal notranslate"><span class="pre">false</span></code> to save Emscripten`s file system data to the file system’s persistent source.</p></li>
+<li><p><strong>callback</strong> – A notification callback function that is invoked on completion of the synchronization. If an error occurred, it will be provided as a parameter to this function.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.mkdir">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new directory node in the file system. For example:</p>
@@ -1290,14 +1291,14 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The path name for the new directory node.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) -- <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">File permissions</span></a> for the new node. The default setting (<a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>) is 0777.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – The path name for the new directory node.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">File permissions</span></a> for the new node. The default setting (<a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>) is 0777.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.mkdev">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">mkdev</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode</em>, <em class="sig-param">dev</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.mkdev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new device node in the file system referencing the registered device driver (<a class="reference internal" href="#FS.registerDevice" title="FS.registerDevice"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.registerDevice()</span></code></a>) for <code class="docutils literal notranslate"><span class="pre">dev</span></code>. For example:</p>
@@ -1309,16 +1310,16 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The path name for the new device node.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) -- <p><a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">File permissions</span></a> for the new node. The default setting (<a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>) is 0777.</p>
+<li><p><strong>path</strong> (<em>string</em>) – The path name for the new device node.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – <p><a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">File permissions</span></a> for the new node. The default setting (<a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>) is 0777.</p>
 </p></li>
-<li><p><strong>dev</strong> (<em>int</em>) -- The registered device driver.</p></li>
+<li><p><strong>dev</strong> (<em>int</em>) – The registered device driver.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.symlink">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">symlink</code><span class="sig-paren">(</span><em class="sig-param">oldpath</em>, <em class="sig-param">newpath</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.symlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a symlink node at <code class="docutils literal notranslate"><span class="pre">newpath</span></code> linking to <code class="docutils literal notranslate"><span class="pre">oldpath</span></code>. For example:</p>
@@ -1329,14 +1330,14 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>oldpath</strong> (<em>string</em>) -- The path name of the file to link to.</p></li>
-<li><p><strong>newpath</strong> (<em>string</em>) -- The path to the new symlink node, that points to <code class="docutils literal notranslate"><span class="pre">oldpath</span></code>.</p></li>
+<li><p><strong>oldpath</strong> (<em>string</em>) – The path name of the file to link to.</p></li>
+<li><p><strong>newpath</strong> (<em>string</em>) – The path to the new symlink node, that points to <code class="docutils literal notranslate"><span class="pre">oldpath</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.rename">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">rename</code><span class="sig-paren">(</span><em class="sig-param">oldpath</em>, <em class="sig-param">newpath</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.rename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Renames the node at <code class="docutils literal notranslate"><span class="pre">oldpath</span></code> to <code class="docutils literal notranslate"><span class="pre">newpath</span></code>. For example:</p>
@@ -1347,14 +1348,14 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>oldpath</strong> (<em>string</em>) -- The old path name.</p></li>
-<li><p><strong>newpath</strong> (<em>string</em>) -- The new path name</p></li>
+<li><p><strong>oldpath</strong> (<em>string</em>) – The old path name.</p></li>
+<li><p><strong>newpath</strong> (<em>string</em>) – The new path name</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.rmdir">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">rmdir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.rmdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes an empty directory located at <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
@@ -1366,13 +1367,13 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path of the directory to be removed.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path of the directory to be removed.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.unlink">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">unlink</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.unlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unlinks the node at <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
@@ -1385,13 +1386,13 @@ system's persistent data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path of the target node.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path of the target node.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.readlink">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">readlink</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.readlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the string value stored in the symbolic link at <code class="docutils literal notranslate"><span class="pre">path</span></code>. For example:</p>
@@ -1415,7 +1416,7 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1424,7 +1425,7 @@ int main() {
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.stat">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">stat</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.stat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets a JavaScript object containing statistics about the node at <code class="docutils literal notranslate"><span class="pre">path</span></code>. For example:</p>
@@ -1461,26 +1462,26 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.lstat">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">lstat</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.lstat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to <a class="reference internal" href="#FS.stat" title="FS.stat"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.stat()</span></code></a>, However, if <code class="docutils literal notranslate"><span class="pre">path</span></code> is a symbolic link then the returned stats will be for the link itself, not the file that it links to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.chmod">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">chmod</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.chmod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the mode flags for <code class="docutils literal notranslate"><span class="pre">path</span></code> to <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
@@ -1496,102 +1497,102 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) -- <p>The new <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">file permissions</span></a> for <code class="docutils literal notranslate"><span class="pre">path</span></code>, <a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>.</p>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – <p>The new <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">file permissions</span></a> for <code class="docutils literal notranslate"><span class="pre">path</span></code>, <a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>.</p>
 </p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.lchmod">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">lchmod</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.lchmod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to <a class="reference internal" href="#FS.chmod" title="FS.chmod"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.chmod()</span></code></a>. However, if <code class="docutils literal notranslate"><span class="pre">path</span></code> is a symbolic link then the mode will be set on the link itself, not the file that it links to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) -- <p>The new <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">file permissions</span></a> for <code class="docutils literal notranslate"><span class="pre">path</span></code>, <a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>.</p>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – <p>The new <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">file permissions</span></a> for <code class="docutils literal notranslate"><span class="pre">path</span></code>, <a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>.</p>
 </p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.fchmod">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">fchmod</code><span class="sig-paren">(</span><em class="sig-param">fd</em>, <em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.fchmod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to <a class="reference internal" href="#FS.chmod" title="FS.chmod"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.chmod()</span></code></a>. However, a raw file descriptor is supplied as <code class="docutils literal notranslate"><span class="pre">fd</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fd</strong> (<em>int</em>) -- Descriptor of target file.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) -- <p>The new <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">file permissions</span></a> for <code class="docutils literal notranslate"><span class="pre">path</span></code>, <a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>.</p>
+<li><p><strong>fd</strong> (<em>int</em>) – Descriptor of target file.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – <p>The new <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">file permissions</span></a> for <code class="docutils literal notranslate"><span class="pre">path</span></code>, <a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>.</p>
 </p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.chown">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">chown</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">uid</em>, <em class="sig-param">gid</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.chown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the ownership of the specified file to the given user or group id.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This call exists to provide a more &quot;complete&quot; API mapping for ported code. Values set are effectively ignored.</p>
+<p>This call exists to provide a more “complete” API mapping for ported code. Values set are effectively ignored.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
-<li><p><strong>uid</strong> (<em>int</em>) -- The id of the user to take ownership of the file.</p></li>
-<li><p><strong>gid</strong> (<em>int</em>) -- The id of the group to take ownership of the file.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
+<li><p><strong>uid</strong> (<em>int</em>) – The id of the user to take ownership of the file.</p></li>
+<li><p><strong>gid</strong> (<em>int</em>) – The id of the group to take ownership of the file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.lchown">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">lchown</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">uid</em>, <em class="sig-param">gid</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.lchown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to <a class="reference internal" href="#FS.chown" title="FS.chown"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.chown()</span></code></a>. However, if <code class="docutils literal notranslate"><span class="pre">path</span></code> is a symbolic link then the properties will be set on the link itself, not the file that it links to.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This call exists to provide a more &quot;complete&quot; API mapping for ported code. Values set are effectively ignored.</p>
+<p>This call exists to provide a more “complete” API mapping for ported code. Values set are effectively ignored.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path to the target file.</p></li>
-<li><p><strong>uid</strong> (<em>int</em>) -- The id of the user to take ownership of the file.</p></li>
-<li><p><strong>gid</strong> (<em>int</em>) -- The id of the group to take ownership of the file.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path to the target file.</p></li>
+<li><p><strong>uid</strong> (<em>int</em>) – The id of the user to take ownership of the file.</p></li>
+<li><p><strong>gid</strong> (<em>int</em>) – The id of the group to take ownership of the file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.fchown">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">fchown</code><span class="sig-paren">(</span><em class="sig-param">fd</em>, <em class="sig-param">uid</em>, <em class="sig-param">gid</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.fchown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identical to <a class="reference internal" href="#FS.chown" title="FS.chown"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.chown()</span></code></a>. However, a raw file descriptor is supplied as <code class="docutils literal notranslate"><span class="pre">fd</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This call exists to provide a more &quot;complete&quot; API mapping for ported code. Values set are effectively ignored.</p>
+<p>This call exists to provide a more “complete” API mapping for ported code. Values set are effectively ignored.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fd</strong> (<em>int</em>) -- Descriptor of target file.</p></li>
-<li><p><strong>uid</strong> (<em>int</em>) -- The id of the user to take ownership of the file.</p></li>
-<li><p><strong>gid</strong> (<em>int</em>) -- The id of the group to take ownership of the file.</p></li>
+<li><p><strong>fd</strong> (<em>int</em>) – Descriptor of target file.</p></li>
+<li><p><strong>uid</strong> (<em>int</em>) – The id of the user to take ownership of the file.</p></li>
+<li><p><strong>gid</strong> (<em>int</em>) – The id of the group to take ownership of the file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.truncate">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">truncate</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">len</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.truncate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Truncates a file to the specified length. For example:</p>
@@ -1615,28 +1616,28 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- Path of the file to be truncated.</p></li>
-<li><p><strong>len</strong> (<em>int</em>) -- The truncation length for the file.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – Path of the file to be truncated.</p></li>
+<li><p><strong>len</strong> (<em>int</em>) – The truncation length for the file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.ftruncate">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">ftruncate</code><span class="sig-paren">(</span><em class="sig-param">fd</em>, <em class="sig-param">len</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.ftruncate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Truncates the file identified by the <code class="docutils literal notranslate"><span class="pre">fd</span></code> to the specified length (<code class="docutils literal notranslate"><span class="pre">len</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fd</strong> (<em>int</em>) -- Descriptor of file to be truncated.</p></li>
-<li><p><strong>len</strong> (<em>int</em>) -- The truncation length for the file.</p></li>
+<li><p><strong>fd</strong> (<em>int</em>) – Descriptor of file to be truncated.</p></li>
+<li><p><strong>len</strong> (<em>int</em>) – The truncation length for the file.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.utime">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">utime</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">atime</em>, <em class="sig-param">mtime</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.utime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the timestamps of the file located at <code class="docutils literal notranslate"><span class="pre">path</span></code>. The times passed to the arguments are in <em>milliseconds</em> since January 1, 1970 (midnight UTC/GMT).</p>
@@ -1644,15 +1645,15 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The path of the file to update.</p></li>
-<li><p><strong>atime</strong> (<em>int</em>) -- The file access time (milliseconds).</p></li>
-<li><p><strong>mtime</strong> (<em>int</em>) -- The file modify time (milliseconds).</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – The path of the file to update.</p></li>
+<li><p><strong>atime</strong> (<em>int</em>) – The file access time (milliseconds).</p></li>
+<li><p><strong>mtime</strong> (<em>int</em>) – The file modify time (milliseconds).</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.open">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">flags</em><span class="optional">[</span>, <em class="sig-param">mode</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#FS.open" title="Permalink to this definition">¶</a></dt>
 <dd><p>Opens a file with the specified flags. <code class="docutils literal notranslate"><span class="pre">flags</span></code> can be:</p>
@@ -1675,9 +1676,9 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The path of the file to open.</p></li>
-<li><p><strong>flags</strong> (<em>string</em>) -- Read and write <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">flags</span></a>.</p></li>
-<li><p><strong>mode</strong> -- <p>File permission <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">flags</span></a> for the file. The default setting (<a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>) is 0666.</p>
+<li><p><strong>path</strong> (<em>string</em>) – The path of the file to open.</p></li>
+<li><p><strong>flags</strong> (<em>string</em>) – Read and write <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">flags</span></a>.</p></li>
+<li><p><strong>mode</strong> – <p>File permission <a class="reference internal" href="#fs-read-and-write-flags"><span class="std std-ref">flags</span></a> for the file. The default setting (<a class="reference external" href="http://en.wikipedia.org/wiki/File_system_permissions#Numeric_notation">in octal numeric notation</a>) is 0666.</p>
 </p></li>
 </ul>
 </dd>
@@ -1687,20 +1688,20 @@ int main() {
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.close">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param">stream</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes the file stream.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stream</strong> (<em>object</em>) -- The stream to be closed.</p></li>
+<li><p><strong>stream</strong> (<em>object</em>) – The stream to be closed.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.llseek">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">llseek</code><span class="sig-paren">(</span><em class="sig-param">stream</em>, <em class="sig-param">offset</em>, <em class="sig-param">whence</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.llseek" title="Permalink to this definition">¶</a></dt>
 <dd><p>Repositions the offset of the stream <code class="docutils literal notranslate"><span class="pre">offset</span></code> bytes relative to the beginning, current position, or end of the file, depending on the <code class="docutils literal notranslate"><span class="pre">whence</span></code> parameter.</p>
@@ -1708,19 +1709,19 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stream</strong> (<em>object</em>) -- The stream for which the offset is to be repositioned.</p></li>
-<li><p><strong>offset</strong> (<em>int</em>) -- The offset (in bytes) relative to <code class="docutils literal notranslate"><span class="pre">whence</span></code>.</p></li>
-<li><p><strong>whence</strong> (<em>int</em>) -- Point in file (beginning, current point, end) from which to calculate the offset: <code class="docutils literal notranslate"><span class="pre">SEEK_SET</span></code> (0), <code class="docutils literal notranslate"><span class="pre">SEEK_CUR</span></code> (1) or <code class="docutils literal notranslate"><span class="pre">SEEK_END</span></code> (2)</p></li>
+<li><p><strong>stream</strong> (<em>object</em>) – The stream for which the offset is to be repositioned.</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – The offset (in bytes) relative to <code class="docutils literal notranslate"><span class="pre">whence</span></code>.</p></li>
+<li><p><strong>whence</strong> (<em>int</em>) – Point in file (beginning, current point, end) from which to calculate the offset: <code class="docutils literal notranslate"><span class="pre">SEEK_SET</span></code> (0), <code class="docutils literal notranslate"><span class="pre">SEEK_CUR</span></code> (1) or <code class="docutils literal notranslate"><span class="pre">SEEK_END</span></code> (2)</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.read">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">stream</em>, <em class="sig-param">buffer</em>, <em class="sig-param">offset</em>, <em class="sig-param">length</em><span class="optional">[</span>, <em class="sig-param">position</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#FS.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read <code class="docutils literal notranslate"><span class="pre">length</span></code> bytes from the stream, storing them into <code class="docutils literal notranslate"><span class="pre">buffer</span></code> starting at <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
-<p>By default, reading starts from the stream's current offset, however, a specific offset can be specified with the <code class="docutils literal notranslate"><span class="pre">position</span></code> argument. For example:</p>
+<p>By default, reading starts from the stream’s current offset, however, a specific offset can be specified with the <code class="docutils literal notranslate"><span class="pre">position</span></code> argument. For example:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">stream</span> <span class="o">=</span> <span class="nx">FS</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;abinaryfile&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
 <span class="nx">FS</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">buf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
@@ -1730,21 +1731,21 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stream</strong> (<em>object</em>) -- The stream to read from.</p></li>
-<li><p><strong>buffer</strong> (<em>ArrayBufferView</em>) -- The buffer to store the read data.</p></li>
-<li><p><strong>offset</strong> (<em>int</em>) -- The offset within <code class="docutils literal notranslate"><span class="pre">buffer</span></code> to store the data.</p></li>
-<li><p><strong>length</strong> (<em>int</em>) -- The length of data to write in <code class="docutils literal notranslate"><span class="pre">buffer</span></code>.</p></li>
-<li><p><strong>position</strong> (<em>int</em>) -- The offset within the stream to read. By default this is the stream's current offset.</p></li>
+<li><p><strong>stream</strong> (<em>object</em>) – The stream to read from.</p></li>
+<li><p><strong>buffer</strong> (<em>ArrayBufferView</em>) – The buffer to store the read data.</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – The offset within <code class="docutils literal notranslate"><span class="pre">buffer</span></code> to store the data.</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – The length of data to write in <code class="docutils literal notranslate"><span class="pre">buffer</span></code>.</p></li>
+<li><p><strong>position</strong> (<em>int</em>) – The offset within the stream to read. By default this is the stream’s current offset.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.write">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">stream</em>, <em class="sig-param">buffer</em>, <em class="sig-param">offset</em>, <em class="sig-param">length</em><span class="optional">[</span>, <em class="sig-param">position</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#FS.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes <code class="docutils literal notranslate"><span class="pre">length</span></code> bytes from <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, starting at <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
-<p>By default, writing starts from the stream's current offset, however, a specific offset can be specified with the <code class="docutils literal notranslate"><span class="pre">position</span></code> argument. For example:</p>
+<p>By default, writing starts from the stream’s current offset, however, a specific offset can be specified with the <code class="docutils literal notranslate"><span class="pre">position</span></code> argument. For example:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="mi">32</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">stream</span> <span class="o">=</span> <span class="nx">FS</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;dummy&#39;</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">);</span>
 <span class="nx">FS</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
@@ -1754,29 +1755,29 @@ int main() {
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stream</strong> (<em>object</em>) -- The stream to write to.</p></li>
-<li><p><strong>buffer</strong> (<em>ArrayBufferView</em>) -- The buffer to write.</p></li>
-<li><p><strong>offset</strong> (<em>int</em>) -- The offset within <code class="docutils literal notranslate"><span class="pre">buffer</span></code> to write.</p></li>
-<li><p><strong>length</strong> (<em>int</em>) -- The length of data to write.</p></li>
-<li><p><strong>position</strong> (<em>int</em>) -- The offset within the stream to write. By default this is the stream's current offset.</p></li>
+<li><p><strong>stream</strong> (<em>object</em>) – The stream to write to.</p></li>
+<li><p><strong>buffer</strong> (<em>ArrayBufferView</em>) – The buffer to write.</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – The offset within <code class="docutils literal notranslate"><span class="pre">buffer</span></code> to write.</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – The length of data to write.</p></li>
+<li><p><strong>position</strong> (<em>int</em>) – The offset within the stream to write. By default this is the stream’s current offset.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.readFile">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">readFile</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">opts</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.readFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the entire file at <code class="docutils literal notranslate"><span class="pre">path</span></code> and returns it as a <code class="docutils literal notranslate"><span class="pre">string</span></code> (encoding is <code class="docutils literal notranslate"><span class="pre">utf8</span></code>), or as a new <code class="docutils literal notranslate"><span class="pre">Uint8Array</span></code> buffer (encoding is <code class="docutils literal notranslate"><span class="pre">binary</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The file to read.</p></li>
-<li><p><strong>opts</strong> (<em>object</em>) -- <ul>
+<li><p><strong>path</strong> (<em>string</em>) – The file to read.</p></li>
+<li><p><strong>opts</strong> (<em>object</em>) – <ul>
 <li><p><strong>encoding</strong> (<em>string</em>)
 Defines the encoding used to return the file contents: <code class="docutils literal notranslate"><span class="pre">binary</span></code> | <code class="docutils literal notranslate"><span class="pre">utf8</span></code> . The default is <code class="docutils literal notranslate"><span class="pre">binary</span></code></p></li>
 <li><p><strong>flags</strong> (<em>string</em>)
-Read flags, as defined in <a class="reference internal" href="#FS.open" title="FS.open"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.open()</span></code></a>. The default is 'r'.</p></li>
+Read flags, as defined in <a class="reference internal" href="#FS.open" title="FS.open"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.open()</span></code></a>. The default is ‘r’.</p></li>
 </ul>
 </p></li>
 </ul>
@@ -1787,7 +1788,7 @@ Read flags, as defined in <a class="reference internal" href="#FS.open" title="F
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.writeFile">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">writeFile</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">data</em>, <em class="sig-param">opts</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.writeFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the entire contents of <code class="docutils literal notranslate"><span class="pre">data</span></code> to the file at <code class="docutils literal notranslate"><span class="pre">path</span></code>. For example:</p>
@@ -1798,11 +1799,11 @@ Read flags, as defined in <a class="reference internal" href="#FS.open" title="F
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The file to which to write <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p></li>
-<li><p><strong>data</strong> (<em>string|ArrayBufferView</em>) -- The data to write. A string will always be decoded as UTF-8.</p></li>
-<li><p><strong>opts</strong> (<em>object</em>) -- <ul>
+<li><p><strong>path</strong> (<em>string</em>) – The file to which to write <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p></li>
+<li><p><strong>data</strong> (<em>string|ArrayBufferView</em>) – The data to write. A string will always be decoded as UTF-8.</p></li>
+<li><p><strong>opts</strong> (<em>object</em>) – <ul>
 <li><p><strong>flags</strong> (<em>string</em>)
-Write flags, as defined in <a class="reference internal" href="#FS.open" title="FS.open"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.open()</span></code></a>. The default is 'w'.</p></li>
+Write flags, as defined in <a class="reference internal" href="#FS.open" title="FS.open"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.open()</span></code></a>. The default is ‘w’.</p></li>
 </ul>
 </p></li>
 </ul>
@@ -1810,7 +1811,7 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.createLazyFile">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">createLazyFile</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">name</em>, <em class="sig-param">url</em>, <em class="sig-param">canRead</em>, <em class="sig-param">canWrite</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.createLazyFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a file that will be loaded lazily on first access from a given URL or local file system path, and returns a reference to it.</p>
@@ -1826,11 +1827,11 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>parent</strong> (<em>string/object</em>) -- The parent folder, either as a path (e.g. <cite>'/usr/lib'</cite>) or an object previously returned from a <cite>FS.mkdir()</cite> or <cite>FS.createPath()</cite> call.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) -- The name of the new file.</p></li>
-<li><p><strong>url</strong> (<em>string</em>) -- In the browser, this is the URL whose contents will be returned when this file is accessed. In a command line engine like <em>node.js</em>, this will be the local (real) file system path from where the contents will be loaded. Note that writes to this file are virtual.</p></li>
-<li><p><strong>canRead</strong> (<em>bool</em>) -- Whether the file should have read permissions set from the program's point of view.</p></li>
-<li><p><strong>canWrite</strong> (<em>bool</em>) -- Whether the file should have write permissions set from the program's point of view.</p></li>
+<li><p><strong>parent</strong> (<em>string/object</em>) – The parent folder, either as a path (e.g. <cite>‘/usr/lib’</cite>) or an object previously returned from a <cite>FS.mkdir()</cite> or <cite>FS.createPath()</cite> call.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – The name of the new file.</p></li>
+<li><p><strong>url</strong> (<em>string</em>) – In the browser, this is the URL whose contents will be returned when this file is accessed. In a command line engine like <em>node.js</em>, this will be the local (real) file system path from where the contents will be loaded. Note that writes to this file are virtual.</p></li>
+<li><p><strong>canRead</strong> (<em>bool</em>) – Whether the file should have read permissions set from the program’s point of view.</p></li>
+<li><p><strong>canWrite</strong> (<em>bool</em>) – Whether the file should have write permissions set from the program’s point of view.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1839,18 +1840,18 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.createPreloadedFile">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">createPreloadedFile</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">name</em>, <em class="sig-param">url</em>, <em class="sig-param">canRead</em>, <em class="sig-param">canWrite</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.createPreloadedFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preloads a file asynchronously, and uses preload plugins to prepare its content. You should call this in <code class="docutils literal notranslate"><span class="pre">preRun</span></code>, <code class="docutils literal notranslate"><span class="pre">run()</span></code> will be delayed until all preloaded files are ready. This is how the <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preload-file</span></a> option works in <em>emcc</em> when <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code> has been specified (if you use this method by itself, you will need to build the program with that option).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>parent</strong> (<em>string/object</em>) -- The parent folder, either as a path (e.g. <strong>'/usr/lib'</strong>) or an object previously returned from a <cite>FS.mkdir()</cite> or <cite>FS.createPath()</cite> call.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) -- The name of the new file.</p></li>
-<li><p><strong>url</strong> (<em>string</em>) -- In the browser, this is the URL whose contents will be returned when the file is accessed. In a command line engine, this will be the local (real) file system path the contents will be loaded from. Note that writes to this file are virtual.</p></li>
-<li><p><strong>canRead</strong> (<em>bool</em>) -- Whether the file should have read permissions set from the program's point of view.</p></li>
-<li><p><strong>canWrite</strong> (<em>bool</em>) -- Whether the file should have write permissions set from the program's point of view.</p></li>
+<li><p><strong>parent</strong> (<em>string/object</em>) – The parent folder, either as a path (e.g. <strong>‘/usr/lib’</strong>) or an object previously returned from a <cite>FS.mkdir()</cite> or <cite>FS.createPath()</cite> call.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – The name of the new file.</p></li>
+<li><p><strong>url</strong> (<em>string</em>) – In the browser, this is the URL whose contents will be returned when the file is accessed. In a command line engine, this will be the local (real) file system path the contents will be loaded from. Note that writes to this file are virtual.</p></li>
+<li><p><strong>canRead</strong> (<em>bool</em>) – Whether the file should have read permissions set from the program’s point of view.</p></li>
+<li><p><strong>canWrite</strong> (<em>bool</em>) – Whether the file should have write permissions set from the program’s point of view.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1859,15 +1860,15 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </div>
 <div class="section" id="file-types">
 <h2>File types<a class="headerlink" href="#file-types" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten's file system supports regular files, directories, symlinks, character devices, block devices and sockets. Similarly to most Unix systems, all of these file types can be operated on using the higher-level FS operations like <a class="reference internal" href="#FS.read" title="FS.read"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.read()</span></code></a> and <a class="reference internal" href="#FS.write" title="FS.write"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.write()</span></code></a>.</p>
-<dl class="function">
+<p>Emscripten’s file system supports regular files, directories, symlinks, character devices, block devices and sockets. Similarly to most Unix systems, all of these file types can be operated on using the higher-level FS operations like <a class="reference internal" href="#FS.read" title="FS.read"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.read()</span></code></a> and <a class="reference internal" href="#FS.write" title="FS.write"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.write()</span></code></a>.</p>
+<dl class="js function">
 <dt id="FS.isFile">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">isFile</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.isFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests if the <code class="docutils literal notranslate"><span class="pre">mode</span></code> bitmask represents a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> -- A bitmask of possible file properties.</p></li>
+<li><p><strong>mode</strong> – A bitmask of possible file properties.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1879,7 +1880,7 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.isDir">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">isDir</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.isDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests if the <code class="docutils literal notranslate"><span class="pre">mode</span></code> bitmask represents a directory.</p>
@@ -1893,14 +1894,14 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.isLink">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">isLink</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.isLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests if the <code class="docutils literal notranslate"><span class="pre">mode</span></code> bitmask represents a symlink.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> -- A bitmask of possible file properties.</p></li>
+<li><p><strong>mode</strong> – A bitmask of possible file properties.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1912,14 +1913,14 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.isChrdev">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">isChrdev</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.isChrdev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests if the <code class="docutils literal notranslate"><span class="pre">mode</span></code> bitmask represents a character device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> -- A bitmask of possible file properties.</p></li>
+<li><p><strong>mode</strong> – A bitmask of possible file properties.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1931,14 +1932,14 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.isBlkdev">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">isBlkdev</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.isBlkdev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests if the <code class="docutils literal notranslate"><span class="pre">mode</span></code> bitmask represents a block device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> -- A bitmask of possible file properties.</p></li>
+<li><p><strong>mode</strong> – A bitmask of possible file properties.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1950,14 +1951,14 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.isSocket">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">isSocket</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.isSocket" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tests if the <code class="docutils literal notranslate"><span class="pre">mode</span></code> bitmask represents a socket.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> -- A bitmask of possible file properties.</p></li>
+<li><p><strong>mode</strong> – A bitmask of possible file properties.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1972,7 +1973,7 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </div>
 <div class="section" id="paths">
 <h2>Paths<a class="headerlink" href="#paths" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="js function">
 <dt id="FS.cwd">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">cwd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FS.cwd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the current working directory.</p>
@@ -1983,20 +1984,20 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.chdir">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">chdir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.chdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the current working directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The path to set as current working directory.</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – The path to set as current working directory.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.lookupPath">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">lookupPath</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">opts</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.lookupPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Looks up the incoming path and returns an object containing both the resolved path and node.</p>
@@ -2007,8 +2008,8 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The incoming path.</p></li>
-<li><p><strong>opts</strong> (<em>object</em>) -- <p>Options for the path:</p>
+<li><p><strong>path</strong> (<em>string</em>) – The incoming path.</p></li>
+<li><p><strong>opts</strong> (<em>object</em>) – <p>Options for the path:</p>
 <ul>
 <li><p><strong>parent</strong> (<em>bool</em>)
 If true, stop resolving the path once the penultimate component is reached.
@@ -2033,18 +2034,18 @@ For example, consider a symlink <code class="docutils literal notranslate"><span
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.analyzePath">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">analyzePath</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">dontResolveLastLink</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.analyzePath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Looks up the incoming path and returns an object containing information about
 file stats and nodes. Built on top of <code class="docutils literal notranslate"><span class="pre">FS.lookupPath</span></code> and provides more
-information about given path and its parent. If any error occurs it won't
+information about given path and its parent. If any error occurs it won’t
 throw but returns an <code class="docutils literal notranslate"><span class="pre">error</span></code> property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>string</em>) -- The incoming path.</p></li>
-<li><p><strong>dontResolveLastLink</strong> (<em>boolean</em>) -- If true, don't follow the last component
+<li><p><strong>path</strong> (<em>string</em>) – The incoming path.</p></li>
+<li><p><strong>dontResolveLastLink</strong> (<em>boolean</em>) – If true, don’t follow the last component
 if it is a symlink.</p></li>
 </ul>
 </dd>
@@ -2068,14 +2069,14 @@ if it is a symlink.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="js function">
 <dt id="FS.getPath">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">getPath</code><span class="sig-paren">(</span><em class="sig-param">node</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.getPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the absolute path to <code class="docutils literal notranslate"><span class="pre">node</span></code>, accounting for mounts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>node</strong> -- The current node.</p></li>
+<li><p><strong>node</strong> – The current node.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -2198,7 +2199,7 @@ if it is a symlink.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.7',
+            VERSION:'2.0.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
