@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 2.0.11 documentation</title>
+  <title>Release Notes &mdash; Emscripten 2.0.12 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.11 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.12 documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -99,7 +99,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions">Installation instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions-using-emsdk">Installation instructions using emsdk</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
@@ -108,6 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#using-the-docker-image">Using the Docker image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-using-packages">Installation using packages</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
@@ -760,22 +761,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/trace.h.html#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api_reference/vr.h.html">vr.h</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#test-example-code">Test/Example code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#functions">Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#initialization">Initialization</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#api-queries">API Queries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#display-functions">Display Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#render-loop">Render Loop</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#defines">Defines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/vr.h.html#types">Types</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/vr.h.html#math">Math</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fiber.h.html#api-reference">API Reference</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/fiber.h.html#types">Types</a></li>
@@ -1063,7 +1048,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <div class="section" id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 2.0.11 (Jan 05, 2021) is listed below.</p>
+<p>The ChangeLog for Emscripten 2.0.12 (Jan 11, 2021) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that version numbers do not necessarily reflect the amount of changes
@@ -1086,9 +1071,25 @@ See docs/process.md for more on how version tagging works.
 
 Current Trunk
 -------------
+- Emscripten now builds a complete sysroot inside the EM_CACHE directory.
+  This includes the system headers which get copied into place there rather
+  than adding a sequence of extra include directories.
+
+2.0.12: 01/09/2021
+------------------
+- `emscripten/vr.h` and other remnants of WebVR support removed. (#13210, which
+  is a followup to #10460)
+- Stop overriding CMake default flags based on build type. This will 
+  result in builds that are more like CMake does on other platforms. You
+  may notice that `RelWithDebInfo` will now include debug info (it did not
+  before, which appears to have been an error), and that `Release` will
+  use `-O3` instead of `-O2` (which is a better choice anyhow). (#13083)
 
 2.0.11: 12/17/2020
 ------------------
+- `emcc -v` no longer forces the running the sanity checks.  Sanity checks
+  are always run on first use or can be forced with `--check` or by setting
+  `EMCC_DEBUG` is set in the environment.
 - An upstream LLVM regression with global initializer linking has been fixed
   (#13038).
 - Remove a racy unneeded assertion about async dynamic linking (#13060).
@@ -5519,7 +5520,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.11',
+            VERSION:'2.0.12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
