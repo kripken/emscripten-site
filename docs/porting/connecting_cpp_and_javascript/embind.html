@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 2.0.12 documentation</title>
+  <title>Embind &mdash; Emscripten 2.0.13 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.12 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.13 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -99,7 +99,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../getting_started/downloads.html">Download and install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-instructions-using-emsdk">Installation instructions using emsdk</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended">Installation instructions using the emsdk (recommended)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
@@ -108,7 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#using-the-docker-image">Using the Docker image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-using-packages">Installation using packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-using-unofficial-packages">Installation using unofficial packages</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
@@ -399,6 +399,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../Debugging.html#profiling">Profiling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../Debugging.html#speed">Speed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../Debugging.html#memory">Memory</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#autodebugger">AutoDebugger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
 </ul>
@@ -428,6 +433,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">C++ exceptions support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html#overhead">Overhead</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -1102,7 +1112,7 @@ or via a <code class="docutils literal notranslate"><span class="pre">&lt;script
   <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="kd">var</span> <span class="nx">Module</span> <span class="o">=</span> <span class="p">{</span>
       <span class="nx">onRuntimeInitialized</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;lerp result: &#39;</span> <span class="o">+</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">lerp</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">));</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;lerp result: &#39;</span> <span class="o">+</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">lerp</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">));</span>
       <span class="p">}</span>
     <span class="p">};</span>
   <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -1200,10 +1210,10 @@ internal methods.</p>
 </div>
 <p>An instance of <code class="docutils literal notranslate"><span class="pre">MyClass</span></code> can then be created and used in JavaScript as
 shown below:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">MyClass</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;hello&quot;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">MyClass</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span> <span class="s2">&quot;hello&quot;</span><span class="p">);</span>
 <span class="nx">instance</span><span class="p">.</span><span class="nx">incrementX</span><span class="p">();</span>
 <span class="nx">instance</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span> <span class="c1">// 11</span>
-<span class="nx">instance</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span> <span class="c1">// 20</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="mf">20</span><span class="p">;</span> <span class="c1">// 20</span>
 <span class="nx">Module</span><span class="p">.</span><span class="nx">MyClass</span><span class="p">.</span><span class="nx">getStringFromInstance</span><span class="p">(</span><span class="nx">instance</span><span class="p">);</span> <span class="c1">// &quot;hello&quot;</span>
 <span class="nx">instance</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
 </pre></div>
@@ -1235,18 +1245,18 @@ it has received, or the Emscripten heap will grow indefinitely.</p>
 support for value types. <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv411value_array" title="value_array"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Value</span> <span class="pre">arrays</span></code></a> are
 converted to and from JavaScript Arrays and <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412value_object" title="value_object"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">value</span> <span class="pre">objects</span></code></a> are converted to and from JavaScript Objects.</p>
 <p>Consider the example below:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">Point2f</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">Point2f</span> <span class="p">{</span>
     <span class="kt">float</span> <span class="n">x</span><span class="p">;</span>
     <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="k">struct</span> <span class="n">PersonRecord</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="nc">PersonRecord</span> <span class="p">{</span>
     <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
 <span class="p">};</span>
 
     <span class="c1">// Array fields are treated as if they were std::array&lt;type,size&gt;</span>
-    <span class="k">struct</span> <span class="n">ArrayInStruct</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="nc">ArrayInStruct</span> <span class="p">{</span>
             <span class="kt">int</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
     <span class="p">};</span>
 
@@ -1395,8 +1405,8 @@ the <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415
 long as the instance handle can be converted to the first argument of the
 non-member function. The classic example is when the function exposed to
 JavaScript does not exactly match the behavior of a C++ method.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">Array10</span> <span class="p">{</span>
-    <span class="kt">int</span><span class="o">&amp;</span> <span class="n">get</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">Array10</span> <span class="p">{</span>
+    <span class="kt">int</span><span class="o">&amp;</span> <span class="nf">get</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
     <span class="p">}</span>
     <span class="kt">int</span> <span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
@@ -1430,11 +1440,11 @@ calls into JavaScript calls.</p>
 <h4>Abstract methods<a class="headerlink" href="#abstract-methods" title="Permalink to this headline">¶</a></h4>
 <p>Let’s begin with a simple case: pure virtual functions that must be
 implemented in JavaScript.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">Interface</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">Interface</span> <span class="p">{</span>
     <span class="k">virtual</span> <span class="kt">void</span> <span class="n">invoke</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">str</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="k">struct</span> <span class="nl">InterfaceWrapper</span> <span class="p">:</span> <span class="k">public</span> <span class="n">wrapper</span><span class="o">&lt;</span><span class="n">Interface</span><span class="o">&gt;</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="nc">InterfaceWrapper</span> <span class="o">:</span> <span class="k">public</span> <span class="n">wrapper</span><span class="o">&lt;</span><span class="n">Interface</span><span class="o">&gt;</span> <span class="p">{</span>
     <span class="n">EMSCRIPTEN_WRAPPER</span><span class="p">(</span><span class="n">InterfaceWrapper</span><span class="p">);</span>
     <span class="kt">void</span> <span class="nf">invoke</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">call</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;invoke&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">);</span>
@@ -1503,13 +1513,13 @@ errors.</p>
 <p>If a C++ class has a non-pure virtual function, it can be overridden — but
 does not have to be. This requires a slightly different wrapper
 implementation:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">Base</span> <span class="p">{</span>
     <span class="k">virtual</span> <span class="kt">void</span> <span class="n">invoke</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// default implementation</span>
     <span class="p">}</span>
 <span class="p">};</span>
 
-<span class="k">struct</span> <span class="nl">BaseWrapper</span> <span class="p">:</span> <span class="k">public</span> <span class="n">wrapper</span><span class="o">&lt;</span><span class="n">Base</span><span class="o">&gt;</span> <span class="p">{</span>
+<span class="k">struct</span> <span class="nc">BaseWrapper</span> <span class="o">:</span> <span class="k">public</span> <span class="n">wrapper</span><span class="o">&lt;</span><span class="n">Base</span><span class="o">&gt;</span> <span class="p">{</span>
     <span class="n">EMSCRIPTEN_WRAPPER</span><span class="p">(</span><span class="n">BaseWrapper</span><span class="p">);</span>
     <span class="kt">void</span> <span class="nf">invoke</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">str</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">call</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;invoke&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">);</span>
@@ -1576,8 +1586,8 @@ downcasting to work.</p>
 but <em>embind</em> does not support overloading based on type. When specifying
 an overload, use the <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415select_overloadNSt11add_pointerI9SignatureE4typeE" title="select_overload"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">select_overload()</span></code></a> helper function to select
 the appropriate signature.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">HasOverloadedMethods</span> <span class="p">{</span>
-    <span class="kt">void</span> <span class="n">foo</span><span class="p">();</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">HasOverloadedMethods</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="nf">foo</span><span class="p">();</span>
     <span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">);</span>
     <span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">float</span> <span class="n">f</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 <span class="p">};</span>
@@ -1596,7 +1606,7 @@ the appropriate signature.</p>
 <span id="embind-enums"></span><h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <p><em>Embind</em>’s <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv45enum_" title="enum_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">enumeration</span> <span class="pre">support</span></code></a> works with both C++98
 enums and C++11 “enum classes”.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="n">OldStyle</span> <span class="p">{</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="nc">OldStyle</span> <span class="p">{</span>
     <span class="n">OLD_STYLE_ONE</span><span class="p">,</span>
     <span class="n">OLD_STYLE_TWO</span>
 <span class="p">};</span>
@@ -1837,7 +1847,7 @@ and then play the tone.</p>
   <span class="k">return</span> <span class="n">m</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="k">module</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">function</span><span class="p">(</span><span class="s">&quot;returnVectorData&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">returnVectorData</span><span class="p">);</span>
   <span class="n">function</span><span class="p">(</span><span class="s">&quot;returnMapData&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">returnMapData</span><span class="p">);</span>
 
@@ -1854,18 +1864,18 @@ and then play the tone.</p>
 <span class="kd">var</span> <span class="nx">vectorSize</span> <span class="o">=</span> <span class="nx">retVector</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span>
 
 <span class="c1">// reset vector value</span>
-<span class="nx">retVector</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">vectorSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">);</span>
+<span class="nx">retVector</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">vectorSize</span> <span class="o">-</span> <span class="mf">1</span><span class="p">,</span> <span class="mf">11</span><span class="p">);</span>
 
 <span class="c1">// push value into vector</span>
-<span class="nx">retVector</span><span class="p">.</span><span class="nx">push_back</span><span class="p">(</span><span class="mi">12</span><span class="p">);</span>
+<span class="nx">retVector</span><span class="p">.</span><span class="nx">push_back</span><span class="p">(</span><span class="mf">12</span><span class="p">);</span>
 
 <span class="c1">// retrieve value from the vector</span>
-<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">retVector</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">retVector</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Vector Value: &quot;</span><span class="p">,</span> <span class="nx">retVector</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">i</span><span class="p">));</span>
 <span class="p">}</span>
 
 <span class="c1">// expand vector size</span>
-<span class="nx">retVector</span><span class="p">.</span><span class="nx">resize</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="nx">retVector</span><span class="p">.</span><span class="nx">resize</span><span class="p">(</span><span class="mf">20</span><span class="p">,</span> <span class="mf">1</span><span class="p">);</span>
 
 <span class="kd">var</span> <span class="nx">retMap</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;returnMapData&#39;</span><span class="p">]();</span>
 
@@ -1873,19 +1883,19 @@ and then play the tone.</p>
 <span class="kd">var</span> <span class="nx">mapSize</span> <span class="o">=</span> <span class="nx">retMap</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span>
 
 <span class="c1">// retrieve value from map</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Map Value: &quot;</span><span class="p">,</span> <span class="nx">retMap</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Map Value: &quot;</span><span class="p">,</span> <span class="nx">retMap</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mf">10</span><span class="p">));</span>
 
 <span class="c1">// figure out which map keys are available</span>
 <span class="c1">// NB! You must call `register_vector&lt;key_type&gt;`</span>
 <span class="c1">// to make vectors available</span>
 <span class="kd">var</span> <span class="nx">mapKeys</span> <span class="o">=</span> <span class="nx">retMap</span><span class="p">.</span><span class="nx">keys</span><span class="p">();</span>
-<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">mapKeys</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">mapKeys</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">mapKeys</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Map key/value: &quot;</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">retMap</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">));</span>
 <span class="p">}</span>
 
 <span class="c1">// reset the value at the given index position</span>
-<span class="nx">retMap</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;OtherValue&quot;</span><span class="p">);</span>
+<span class="nx">retMap</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span> <span class="s2">&quot;OtherValue&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -2013,7 +2023,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.0.12',
+            VERSION:'2.0.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -2023,7 +2033,6 @@ real-world applications has proved to be more than acceptable.</p>
       <script type="text/javascript" src="../../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../../_static/language_data.js"></script>
 
   
 

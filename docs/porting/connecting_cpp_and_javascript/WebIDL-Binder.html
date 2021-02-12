@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WebIDL Binder &mdash; Emscripten 2.0.12 documentation</title>
+  <title>WebIDL Binder &mdash; Emscripten 2.0.13 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.12 documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.13 documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Files and File Systems" href="../files/index.html"/>
         <link rel="prev" title="Embind" href="embind.html"/> 
@@ -99,7 +99,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../getting_started/downloads.html">Download and install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-instructions-using-emsdk">Installation instructions using emsdk</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended">Installation instructions using the emsdk (recommended)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
@@ -108,7 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#using-the-docker-image">Using the Docker image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-using-packages">Installation using packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started/downloads.html#installation-using-unofficial-packages">Installation using unofficial packages</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
@@ -399,6 +399,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../Debugging.html#profiling">Profiling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../Debugging.html#speed">Speed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../Debugging.html#memory">Memory</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#autodebugger">AutoDebugger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
 </ul>
@@ -428,6 +433,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">C++ exceptions support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html#overhead">Overhead</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -1117,7 +1127,7 @@ interface Bar {
 <li><p>Create a file called something like <strong>my_glue_wrapper.cpp</strong> to <code class="docutils literal notranslate"><span class="pre">#include</span></code> the headers of the classes you are binding and <em>glue.cpp</em>. This might have the following content:</p></li>
 </ol>
 <blockquote>
-<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;...&gt; // Where &quot;...&quot; represents the headers for the classes we are binding.</span><span class="cp"></span>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;...&gt;</span><span class="c1"> // Where &quot;...&quot; represents the headers for the classes we are binding.</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;glue.cpp&gt;</span><span class="cp"></span>
 </pre></div>
 </div>
@@ -1159,10 +1169,10 @@ global scope, and in some cases you want to create more than one.</p>
 <h2>Using C++ classes in JavaScript<a class="headerlink" href="#using-c-classes-in-javascript" title="Permalink to this headline">¶</a></h2>
 <p>Once binding is complete, C++ objects can be created and used in JavaScript as though they were normal JavaScript objects. For example, continuing the above example, you can create the <code class="docutils literal notranslate"><span class="pre">Foo</span></code> and <code class="docutils literal notranslate"><span class="pre">Bar</span></code> objects and call methods on them.</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">setVal</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">setVal</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
 <span class="nx">alert</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">getVal</span><span class="p">());</span>
 
-<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mi">123</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span>
 <span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span>
 </pre></div>
 </div>
@@ -1177,7 +1187,7 @@ global scope, and in some cases you want to create more than one.</p>
 </div>
 <p>JavaScript will automatically garbage collect any of the wrapped C++ objects when there are no more references. If the C++ object doesn’t require specific clean up (i.e. it doesn’t have a destructor) then no other action needs to be taken.</p>
 <p>If a C++ object does need to be cleaned up, you must explicitly call <a class="reference internal" href="../../api_reference/module.html#Module.destroy" title="Module.destroy"><code class="xref js js-func docutils literal notranslate"><span class="pre">Module.destroy(obj)</span></code></a> to invoke its destructor — then drop all references to the object so that it can be garbage collected. For example, if <code class="docutils literal notranslate"><span class="pre">Bar</span></code> were to allocate memory that requires cleanup:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mi">123</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span>
 <span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span>
 <span class="nx">Module</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span> <span class="c1">// If the C++ object requires clean up</span>
 </pre></div>
@@ -1201,9 +1211,9 @@ attribute <span class="nb">long</span> attr;
 </div>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// JavaScript</span>
 <span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="mf">7</span><span class="p">;</span>
 <span class="c1">// Equivalent to:</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">set_attr</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">set_attr</span><span class="p">(</span><span class="mf">7</span><span class="p">);</span>
 
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">attr</span><span class="p">);</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">get_attr</span><span class="p">());</span>
@@ -1226,7 +1236,7 @@ MyClass process(MyClass input);
 <p>This assumption isn’t true for base types like void,int,bool,DOMString,etc.</p>
 <p>References should be decorated using <code class="docutils literal notranslate"><span class="pre">[Ref]</span></code>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
-<span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">input</span><span class="p">);</span>
+<span class="n">MyClass</span><span class="o">&amp;</span> <span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;</span> <span class="n">input</span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
@@ -1252,7 +1262,7 @@ MyClass process(MyClass input);
 <p>C++ arguments or return types that use <code class="docutils literal notranslate"><span class="pre">const</span></code> can be specified in IDL using <code class="docutils literal notranslate"><span class="pre">[Const]</span></code>.</p>
 <p>For example, the following code fragments show the C++ and IDL for a function that returns a constant pointer object.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//C++</span>
-<span class="k">const</span> <span class="n">myObject</span><span class="o">*</span> <span class="nf">getAsConst</span><span class="p">();</span>
+<span class="k">const</span> <span class="n">myObject</span><span class="o">*</span> <span class="n">getAsConst</span><span class="p">();</span>
 </pre></div>
 </div>
 <div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
@@ -1313,13 +1323,13 @@ interface Inner {
 <h2>enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <p>Enums are declared very similarly in C++ and IDL:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
-<span class="k">enum</span> <span class="n">AnEnum</span> <span class="p">{</span>
+<span class="k">enum</span> <span class="nc">AnEnum</span> <span class="p">{</span>
   <span class="n">enum_value1</span><span class="p">,</span>
   <span class="n">enum_value2</span>
 <span class="p">};</span>
 
 <span class="c1">// WebIDL</span>
-<span class="k">enum</span> <span class="n">AnEnum</span> <span class="p">{</span>
+<span class="k">enum</span> <span class="nc">AnEnum</span> <span class="p">{</span>
   <span class="s">&quot;enum_value1&quot;</span><span class="p">,</span>
   <span class="s">&quot;enum_value2&quot;</span>
 <span class="p">};</span>
@@ -1328,13 +1338,13 @@ interface Inner {
 <p>The syntax is slightly more complicated for enums declared inside a namespace:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
 <span class="k">namespace</span> <span class="n">EnumNamespace</span> <span class="p">{</span>
-  <span class="k">enum</span> <span class="n">EnumInNamespace</span> <span class="p">{</span>
+  <span class="k">enum</span> <span class="nc">EnumInNamespace</span> <span class="p">{</span>
   <span class="n">e_namespace_val</span> <span class="o">=</span> <span class="mi">78</span>
   <span class="p">};</span>
 <span class="p">};</span>
 
 <span class="c1">// WebIDL</span>
-<span class="k">enum</span> <span class="n">EnumNamespace_EnumInNamespace</span> <span class="p">{</span>
+<span class="k">enum</span> <span class="nc">EnumNamespace_EnumInNamespace</span> <span class="p">{</span>
   <span class="s">&quot;EnumNamespace::e_namespace_val&quot;</span>
 <span class="p">};</span>
 </pre></div>
@@ -1343,7 +1353,7 @@ interface Inner {
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
 <span class="k">class</span> <span class="nc">EnumClass</span> <span class="p">{</span>
  <span class="k">public</span><span class="o">:</span>
-  <span class="k">enum</span> <span class="n">EnumWithinClass</span> <span class="p">{</span>
+  <span class="k">enum</span> <span class="nc">EnumWithinClass</span> <span class="p">{</span>
   <span class="n">e_val</span> <span class="o">=</span> <span class="mi">34</span>
   <span class="p">};</span>
   <span class="n">EnumWithinClass</span> <span class="nf">GetEnum</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">e_val</span><span class="p">;</span> <span class="p">}</span>
@@ -1354,12 +1364,12 @@ interface Inner {
 
 
 <span class="c1">// WebIDL</span>
-<span class="k">enum</span> <span class="n">EnumClass_EnumWithinClass</span> <span class="p">{</span>
+<span class="k">enum</span> <span class="nc">EnumClass_EnumWithinClass</span> <span class="p">{</span>
   <span class="s">&quot;EnumClass::e_val&quot;</span>
 <span class="p">};</span>
 
 <span class="n">interface</span> <span class="n">EnumClass</span> <span class="p">{</span>
-  <span class="kt">void</span> <span class="n">EnumClass</span><span class="p">();</span>
+  <span class="kt">void</span> <span class="nf">EnumClass</span><span class="p">();</span>
 
   <span class="n">EnumClass_EnumWithinClass</span> <span class="nf">GetEnum</span><span class="p">();</span>
 
@@ -1603,7 +1613,7 @@ interface ImplJS {
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.0.12',
+            VERSION:'2.0.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1613,7 +1623,6 @@ interface ImplJS {
       <script type="text/javascript" src="../../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../../_static/language_data.js"></script>
 
   
 

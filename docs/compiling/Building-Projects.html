@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 2.0.12 documentation</title>
+  <title>Building Projects &mdash; Emscripten 2.0.13 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.13 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -99,7 +99,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions-using-emsdk">Installation instructions using emsdk</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended">Installation instructions using the emsdk (recommended)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
@@ -108,7 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#using-the-docker-image">Using the Docker image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-using-packages">Installation using packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-using-unofficial-packages">Installation using unofficial packages</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
@@ -399,6 +399,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#profiling">Profiling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#speed">Speed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory">Memory</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#autodebugger">AutoDebugger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
 </ul>
@@ -428,6 +433,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ exceptions support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#overhead">Overhead</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -1052,7 +1062,7 @@ make
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run emconfigure with the normal configure command as an argument.</span>
 ./emconfigure ./configure
 
-<span class="c1"># Run emmake with the normal make to generate linked LLVM bitcode.</span>
+<span class="c1"># Run emmake with the normal make to generate wasm object files.</span>
 ./emmake make
 
 <span class="c1"># Compile the linked code generated by make to JavaScript + WebAssembly.</span>
@@ -1071,7 +1081,11 @@ make
 <p class="admonition-title">Tip</p>
 <p>We recommend you call both <em>emconfigure</em> and <em>emmake</em> scripts in <em>configure</em>- and <em>CMake</em>-based build systems. Whether you actually <strong>need</strong> to call both tools depends on the build system (some systems will store the environment variables in the configure step, and others will not).</p>
 </div>
-<p><em>Make</em> generates linked LLVM bitcode. It does not automatically generate JavaScript during linking because all the files must be compiled using the <a class="reference internal" href="#building-projects-optimizations"><span class="std std-ref">same optimizations and compiler options</span></a> — and it makes sense to do this in the final conversion from bitcode to JavaScript.</p>
+<p><em>Make</em> generates wasm object files. It may also link the object files into
+libraries and/or wasm executables. Unless such a build system has been modified
+to also emit JavaScript output, you will need to run an additional <code class="docutils literal notranslate"><span class="pre">emcc</span></code>
+command as shown above, that will emit the final runnable JavaScript and
+WebAssembly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The file output from <em>make</em> might have a different suffix: <strong>.a</strong> for a static
@@ -1084,7 +1098,7 @@ LLVM bitcode).</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Some build systems may not properly emit bitcode using the above procedure,
+<p>Some build systems may not properly emit wasm object files using the above procedure,
 and you may see <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">valid</span> <span class="pre">input</span> <span class="pre">file</span></code> warnings. You can run <code class="docutils literal notranslate"><span class="pre">file</span></code> to
 check what a file contains (also you can manually check if the contents
 start with <code class="docutils literal notranslate"><span class="pre">\0asm</span></code> to see if they are wasm object files, or <code class="docutils literal notranslate"><span class="pre">BC</span></code> if they
@@ -1160,7 +1174,7 @@ direct it do something else.  This differs to previous behaviour where
 </ul>
 </div>
 <p>JavaScript/WebAssembly optimizations are specified in the final step (sometimes called “link”, as that step typically also links together a bunch of files that are all compiled together into one JavaScript/WebAssembly output). For example, to compile with <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile the linked bitcode to JavaScript with -O1 optimizations.</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile the object file to JavaScript with -O1 optimizations.</span>
 ./emcc -O1 project.o -o project.js
 </pre></div>
 </div>
@@ -1168,7 +1182,9 @@ direct it do something else.  This differs to previous behaviour where
 <div class="section" id="building-projects-with-debug-information">
 <span id="building-projects-debug"></span><h2>Building projects with debug information<a class="headerlink" href="#building-projects-with-debug-information" title="Permalink to this headline">¶</a></h2>
 <p>Building a project containing debug information requires that debug flags are specified for both the LLVM and JavaScript compilation phases.</p>
-<p>To make <em>Clang</em> and LLVM emit debug information in the bitcode files you need to compile the sources with <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g</span></a> (exactly the same as with <a class="reference internal" href="../site/glossary.html#term-Clang"><span class="xref std std-term">clang</span></a> or <em>gcc</em> normally). To get <em>emcc</em> to include the debug information when compiling the bitcode to JavaScript, specify <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g</span></a> or one of the <code class="docutils literal notranslate"><span class="pre">-gN</span></code> <a class="reference internal" href="../tools_reference/emcc.html#emcc-gn"><span class="std std-ref">debug level options</span></a>.</p>
+<p>To make <em>Clang</em> and LLVM emit debug information in object files you need to
+compile the sources with <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g</span></a> (exactly the same as
+with <a class="reference internal" href="../site/glossary.html#term-Clang"><span class="xref std std-term">clang</span></a> or <em>gcc</em> normally).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Each build-system defines its own mechanisms for setting debug flags. <strong>To get Clang to emit LLVM debug information, you will need to work out the correct approach for your system</strong>.</p>
@@ -1176,8 +1192,11 @@ direct it do something else.  This differs to previous behaviour where
 <li><p>Some build systems have a flag like <code class="docutils literal notranslate"><span class="pre">./configure</span> <span class="pre">--enable-debug</span></code>.</p></li>
 </ul>
 </div>
-<p>The flags for emitting debug information when compiling from bitcode to JavaScript are specified as an <em>emcc</em> option in the final step:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile the linked bitcode to JavaScript.</span>
+<p>To get <em>emcc</em> to include the debug information present in object files when
+generating the final JavaScript and WebAssembly, your final <code class="docutils literal notranslate"><span class="pre">emcc</span></code> command
+must specify <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g</span></a> or one of the
+<code class="docutils literal notranslate"><span class="pre">-gN</span></code> <a class="reference internal" href="../tools_reference/emcc.html#emcc-gn"><span class="std std-ref">debug level options</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile the wasm object file to JavaScript+WebAssembly, with debug info</span>
 <span class="c1"># -g or -gN can be used to set the debug level (N)</span>
 ./emcc -g project.o -o project.js
 </pre></div>
@@ -1187,17 +1206,21 @@ direct it do something else.  This differs to previous behaviour where
 <div class="section" id="using-libraries">
 <h2>Using libraries<a class="headerlink" href="#using-libraries" title="Permalink to this headline">¶</a></h2>
 <p>Built-in support is available for a number of standard libraries: <em>libc</em>, <em>libc++</em> and <em>SDL</em>. These will automatically be linked when you compile code that uses them (you do not even need to add <code class="docutils literal notranslate"><span class="pre">-lSDL</span></code>, but see below for more SDL-specific details).</p>
-<p>If your project uses other libraries, for example <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/zlib">zlib</a> or <em>glib</em>, you will need to build and link them. The normal approach is to build the libraries to bitcode and then compile library and main program bitcode together to JavaScript.</p>
+<p>If your project uses other libraries, for example
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/zlib">zlib</a>
+or <em>glib</em>, you will need to build and link them. The normal approach is to build
+the libraries (to object files, or <code class="docutils literal notranslate"><span class="pre">.a</span></code> archives of them) and then link those
+with your main program to emit JavaScript+WebAssembly.</p>
 <p>For example, consider the case where a project “project” uses a library “libstuff”:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile libstuff to bitcode</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile libstuff to libstuff.a</span>
 ./emconfigure ./configure
 ./emmake make
 
-<span class="c1"># Compile project to bitcode</span>
+<span class="c1"># Compile project to project.o</span>
 ./emconfigure ./configure
 ./emmake make
 
-<span class="c1"># Compile the library and code together to HTML</span>
+<span class="c1"># Link the library and code together.</span>
 emcc project.o libstuff.a -o final.html
 </pre></div>
 </div>
@@ -1254,7 +1277,13 @@ work.</p>
 <div class="section" id="dynamic-linking">
 <h3>Dynamic linking<a class="headerlink" href="#dynamic-linking" title="Permalink to this headline">¶</a></h3>
 <p>Emscripten’s goal is to generate the fastest and smallest possible code, and for that reason it focuses on generating a single JavaScript file for an entire project. For that reason, dynamic linking should be avoided when possible.</p>
-<p>By default, Emscripten <code class="docutils literal notranslate"><span class="pre">.so</span></code> files are the same as regular <code class="docutils literal notranslate"><span class="pre">.o</span></code> object files. Dynamic libraries that you specify in the final build stage (when generating JavaScript or HTML) are linked in as static libraries. <em>Emcc</em> ignores commands to dynamically link libraries when linking together bitcode (i.e., not in the final build stage). This is to ensure that the same dynamic library is not linked multiple times in intermediate build stages, which would result in duplicate symbol errors.</p>
+<p>By default, Emscripten <code class="docutils literal notranslate"><span class="pre">.so</span></code> files are the same as regular <code class="docutils literal notranslate"><span class="pre">.o</span></code> object files.
+Dynamic libraries that you specify in the final build stage (when generating
+JavaScript or HTML) are linked in as static libraries. <em>Emcc</em> ignores commands
+to dynamically link libraries during the compile stage (i.e., not in the
+final build stage). This is to ensure that the same dynamic library is not
+linked multiple times in intermediate build stages, which would result in
+duplicate symbol errors.</p>
 <p>There is <a class="reference external" href="https://github.com/emscripten-core/emscripten/wiki/Linking">experimental support</a> for true dynamic libraries, loaded as runtime, either via dlopen or as a shared library. See that link for the details and limitations.</p>
 </div>
 <div class="section" id="configure-may-run-checks-that-appear-to-fail">
@@ -1361,7 +1390,7 @@ but a build system might have it hardcoded, or require you to
 <li><p>The compilation error <code class="docutils literal notranslate"><span class="pre">multiply</span> <span class="pre">defined</span> <span class="pre">symbol</span></code> indicates that the project has linked a particular static library multiple times. The project will need to be changed so that the problem library is linked only once.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can use <code class="docutils literal notranslate"><span class="pre">llvm-nm</span></code> to see which symbols are defined in each bitcode file.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">llvm-nm</span></code> to see which symbols are defined in each object file.</p>
 </div>
 <p>One solution is to use the <span class="target" id="id3">dynamic-linking</span> approach described above. This ensures that libraries are linked only once, in the final build stage.</p>
 </li>
@@ -1480,7 +1509,7 @@ but a build system might have it hardcoded, or require you to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.12',
+            VERSION:'2.0.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1490,7 +1519,6 @@ but a build system might have it hardcoded, or require you to
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.12 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.13 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.13 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -99,7 +99,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions-using-emsdk">Installation instructions using emsdk</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended">Installation instructions using the emsdk (recommended)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#emsdk-install-targets">Emsdk install targets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../getting_started/downloads.html#platform-specific-notes">Platform-specific notes</a></li>
 </ul>
@@ -108,7 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#updating-the-sdk">Updating the SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#uninstalling-the-emscripten-sdk">Uninstalling the Emscripten SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#using-the-docker-image">Using the Docker image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-using-packages">Installation using packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/downloads.html#installation-using-unofficial-packages">Installation using unofficial packages</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a><ul>
@@ -399,6 +399,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#infinite-loops">Infinite loops</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#profiling">Profiling</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#speed">Speed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory">Memory</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#autodebugger">AutoDebugger</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#autodebugger-regression-workflow">AutoDebugger Regression Workflow</a></li>
 </ul>
@@ -428,6 +433,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ exceptions support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#overhead">Overhead</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
@@ -1061,7 +1071,8 @@ C++), object files (produced by <cite>emcc -c</cite>), or LLVM assembly files.</
 <p>To see the full list of <em>Clang</em> options supported on the version of <em>Clang</em> used by Emscripten, run <code class="docutils literal notranslate"><span class="pre">clang</span> <span class="pre">--help</span></code>.</p>
 <p>Options that are modified or new in <em>emcc</em> are listed below:</p>
 <span id="emcc-compiler-optimization-options"></span><dl id="emcc-o0">
-<dt><code class="docutils literal notranslate"><span class="pre">-O0</span></code></dt><dd><p>No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-O0</span></code></dt><dd><p>[compile+link]
+No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.</p>
 <p>This and other optimization settings are meaningful both during compile and
 during link. During compile it affects LLVM optimizations, and during link it
 affects final optimization of the code in Binaryen as well as optimization of
@@ -1070,11 +1081,13 @@ should link with something higher.)</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-o1">
-<dt><code class="docutils literal notranslate"><span class="pre">-O1</span></code></dt><dd><p>Simple optimizations. During the compile step these include LLVM <code class="docutils literal notranslate"><span class="pre">-O1</span></code> optimizations. During the link step this does not include various runtime assertions in JS that <cite>-O0</cite> would do.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-O1</span></code></dt><dd><p>[compile+link]
+Simple optimizations. During the compile step these include LLVM <code class="docutils literal notranslate"><span class="pre">-O1</span></code> optimizations. During the link step this does not include various runtime assertions in JS that <cite>-O0</cite> would do.</p>
 </dd>
 </dl>
 <dl id="emcc-o2">
-<dt><code class="docutils literal notranslate"><span class="pre">-O2</span></code></dt><dd><p>Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>, but enables more optimizations. During link this will also enable various JavaScript optimizations.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-O2</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>, but enables more optimizations. During link this will also enable various JavaScript optimizations.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>These JavaScript optimizations can reduce code size by removing things that the compiler does not see being used, in particular, parts of the runtime may be stripped if they are not exported on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object. The compiler is aware of code in <a class="reference internal" href="#emcc-pre-js"><span class="std std-ref">–pre-js</span></a> and <a class="reference internal" href="#emcc-post-js"><span class="std std-ref">–post-js</span></a>, so you can safely use the runtime from there. Alternatively, you can use <code class="docutils literal notranslate"><span class="pre">EXTRA_EXPORTED_RUNTIME_METHODS</span></code>, see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/settings.js">src/settings.js</a>.</p>
@@ -1082,7 +1095,8 @@ should link with something higher.)</p>
 </dd>
 </dl>
 <dl id="emcc-o3">
-<dt><code class="docutils literal notranslate"><span class="pre">-O3</span></code></dt><dd><p>Like <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but with additional optimizations that may take longer to run.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-O3</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but with additional optimizations that may take longer to run.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is a good setting for a release build.</p>
@@ -1090,11 +1104,13 @@ should link with something higher.)</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-os">
-<dt><code class="docutils literal notranslate"><span class="pre">-Os</span></code></dt><dd><p>Like <code class="docutils literal notranslate"><span class="pre">-O3</span></code>, but focuses more on code size (and may make tradeoffs with speed). This can affect both wasm and JavaScript.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-Os</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O3</span></code>, but focuses more on code size (and may make tradeoffs with speed). This can affect both wasm and JavaScript.</p>
 </dd>
 </dl>
 <dl id="emcc-oz">
-<dt><code class="docutils literal notranslate"><span class="pre">-Oz</span></code></dt><dd><p>Like <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, but reduces code size even further, and may take longer to run. This can affect both wasm and JavaScript.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-Oz</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, but reduces code size even further, and may take longer to run. This can affect both wasm and JavaScript.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For more tips on optimizing your code, see <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span class="std std-ref">Optimizing Code</span></a>.</p>
@@ -1102,7 +1118,8 @@ should link with something higher.)</p>
 </dd>
 </dl>
 <dl id="emcc-s-option-value">
-<dt><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OPTION[=VALUE]</span></code></dt><dd><p>Emscripten build options. For the available options, see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/settings.js">src/settings.js</a>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OPTION[=VALUE]</span></code></dt><dd><p>[different OPTIONs affect at different stages, most at link time]
+Emscripten build options. For the available options, see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/settings.js">src/settings.js</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You can prefix boolean options with <code class="docutils literal notranslate"><span class="pre">NO_</span></code> to reverse them. For example, <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXIT_RUNTIME=1</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">NO_EXIT_RUNTIME=0</span></code>.</p>
@@ -1138,13 +1155,15 @@ between the <code class="docutils literal notranslate"><span class="pre">-s</spa
 </dd>
 </dl>
 <dl class="simple" id="emcc-g">
-<dt><code class="docutils literal notranslate"><span class="pre">-g</span></code></dt><dd><p>Preserve debug information.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-g</span></code></dt><dd><p>[compile+link]
+Preserve debug information.</p>
 <ul class="simple">
 <li><p>When compiling to object files, this is the same as in <em>Clang</em> and <em>gcc</em>, it adds debug information to the object files.</p></li>
 <li><p>When linking, this is equivalent to <a class="reference internal" href="#emcc-g3"><span class="std std-ref">-g3</span></a>.</p></li>
 </ul>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-gseparate-dwarf[=FILENAME]</span></code></dt><dd><p>Preserve debug information, but in a separate file on the side. This is the
+<dt><code class="docutils literal notranslate"><span class="pre">-gseparate-dwarf[=FILENAME]</span></code></dt><dd><p>[same as -g3 if passed at compile time, otherwise applies at link]
+Preserve debug information, but in a separate file on the side. This is the
 same as <code class="docutils literal notranslate"><span class="pre">-g</span></code>, but the main file will contain no debug info. Instead, debug
 info will be present in a file on the side, in <code class="docutils literal notranslate"><span class="pre">FILENAME</span></code> if provided,
 otherwise the same as the wasm file but with suffix <code class="docutils literal notranslate"><span class="pre">.debug.wasm</span></code>. While
@@ -1155,7 +1174,8 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl id="emcc-gn">
-<dt><code class="docutils literal notranslate"><span class="pre">-g&lt;level&gt;</span></code></dt><dd><p>Controls the level of debuggability. Each level builds on the previous one:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-g&lt;level&gt;</span></code></dt><dd><p>[compile+link]
+Controls the level of debuggability. Each level builds on the previous one:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p id="emcc-g0"><code class="docutils literal notranslate"><span class="pre">-g0</span></code>: Make no effort to keep code debuggable.</p>
@@ -1182,15 +1202,19 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-profiling">
-<dt><code class="docutils literal notranslate"><span class="pre">--profiling</span></code></dt><dd><p>Use reasonable defaults when emitting JavaScript to make the build readable but still useful for profiling. This sets <code class="docutils literal notranslate"><span class="pre">-g2</span></code> (preserve whitespace and function names) and may also enable optimizations that affect performance and otherwise might not be performed in <code class="docutils literal notranslate"><span class="pre">-g2</span></code>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--profiling</span></code></dt><dd><p>[same as -g2 if passed at compile time, otherwise applies at link]
+Use reasonable defaults when emitting JavaScript to make the build readable but still useful for profiling. This sets <code class="docutils literal notranslate"><span class="pre">-g2</span></code> (preserve whitespace and function names) and may also enable optimizations that affect performance and otherwise might not be performed in <code class="docutils literal notranslate"><span class="pre">-g2</span></code>.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--profiling-funcs</span></code></dt><dd><p>Preserve function names in profiling, but otherwise minify whitespace and names as we normally do in optimized builds. This is useful if you want to look at profiler results based on function names, but do <em>not</em> intend to read the emitted code.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--profiling-funcs</span></code></dt><dd><p>[link]
+Preserve function names in profiling, but otherwise minify whitespace and names as we normally do in optimized builds. This is useful if you want to look at profiler results based on function names, but do <em>not</em> intend to read the emitted code.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--tracing</span></code></dt><dd><p>Enable the <a class="reference internal" href="../api_reference/trace.h.html#trace-h"><span class="std std-ref">Emscripten Tracing API</span></a>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--tracing</span></code></dt><dd><p>[link]
+Enable the <a class="reference internal" href="../api_reference/trace.h.html#trace-h"><span class="std std-ref">Emscripten Tracing API</span></a>.</p>
 </dd>
 </dl>
 <dl id="emcc-emit-symbol-map">
-<dt><code class="docutils literal notranslate"><span class="pre">--emit-symbol-map</span></code></dt><dd><p>Save a map file between the minified global names and the original function names. This allows you, for example, to reconstruct meaningful stack traces.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--emit-symbol-map</span></code></dt><dd><p>[link]
+Save a map file between the minified global names and the original function names. This allows you, for example, to reconstruct meaningful stack traces.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is only relevant when <a class="reference internal" href="../site/glossary.html#term-Minifying"><span class="xref std std-term">minifying</span></a> global names, which happens in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and above, and when no <code class="docutils literal notranslate"><span class="pre">-g</span></code> option was specified to prevent minification.</p>
@@ -1198,7 +1222,8 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl id="emcc-llvm-opts">
-<dt><code class="docutils literal notranslate"><span class="pre">--llvm-opts</span> <span class="pre">&lt;level&gt;</span></code></dt><dd><p>Enables LLVM optimizations, relevant when we call the LLVM optimizer (which is done when building source files to object code). Possible <code class="docutils literal notranslate"><span class="pre">level</span></code> values are:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--llvm-opts</span> <span class="pre">&lt;level&gt;</span></code></dt><dd><p>[compile+link]
+Enables LLVM optimizations, relevant when we call the LLVM optimizer (which is done when building source files to object code). Possible <code class="docutils literal notranslate"><span class="pre">level</span></code> values are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: No LLVM optimizations (default in -O0).</p></li>
@@ -1215,11 +1240,13 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-lto">
-<dt><code class="docutils literal notranslate"><span class="pre">-flto</span></code></dt><dd><p>Enables link-time optimizations (LTO).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-flto</span></code></dt><dd><p>[compile+link]
+Enables link-time optimizations (LTO).</p>
 </dd>
 </dl>
 <dl id="emcc-closure">
-<dt><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">&lt;on&gt;</span></code></dt><dd><p>Runs the <a class="reference internal" href="../site/glossary.html#term-Closure-Compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible <code class="docutils literal notranslate"><span class="pre">on</span></code> values are:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">&lt;on&gt;</span></code></dt><dd><p>[link]
+Runs the <a class="reference internal" href="../site/glossary.html#term-Closure-Compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible <code class="docutils literal notranslate"><span class="pre">on</span></code> values are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: No closure compiler (default in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and below).</p></li>
@@ -1239,14 +1266,17 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl id="emcc-pre-js">
-<dt><code class="docutils literal notranslate"><span class="pre">--pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>Specify a file whose contents are added before the emitted code and optimized together with it. Note that this might not literally be the very first thing in the JS output, for example if <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> is used (see <code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code>). If you want that, you can just prepend to the output from emscripten; the benefit of <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> is that it optimizes the code with the rest of the emscripten output, which allows better dead code elimination and minification, and it should only be used for that purpose. In particular, <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> code should not alter the main output from emscripten in ways that could confuse the optimizer, such as using <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> + <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> to put all the output in an inner function scope (see <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> for that).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Specify a file whose contents are added before the emitted code and optimized together with it. Note that this might not literally be the very first thing in the JS output, for example if <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> is used (see <code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code>). If you want that, you can just prepend to the output from emscripten; the benefit of <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> is that it optimizes the code with the rest of the emscripten output, which allows better dead code elimination and minification, and it should only be used for that purpose. In particular, <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> code should not alter the main output from emscripten in ways that could confuse the optimizer, such as using <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> + <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> to put all the output in an inner function scope (see <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> for that).</p>
 <p><cite>–pre-js</cite> (but not <cite>–post-js</cite>) is also useful for specifying things on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object, as it appears before the JS looks at <code class="docutils literal notranslate"><span class="pre">Module</span></code> (for example, you can define <code class="docutils literal notranslate"><span class="pre">Module['print']</span></code> there).</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-post-js">
-<dt><code class="docutils literal notranslate"><span class="pre">--post-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>Like <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, but emits a file <em>after</em> the emitted code.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--post-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Like <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, but emits a file <em>after</em> the emitted code.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>Specify a file whose contents are prepended to the JavaScript output. This
+<dt><code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Specify a file whose contents are prepended to the JavaScript output. This
 file is prepended to the final JavaScript output, <em>after</em> all other
 work has been done, including optimization, optional <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code>-ation,
 instrumentation like <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>, etc. This is the same as prepending
@@ -1255,11 +1285,13 @@ way to do that. (For comparison, <code class="docutils literal notranslate"><spa
 code together with everything else, keep it in the same scope if running
 <cite>MODULARIZE</cite>, etc.).</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--extern-post-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>Like <code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span></code>, but appends to the end.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--extern-post-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Like <code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span></code>, but appends to the end.</p>
 </dd>
 </dl>
 <dl id="emcc-embed-file">
-<dt><code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>Specify a file (with path) to embed inside the generated JavaScript. The path is relative to the current directory at compile time. If a directory is passed here, its entire contents will be embedded.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Specify a file (with path) to embed inside the generated JavaScript. The path is relative to the current directory at compile time. If a directory is passed here, its entire contents will be embedded.</p>
 <p>For example, if the command includes <code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">dir/file.dat</span></code>, then <code class="docutils literal notranslate"><span class="pre">dir/file.dat</span></code> must exist relative to the directory where you run <em>emcc</em>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1269,7 +1301,8 @@ code together with everything else, keep it in the same scope if running
 </dd>
 </dl>
 <dl id="emcc-preload-file">
-<dt><code class="docutils literal notranslate"><span class="pre">--preload-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>Specify a file to preload before running the compiled code asynchronously. The path is relative to the current directory at compile time. If a directory is passed here, its entire contents will be embedded.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--preload-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>[link]
+Specify a file to preload before running the compiled code asynchronously. The path is relative to the current directory at compile time. If a directory is passed here, its entire contents will be embedded.</p>
 <p>Preloaded files are stored in <strong>filename.data</strong>, where <strong>filename.html</strong> is the main file you are compiling to. To run your code, you will need both the <strong>.html</strong> and the <strong>.data</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1280,13 +1313,16 @@ code together with everything else, keep it in the same scope if running
 </dd>
 </dl>
 <dl class="simple" id="emcc-exclude-file">
-<dt><code class="docutils literal notranslate"><span class="pre">--exclude-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>Files and directories to be excluded from <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a> and <a class="reference internal" href="#emcc-preload-file"><span class="std std-ref">–preload-file</span></a>. Wildcards (*) are supported.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--exclude-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>[link]
+Files and directories to be excluded from <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a> and <a class="reference internal" href="#emcc-preload-file"><span class="std std-ref">–preload-file</span></a>. Wildcards (*) are supported.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code></dt><dd><p>Tells the file packager to run preload plugins on the files as they are loaded. This performs tasks like decoding images and audio using the browser’s codecs.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code></dt><dd><p>[link]
+Tells the file packager to run preload plugins on the files as they are loaded. This performs tasks like decoding images and audio using the browser’s codecs.</p>
 </dd>
 </dl>
 <dl id="emcc-shell-file">
-<dt><code class="docutils literal notranslate"><span class="pre">--shell-file</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>The path name to a skeleton HTML file used when generating HTML output. The shell file used needs to have this token inside it: <code class="docutils literal notranslate"><span class="pre">{{{</span> <span class="pre">SCRIPT</span> <span class="pre">}}}</span></code>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--shell-file</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[link]
+The path name to a skeleton HTML file used when generating HTML output. The shell file used needs to have this token inside it: <code class="docutils literal notranslate"><span class="pre">{{{</span> <span class="pre">SCRIPT</span> <span class="pre">}}}</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
@@ -1297,30 +1333,37 @@ code together with everything else, keep it in the same scope if running
 </dd>
 </dl>
 <dl class="simple" id="emcc-source-map-base">
-<dt><code class="docutils literal notranslate"><span class="pre">--source-map-base</span> <span class="pre">&lt;base-url&gt;</span></code></dt><dd><p>The URL for the location where WebAssembly source maps will be published. When this option is provided, the <strong>.wasm</strong> file is updated to have a <code class="docutils literal notranslate"><span class="pre">sourceMappingURL</span></code> section. The resulting URL will have format: <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;wasm-file-name&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">.map</span></code>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--source-map-base</span> <span class="pre">&lt;base-url&gt;</span></code></dt><dd><p>[link]
+The URL for the location where WebAssembly source maps will be published. When this option is provided, the <strong>.wasm</strong> file is updated to have a <code class="docutils literal notranslate"><span class="pre">sourceMappingURL</span></code> section. The resulting URL will have format: <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;wasm-file-name&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">.map</span></code>.</p>
 </dd>
 </dl>
 <dl id="emcc-minify">
-<dt><code class="docutils literal notranslate"><span class="pre">--minify</span> <span class="pre">0</span></code></dt><dd><p>Identical to <code class="docutils literal notranslate"><span class="pre">-g1</span></code>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--minify</span> <span class="pre">0</span></code></dt><dd><p>[same as -g1 if passed at compile time, otherwise applies at link]
+Identical to <code class="docutils literal notranslate"><span class="pre">-g1</span></code>.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--js-transform</span> <span class="pre">&lt;cmd&gt;</span></code></dt><dd><p>Specifies a <code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> to be called on the generated code before it is optimized. This lets you modify the JavaScript, for example adding or removing some code, in a way that those modifications will be optimized together with the generated code.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--js-transform</span> <span class="pre">&lt;cmd&gt;</span></code></dt><dd><p>[link]
+Specifies a <code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> to be called on the generated code before it is optimized. This lets you modify the JavaScript, for example adding or removing some code, in a way that those modifications will be optimized together with the generated code.</p>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> will be called with the file name of the generated code as a parameter. To modify the code, you can read the original data and then append to it or overwrite it with the modified data.</p>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> is interpreted as a space-separated list of arguments, for example, <code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> of <strong>python processor.py</strong> will cause a Python script to be run.</p>
 </dd>
 </dl>
 <dl id="emcc-bind">
-<dt><code class="docutils literal notranslate"><span class="pre">--bind</span></code></dt><dd><p>Compiles the source code using the <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind"><span class="std std-ref">Embind</span></a> bindings to connect C/C++ and JavaScript.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--bind</span></code></dt><dd><p>[link]
+Compiles the source code using the <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind"><span class="std std-ref">Embind</span></a> bindings to connect C/C++ and JavaScript.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--ignore-dynamic-linking</span></code></dt><dd><p>Tells the compiler to ignore dynamic linking (the user will need to manually link to the shared libraries later on).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--ignore-dynamic-linking</span></code></dt><dd><p>[link]
+Tells the compiler to ignore dynamic linking (the user will need to manually link to the shared libraries later on).</p>
 <p>Normally <em>emcc</em> will simply link in code from the dynamic library as though it were statically linked, which will fail if the same dynamic library is linked more than once. With this option, dynamic linking is ignored, which allows the build system to proceed without errors.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-js-library">
-<dt><code class="docutils literal notranslate"><span class="pre">--js-library</span> <span class="pre">&lt;lib&gt;</span></code></dt><dd><p>A JavaScript library to use in addition to those in Emscripten’s core libraries (src/library_*).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--js-library</span> <span class="pre">&lt;lib&gt;</span></code></dt><dd><p>[link]
+A JavaScript library to use in addition to those in Emscripten’s core libraries (src/library_*).</p>
 </dd>
 </dl>
 <dl id="emcc-verbose">
-<dt><code class="docutils literal notranslate"><span class="pre">-v</span></code></dt><dd><p>Turns on verbose output.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-v</span></code></dt><dd><p>[general]
+Turns on verbose output.</p>
 <p>This will print the internal sub-commands run by emscripten as well as <code class="docutils literal notranslate"><span class="pre">-v</span></code>
 to <em>Clang</em>.</p>
 <div class="admonition tip">
@@ -1328,12 +1371,14 @@ to <em>Clang</em>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-v</span></code> is a useful tool for diagnosing errors. It works with or without other arguments.</p>
 </div>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--check</span></code></dt><dd><p>Runs Emscripten’s internal sanity checks and reports any issues with the
+<dt><code class="docutils literal notranslate"><span class="pre">--check</span></code></dt><dd><p>[general]
+Runs Emscripten’s internal sanity checks and reports any issues with the
 current configuration.</p>
 </dd>
 </dl>
 <dl id="emcc-cache">
-<dt><code class="docutils literal notranslate"><span class="pre">--cache</span></code></dt><dd><p>Sets the directory to use as the Emscripten cache. The Emscripten cache
+<dt><code class="docutils literal notranslate"><span class="pre">--cache</span></code></dt><dd><p>[general]
+Sets the directory to use as the Emscripten cache. The Emscripten cache
 is used to store pre-built versions of <code class="docutils literal notranslate"><span class="pre">libc</span></code>, <code class="docutils literal notranslate"><span class="pre">libcxx</span></code> and other
 libraries.</p>
 <p>If using this in combination with <code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code>, be sure to specify
@@ -1343,7 +1388,8 @@ using the <code class="docutils literal notranslate"><span class="pre">EM_CACHE<
 </dd>
 </dl>
 <dl id="emcc-clear-cache">
-<dt><code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code></dt><dd><p>Manually clears the cache of compiled Emscripten system libraries (libc++,
+<dt><code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code></dt><dd><p>[general]
+Manually clears the cache of compiled Emscripten system libraries (libc++,
 libc++abi, libc).</p>
 <p>This is normally handled automatically, but if you update LLVM in-place
 (instead of having a different directory for a new version), the caching
@@ -1356,7 +1402,8 @@ is usually within the cache directory.</p>
 </dd>
 </dl>
 <dl id="emcc-clear-ports">
-<dt><code class="docutils literal notranslate"><span class="pre">--clear-ports</span></code></dt><dd><p>Manually clears the local copies of ports from the Emscripten Ports repos
+<dt><code class="docutils literal notranslate"><span class="pre">--clear-ports</span></code></dt><dd><p>[general]
+Manually clears the local copies of ports from the Emscripten Ports repos
 (sdl2, etc.). This also clears the cache, to remove their builds.</p>
 <p>You should only need to do this if a problem happens and you want all ports
 that you use to be downloaded and built from scratch. After this operation is
@@ -1364,11 +1411,13 @@ complete, this process will exit.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-show-ports">
-<dt><code class="docutils literal notranslate"><span class="pre">--show-ports</span></code></dt><dd><p>Shows the list of available projects in the Emscripten Ports repos. After this operation is complete, this process will exit.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--show-ports</span></code></dt><dd><p>[general]
+Shows the list of available projects in the Emscripten Ports repos. After this operation is complete, this process will exit.</p>
 </dd>
 </dl>
 <dl id="emcc-memory-init-file">
-<dt><code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">&lt;on&gt;</span></code></dt><dd><p>Specifies whether to emit a separate memory initialization file.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">&lt;on&gt;</span></code></dt><dd><p>[link]
+Specifies whether to emit a separate memory initialization file.</p>
 <blockquote>
 <div><div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1392,42 +1441,52 @@ complete, this process will exit.</p>
 </ul>
 </div></blockquote>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">-Wwarn-absolute-paths</span></code></dt><dd><p>Enables warnings about the use of absolute paths in <code class="docutils literal notranslate"><span class="pre">-I</span></code> and <code class="docutils literal notranslate"><span class="pre">-L</span></code> command line directives. This is used to warn against unintentional use of absolute paths, which is sometimes dangerous when referring to nonportable local system headers.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-Wwarn-absolute-paths</span></code></dt><dd><p>[compile+link]
+Enables warnings about the use of absolute paths in <code class="docutils literal notranslate"><span class="pre">-I</span></code> and <code class="docutils literal notranslate"><span class="pre">-L</span></code> command line directives. This is used to warn against unintentional use of absolute paths, which is sometimes dangerous when referring to nonportable local system headers.</p>
 </dd>
 </dl>
 <dl class="simple" id="proxy-to-worker">
-<dt><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code></dt><dd><p>Runs the main application code in a worker, proxying events to it and output from it. If emitting HTML, this emits a <strong>.html</strong> file, and a separate <strong>.js</strong> file containing the JavaScript to be run in a worker. If emitting JavaScript, the target file name contains the part to be run on the main thread, while a second <strong>.js</strong> file with suffix “.worker.js” will contain the worker portion.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code></dt><dd><p>[link]
+Runs the main application code in a worker, proxying events to it and output from it. If emitting HTML, this emits a <strong>.html</strong> file, and a separate <strong>.js</strong> file containing the JavaScript to be run in a worker. If emitting JavaScript, the target file name contains the part to be run on the main thread, while a second <strong>.js</strong> file with suffix “.worker.js” will contain the worker portion.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-emrun">
-<dt><code class="docutils literal notranslate"><span class="pre">--emrun</span></code></dt><dd><p>Enables the generated output to be aware of the <a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-html-files-with-emrun"><span class="std std-ref">emrun</span></a> command line tool. This allows <code class="docutils literal notranslate"><span class="pre">stdout</span></code>, <code class="docutils literal notranslate"><span class="pre">stderr</span></code> and <code class="docutils literal notranslate"><span class="pre">exit(returncode)</span></code> capture when running the generated application through <em>emrun</em>. (This enables <cite>EXIT_RUNTIME=1</cite>, allowing normal runtime exiting with return code passing.)</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--emrun</span></code></dt><dd><p>[link]
+Enables the generated output to be aware of the <a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-html-files-with-emrun"><span class="std std-ref">emrun</span></a> command line tool. This allows <code class="docutils literal notranslate"><span class="pre">stdout</span></code>, <code class="docutils literal notranslate"><span class="pre">stderr</span></code> and <code class="docutils literal notranslate"><span class="pre">exit(returncode)</span></code> capture when running the generated application through <em>emrun</em>. (This enables <cite>EXIT_RUNTIME=1</cite>, allowing normal runtime exiting with return code passing.)</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--cpuprofiler</span></code></dt><dd><p>Embeds a simple CPU profiler onto the generated page. Use this to perform cursory interactive performance profiling.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--cpuprofiler</span></code></dt><dd><p>[link]
+Embeds a simple CPU profiler onto the generated page. Use this to perform cursory interactive performance profiling.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--memoryprofiler</span></code></dt><dd><p>Embeds a memory allocation tracker onto the generated page. Use this to profile the application usage of the Emscripten HEAP.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--memoryprofiler</span></code></dt><dd><p>[link]
+Embeds a memory allocation tracker onto the generated page. Use this to profile the application usage of the Emscripten HEAP.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--threadprofiler</span></code></dt><dd><p>Embeds a thread activity profiler onto the generated page. Use this to profile the application usage of pthreads when targeting multithreaded builds (-s USE_PTHREADS=1/2).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--threadprofiler</span></code></dt><dd><p>[link]
+Embeds a thread activity profiler onto the generated page. Use this to profile the application usage of pthreads when targeting multithreaded builds (-s USE_PTHREADS=1/2).</p>
 </dd>
 </dl>
 <dl id="emcc-config">
-<dt><code class="docutils literal notranslate"><span class="pre">--em-config</span></code></dt><dd><p>Specifies the location of the <strong>.emscripten</strong> configuration file.  If not
+<dt><code class="docutils literal notranslate"><span class="pre">--em-config</span></code></dt><dd><p>[general]
+Specifies the location of the <strong>.emscripten</strong> configuration file.  If not
 specified emscripten will search for <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> first in the emscripten
 directory itself, and then in the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/.emscripten</span></code>).
 This can be overridden using the <code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code> environment variable.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--default-obj-ext</span> <span class="pre">.ext</span></code></dt><dd><p>Specifies the file suffix to generate if the location of a directory name is passed to the <code class="docutils literal notranslate"><span class="pre">-o</span></code> directive.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--default-obj-ext</span> <span class="pre">.ext</span></code></dt><dd><p>[compile+link]
+Specifies the file suffix to generate if the location of a directory name is passed to the <code class="docutils literal notranslate"><span class="pre">-o</span></code> directive.</p>
 <p>For example, consider the following command, which will by default generate an output name <strong>dir/a.o</strong>. With <code class="docutils literal notranslate"><span class="pre">--default-obj-ext</span> <span class="pre">.ext</span></code> the generated file has the custom suffix <em>dir/a.ext</em>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">c</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> <span class="nb">dir</span><span class="o">/</span>
 </pre></div>
 </div>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--valid-abspath</span> <span class="pre">path</span></code></dt><dd><p>Note an allowed absolute path, which we should not warn about (absolute
+<dt><code class="docutils literal notranslate"><span class="pre">--valid-abspath</span> <span class="pre">path</span></code></dt><dd><p>[compile+link]
+Note an allowed absolute path, which we should not warn about (absolute
 include paths normally are warned about, since they may refer to the
 local system headers etc. which we need to avoid when cross-compiling).</p>
 </dd>
 </dl>
 <dl id="emcc-o-target">
-<dt><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">&lt;target&gt;</span></code></dt><dd><p>When linking an executable, the <code class="docutils literal notranslate"><span class="pre">target</span></code> file name extension defines the output type to be generated:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">&lt;target&gt;</span></code></dt><dd><p>[link]
+When linking an executable, the <code class="docutils literal notranslate"><span class="pre">target</span></code> file name extension defines the output type to be generated:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>&lt;name&gt; <strong>.js</strong> : JavaScript (+ separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly). (default)</p></li>
@@ -1445,11 +1504,14 @@ below) the name of the output file is irrelevant.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-c">
-<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code></dt><dd><p>Tells <em>emcc</em> to emit an object file which can then be linked with other object files to produce an executable.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code></dt><dd><p>[compile]
+Tells <em>emcc</em> to emit an object file which can then be linked with other object files to produce an executable.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--output_eol</span> <span class="pre">windows|linux</span></code></dt><dd><p>Specifies the line ending to generate for the text files that are outputted. If “–output_eol windows” is passed, the final output files will have Windows rn line endings in them. With “–output_eol linux”, the final generated files will be written with Unix n line endings.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--output_eol</span> <span class="pre">windows|linux</span></code></dt><dd><p>[link]
+Specifies the line ending to generate for the text files that are outputted. If “–output_eol windows” is passed, the final output files will have Windows rn line endings in them. With “–output_eol linux”, the final generated files will be written with Unix n line endings.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">--cflags</span></code></dt><dd><p>Prints out the flags <code class="docutils literal notranslate"><span class="pre">emcc</span></code> would pass to <code class="docutils literal notranslate"><span class="pre">clang</span></code> to compile source code to object form. You can use this to invoke clang yourself, and then run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> on those outputs just for the final linking+conversion to JS.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--cflags</span></code></dt><dd><p>[other]
+Prints out the flags <code class="docutils literal notranslate"><span class="pre">emcc</span></code> would pass to <code class="docutils literal notranslate"><span class="pre">clang</span></code> to compile source code to object form. You can use this to invoke clang yourself, and then run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> on those outputs just for the final linking+conversion to JS.</p>
 </dd>
 </dl>
 </div>
@@ -1459,10 +1521,24 @@ below) the name of the output file is irrelevant.</p>
 <p><em>emcc</em> is affected by several environment variables, as listed below:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">EMMAKEN_JUST_CONFIGURE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EMMAKEN_CFLAGS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMMAKEN_COMPILER</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMMAKEN_JUST_CONFIGURE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMMAKEN_NO_SDK</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_AUTODEBUG</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_CFLAGS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_CORES</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG_SAVE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_FORCE_STDLIBS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_ONLY_FORCED_STDLIBS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_LOCAL_PORTS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_STDERR_FILE</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EMCC_CLOSURE_ARGS</span></code> : arguments to be passed to <em>Closure Compiler</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_STRICT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_SKIP_SANITY_CHECK</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EM_IGNORE_SANITY</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code></p></li>
 </ul>
 </div></blockquote>
 <p>Search for ‘os.environ’ in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/emcc.py">emcc.py</a> to see how these are used. The most interesting is possibly <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG</span></code>, which forces the compiler to dump its build and temporary files to a temporary directory where they can be reviewed.</p>
@@ -1580,7 +1656,7 @@ below) the name of the output file is irrelevant.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.12',
+            VERSION:'2.0.13',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1590,7 +1666,6 @@ below) the name of the output file is irrelevant.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 
