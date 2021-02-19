@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Test Suite &mdash; Emscripten 2.0.13 documentation</title>
+  <title>Emscripten Test Suite &mdash; Emscripten 2.0.14 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.13 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.14 documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Bug Reporting" href="bug_reports.html"/>
         <link rel="prev" title="Emscripten Tutorial" href="Tutorial.html"/> 
@@ -1059,25 +1059,25 @@ how best to do that.</p>
 </div>
 <div class="section" id="running-tests">
 <h2>Running tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
-<p>Run the test suite runner (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/runner.py">tests/runner.py</a>) with no arguments to see the help message:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tests/runner.py
+<p>Run the test suite runner (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/runner.py">tests/runner</a>) with no arguments to see the help message:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tests/runner
 </pre></div>
 </div>
 <p>The tests are divided into <em>modes</em>. You can run either an entire mode or an individual test, or use wildcards to run some tests in some modes. For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># run one test (in the default mode)</span>
-python tests/runner.py test_loop
+tests/runner test_loop
 
 <span class="c1"># run one test in a specific mode (here, asm.js -O2)</span>
-python tests/runner.py asm2.test_loop
+tests/runner asm2.test_loop
 
 <span class="c1"># run a test in a bunch of modes (here, all asm.js modes)</span>
-python tests/runner.py asm*.test_loop
+tests/runner asm*.test_loop
 
 <span class="c1"># run a bunch of tests in one mode (here, all i64 tests in wasm -O3)</span>
-python tests/runner.py wasm3.test_*i64*
+tests/runner wasm3.test_*i64*
 
 <span class="c1"># run all tests in a specific mode (here, asm.js -O1)</span>
-python tests/runner.py asm1
+tests/runner asm1
 </pre></div>
 </div>
 <p>The <em>core</em> test modes (defined at the bottom of <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/test_core.py">tests/test_core.py</a>) let you run a specific test in either asm.js or wasm, and with different optimization flags. There are also non-core test modes, that run tests in more special manner (in particular, in those tests it is not possible to say “run the test with a different optimization flag” - that is what the core tests are for). The non-core test modes include</p>
@@ -1093,24 +1093,24 @@ python tests/runner.py asm1
 </div></blockquote>
 <p>The wildcards we mentioned above work for non-core test modes too, for example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># run one browser test</span>
-python tests/runner.py browser.test_sdl_image
+tests/runner browser.test_sdl_image
 
 <span class="c1"># run all SDL2 browser tests</span>
-python tests/runner.py browser.test_sdl2*
+tests/runner browser.test_sdl2*
 
 <span class="c1"># run all browser tests</span>
-python tests/runner.py browser
+tests/runner browser
 </pre></div>
 </div>
 </div>
 <div class="section" id="skipping-tests">
 <h2>Skipping Tests<a class="headerlink" href="#skipping-tests" title="Permalink to this headline">¶</a></h2>
 <p>An individual test can be skipped by passing the “skip:” prefix. E.g.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tests/runner.py other skip:other.test_cmake
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tests/runner other skip:other.test_cmake
 </pre></div>
 </div>
 <p>Wildcards can also be passed in skip, so</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tests/runner.py browser skip:browser.test_pthread_*
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tests/runner browser skip:browser.test_pthread_*
 </pre></div>
 </div>
 <p>will run the whole browser suite except for all the pthread tests in it.</p>
@@ -1118,7 +1118,7 @@ python tests/runner.py browser
 <div class="section" id="running-a-bunch-of-random-tests">
 <h2>Running a bunch of random tests<a class="headerlink" href="#running-a-bunch-of-random-tests" title="Permalink to this headline">¶</a></h2>
 <p>You can run a random subset of the test suite, using something like</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tests/runner.py random100
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tests/runner random100
 </pre></div>
 </div>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">100</span></code> with another number as you prefer. This will run that number of random tests, and tell you the statistical likelihood of almost all the test suite passing assuming those tests do. This works just like election surveys do - given a small sample, we can predict fairly well that so-and-so percent of the public will vote for candidate A. In our case, the “candidates” are pass or fail, and we can predict how much of the test suite will pass given that sample. Assuming the sample tests all pass, we can say with high likelihood that most of the test suite will in fact pass. (Of course, this is no guarantee, and even a single test failure is serious, however, this gives a quick estimate that your patch does not cause significant and obvious breakage.)</p>
@@ -1128,23 +1128,23 @@ python tests/runner.py browser
 <p>Please see the bottom the file <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/test_core.py">tests/test_core.py</a> for the current test modes, as they may change slowly over time.
 When you want to run the entire test suite locally, these are currently the important commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all core wasm tests</span>
-python tests/runner.py wasm*
+tests/runner wasm*
 
 <span class="c1"># Run &quot;other&quot; test suite</span>
-python tests/runner.py other
+tests/runner other
 
 <span class="c1"># Run &quot;browser&quot; test suite - this requires a web browser</span>
-python tests/runner.py browser
+tests/runner browser
 
 <span class="c1"># Run &quot;sockets&quot; test suite - this requires a web browser too</span>
-python tests/runner.py sockets
+tests/runner sockets
 
 <span class="c1"># Run &quot;sanity&quot; test suite - this tests setting up emscripten during</span>
 <span class="c1"># first run, etc., and so it modifies your .emscripten file temporarily.</span>
-python tests/runner.py sanity
+tests/runner sanity
 
 <span class="c1"># Optionally, also run benchmarks to check for regressions</span>
-python tests/runner.py benchmark
+tests/runner benchmark
 </pre></div>
 </div>
 </div>
@@ -1158,15 +1158,15 @@ benchmarks such as CoreMark and LINPACK. See for example
 which gives an overview.</p>
 <p>To run the benchmark suite, do:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all benchmarks</span>
-python tests/runner.py benchmark
+tests/runner benchmark
 </pre></div>
 </div>
 <p>As with all the test suites, you can also run a specific benchmark:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run one specific benchmark</span>
-python tests/runner.py benchmark.test_skinning
+tests/runner benchmark.test_skinning
 </pre></div>
 </div>
-<p>Usually you will want to customize the python in <cite>tests/test_benchmark.py</cite> to
+<p>Usually you will want to customize the in <cite>tests/test_benchmark.py</cite> to
 run the benchmarks you want (there is currently no external config file). Things
 you may want to modify include:</p>
 <ul class="simple">
@@ -1184,14 +1184,14 @@ increase code size, so it’s not done by default).</p></li>
 <p>Setting the <a class="reference internal" href="../porting/Debugging.html#debugging-emcc-debug"><span class="std std-ref">Debug mode (EMCC_DEBUG)</span></a> is useful for debugging tests, as it emits debug output and intermediate files (the files go in <strong>/tmp/emscripten_temp/</strong>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># On Windows, use &quot;set&quot; to set and un-set the EMCC_DEBUG environment variable:</span>
 <span class="nb">set</span> <span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span>
-python tests/runner.py test_hello_world
+tests/runner test_hello_world
 <span class="nb">set</span> <span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">0</span>
 
 <span class="c1"># On Linux, you can do this all in one line</span>
-<span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span> python tests/runner.py test_hello_world
+<span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span> tests/runner test_hello_world
 
 <span class="c1"># EMCC_DEBUG=2 generates additional debug information.</span>
-<span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">2</span> python tests/runner.py test_hello_world
+<span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">2</span> tests/runner test_hello_world
 </pre></div>
 </div>
 <p>You can also specify <code class="docutils literal notranslate"><span class="pre">EMTEST_SAVE_DIR=1</span></code> in the environment to save the
@@ -1316,7 +1316,7 @@ started.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.13',
+            VERSION:'2.0.14',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
