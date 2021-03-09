@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 2.0.14 documentation</title>
+  <title>Building Projects &mdash; Emscripten 2.0.15 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.15 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -1207,7 +1207,7 @@ must specify <a class="reference internal" href="../tools_reference/emcc.html#em
 <h2>Using libraries<a class="headerlink" href="#using-libraries" title="Permalink to this headline">¶</a></h2>
 <p>Built-in support is available for a number of standard libraries: <em>libc</em>, <em>libc++</em> and <em>SDL</em>. These will automatically be linked when you compile code that uses them (you do not even need to add <code class="docutils literal notranslate"><span class="pre">-lSDL</span></code>, but see below for more SDL-specific details).</p>
 <p>If your project uses other libraries, for example
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/zlib">zlib</a>
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/zlib">zlib</a>
 or <em>glib</em>, you will need to build and link them. The normal approach is to build
 the libraries (to object files, or <code class="docutils literal notranslate"><span class="pre">.a</span></code> archives of them) and then link those
 with your main program to emit JavaScript+WebAssembly.</p>
@@ -1242,7 +1242,7 @@ emcc project.o libstuff.a -o final.html
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Emscripten also has support for older SDL1, which is built-in. If you do not specify SDL2 as in the command above, then SDL1 is linked in and the SDL1 include paths are used. SDL1 has support for <em>sdl-config</em>, which is present in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/system/bin/sdl-config">system/bin</a>. Using the native <em>sdl-config</em> may result in compilation or missing-symbol errors. You will need to modify the build system to look for files in <strong>emscripten/system</strong> or <strong>emscripten/system/bin</strong> in order to use the Emscripten <em>sdl-config</em>.</p>
+<p>Emscripten also has support for older SDL1, which is built-in. If you do not specify SDL2 as in the command above, then SDL1 is linked in and the SDL1 include paths are used. SDL1 has support for <em>sdl-config</em>, which is present in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/system/bin/sdl-config">system/bin</a>. Using the native <em>sdl-config</em> may result in compilation or missing-symbol errors. You will need to modify the build system to look for files in <strong>emscripten/system</strong> or <strong>emscripten/system/bin</strong> in order to use the Emscripten <em>sdl-config</em>.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1271,7 +1271,7 @@ work.</p>
 <div class="section" id="build-system-self-execution">
 <h3>Build system self-execution<a class="headerlink" href="#build-system-self-execution" title="Permalink to this headline">¶</a></h3>
 <p>Some large projects generate executables and run them in order to generate input for later parts of the build process (for example, a parser may be built and then run on a grammar, which then generates C/C++ code that implements that grammar). This sort of build process causes problems when using Emscripten because you cannot directly run the code you are generating.</p>
-<p>The simplest solution is usually to build the project twice: once natively, and once to JavaScript. When the JavaScript build procedure fails because a generated executable is not present, you can then copy that executable from the native build, and continue to build normally. This approach was successfully used for compiling Python (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/python/readme.md">tests/python/readme.md</a> for more details).</p>
+<p>The simplest solution is usually to build the project twice: once natively, and once to JavaScript. When the JavaScript build procedure fails because a generated executable is not present, you can then copy that executable from the native build, and continue to build normally. This approach was successfully used for compiling Python (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/python/readme.md">tests/python/readme.md</a> for more details).</p>
 <p>In some cases it makes sense to modify the build scripts so that they build the generated executable natively. For example, this can be done by specifying two compilers in the build scripts, <em>emcc</em> and <em>gcc</em>, and using <em>gcc</em> just for generated executables. However, this can be more complicated than the previous solution because you need to modify the project build scripts, and you may have to work around cases where code is compiled and used both for the final result and for a generated executable.</p>
 </div>
 <div class="section" id="dynamic-linking">
@@ -1370,7 +1370,7 @@ set via an environment variable.  e.g:</p>
 </div>
 <div class="section" id="examples-test-code">
 <h2>Examples / test code<a class="headerlink" href="#examples-test-code" title="Permalink to this headline">¶</a></h2>
-<p>The Emscripten test suite (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/tests/runner.py">tests/runner.py</a>) contains a number of good examples — large C/C++ projects that are built using their normal build systems as described above: <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/freetype">freetype</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/openjpeg">openjpeg</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/zlib">zlib</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/bullet">bullet</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/master/tests/poppler">poppler</a>.</p>
+<p>The Emscripten test suite (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/runner.py">tests/runner.py</a>) contains a number of good examples — large C/C++ projects that are built using their normal build systems as described above: <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/freetype">freetype</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/openjpeg">openjpeg</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/zlib">zlib</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/bullet">bullet</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/poppler">poppler</a>.</p>
 <p>It is also worth looking at the build scripts in the <a class="reference external" href="https://github.com/kripken/ammo.js/blob/master/make.py">ammo.js</a> project.</p>
 </div>
 <div class="section" id="troubleshooting">
@@ -1509,7 +1509,7 @@ but a build system might have it hardcoded, or require you to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.14',
+            VERSION:'2.0.15',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

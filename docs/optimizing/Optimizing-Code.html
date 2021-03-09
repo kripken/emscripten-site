@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 2.0.14 documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 2.0.15 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.14 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.15 documentation" href="../../index.html"/>
         <link rel="next" title="Optimizing WebGL" href="Optimizing-WebGL.html"/>
         <link rel="prev" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="../tools_reference/emcmdprompt.html"/> 
 
@@ -1064,7 +1064,7 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>The meanings of the <em>emcc</em> optimization flags (<code class="docutils literal notranslate"><span class="pre">-O1,</span> <span class="pre">-O2</span></code> etc.) are similar to <em>gcc</em>, <em>clang</em>, and other compilers, but also different because optimizing asm.js and WebAssembly includes some additional types of optimizations. The mapping of the <em>emcc</em> levels to the LLVM bitcode optimization levels is documented in the reference.</p></li>
+<li><p>The meanings of the <em>emcc</em> optimization flags (<code class="docutils literal notranslate"><span class="pre">-O1,</span> <span class="pre">-O2</span></code> etc.) are similar to <em>gcc</em>, <em>clang</em>, and other compilers, but also different because optimizing WebAssembly includes some additional types of optimizations. The mapping of the <em>emcc</em> levels to the LLVM bitcode optimization levels is documented in the reference.</p></li>
 </ul>
 </div>
 </div>
@@ -1073,7 +1073,6 @@
 <p>Compiling source files to object files works as you’d expect in a native build system that uses clang and LLVM. When linking object files to the final executable, Emscripten does additional optimizations as well depending on the optimization level:</p>
 <ul class="simple">
 <li><p>For wasm, the Binaryen optimizer is run. Binaryen does both general-purpose optimizations to the wasm that LLVM does not, and also does some whole-program optimization. (Note that Binaryen’s whole-program optimizations may do things like inlining, which can be surprising in some cases as LLVM IR attributes like <code class="docutils literal notranslate"><span class="pre">noinline</span></code> have been lost at this point.)</p></li>
-<li><p>For asm.js, the Emscripten asm.js optimizer is run.</p></li>
 <li><p>JavaScript is generated at this phase, and is optimized by Emscripten’s JS optimizer. Optionally you can also run <a class="reference internal" href="../tools_reference/emcc.html#emcc-closure"><span class="std std-ref">the closure compiler</span></a>, which is highly recommended for code size.</p></li>
 <li><p>Emscripten also optimizes the combined wasm+JS, by minifying imports and exports between them, and by running meta-dce which removes unused code in cycles that span the two worlds.</p></li>
 </ul>
@@ -1112,11 +1111,11 @@ Binaryen optimizer would normally be run.</p>
 </div>
 <div class="section" id="advanced-compiler-settings">
 <h2>Advanced compiler settings<a class="headerlink" href="#advanced-compiler-settings" title="Permalink to this headline">¶</a></h2>
-<p>There are several flags you can <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><span class="std std-ref">pass to the compiler</span></a> to affect code generation, which will also affect performance — for example <a class="reference internal" href="#optimizing-code-exception-catching"><span class="std std-ref">DISABLE_EXCEPTION_CATCHING</span></a>. These are documented in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/settings.js">src/settings.js</a>. Some of these will be directly affected by the optimization settings (you can find out which ones by searching for <code class="docutils literal notranslate"><span class="pre">apply_opt_level</span></code> in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tools/shared.py#L958">tools/shared.py</a>).</p>
+<p>There are several flags you can <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><span class="std std-ref">pass to the compiler</span></a> to affect code generation, which will also affect performance — for example <a class="reference internal" href="#optimizing-code-exception-catching"><span class="std std-ref">DISABLE_EXCEPTION_CATCHING</span></a>. These are documented in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/settings.js">src/settings.js</a>. Some of these will be directly affected by the optimization settings (you can find out which ones by searching for <code class="docutils literal notranslate"><span class="pre">apply_opt_level</span></code> in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tools/shared.py#L958">tools/shared.py</a>).</p>
 </div>
 <div class="section" id="webassembly">
 <h2>WebAssembly<a class="headerlink" href="#webassembly" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten will emit WebAssembly by default. You can switch that off with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=0</span></code> (and then emscripten emits asm.js), which is necessary if you want the output to run in places where wasm support is not present yet, but the downside is larger and slower code.</p>
+<p>Emscripten will emit WebAssembly by default. You can switch that off with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=0</span></code> (in which case emscripten emit JavaScript), which is necessary if you want the output to run in places where wasm support is not present yet, but the downside is larger and slower code.</p>
 </div>
 <div class="section" id="code-size">
 <span id="optimizing-code-size"></span><h2>Code size<a class="headerlink" href="#code-size" title="Permalink to this headline">¶</a></h2>
@@ -1124,7 +1123,7 @@ Binaryen optimizer would normally be run.</p>
 <div class="section" id="trading-off-code-size-and-performance">
 <span id="optimizing-code-oz-os"></span><h3>Trading off code size and performance<a class="headerlink" href="#trading-off-code-size-and-performance" title="Permalink to this headline">¶</a></h3>
 <p>You may wish to build the less performance-sensitive source files in your project using <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><span class="std std-ref">-Os</span></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><span class="std std-ref">-Oz</span></a> and the remainder using <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a> (<a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><span class="std std-ref">-Os</span></a> and <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><span class="std std-ref">-Oz</span></a> are similar to <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a>, but reduce code size at the expense of performance. <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><span class="std std-ref">-Oz</span></a> reduces code size more than <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><span class="std std-ref">-Os</span></a>.)</p>
-<p>Separately, you can do the final link/build command with <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> to make the compiler focus more on code size when generating WebAssembly/asm.js.</p>
+<p>Separately, you can do the final link/build command with <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> to make the compiler focus more on code size when generating WebAssembly module.</p>
 </div>
 <div class="section" id="miscellaneous-code-size-tips">
 <h3>Miscellaneous code size tips<a class="headerlink" href="#miscellaneous-code-size-tips" title="Permalink to this headline">¶</a></h3>
@@ -1165,8 +1164,8 @@ source files with <code class="docutils literal notranslate"><span class="pre">-
 <h2>Other optimization issues<a class="headerlink" href="#other-optimization-issues" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="c-exceptions">
 <span id="optimizing-code-exception-catching"></span><h3>C++ exceptions<a class="headerlink" href="#c-exceptions" title="Permalink to this headline">¶</a></h3>
-<p>Catching C++ exceptions (specifically, emitting catch blocks) is turned off by default in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> (and above). Due to how asm.js/wasm currently implement exceptions, this makes the code much smaller and faster (eventually, wasm should gain native support for exceptions, and not have this issue).</p>
-<p>To re-enable exceptions in optimized code, run <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></code> (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/master/src/settings.js">src/settings.js</a>).</p>
+<p>Catching C++ exceptions (specifically, emitting catch blocks) is turned off by default in <code class="docutils literal notranslate"><span class="pre">-O1</span></code> (and above). Due to how WebAssembly currently implement exceptions, this makes the code much smaller and faster (eventually, wasm should gain native support for exceptions, and not have this issue).</p>
+<p>To re-enable exceptions in optimized code, run <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></code> (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/settings.js">src/settings.js</a>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When exception catching is disabled, a thrown exception terminates the application. In other words, an exception is still thrown, but it isn’t caught.</p>
@@ -1182,7 +1181,7 @@ source files with <code class="docutils literal notranslate"><span class="pre">-
 </div>
 <div class="section" id="memory-growth">
 <h3>Memory Growth<a class="headerlink" href="#memory-growth" title="Permalink to this headline">¶</a></h3>
-<p>Building with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ALLOW_MEMORY_GROWTH=1</span></code> allows the total amount of memory used to change depending on the demands of the application. This is useful for apps that don’t know ahead of time how much they will need, but it disables asm.js optimizations. In WebAssembly, however, there should be little or no overhead.</p>
+<p>Building with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ALLOW_MEMORY_GROWTH=1</span></code> allows the total amount of memory used to change depending on the demands of the application. This is useful for apps that don’t know ahead of time how much they will need.</p>
 </div>
 <div class="section" id="viewing-code-optimization-passes">
 <h3>Viewing code optimization passes<a class="headerlink" href="#viewing-code-optimization-passes" title="Permalink to this headline">¶</a></h3>
@@ -1210,7 +1209,6 @@ source files with <code class="docutils literal notranslate"><span class="pre">-
 <ul class="simple">
 <li><p><a class="reference internal" href="../compiling/Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a> is a two-stage process: compiling source code files to LLVM <strong>and</strong> generating JavaScript from LLVM. Did you build using the same optimization values in <strong>both</strong> steps (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> or <code class="docutils literal notranslate"><span class="pre">-O3</span></code>)?</p></li>
 <li><p>Test on multiple browsers. If performance is acceptable on one browser and significantly poorer on another, then <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><span class="std std-ref">file a bug report</span></a>, noting the problem browser and other relevant information.</p></li>
-<li><p>Does the code <em>validate</em> in Firefox (look for “Successfully compiled asm.js code” in the web console). If you see a validation error when using an up-to-date version of Firefox and Emscripten then please <a class="reference internal" href="../getting_started/bug_reports.html#bug-reports"><span class="std std-ref">file a bug report</span></a>.</p></li>
 </ul>
 </div>
 </div>
@@ -1324,7 +1322,7 @@ source files with <code class="docutils literal notranslate"><span class="pre">-
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.14',
+            VERSION:'2.0.15',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
