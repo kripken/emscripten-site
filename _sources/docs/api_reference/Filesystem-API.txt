@@ -4,7 +4,7 @@
 File System API
 ===============
 
-File operations in Emscripten are provided by the `FS <https://github.com/emscripten-core/emscripten/blob/incoming/src/library_fs.js>`_ library. It is used internally for all of Emscripten's **libc** and **libcxx** file I/O.
+File operations in Emscripten are provided by the `FS <https://github.com/emscripten-core/emscripten/blob/master/src/library_fs.js>`_ library. It is used internally for all of Emscripten's **libc** and **libcxx** file I/O.
 
 .. note:: The API is *inspired* by the Linux/POSIX `File System API <http://linux.die.net/man/2/>`_, with each presenting a very similar interface.
 
@@ -12,7 +12,7 @@ File operations in Emscripten are provided by the `FS <https://github.com/emscri
   native and browser environments make this unreasonable. For example, user and
   group permissions are defined but ignored in :js:func:`FS.open`.
 
-Emscripten predominantly compiles code that uses synchronous file I/O, so the majority of the ``FS`` member functions offer a synchronous interface (with errors being reported by raising exceptions of type `FS.ErrnoError <https://github.com/emscripten-core/emscripten/blob/incoming/system/lib/libc/musl/arch/emscripten/bits/errno.h>`_).
+Emscripten predominantly compiles code that uses synchronous file I/O, so the majority of the ``FS`` member functions offer a synchronous interface (with errors being reported by raising exceptions of type `FS.ErrnoError <https://github.com/emscripten-core/emscripten/blob/master/system/lib/libc/musl/arch/emscripten/bits/errno.h>`_).
 
 File data in Emscripten is partitioned by mounted file systems. Several file systems are provided. An instance of :ref:`MEMFS <filesystem-api-memfs>` is mounted to ``/`` by default. The subdirectories `/home/web_user` and `/tmp` are also created automatically, in addition to several other special devices and streams (e.g. `/dev/null`, `/dev/random`, `/dev/stdin`, `/proc/self/fd`); see `FS.staticInit()` in the FS library for full details. Instances of :ref:`NODEFS <filesystem-api-nodefs>` and :ref:`IDBFS <filesystem-api-idbfs>` can be mounted to other directories if your application needs to :ref:`persist data <filesystem-api-persist-data>`.
 
@@ -43,6 +43,8 @@ However, due to JavaScript's event-driven nature, most *persistent* storage opti
 
 File systems
 ============
+
+.. note:: Only the :ref:`MEMFS <filesystem-api-memfs>` filesystem is included by default. All others must be enabled explicitly, using ``-lnodefs.js`` (:ref:`NODEFS <filesystem-api-nodefs>`), ``-lidbfs.js`` (:ref:`IDBFS <filesystem-api-idbfs>`), ``-lworkerfs.js`` (:ref:`WORKERFS <filesystem-api-workerfs>`), or ``-lproxyfs.js`` (PROXYFS).
 
 .. _filesystem-api-memfs:
 
@@ -488,8 +490,8 @@ File system API
   Note that in the current implementation the stored timestamp is a single value, the maximum of ``atime`` and ``mtime``.
 
   :param string path: The path of the file to update.
-  :param int atime: The file modify time (milliseconds).
-  :param int mtime: The file access time (milliseconds).
+  :param int atime: The file access time (milliseconds).
+  :param int mtime: The file modify time (milliseconds).
 
 
 
@@ -758,6 +760,34 @@ Paths
       {
         path: resolved_path,
         node: resolved_node
+      }
+
+
+.. js:function:: FS.analyzePath(path, dontResolveLastLink)
+
+  Looks up the incoming path and returns an object containing information about
+  file stats and nodes. Built on top of ``FS.lookupPath`` and provides more 
+  information about given path and its parent. If any error occurs it won't 
+  throw but returns an ``error`` property.
+
+  :param string path: The incoming path.
+  :param boolean dontResolveLastLink: If true, don't follow the last component 
+    if it is a symlink.
+
+  :returns: an object with the format:
+
+    .. code-block:: javascript
+
+      {
+        isRoot: boolean,
+        exists: boolean, 
+        error: Error, 
+        name: string, 
+        path: resolved_path, 
+        object: resolved_node,
+        parentExists: boolean, 
+        parentPath: resolved_parent_path, 
+        parentObject: resolved_parent_node
       }
 
 

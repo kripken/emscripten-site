@@ -8,6 +8,11 @@ Module object
 
 Developers can provide an implementation of ``Module`` to control the execution of code. For example, to define how notification messages from Emscripten are displayed, developers implement the :js:attr:`Module.print` attribute.
 
+When an Emscripten application starts up it looks at the values on the ``Module``
+object and applies them. Note that changing the values *after* startup will not
+work in general; in a build with ``ASSERTIONS`` enabled you will get an error
+in that case.
+
 .. note:: ``Module`` is also used to provide access to Emscripten API functions (for example :js:func:`ccall`) in a safe way. Any function or runtime method exported (using ``EXPORTED_FUNCTIONS`` for compiled functions, or ``EXTRA_EXPORTED_RUNTIME_METHODS`` for runtime methods like ``ccall``) will be accessible on the ``Module`` object, without minification changing the name, and the optimizer will make sure to keep the function present (and not remove it as unused). See the :ref:`relevant FAQ entry<faq-export-stuff>`.
 
 .. contents:: Table of Contents
@@ -61,7 +66,7 @@ The following ``Module`` attributes affect code execution. Set them to customize
 
   Allows you to provide your own ``WebAssembly.Memory`` to use as the memory. The properites used to initialize the memory should match the compiler options.
 
-  For example, if you set ``TOTAL_MEMORY`` to 8MB without memory growth, then the ``wasmMemory`` you provide (if any) should have both the ``'initial'`` and ``'maximum'`` set to 128 (due to WASM page sizes being 64KB).
+  For example, if you set ``INITIAL_MEMORY`` to 8MB without memory growth, then the ``wasmMemory`` you provide (if any) should have both the ``'initial'`` and ``'maximum'`` set to 128 (due to WASM page sizes being 64KB).
 
 .. js:attribute:: Module.locateFile
 
