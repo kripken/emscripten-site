@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Profiling the Toolchain &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Profiling the Toolchain &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="next" title="About this site" href="../site/about.html"/>
         <link rel="prev" title="AUTHORS" href="../contributing/AUTHORS.html"/> 
 
@@ -1044,10 +1044,10 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="profiling-the-toolchain">
+  <section id="profiling-the-toolchain">
 <span id="profiling-toolchain"></span><h1>Profiling the Toolchain<a class="headerlink" href="#profiling-the-toolchain" title="Permalink to this headline">¶</a></h1>
 <p>The toolchain interacts with a moderate amount of external tools and sublibraries, the exact set generally depends on which compilation and linker flags were used. If you are seeing abnormal compilation times, or if you are developing the Emscripten toolchain itself, it may be useful to profile the toolchain performance itself as it compiles your project. Emscripten has a built-in toolchain wide <code class="docutils literal notranslate"><span class="pre">emprofile.py</span></code> profiler that can be used for this purpose.</p>
-<div class="section" id="quick-example">
+<section id="quick-example">
 <h2>Quick Example<a class="headerlink" href="#quick-example" title="Permalink to this headline">¶</a></h2>
 <p>To try out the toolchain profiler, run the following set of commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> path/to/emscripten
@@ -1057,11 +1057,11 @@ emprofile
 </pre></div>
 </div>
 <p>On Windows, replace the <code class="docutils literal notranslate"><span class="pre">export</span></code> keyword with <code class="docutils literal notranslate"><span class="pre">set</span></code> instead. The last command should generate a HTML file of form <code class="docutils literal notranslate"><span class="pre">toolchain_profiler.results_yyyymmdd_hhmm.html</span></code> that can be opened in the web browser to view the results.</p>
-</div>
-<div class="section" id="details">
+</section>
+<section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
 <p>The toolchain profiler is active whenever the toolchain is invoked with the environment variable <code class="docutils literal notranslate"><span class="pre">EMPROFILE=1</span></code> being set. In this mode, each called tool will accumulate profiling instrumentation data to a set of .json files under the Emscripten temp directory.</p>
-<div class="section" id="profiling-tool-commands">
+<section id="profiling-tool-commands">
 <h3>Profiling Tool Commands<a class="headerlink" href="#profiling-tool-commands" title="Permalink to this headline">¶</a></h3>
 <p>The command <code class="docutils literal notranslate"><span class="pre">tools/emprofile.py</span> <span class="pre">--clear</span></code> deletes all previously stored profiling data. Call this command to erase the profiling session to a fresh empty state. To start profiling, call Emscripten tool commands with the environment variable <code class="docutils literal notranslate"><span class="pre">EMPROFILE=1</span></code> set either system-wide as shown in the example, or on a per command basis, like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emprofile --clear
@@ -1072,11 +1072,11 @@ emprofile --outfile<span class="o">=</span>myresults.html
 </div>
 <p>Any number of commands can be profiled within one session, and when <code class="docutils literal notranslate"><span class="pre">emprofile</span></code> is finally called, it will pick up records from all Emscripten tool invocations up to that point, graph them, and clear the recorded profiling data for the next run.</p>
 <p>The output HTML filename can be chosen with the optional <code class="docutils literal notranslate"><span class="pre">--outfile=myresults.html</span></code> parameter.</p>
-</div>
-</div>
-<div class="section" id="instrumenting-python-scripts">
+</section>
+</section>
+<section id="instrumenting-python-scripts">
 <h2>Instrumenting Python Scripts<a class="headerlink" href="#instrumenting-python-scripts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="python-profiling-blocks">
+<section id="python-profiling-blocks">
 <h3>Python Profiling Blocks<a class="headerlink" href="#python-profiling-blocks" title="Permalink to this headline">¶</a></h3>
 <p>Graphing the subprocess start and end times alone might sometimes be a bit too coarse view into what is happening. In Python code, it is possible to hierarchically annotate individual blocks of code to break down execution into custom tasks. These blocks will be shown in blue in the output graph. To add a custom profiling block, use the Python <code class="docutils literal notranslate"><span class="pre">with</span></code> keyword to add a <code class="docutils literal notranslate"><span class="pre">profile_block</span></code> section:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">ToolchainProfiler</span><span class="o">.</span><span class="n">profile_block</span><span class="p">(</span><span class="s1">&#39;my_custom_task&#39;</span><span class="p">):</span>
@@ -1099,9 +1099,9 @@ emprofile --outfile<span class="o">=</span>myresults.html
 </pre></div>
 </div>
 <p>However when using this form one must be cautious to ensure that each call to <code class="docutils literal notranslate"><span class="pre">ToolchainProfiler.enter_block()</span></code> is matched by exactly one call to <code class="docutils literal notranslate"><span class="pre">ToolchainProfiler.exit_block()</span></code> in all code flows, so wrapping the code in a <code class="docutils literal notranslate"><span class="pre">try-finally</span></code> statement is a good idea.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -1212,7 +1212,7 @@ emprofile --outfile<span class="o">=</span>myresults.html
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1222,6 +1222,7 @@ emprofile --outfile<span class="o">=</span>myresults.html
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

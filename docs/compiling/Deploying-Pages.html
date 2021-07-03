@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Deploying Emscripten Compiled Pages &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Deploying Emscripten Compiled Pages &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building and Deploying on GitLab" href="GitLab.html"/>
         <link rel="prev" title="Building projects on Travis CI" href="Travis.html"/> 
@@ -1049,17 +1049,17 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="deploying-emscripten-compiled-pages">
+  <section id="deploying-emscripten-compiled-pages">
 <span id="deploying-pages"></span><h1>Deploying Emscripten Compiled Pages<a class="headerlink" href="#deploying-emscripten-compiled-pages" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten compiled output can either be run directly in a JS shell from command line, or hosted on a web page. When hosting asm.js and WebAssembly compiled pages as .html for browsers to execute, Emscripten provides a default <cite>HTML shell file</cite> that serves as a launcher to run the code, simplified to get started with development. However when getting ready to release and host the content on a web site, a number of extra features and customizations are likely needed to polish the visitor experience. This guide highlights things to pay attention to when deploying sites to the public.</p>
-<div class="section" id="build-files-and-custom-shell">
+<section id="build-files-and-custom-shell">
 <h2>Build Files and Custom Shell<a class="headerlink" href="#build-files-and-custom-shell" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten build output consists of two essential parts: 1) the low level compiled code module and 2) the JavaScript runtime to interact with it. If targeting WebAssembly which is done with linker flags <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=1</span> <span class="pre">-o</span> <span class="pre">out.html</span></code>, the compiled code is stored in a file <code class="docutils literal notranslate"><span class="pre">out.wasm</span></code> and the runtime lives in a file <code class="docutils literal notranslate"><span class="pre">out.js</span></code>. When targeting asm.js there exists an additional binary file <code class="docutils literal notranslate"><span class="pre">out.mem</span></code> that contains the static memory section of the compiled code. This part is embedded in the <code class="docutils literal notranslate"><span class="pre">out.wasm</span></code> file when targeting WebAssembly.</p>
 <p>Additional build output files can also exist, depending on which features are used. If the Emscripten file packager is used, a binary <code class="docutils literal notranslate"><span class="pre">out.data</span></code> package is generated, along with an associated <code class="docutils literal notranslate"><span class="pre">out.data.js</span></code> loader file. Also Emscripten pthreads and Fetch APIs have their own associated Web Worker related script <code class="docutils literal notranslate"><span class="pre">.js</span></code> output files.</p>
 <p>Developers can choose to output either to JavaScript or HTML. If outputting JavaScript (<code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.js</span></code>), the developer is expected to manually create the <code class="docutils literal notranslate"><span class="pre">out.html</span></code> main page in which the code is run in browsers. When targeting HTML with <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.html</span></code> (the recommended build mode), Emscripten will generate the HTML shell file automatically. This shell file can be customized by using the <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-o</span> <span class="pre">out.html</span> <span class="pre">--shell-file</span> <span class="pre">path/to/custom_shell.html</span></code> linker directive. Copy the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/shell_minimal.html">default minimal HTML shell file</a> from Emscripten repository to your project tree to get a good starting template for a customized shell file.</p>
 <p>The following sections offer tips for improving the site experience.</p>
-</div>
-<div class="section" id="optimizing-download-sizes">
+</section>
+<section id="optimizing-download-sizes">
 <h2>Optimizing Download Sizes<a class="headerlink" href="#optimizing-download-sizes" title="Permalink to this headline">¶</a></h2>
 <p>The biggest slowdown to speedy page loading is most often the need to download large amounts of asset data for the project, especially if the page is heavy on WebGL textures or geometry. Compiled code generally takes up more space than handwritten JavaScript, but machine code compresses efficiently. Therefore when hosting asm.js and WebAssembly, it is critical to ensure that all content is transferred using gzip compression, which all browsers and CDNs nowadays support built-in. Gzip compressing <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files give on average 60-75% size reductions compared to uncompressed ones, so it practically never makes sense to serve uncompressed files.</p>
 <ul class="simple">
@@ -1070,8 +1070,8 @@
 <li><p>Asset sizes for WebGL applications are often dominated by the amount of textures, such that using compressed texture formats helps to shrink down asset sizes. The web can be quite a different platform to target compared to native platforms, since on the web one cannot necessarily assume that a specific compressed texture format would be supported on the visitor’s hardware, especially if developing a site that should work both on mobile and desktop browsers. The best practice to support a wide range of hardware is to generate multiple sets of compressed textures, one for each supported platform, and download the appropriate one based on the formats that the WebGL context supports.</p></li>
 <li><p>If multiple screen sizes are being targeted, e.g. in desktop and mobile form factors, consider separating textures out to SD and HD variants to make the page load up quicker for mobile devices that have a smaller display resolution.</p></li>
 </ul>
-</div>
-<div class="section" id="optimizing-page-startup-times">
+</section>
+<section id="optimizing-page-startup-times">
 <h2>Optimizing Page Startup Times<a class="headerlink" href="#optimizing-page-startup-times" title="Permalink to this headline">¶</a></h2>
 <p>In addition to downloading the page, other parts of the startup sequence can sometimes also be slow. Things to consider here are:</p>
 <ul class="simple">
@@ -1082,8 +1082,8 @@
 <li><p>In the case when the first time load of the page is dominated by network transfers, it is useful to take advantage of the fact that the CPU is otherwise mostly idle while waiting for downloads to finish. This CPU time can be utilized to perform other heavy tasks. An ideal candidate for this is to download and compile the asm.js/WebAssembly module already while downloading other page assets.</p></li>
 <li><p>A currently known issue on Windows based systems is that compiling WebGL shaders can be slow. This is also a primary candidate for an action to be performed in parallel while downloading other assets for the page.</p></li>
 </ul>
-</div>
-<div class="section" id="providing-a-quick-second-time-load">
+</section>
+<section id="providing-a-quick-second-time-load">
 <h2>Providing a Quick Second Time Load<a class="headerlink" href="#providing-a-quick-second-time-load" title="Permalink to this headline">¶</a></h2>
 <p>While the first run experience of visiting a page can take some time to finish all downloads, the second run experience of the page can be made much faster by making sure that the results of the first visit are cached by the browser.</p>
 <ul class="simple">
@@ -1093,15 +1093,15 @@
 <li><p>When implementing IndexedDB based caching, it is good to note that as an asynchronous API that performs disk accesses, IndexedDB operations have some latency as well. Therefore if performing multiple read operations at startup, it is good to fire all of them up in parallel where possible, to reduce latency.</p></li>
 <li><p>Another important point with persisting data is that for best practices towards the user, it is good to provide an explicit visual identification when using IndexedDB or localStorage to persist large amounts of data, and offer an easy mechanism to clear or uninstall that data. This is because currently browsers do not implement convenient UIs for fine grained deletion of data from these storages, but clearing data often is presented as a “clear cache from all pages” type of option.</p></li>
 </ul>
-</div>
-<div class="section" id="reserving-memory-for-compiled-code">
+</section>
+<section id="reserving-memory-for-compiled-code">
 <h2>Reserving Memory for Compiled Code<a class="headerlink" href="#reserving-memory-for-compiled-code" title="Permalink to this headline">¶</a></h2>
 <p>An inherent property of asm.js and WebAssembly applications is that they need a linear block of memory to represent the application <cite>heap</cite>. This is often the single largest memory allocation that an Emscripten compiled page does, and therefore is the one that is at the biggest risk of failing if the user’s system is low on memory.</p>
 <p>Because this memory allocation needs to be contiguous, it can happen that the user’s browser process does have enough memory, but only the address space of the process is too fragmented, and there is not enough linear address space available to satisfy the allocation. To avoid this issue, the best practice is to allocate the <code class="docutils literal notranslate"><span class="pre">WebAssembly.Memory</span></code> object (<code class="docutils literal notranslate"><span class="pre">ArrayBuffer</span></code> for asm.js) up front at the top of the main page, before any other allocations or page script load actions are done. This ensures that the allocation has best chances to succeed. See the fields <code class="docutils literal notranslate"><span class="pre">Module['buffer']</span></code> and <code class="docutils literal notranslate"><span class="pre">Module['wasmMemory']</span></code> for more information.</p>
 <p>Additionally, it is possible to opt in to content process isolation specifically for a web page that needs this kind of a large allocation. To utilize this machinery, specify the HTTP response header <code class="docutils literal notranslate"><span class="pre">Large-Allocation:</span> <span class="pre">&lt;MBytes&gt;</span></code> when serving the main html page. This support is currently implemented in Firefox 53.</p>
 <p>Last, it is easy to accidentally cling to large unneeded blocks of memory after the page has loaded. For example, in WebAssembly, once the WebAssembly Module has been instantiated to a <code class="docutils literal notranslate"><span class="pre">WebAssembly.Instance</span></code> object, the original <code class="docutils literal notranslate"><span class="pre">WebAssembly.Module</span></code> object is no longer needed in memory, and it is best to clear all references to it so that the garbage collector can reclaim it, because the Module object can be dozens of megabytes in size. Similar, make sure that all XHRed files, asset data and large scripts are not referenced anymore when not used. Check out the browser’s memory profiling tool, and the <code class="docutils literal notranslate"><span class="pre">about:memory</span></code> page in Firefox to perform memory profiling to ensure that memory is not being wasted.</p>
-</div>
-<div class="section" id="robust-error-handling">
+</section>
+<section id="robust-error-handling">
 <h2>Robust Error Handling<a class="headerlink" href="#robust-error-handling" title="Permalink to this headline">¶</a></h2>
 <p>To provide the best possible user experience, make sure that the different ways that the page can fail are taken into account, and good error reporting is provided to the user. In particular, proceed through the following checklist for best practices.</p>
 <ul>
@@ -1141,8 +1141,8 @@
 <li><p>Do not let the html page “freeze” and bury the error message in the web page console, because most users will not know how to find it there. Strive to provide meaningful error reports to the user on the main html page, preferably with hints on how to act. If updating a browser version or GPU drivers, or freeing up some space on disk might have a chance to help the page to run, let the user know what they could try out. If the error in question is completely unexpected, consider providing a link or an email address where to report the issue to.</p></li>
 <li><p>Provide meaningful and interactive loading progress indicators to show the user whether the loading progress is still proceeding and what is going to happen next. Try to prevent leading the user to a <cite>“I wonder if it is still loading or if it hung?”</cite> state of mind.</p></li>
 </ul>
-</div>
-<div class="section" id="prepare-for-the-web-environment">
+</section>
+<section id="prepare-for-the-web-environment">
 <h2>Prepare for The Web Environment<a class="headerlink" href="#prepare-for-the-web-environment" title="Permalink to this headline">¶</a></h2>
 <p>When planning a testing matrix before pushing a site live, the following items can be a good idea to review.</p>
 <ul class="simple">
@@ -1162,9 +1162,9 @@
 <li><p>If using the <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code> API (i.e. <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code> function) to drive rendering, be aware that the rate at which the function is called is not always 60 Hz, but can vary at runtime e.g. when moving the browser window from one display to another in a multimonitor setup, if the displays have different refresh rates. Update intervals such as 75Hz, 90Hz, 100Hz, 120Hz, 144Hz and 200Hz are becoming more common.</p></li>
 <li><p>Simulate lack of any special APIs that the page might need, e.g. Gamepad, Acceleration or Touch Events, and make sure that appropriate error flow is handled in those cases as well.</p></li>
 </ul>
-<p>If you have good tips or suggestsions to share, please help improve this guide by posting feedback to the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues">Emscripten bug tracker</a> or the <a class="reference external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">emscripten-discuss</a> mailing list.</p>
-</div>
-</div>
+<p>If you have good tips or suggestions to share, please help improve this guide by posting feedback to the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues">Emscripten bug tracker</a> or the <a class="reference external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">emscripten-discuss</a> mailing list.</p>
+</section>
+</section>
 
 
           </div>
@@ -1277,7 +1277,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1287,6 +1287,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

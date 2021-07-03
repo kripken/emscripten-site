@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ exceptions support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -1049,7 +1049,7 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="porting-simd-code-targeting-webassembly">
+  <section id="porting-simd-code-targeting-webassembly">
 <h1>Porting SIMD code targeting WebAssembly<a class="headerlink" href="#porting-simd-code-targeting-webassembly" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten supports the <a class="reference external" href="https://github.com/webassembly/simd/">WebAssembly SIMD proposal</a> when using the WebAssembly LLVM backend. To enable SIMD, pass the -msimd128 flag at compile time. This will also turn on LLVM’s autovectorization passes, so no source modifications are necessary to benefit from SIMD.</p>
 <p>At the source level, the GCC/Clang <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a> can be used and will be lowered to WebAssembly SIMD instructions where possible. In addition, there is a portable intrinsics header file that can be used.</p>
@@ -1060,8 +1060,8 @@
 </div></blockquote>
 <p>Separate documentation for the intrinsics header is a work in progress, but its usage is straightforward and its source can be found at <a class="reference external" href="https://github.com/llvm/llvm-project/blob/main/clang/lib/Headers/wasm_simd128.h">wasm_simd128.h</a>. These intrinsics are under active development in parallel with the SIMD proposal and should not be considered any more stable than the proposal itself. Note that most engines will also require an extra flag to enable SIMD. For example, Node requires <cite>–experimental-wasm-simd</cite>.</p>
 <p>WebAssembly SIMD is not supported when using the Fastcomp backend.</p>
-</div>
-<div class="section" id="limitations-and-behavioral-differences">
+</section>
+<section id="limitations-and-behavioral-differences">
 <h1>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this headline">¶</a></h1>
 <p>When porting native SIMD code, it should be noted that because of portability concerns, the WebAssembly SIMD specification does not expose the full native instruction sets. In particular the following changes exist:</p>
 <blockquote>
@@ -1073,8 +1073,8 @@
 </ul>
 </div></blockquote>
 <p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
-</div>
-<div class="section" id="optimization-considerations">
+</section>
+<section id="optimization-considerations">
 <h1>Optimization considerations<a class="headerlink" href="#optimization-considerations" title="Permalink to this headline">¶</a></h1>
 <p>When porting SIMD code to use WebAssembly SIMD, implementors should be aware of semantic differences between the host hardware and WebAssembly semantics; as acknowledged in the WebAssembly design documentation, “<a class="reference external" href="https://github.com/WebAssembly/design/blob/master/Portability.md#assumptions-for-efficient-execution">this sometimes will lead to poor performance</a>.” The following list outlines some WebAssembly SIMD instructions to look out for when performance tuning:</p>
 <table class="colwidths-given docutils align-default" id="id5">
@@ -1129,8 +1129,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="compiling-simd-code-targeting-x86-sse-instruction-set">
+</section>
+<section id="compiling-simd-code-targeting-x86-sse-instruction-set">
 <h1>Compiling SIMD code targeting x86 SSE instruction set<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-set" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten supports compiling existing codebases that use x86 SSE by passing the <cite>-msse</cite> directive to the compiler, and including the header <cite>&lt;xmmintrin.h&gt;</cite>.</p>
 <p>Currently only the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, and 128-bit AVX instruction sets are supported.</p>
@@ -1150,6 +1150,7 @@
 </dd>
 </dl>
 <p>Certain intrinsics in the table below are marked “virtual”. This means that there does not actually exist a native x86 SSE instruction set opcode to implement them, but native compilers offer the function as a convenience. Different compilers might generate a different instruction sequence for these.</p>
+<p>In addition to consulting the tables below, you can turn on diagnostics for slow, emulated functions by defining the macro <cite>WASM_SIMD_COMPAT_SLOW</cite>. This will print out warnings if you attempt to use any of the slow paths (corresponding to ❌ or 💣 in the legend).</p>
 <table class="colwidths-given docutils align-default" id="id6">
 <caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt;</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
 <colgroup>
@@ -1701,7 +1702,7 @@
 <td><p>❌ scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtepi32_pd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f64x2_convert_low_i32x4</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtepi32_ps</p></td>
 <td><p>✅ wasm_f32x4_convert_i32x4</p></td>
@@ -1710,13 +1711,13 @@
 <td><p>❌ scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtpd_ps</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f32x4_demote_f64x2_zero</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtps_epi32</p></td>
 <td><p>❌ scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_cvtps_pd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f64x2_promote_low_f32x4</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cvtsd_f64</p></td>
 <td><p>✅ wasm_f64x2_extract_lane</p></td>
@@ -2342,10 +2343,10 @@
 <td><p>⚠️ emulated with a SIMD shr+and+andnot+or</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_ceil_pd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f64x2_ceil</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_ceil_ps</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f32x4_ceil</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_ceil_sd</p></td>
 <td><p>❌ scalarized</p></td>
@@ -2411,10 +2412,10 @@
 <td><p>✅ wasm_i32x4_extract_lane</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_floor_pd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f64x2_floor</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_floor_ps</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_f32x4_floor</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_floor_sd</p></td>
 <td><p>❌ scalarized</p></td>
@@ -2500,7 +2501,7 @@
 <tr class="row-even"><td><p>_mm_testc_si128</p></td>
 <td><p>❌ scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>_mm_test_nzc_si128</p></td>
+<tr class="row-odd"><td><p>_mm_testnzc_si128</p></td>
 <td><p>❌ scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_testz_si128</p></td>
@@ -2510,7 +2511,7 @@
 </table>
 <p>The following table highlights the availability and expected performance of different SSE4.2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_2">Intel Intrinsics Guide on SSE4.2</a>.</p>
 <table class="colwidths-given docutils align-default" id="id11">
-<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt;</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSE4.2 intrinsics available via #include &lt;nmmintrin.h&gt;</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -2522,7 +2523,7 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>_mm_cmpgt_epi64</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_i64x2_gt</p></td>
 </tr>
 </tbody>
 </table>
@@ -2606,8 +2607,8 @@
 </tbody>
 </table>
 <p>Only the 128-bit wide instructions from AVX instruction set are available. 256-bit wide AVX instructions are not provided.</p>
-</div>
-<div class="section" id="compiling-simd-code-targeting-arm-neon-instruction-set">
+</section>
+<section id="compiling-simd-code-targeting-arm-neon-instruction-set">
 <h1>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten supports compiling existing codebases that use ARM NEON by
 passing the <cite>-mfpu=neon</cite> directive to the compiler, and including the
@@ -3035,7 +3036,7 @@ wide intrinsics.</p>
 </tr>
 </tbody>
 </table>
-</div>
+</section>
 
 
           </div>
@@ -3148,7 +3149,7 @@ wide intrinsics.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -3158,6 +3159,7 @@ wide intrinsics.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Pthreads support &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Networking" href="networking.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -1049,27 +1049,19 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="pthreads-support">
+  <section id="pthreads-support">
 <h1>Pthreads support<a class="headerlink" href="#pthreads-support" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Browsers are currently shipping SharedArrayBuffer gated behind Cross Origin Opener Policy (COOP) and Cross Origin Embedder Policy (COEP) headers. Pthreads code will not work in deployed environment unless these headers are correctly set. For more information click <a class="reference external" href="https://web.dev/coop-coep">this</a></p>
+<p>Browsers <a class="reference external" href="https://webassembly.org/roadmap/">that have implemented and enabled</a> SharedArrayBuffer, are gating it behind Cross Origin Opener Policy (COOP) and Cross Origin Embedder Policy (COEP) headers. Pthreads code will not work in deployed environment unless these headers are correctly set. For more information click <a class="reference external" href="https://web.dev/coop-coep">this</a></p>
 </div>
 <p>Emscripten has support for multithreading using SharedArrayBuffer in browsers. That API allows sharing memory between the main thread and web workers as well as atomic operations for synchronization, which enables Emscripten to implement support for the Pthreads (POSIX threads) API. This support is considered stable in Emscripten.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>As of Sep 2019, some browsers have disabled SharedArrayBuffer due to
-the Spectre set of vulnerabilities. Until it is restored you can still
-experiment with it if you flip a pref in those browsers. In other
-browsers (like Chrome on desktop), SharedArrayBuffer is fully enabled
-by default and you don’t need to flip any flags.</p>
-</div>
-<div class="section" id="compiling-with-pthreads-enabled">
+<section id="compiling-with-pthreads-enabled">
 <h2>Compiling with pthreads enabled<a class="headerlink" href="#compiling-with-pthreads-enabled" title="Permalink to this headline">¶</a></h2>
 <p>By default, support for pthreads is not enabled. To enable code generation for pthreads, the following command line flags exist:</p>
 <ul class="simple">
 <li><p>Pass the compiler flag <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</p></li>
-<li><p>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code> to specify a predefined pool of web workers to populate at page preRun time before application main() is called. This is important because if the workers do not already exist then we may need to wait for the next browser event iteration for certain things, see below.</p></li>
+<li><p>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;expression&gt;</span></code> to specify a predefined pool of web workers to populate at page <code class="docutils literal notranslate"><span class="pre">preRun</span></code> time before application <code class="docutils literal notranslate"><span class="pre">main()</span></code> is called. This is important because if the workers do not already exist then we may need to wait for the next browser event iteration for certain things, see below. <code class="docutils literal notranslate"><span class="pre">&lt;expression&gt;</span></code> can be any valid JavaScript expression, including integers like <code class="docutils literal notranslate"><span class="pre">8</span></code> for a fixed number of threads or, say, <code class="docutils literal notranslate"><span class="pre">navigator.hardwareConcurrency</span></code> to create as many threads as there are CPU cores.</p></li>
 </ul>
 <p>There should be no other changes required. In C/C++ code, the preprocessor check <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__EMSCRIPTEN_PTHREADS__</span></code> can be used to detect whether Emscripten is currently targeting pthreads.</p>
 <div class="admonition note">
@@ -1079,8 +1071,8 @@ multithreading when available and fall back to single threaded when not. The
 best you can do is two separate builds, one with and one
 without threads, and pick between them at runtime.</p>
 </div>
-</div>
-<div class="section" id="additional-flags">
+</section>
+<section id="additional-flags">
 <h2>Additional flags<a class="headerlink" href="#additional-flags" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PROXY_TO_PTHREAD</span></code>: In this mode your original <code class="docutils literal notranslate"><span class="pre">main()</span></code> is replaced by
@@ -1096,8 +1088,8 @@ can depend on them synchronously.</p></li>
 but is unrelated. That flag does not use pthreads or SharedArrayBuffer, and
 instead uses a plain Web Worker to run your main program (and postMessage to
 proxy messages back and forth).</p>
-</div>
-<div class="section" id="proxying">
+</section>
+<section id="proxying">
 <h2>Proxying<a class="headerlink" href="#proxying" title="Permalink to this headline">¶</a></h2>
 <p>The Web allows certain operations to only happen from the main browser thread,
 like interacting with the DOM. As a result, various operations are proxied to
@@ -1114,8 +1106,8 @@ thread).</p>
 on the main application thread (as we support JS plugin filesystems, which
 cannot share memory); this is another set of operations that are proxied.</p>
 <p>Proxying can cause problems in certain cases, see the section on blocking below.</p>
-</div>
-<div class="section" id="blocking-on-the-main-browser-thread">
+</section>
+<section id="blocking-on-the-main-browser-thread">
 <h2>Blocking on the main browser thread<a class="headerlink" href="#blocking-on-the-main-browser-thread" title="Permalink to this headline">¶</a></h2>
 <p>Note that in most cases the “main browser thread” is the same as the “main
 application thread”. The main browser thread is where web pages start to run
@@ -1157,8 +1149,8 @@ assumed <code class="docutils literal notranslate"><span class="pre">main()</spa
 you can replace <code class="docutils literal notranslate"><span class="pre">pthread_join</span></code> with <code class="docutils literal notranslate"><span class="pre">pthread_tryjoin_np</span></code>. This may require
 your application to be refactored to use asynchronous events, perhaps through
 <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> or <a class="reference internal" href="asyncify.html#asyncify"><span class="std std-ref">Asyncify</span></a>.</p>
-</div>
-<div class="section" id="special-considerations">
+</section>
+<section id="special-considerations">
 <h2>Special considerations<a class="headerlink" href="#special-considerations" title="Permalink to this headline">¶</a></h2>
 <p>The Emscripten implementation for the pthreads API should follow the POSIX standard closely, but some behavioral differences do exist:</p>
 <ul class="simple">
@@ -1172,7 +1164,7 @@ an effect such as a memory write. There are several solutions to this:</p>
 <ol class="arabic simple">
 <li><p>Return to the main event loop (for example, use
 <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop</span></code>, or Asyncify).</p></li>
-<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;integer&gt;</span></code>. Using a pool
+<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;expression&gt;</span></code>. Using a pool
 creates the Web Workers before main is called, so they can just be used
 when <code class="docutils literal notranslate"><span class="pre">pthread_create</span></code> is called.</p></li>
 <li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PROXY_TO_PTHREAD</span></code>, which will run <code class="docutils literal notranslate"><span class="pre">main()</span></code> on
@@ -1189,8 +1181,8 @@ main browser thread, where it can return to the main event loop as needed.</p></
 <li><p>Pthreads + memory growth (<code class="docutils literal notranslate"><span class="pre">ALLOW_MEMORY_GROWTH</span></code>) is especially tricky, see <a class="reference external" href="https://github.com/WebAssembly/design/issues/1271">wasm design issue #1271</a>. This currently causes JS accessing the wasm memory to be slow - but this will likely only be noticeable if the JS does large amounts of memory reads and writes (wasm runs at full speed, so moving work over can fix this). This also requires that your JS be aware that the HEAP* views may need to be updated - JS code embedded with <code class="docutils literal notranslate"><span class="pre">--js-library</span></code> etc will automatically be transformed to use the <code class="docutils literal notranslate"><span class="pre">GROWABLE_HEAP_*</span></code> helper functions where <code class="docutils literal notranslate"><span class="pre">HEAP*</span></code> are used, but external code that uses <code class="docutils literal notranslate"><span class="pre">Module.HEAP*</span></code> directly may encounter problems with views being smaller than memory.</p></li>
 </ul>
 <p>Also note that when compiling code that uses pthreads, an additional JavaScript file <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> is generated alongside the output .js file (where <code class="docutils literal notranslate"><span class="pre">NAME</span></code> is the basename of the main file being emitted). That file must be deployed with the rest of the generated code files. By default, <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <code class="docutils literal notranslate"><span class="pre">Module.locateFile(filename)</span></code> function in the main HTML <code class="docutils literal notranslate"><span class="pre">Module</span></code> object to return the URL of the target location of the <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> entry point. If this function is not defined in <code class="docutils literal notranslate"><span class="pre">Module</span></code>, then the default location relative to the main HTML file is used.</p>
-</div>
-<div class="section" id="running-code-and-tests">
+</section>
+<section id="running-code-and-tests">
 <h2>Running code and tests<a class="headerlink" href="#running-code-and-tests" title="Permalink to this headline">¶</a></h2>
 <p>Any code that is compiled with pthreads support enabled will currently only work in the Firefox Nightly channel, since the SharedArrayBuffer specification is still in an experimental research stage before standardization. There exists two test suites that can be used to verify the behavior of the pthreads API implementation in Emscripten:</p>
 <ul class="simple">
@@ -1198,8 +1190,8 @@ main browser thread, where it can return to the main event loop as needed.</p></
 <li><p>An Emscripten-specialized version of the <a class="reference external" href="http://posixtest.sourceforge.net/">Open POSIX Test Suite</a> is available at <a class="reference external" href="https://github.com/juj/posixtestsuite">juj/posixtestsuite</a> GitHub repository. This suite contains about 300 tests for pthreads conformance. To run this suite, the pref dom.workers.maxPerDomain should first be increased to at least 50.</p></li>
 </ul>
 <p>Please check these first in case of any issues. Bugs can be reported to the Emscripten bug tracker as usual.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -1312,7 +1304,7 @@ main browser thread, where it can return to the main event loop as needed.</p></
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1322,6 +1314,7 @@ main browser thread, where it can return to the main event loop as needed.</p></
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

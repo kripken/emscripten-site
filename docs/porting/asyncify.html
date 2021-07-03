@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Asyncify &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="API Reference" href="../api_reference/index.html"/>
         <link rel="prev" title="C++ exceptions support" href="exceptions.html"/> 
@@ -1049,7 +1049,7 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="asyncify">
+  <section id="asyncify">
 <span id="id1"></span><h1>Asyncify<a class="headerlink" href="#asyncify" title="Permalink to this headline">¶</a></h1>
 <p>Asyncify lets <strong>synchronous</strong> C or C++ code interact with <strong>asynchronous</strong>
 JavaScript. This allows things like:</p>
@@ -1070,7 +1070,7 @@ synchronous way.</p>
 for general background and details of how it works internally (you can also view
 <a class="reference external" href="https://www.youtube.com/watch?v=qQOP6jqZqf8">this talk about Asyncify</a>).
 The following expands on the Emscripten examples from that post.</p>
-<div class="section" id="sleeping-yielding-to-the-event-loop">
+<section id="sleeping-yielding-to-the-event-loop">
 <span id="yielding-to-main-loop"></span><h2>Sleeping / yielding to the event loop<a class="headerlink" href="#sleeping-yielding-to-the-event-loop" title="Permalink to this headline">¶</a></h2>
 <p>Let’s begin with the example from that blogpost:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.cpp</span>
@@ -1130,8 +1130,8 @@ timer happened!
 it is running, which normally would not allow async events to be handled by the
 browser. With Asyncify, those sleeps actually yield to the browser’s main event
 loop, and the timer can happen!</p>
-</div>
-<div class="section" id="making-async-web-apis-behave-as-if-they-were-synchronous">
+</section>
+<section id="making-async-web-apis-behave-as-if-they-were-synchronous">
 <h2>Making async Web APIs behave as if they were synchronous<a class="headerlink" href="#making-async-web-apis-behave-as-if-they-were-synchronous" title="Permalink to this headline">¶</a></h2>
 <p>Aside from <code class="docutils literal notranslate"><span class="pre">emscripten_sleep</span></code> and the other standard sync APIs Asyncify
 supports, you can also add your own functions. To do so, you must create a JS
@@ -1207,8 +1207,8 @@ You will see something like this:</p>
 </div>
 <p>That shows that the C code only continued to execute after the async JS
 completed.</p>
-</div>
-<div class="section" id="more-on-asyncify-imports">
+</section>
+<section id="more-on-asyncify-imports">
 <h2>More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code><a class="headerlink" href="#more-on-asyncify-imports" title="Permalink to this headline">¶</a></h2>
 <p>As in the above example, you can add JS functions that do an async operation but
 look synchronous from the perspective of C. The key thing is to add such methods
@@ -1217,8 +1217,8 @@ library or <code class="docutils literal notranslate"><span class="pre">EM_JS</s
 module that the Asyncify instrumentation must be aware of. Giving it that list
 tells it that all other JS calls will <strong>not</strong> do an async operation, which lets
 it not add overhead where it isn’t needed.</p>
-</div>
-<div class="section" id="returning-values">
+</section>
+<section id="returning-values">
 <h2>Returning values<a class="headerlink" href="#returning-values" title="Permalink to this headline">¶</a></h2>
 <p>You can also return values from async JS functions. Here is an example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.c</span>
@@ -1254,7 +1254,7 @@ it not add overhead where it isn’t needed.</p>
 example is based off of
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#Basic_example">this MDN example</a>
 ).</p>
-<p>Note that we must propagate the value returned from <code class="docutils literal notranslate"><span class="pre">handleSleep()</span></code>. The calling C code then
+<p>Note that we must propagate the value returned from <code class="docutils literal notranslate"><span class="pre">handleAsync()</span></code>. The calling C code then
 gets it normally, after the Promise completes.</p>
 <p>If you’re using the <code class="docutils literal notranslate"><span class="pre">handleSleep</span></code> API, the value needs to be also passed to the <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback, instead of being returned from our handler:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// ...</span>
@@ -1273,8 +1273,8 @@ gets it normally, after the Promise completes.</p>
 <span class="c1">// ...</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="usage-with-embind">
+</section>
+<section id="usage-with-embind">
 <h2>Usage with Embind<a class="headerlink" href="#usage-with-embind" title="Permalink to this headline">¶</a></h2>
 <p>If you’re using <a class="reference internal" href="connecting_cpp_and_javascript/embind.html#embind-val-guide"><span class="std std-ref">Embind</span></a> for interaction with JavaScript
 and want to <code class="docutils literal notranslate"><span class="pre">await</span></code> a dynamically retrieved <code class="docutils literal notranslate"><span class="pre">Promise</span></code>, you can call an
@@ -1286,8 +1286,8 @@ and want to <code class="docutils literal notranslate"><span class="pre">await</
 <p>In this case you don’t need to worry about <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, since it’s an
 internal implementation detail of <code class="docutils literal notranslate"><span class="pre">val::await</span></code> and Emscripten takes care of it
 automatically.</p>
-</div>
-<div class="section" id="usage-with-ccall">
+</section>
+<section id="usage-with-ccall">
 <h2>Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code><a class="headerlink" href="#usage-with-ccall" title="Permalink to this headline">¶</a></h2>
 <p>To make use of an Asyncify-using wasm export from Javascript, you can use the
 <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code> function and pass <code class="docutils literal notranslate"><span class="pre">async:</span> <span class="pre">true</span></code> to its call options object.
@@ -1299,8 +1299,8 @@ function once the computation completes.</p>
 <span class="p">});</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="optimizing">
+</section>
+<section id="optimizing">
 <h2>Optimizing<a class="headerlink" href="#optimizing" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned earlier, unoptimized builds with Asyncify can be large and slow.
 Build with optimizations (say, <code class="docutils literal notranslate"><span class="pre">-O3</span></code>) to get good results.</p>
@@ -1338,16 +1338,16 @@ functions maybe be inlined already. To be safe, run it with <cite>-O0</cite>.</p
 mentioned here are error-prone - if you don’t get things exactly right,
 your application can break. If you don’t absolutely need maximal performance,
 it’s usually ok to use the defaults.</p>
-</div>
-<div class="section" id="potential-problems">
+</section>
+<section id="potential-problems">
 <h2>Potential problems<a class="headerlink" href="#potential-problems" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="stack-overflows">
+<section id="stack-overflows">
 <h3>Stack overflows<a class="headerlink" href="#stack-overflows" title="Permalink to this headline">¶</a></h3>
 <p>If you see an exception thrown from an <code class="docutils literal notranslate"><span class="pre">asyncify_*</span></code> API, then it may be
 a stack overflow. You can increase the stack size with the
 <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_STACK_SIZE</span></code> option.</p>
-</div>
-<div class="section" id="reentrancy">
+</section>
+<section id="reentrancy">
 <h3>Reentrancy<a class="headerlink" href="#reentrancy" title="Permalink to this headline">¶</a></h3>
 <p>While waiting on an asynchronous operation browser events can happen. That
 is often the point of using Asyncify, but unexpected events can happen too.
@@ -1362,8 +1362,8 @@ The first must complete before the second begins.</p>
 if a function uses a global and assumes nothing else can modify it until it
 returns, but if that function sleeps and an event causes other code to
 change that global, then bad things can happen.</p>
-</div>
-<div class="section" id="starting-to-rewind-with-compiled-code-on-the-stack">
+</section>
+<section id="starting-to-rewind-with-compiled-code-on-the-stack">
 <h3>Starting to rewind with compiled code on the stack<a class="headerlink" href="#starting-to-rewind-with-compiled-code-on-the-stack" title="Permalink to this headline">¶</a></h3>
 <p>The examples above show <cite>wakeUp()</cite> being called from JS (after a callback,
 typically), and without any compiled code on the stack. If there <em>were</em> compiled
@@ -1376,9 +1376,9 @@ compiled code that was on the stack - causing a later rewind to behave badly.)</
 <p>A simple workaround you may find useful is to do a setTimeout of 0, replacing
 <code class="docutils literal notranslate"><span class="pre">wakeUp()</span></code> with <code class="docutils literal notranslate"><span class="pre">setTimeout(wakeUp,</span> <span class="pre">0);</span></code>. That will run <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> in a
 later callback, when nothing else is on the stack.</p>
-</div>
-</div>
-<div class="section" id="migrating-from-older-apis">
+</section>
+</section>
+<section id="migrating-from-older-apis">
 <h2>Migrating from older APIs<a class="headerlink" href="#migrating-from-older-apis" title="Permalink to this headline">¶</a></h2>
 <p>If you have code uses the old Emterpreter-Async API, or the old Asyncify, then
 almost everything should just work when you replace <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EMTERPRETIFY</span></code> usage
@@ -1394,8 +1394,8 @@ You can replace <code class="docutils literal notranslate"><span class="pre">ems
 examples.</p></li>
 </ul>
 </div></blockquote>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -1508,7 +1508,7 @@ examples.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1518,6 +1518,7 @@ examples.</p></li>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

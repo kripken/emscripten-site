@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging with Sanitizers &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Debugging with Sanitizers &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="Optimizing WebGL" href="../optimizing/Optimizing-WebGL.html"/> 
 
@@ -1044,16 +1044,16 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="debugging-with-sanitizers">
+  <section id="debugging-with-sanitizers">
 <span id="sanitizers"></span><h1>Debugging with Sanitizers<a class="headerlink" href="#debugging-with-sanitizers" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="undefined-behaviour-sanitizer">
+<section id="undefined-behaviour-sanitizer">
 <span id="sanitizer-ubsan"></span><h2>Undefined Behaviour Sanitizer<a class="headerlink" href="#undefined-behaviour-sanitizer" title="Permalink to this headline">¶</a></h2>
 <p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html">undefined behavior sanitizer</a> (UBSan) is available for use with
 Emscripten. This makes it much easier to catch bugs in your code.</p>
 <p>To use UBSan, simply pass <code class="docutils literal notranslate"><span class="pre">-fsanitize=undefined</span></code> to <code class="docutils literal notranslate"><span class="pre">emcc</span></code> or <code class="docutils literal notranslate"><span class="pre">em++</span></code>. Note
 that you need to pass this at both the compile and link stages, as it affects
 both codegen and system libraries.</p>
-<div class="section" id="catching-null-dereference">
+<section id="catching-null-dereference">
 <h3>Catching Null Dereference<a class="headerlink" href="#catching-null-dereference" title="Permalink to this headline">¶</a></h3>
 <p>By default, with Emscripten, dereferencing a null pointer does not immediately
 cause a segmentation fault, unlike traditional platforms, as 0 is just a normal
@@ -1104,8 +1104,8 @@ not reads, and does not help to find where the bad write actually is.</p>
 <span class="go">null-read.c:3:9: runtime error: load of null pointer of type &#39;int&#39;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="minimal-runtime">
+</section>
+<section id="minimal-runtime">
 <h3>Minimal Runtime<a class="headerlink" href="#minimal-runtime" title="Permalink to this headline">¶</a></h3>
 <p>UBSan’s runtime is non-trivial, and its use can unnecessarily increase the
 attack surface. For this reason, there is a minimal UBSan runtime that is
@@ -1121,9 +1121,9 @@ designed for production uses.</p>
 <span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="address-sanitizer">
+</section>
+</section>
+<section id="address-sanitizer">
 <span id="sanitizer-asan"></span><h2>Address Sanitizer<a class="headerlink" href="#address-sanitizer" title="Permalink to this headline">¶</a></h2>
 <p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/AddressSanitizer.html">address sanitizer</a> (ASan) is also available for use with Emscripten.
 This makes it much easier to catch buffer overflows, memory leaks, and other
@@ -1144,10 +1144,10 @@ compile with  -s ABORTING_MALLOC=0</p>
 <p>ASan fully supports multi-thread environments. ASan also operates on the JS
 support code, that is, if JS tries to read from a memory address that is not
 valid, it will be caught, just like if that access happened from wasm.</p>
-<div class="section" id="examples">
+<section id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Here are some examples of how AddressSanitizer can be used to help find bugs.</p>
-<div class="section" id="buffer-overflow">
+<section id="buffer-overflow">
 <h4>Buffer Overflow<a class="headerlink" href="#buffer-overflow" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">buffer_overflow.c</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
@@ -1183,8 +1183,8 @@ valid, it will be caught, just like if that access happened from wasm.</p>
 <span class="go">...</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="use-after-free">
+</section>
+<section id="use-after-free">
 <h4>Use After Free<a class="headerlink" href="#use-after-free" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_free.cpp</span></code>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
@@ -1227,8 +1227,8 @@ valid, it will be caught, just like if that access happened from wasm.</p>
 <span class="go">...</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="memory-leaks">
+</section>
+<section id="memory-leaks">
 <h4>Memory Leaks<a class="headerlink" href="#memory-leaks" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">leak.cpp</span></code>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
@@ -1277,8 +1277,8 @@ and allow the process to continue running, use
 <code class="docutils literal notranslate"><span class="pre">-fsanitize=leak</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code>. <code class="docutils literal notranslate"><span class="pre">-fsanitize=leak</span></code>
 does not instrument all memory accesses, and as a result is much faster than
 <code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code>.</p>
-</div>
-<div class="section" id="use-after-return">
+</section>
+<section id="use-after-return">
 <h4>Use After Return<a class="headerlink" href="#use-after-return" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_return.c</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
@@ -1324,9 +1324,9 @@ can cause traps. Hence, it is not enabled by default.</p>
 <span class="go">...</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="configuration">
+</section>
+</section>
+<section id="configuration">
 <h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
 <p>ASan can be configured via a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> file:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span> <span class="o">=</span> <span class="s1">&#39;option1=a:option2=b&#39;</span><span class="p">;</span>
@@ -1338,7 +1338,7 @@ and compile with <code class="docutils literal notranslate"><span class="pre">--
 <p>For a detailed understanding of the flags, see the <a class="reference external" href="https://github.com/google/sanitizers/wiki/AddressSanitizerFlags#run-time-flags">ASan documentation</a>.
 Please be warned that most flag combinations are not tested and may or may not
 work.</p>
-<div class="section" id="disabling-malloc-free-stack-traces">
+<section id="disabling-malloc-free-stack-traces">
 <h4>Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces<a class="headerlink" href="#disabling-malloc-free-stack-traces" title="Permalink to this headline">¶</a></h4>
 <p>In a program that uses <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> (or their C++ equivalent,
 <code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">new</span></code>/<code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">delete</span></code>) very frequently, taking a stack trace at
@@ -1351,9 +1351,9 @@ option <code class="docutils literal notranslate"><span class="pre">malloc_conte
 <p>This prevents ASan from reporting the location of memory leaks or offering
 insight into where the memory for a heap-based memory error originated,
 but may provide tremendous speed ups.</p>
-</div>
-</div>
-<div class="section" id="comparison-to-safe-heap">
+</section>
+</section>
+<section id="comparison-to-safe-heap">
 <h3>Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code><a class="headerlink" href="#comparison-to-safe-heap" title="Permalink to this headline">¶</a></h3>
 <p>Emscripten provides a <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> mode, which can be activated by running
 <code class="docutils literal notranslate"><span class="pre">emcc</span></code> with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SAFE_HEAP</span></code>. This does several things, some of which overlap
@@ -1400,9 +1400,9 @@ optimizations changing something, or clang missing a specific location.</p>
 above the <code class="docutils literal notranslate"><span class="pre">sbrk()</span></code>-managed memory. It may be more efficient than <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>
 in some cases: while it also checks every load and store, the LLVM
 optimizer is run after it adds those checks, which can remove some of them.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -1513,7 +1513,7 @@ optimizer is run after it adds those checks, which can remove some of them.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1523,6 +1523,7 @@ optimizer is run after it adds those checks, which can remove some of them.</p>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building to WebAssembly &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Building to WebAssembly &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Building Projects" href="Building-Projects.html"/> 
@@ -1049,7 +1049,7 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="building-to-webassembly">
+  <section id="building-to-webassembly">
 <span id="webassembly"></span><h1>Building to WebAssembly<a class="headerlink" href="#building-to-webassembly" title="Permalink to this headline">¶</a></h1>
 <p>WebAssembly is a binary format for executing code on the web, allowing fast start times (smaller download and much faster parsing in browsers when compared to JS or asm.js). Emscripten compiles to WebAssembly by default, but you can also compile to JS for older browsers.</p>
 <p>For some historical background, see</p>
@@ -1057,7 +1057,7 @@
 <li><p><a class="reference external" href="https://kripken.github.io/talks/wasm.html">these slides</a> and</p></li>
 <li><p><a class="reference external" href="https://hacks.mozilla.org/2015/12/compiling-to-webassembly-its-happening/">this blogpost</a>.</p></li>
 </ul>
-<div class="section" id="setup">
+<section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly is emitted by default, without the need for any special flags.</p>
 <div class="admonition note">
@@ -1075,7 +1075,7 @@
 <p class="admonition-title">Note</p>
 <p>Deciding to compile to wasm or JS can be done at the linking stage: it doesn’t affect the object files.</p>
 </div>
-<div class="section" id="backends">
+<section id="backends">
 <h3>Backends<a class="headerlink" href="#backends" title="Permalink to this headline">¶</a></h3>
 <p>Emscripten emits WebAssembly using the <strong>upstream LLVM wasm backend</strong>, since
 version <code class="docutils literal notranslate"><span class="pre">1.39.0</span></code> (October 2019). Previously emscripten also supported the
@@ -1133,36 +1133,36 @@ However, in rare cases you may see a regression (for example, in some cases
 so make sure to optimize both when compiling and when linking).</p></li>
 <li><p>Also see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/projects/1">blocker bugs on the wasm backend</a>, and the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?utf8=✓&amp;q=is%3Aissue+is%3Aopen+label%3A&quot;LLVM+wasm+backend&quot;">wasm backend tagged issues</a>.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="trapping">
+</section>
+</section>
+<section id="trapping">
 <h2>Trapping<a class="headerlink" href="#trapping" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly can trap - throw an exception - on things like division by zero, rounding a very large float to an int, and so forth. In asm.js such things were silently ignored, as in JavaScript they do not throw, so this is a difference between JavaScript and WebAssembly that you may notice, with the browser reporting an error like <code class="docutils literal notranslate"><span class="pre">float</span> <span class="pre">unrepresentable</span> <span class="pre">in</span> <span class="pre">integer</span> <span class="pre">range</span></code>, <code class="docutils literal notranslate"><span class="pre">integer</span> <span class="pre">result</span> <span class="pre">unrepresentable</span></code>, <code class="docutils literal notranslate"><span class="pre">integer</span> <span class="pre">overflow</span></code>, or <code class="docutils literal notranslate"><span class="pre">Out</span> <span class="pre">of</span> <span class="pre">bounds</span> <span class="pre">Trunc</span> <span class="pre">operation</span></code>.</p>
 <p>The LLVM wasm backend avoids traps by adding more code around each possible trap (basically clamping the value if it would trap). This can increase code size and decrease speed, if you don’t need that extra code. The proper solution for this is to use newer wasm instructions that do not trap, by calling emcc or clang with <code class="docutils literal notranslate"><span class="pre">-mnontrapping-fptoint</span></code>. That code may not run in older VMs, though.</p>
-</div>
-<div class="section" id="compiler-output">
+</section>
+<section id="compiler-output">
 <h2>Compiler output<a class="headerlink" href="#compiler-output" title="Permalink to this headline">¶</a></h2>
 <p>When using <code class="docutils literal notranslate"><span class="pre">emcc</span></code> to build to WebAssembly, you will see a <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file containing that code, as well as the usual <code class="docutils literal notranslate"><span class="pre">.js</span></code> file that is the main target of compilation. Those two are built to work together: run the <code class="docutils literal notranslate"><span class="pre">.js</span></code> (or <code class="docutils literal notranslate"><span class="pre">.html</span></code>, if that’s what you asked for) file, and it will load and set up the WebAssembly code for you, properly setting up imports and exports for it, etc. Basically, you don’t need to care about whether the compiled code is asm.js or WebAssembly, it’s just a compiler flag, and otherwise everything should just work (except the WebAssembly should be faster).</p>
 <ul class="simple">
 <li><p>Note that the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file is not standalone - it’s not easy to manually run it without that <code class="docutils literal notranslate"><span class="pre">.js</span></code> code, as it depends on getting the proper imports that integrate with JS. For example, it receives imports for syscalls so that it can do things like print to the console. There is work in progress towards ways to create standalone <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files, see the <a class="reference external" href="https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone">WebAssembly Standalone page</a>.</p></li>
 </ul>
 <p>You may also see additional files generated, like a <code class="docutils literal notranslate"><span class="pre">.data</span></code> file if you are preloading files into the virtual filesystem. All that is exactly the same as when building to asm.js. One difference you may notice is the lack of a <code class="docutils literal notranslate"><span class="pre">.mem</span> <span class="pre">file</span></code>, which for asm.js contains the static memory initialization data, which in WebAssembly we can pack more efficiently into the WebAssembly binary itself.</p>
-</div>
-<div class="section" id="testing-native-webassembly-in-browsers">
+</section>
+<section id="testing-native-webassembly-in-browsers">
 <h2>Testing native WebAssembly in browsers<a class="headerlink" href="#testing-native-webassembly-in-browsers" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly support is enabled by default as of Firefox 52, Chrome 57 and Opera 44. On Edge 15 you can enable it via “Experimental JavaScript Features” flag.</p>
-</div>
-<div class="section" id="wasm-files-and-compilation">
+</section>
+<section id="wasm-files-and-compilation">
 <h2><code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files and compilation<a class="headerlink" href="#wasm-files-and-compilation" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly code is prepared somewhat differently than asm.js. asm.js can be bundled inside the main JS file, while as mentioned earlier WebAssembly is a binary file on the side, so you will have more than one file to distribute.</p>
 <p>Another noticeable effect is that WebAssembly is compiled asynchronously by default, which means you must wait for compilation to complete before calling compiled code (by waiting for <code class="docutils literal notranslate"><span class="pre">main()</span></code>, or the <code class="docutils literal notranslate"><span class="pre">onRuntimeInitialized</span></code> callback, etc., which you also need to do when you have anything else that makes startup async, like a <code class="docutils literal notranslate"><span class="pre">.mem</span></code> file for asm.js, or preloaded file data, etc.). You can turn off async compilation by setting <code class="docutils literal notranslate"><span class="pre">WASM_ASYNC_COMPILATION=0</span></code>, but that may not work in Chrome due to current limitations there.</p>
 <ul class="simple">
 <li><p>Note that even with async compilation turned off, fetching the WebAssembly binary may need to be an asynchronous operation (since the Web does not allow synchronous binary downloads on the main thread). If you can fetch the binary yourself, you can set <code class="docutils literal notranslate"><span class="pre">Module['wasmBinary']</span></code> and it will be used from there, and then (with async compilation off) compilation should be synchronous.</p></li>
 </ul>
-</div>
-<div class="section" id="web-server-setup">
+</section>
+<section id="web-server-setup">
 <h2>Web server setup<a class="headerlink" href="#web-server-setup" title="Permalink to this headline">¶</a></h2>
-<p>To serve wasm in the most efficient way over the network, make sure your web server has the proper MIME time for <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files, which is application/wasm. That will allow streaming compilation, where the browser can start to compile code as it downloads.</p>
+<p>To serve wasm in the most efficient way over the network, make sure your web server has the proper MIME type for <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files, which is application/wasm. That will allow streaming compilation, where the browser can start to compile code as it downloads.</p>
 <p>In Apache, you can do this with</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AddType application/wasm .wasm
 </pre></div>
@@ -1179,8 +1179,8 @@ AddEncoding x-gzip .gz
 AddType application/wasm .wasm
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -1293,7 +1293,7 @@ AddType application/wasm .wasm
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1303,6 +1303,7 @@ AddType application/wasm .wasm
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

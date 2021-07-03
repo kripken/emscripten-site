@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fetch API &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Fetch API &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="File System API" href="Filesystem-API.html"/> 
@@ -1049,7 +1049,7 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="fetch-api">
+  <section id="fetch-api">
 <span id="id1"></span><h1>Fetch API<a class="headerlink" href="#fetch-api" title="Permalink to this headline">¶</a></h1>
 <p>The Emscripten Fetch API allows native code to transfer files via XHR (HTTP GET,
 PUT, POST) from remote servers, and to persist the downloaded files locally in
@@ -1058,10 +1058,10 @@ subsequent page visits. The Fetch API is callable from multiple threads, and the
 network requests can be run either synchronously or asynchronously as desired.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In order to use the Fetch API, you would need to compile your code with <strong>-s
-FETCH=1</strong>.</p>
+<p>In order to use the Fetch API, you would need to compile your code with <code class="docutils literal notranslate"><span class="pre">-s</span>
+<span class="pre">FETCH=1</span></code>.</p>
 </div>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The use of the Fetch API is quick to illustrate via an example. The following
 application downloads a file from a web server asynchronously to memory inside
@@ -1100,8 +1100,8 @@ domains, however these are subject to <a class="reference external" href="https:
 emscripten_fetch() function call returns immediately and the operation will
 continue to occur on the background. When the operation finishes, either the
 success or the failure callback will be invoked.</p>
-</div>
-<div class="section" id="persisting-data">
+</section>
+<section id="persisting-data">
 <h2>Persisting data<a class="headerlink" href="#persisting-data" title="Permalink to this headline">¶</a></h2>
 <p>The XHR requests issued by the Fetch API are subject to the usual browser
 caching behavior. These caches are transient (temporary) so there is no
@@ -1125,7 +1125,7 @@ attributes:</p>
 </div>
 <p>For a full example, see the file
 tests/fetch/example_async_xhr_to_memory_via_indexeddb.cpp.</p>
-<div class="section" id="persisting-data-bytes-from-memory">
+<section id="persisting-data-bytes-from-memory">
 <h3>Persisting data bytes from memory<a class="headerlink" href="#persisting-data-bytes-from-memory" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it is useful to persist a range of bytes from application memory to
 IndexedDB (without having to perform any XHRs). This is possible with the
@@ -1163,8 +1163,8 @@ the Emscripten Fetch operation.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="deleting-a-file-from-indexeddb">
+</section>
+<section id="deleting-a-file-from-indexeddb">
 <h3>Deleting a file from IndexedDB<a class="headerlink" href="#deleting-a-file-from-indexeddb" title="Permalink to this headline">¶</a></h3>
 <p>Files can be cleaned up from IndexedDB by using the HTTP action verb “EM_IDB_DELETE”:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span> <span class="o">*</span><span class="n">fetch</span><span class="p">)</span> <span class="p">{</span>
@@ -1184,9 +1184,9 @@ the Emscripten Fetch operation.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="synchronous-fetches">
+</section>
+</section>
+<section id="synchronous-fetches">
 <h2>Synchronous Fetches<a class="headerlink" href="#synchronous-fetches" title="Permalink to this headline">¶</a></h2>
 <p>In some scenarios, it would be nice to be able to perform an XHR request or an
 IndexedDB file operation synchronously in the calling thread. This can make
@@ -1221,16 +1221,16 @@ emscripten_fetch() returns.</p>
 restrictions, depending on which Emscripten build mode (linker flags) is used:</p>
 <ul class="simple">
 <li><p><strong>No flags</strong>: Only asynchronous Fetch operations are available.</p></li>
-<li><p><strong>–proxy-to-worker</strong>: Synchronous Fetch operations are allowed for fetches
+<li><p><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code>: Synchronous Fetch operations are allowed for fetches
 that only do an XHR but do not interact with IndexedDB.</p></li>
-<li><p><strong>-s USE_PTHREADS=1</strong>: Synchronous Fetch operations are available on
+<li><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code>: Synchronous Fetch operations are available on
 pthreads, but not on the main thread.</p></li>
-<li><p><strong>–proxy-to-worker</strong> + <strong>-s USE_PTHREADS=1</strong>: Synchronous Fetch operations
+<li><p><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code> + <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code>: Synchronous Fetch operations
 are available both on the main thread and pthreads.</p></li>
 </ul>
 </div>
-</div>
-<div class="section" id="waitable-fetches">
+</section>
+<section id="waitable-fetches">
 <h2>Waitable Fetches<a class="headerlink" href="#waitable-fetches" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten Fetch operations can also run in a third mode, called a <em>waitable</em>
 fetch. Waitable fetches start off as asynchronous, but at any point after the
@@ -1267,15 +1267,15 @@ issuing thread can perform some other work until the fetch completes.</p>
 <p class="admonition-title">Note</p>
 <p>Waitable fetches are available only in certain build modes:</p>
 <ul class="simple">
-<li><p><strong>No flags</strong> or <strong>–proxy-to-worker</strong>: Waitable fetches are not available.</p></li>
-<li><p><strong>-s USE_PTHREADS=1</strong>: Waitable fetches are available on pthreads, but not
+<li><p><strong>No flags</strong> or <code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code>: Waitable fetches are not available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code>: Waitable fetches are available on pthreads, but not
 on the main thread.</p></li>
-<li><p><strong>–proxy-to-worker</strong> + <strong>-s USE_PTHREADS=1</strong>: Waitable fetches are
+<li><p><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code> + <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">USE_PTHREADS=1</span></code>: Waitable fetches are
 available on all threads.</p></li>
 </ul>
 </div>
-</div>
-<div class="section" id="tracking-progress">
+</section>
+<section id="tracking-progress">
 <h2>Tracking Progress<a class="headerlink" href="#tracking-progress" title="Permalink to this headline">¶</a></h2>
 <p>For robust fetch management, there are several fields available to track the
 status of an XHR.</p>
@@ -1310,8 +1310,8 @@ and the onprogress handler.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="managing-large-files">
+</section>
+<section id="managing-large-files">
 <h2>Managing Large Files<a class="headerlink" href="#managing-large-files" title="Permalink to this headline">¶</a></h2>
 <p>Particular attention should be paid to the memory usage strategy of a fetch.
 Previous examples have all passed the EMSCRIPTEN_FETCH_LOAD_TO_MEMORY flag,
@@ -1322,7 +1322,7 @@ strategy in terms of memory usage. If the file is very large, it might not even
 fit inside the application’s heap area.</p>
 <p>The following subsections provide ways to manage large fetches in a memory
 efficient manner.</p>
-<div class="section" id="downloading-directly-to-indexeddb">
+<section id="downloading-directly-to-indexeddb">
 <h3>Downloading directly to IndexedDB<a class="headerlink" href="#downloading-directly-to-indexeddb" title="Permalink to this headline">¶</a></h3>
 <p>If an application wants to download a file for local access, but does not
 immediately need to use the file, e.g. when preloading data up front for later
@@ -1332,8 +1332,8 @@ causes the fetch to download the file directly to IndexedDB, which avoids
 temporarily populating the file in memory after the download finishes. In this
 scenario, the onsuccess() handler will only report the total downloaded file
 size, but will not contain the data bytes to the file.</p>
-</div>
-<div class="section" id="streaming-downloads">
+</section>
+<section id="streaming-downloads">
 <h3>Streaming Downloads<a class="headerlink" href="#streaming-downloads" title="Permalink to this headline">¶</a></h3>
 <p>Note: This currently only works in Firefox as it uses ‘moz-chunked-arraybuffer’.</p>
 <p>If the application does not need random seek access to the file, but is able to
@@ -1371,8 +1371,8 @@ following snippet for an example.</p>
 </div>
 <p>In this case, the onsuccess() handler will not receive the final file buffer at
 all so memory usage will remain at a minimum.</p>
-</div>
-<div class="section" id="byte-range-downloads">
+</section>
+<section id="byte-range-downloads">
 <h3>Byte Range Downloads<a class="headerlink" href="#byte-range-downloads" title="Permalink to this headline">¶</a></h3>
 <p>Large files can also be managed in smaller chunks by performing Byte Range
 downloads on them. This initiates an XHR or IndexedDB transfer that only fetches
@@ -1408,9 +1408,9 @@ be dealt with separately.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="todo-to-document">
+</section>
+</section>
+<section id="todo-to-document">
 <h2>TODO To Document<a class="headerlink" href="#todo-to-document" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten_fetch() supports the following operations as well, that need
 documenting:</p>
@@ -1434,8 +1434,8 @@ load.</p></li>
 <li><p>Example how to abort and resume partial transfers to IndexedDB.</p></li>
 </ul>
 </div></blockquote>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -1548,7 +1548,7 @@ load.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1558,6 +1558,7 @@ load.</p></li>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 

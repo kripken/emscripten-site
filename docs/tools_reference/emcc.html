@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.21 documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 2.0.26 documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.21 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -1049,10 +1049,10 @@
 </div> -->
           <div role="main">
             
-  <div class="section" id="emscripten-compiler-frontend-emcc">
+  <section id="emscripten-compiler-frontend-emcc">
 <span id="emccdoc"></span><h1>Emscripten Compiler Frontend (emcc)<a class="headerlink" href="#emscripten-compiler-frontend-emcc" title="Permalink to this headline">¶</a></h1>
 <p>The Emscripten Compiler Frontend (<code class="docutils literal notranslate"><span class="pre">emcc</span></code>) is used to call the Emscripten compiler from the command line. It is effectively a drop-in replacement for a standard compiler like <em>gcc</em> or <em>clang</em>.</p>
-<div class="section" id="command-line-syntax">
+<section id="command-line-syntax">
 <h2>Command line syntax<a class="headerlink" href="#command-line-syntax" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">file</span><span class="o">...</span>
 </pre></div>
@@ -1060,7 +1060,7 @@
 <p>(Note that you will need <code class="docutils literal notranslate"><span class="pre">./emcc</span></code> if you want to run emcc from your current directory.)</p>
 <p>The input file(s) can be either source code files that <em>Clang</em> can handle (C or
 C++), object files (produced by <cite>emcc -c</cite>), or LLVM assembly files.</p>
-<div class="section" id="arguments">
+<section id="arguments">
 <h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
 <p>Most <a class="reference external" href="http://linux.die.net/man/1/clang">clang options</a> will work, as will <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html#Option-Summary">gcc options</a>, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display this information</span>
@@ -1142,20 +1142,20 @@ Emscripten build options. For the available options, see <a class="reference ext
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>For lists that include brackets or quote, you need quotation marks (“) around the list in most shells (to avoid errors being raised). Two examples are shown below:</p>
+<p>For lists that include brackets or quote, you need quotation marks (”) around the list in most shells (to avoid errors being raised). Two examples are shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s2">&quot;[&#39;liblib.so&#39;]&quot;</span>
 <span class="o">-</span><span class="n">s</span> <span class="s2">&quot;EXPORTED_FUNCTIONS=[&#39;liblib.so&#39;]&quot;</span>
 </pre></div>
 </div>
 </div>
-<p>You can also specify that the value of an option will be read from a specified JSON-formatted file. For example, the following option sets the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> option with the contents of the file at <strong>path/to/file</strong>.</p>
+<p>You can also specify that the value of an option will be read from a file. For example, the following will set <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> based on the contents of the file at <strong>path/to/file</strong>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=@/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">file</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>In this case the file might contain a JSON-formatted list of functions: <code class="docutils literal notranslate"><span class="pre">[&quot;_func1&quot;,</span> <span class="pre">&quot;func2&quot;]</span></code>.</p></li>
+<li><p>In this case the file should contain a list of symbols, one per line.  For legacy use cases JSON-formatted files are also supported: e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;_func1&quot;,</span> <span class="pre">&quot;func2&quot;]</span></code>.</p></li>
 <li><p>The specified file path must be absolute, not relative.</p></li>
 </ul>
 </div>
@@ -1221,11 +1221,10 @@ Enable the <a class="reference internal" href="../api_reference/trace.h.html#tra
 </dl>
 <dl id="emcc-emit-symbol-map">
 <dt><code class="docutils literal notranslate"><span class="pre">--emit-symbol-map</span></code></dt><dd><p>[link]
-Save a map file between the minified global names and the original function names. This allows you, for example, to reconstruct meaningful stack traces.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is only relevant when <a class="reference internal" href="../site/glossary.html#term-Minifying"><span class="xref std std-term">minifying</span></a> global names, which happens in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and above, and when no <code class="docutils literal notranslate"><span class="pre">-g</span></code> option was specified to prevent minification.</p>
-</div>
+Save a map file between function indexes in the wasm and function names. By
+storing the names on a file on the side, you can avoid shipping the names, and
+can still reconstruct meaningful stack traces by translating the indexes back
+to the names.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When used with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">WASM=2</span></code>, two symbol files are created. <code class="docutils literal notranslate"><span class="pre">[name].js.symbols</span></code> (with WASM symbols) and <code class="docutils literal notranslate"><span class="pre">[name].wasm.js.symbols</span></code> (with ASM.js symbols)</p>
@@ -1239,7 +1238,7 @@ Enables link-time optimizations (LTO).</p>
 </dl>
 <dl id="emcc-closure">
 <dt><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">0|1|2</span></code></dt><dd><p>[link]
-Runs the <a class="reference internal" href="../site/glossary.html#term-Closure-Compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible values are:</p>
+Runs the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible values are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: No closure compiler (default in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and below).</p></li>
@@ -1299,7 +1298,7 @@ Specify a file to preload before running the compiled code asynchronously. The p
 <p>Preloaded files are stored in <strong>filename.data</strong>, where <strong>filename.html</strong> is the main file you are compiling to. To run your code, you will need both the <strong>.html</strong> and the <strong>.data</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>, except that it is only relevant when generating HTML (it uses asynchronous binary <a class="reference internal" href="../site/glossary.html#term-XHR"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
+<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>, except that it is only relevant when generating HTML (it uses asynchronous binary <a class="reference internal" href="../site/glossary.html#term-xhr"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
 </div>
 <p><em>emcc</em> runs <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tools/file_packager.py">tools/file_packager</a> to do the actual packaging of embedded and preloaded files. You can run the file packager yourself if you want (see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files-file-packager"><span class="std std-ref">Packaging using the file packager tool</span></a>). You should then put the output of the file packager in an emcc <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, so that it executes before your main compiled code.</p>
 <p>For more information about the <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> options, see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
@@ -1507,9 +1506,9 @@ Specifies the line ending to generate for the text files that are outputted. If 
 Prints out the flags <code class="docutils literal notranslate"><span class="pre">emcc</span></code> would pass to <code class="docutils literal notranslate"><span class="pre">clang</span></code> to compile source code to object form. You can use this to invoke clang yourself, and then run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> on those outputs just for the final linking+conversion to JS.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="environment-variables">
+</section>
+</section>
+<section id="environment-variables">
 <span id="emcc-environment-variables"></span><h2>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
 <p><em>emcc</em> is affected by several environment variables, as listed below:</p>
 <blockquote>
@@ -1536,8 +1535,8 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
 </ul>
 </div></blockquote>
 <p>Search for ‘os.environ’ in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/emcc.py">emcc.py</a> to see how these are used. The most interesting is possibly <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG</span></code>, which forces the compiler to dump its build and temporary files to a temporary directory where they can be reviewed.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -1650,7 +1649,7 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.21',
+            VERSION:'2.0.26',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1660,6 +1659,7 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../_static/language_data.js"></script>
 
   
 
