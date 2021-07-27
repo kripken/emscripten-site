@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 2.0.26 documentation</title>
+  <title>File System API &mdash; Emscripten 2.0.27 (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.27 (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Fetch API" href="fetch.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -442,8 +442,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
@@ -697,6 +697,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#nodefs">NODEFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#workerfs">WORKERFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#proxyfs">PROXYFS</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#devices">Devices</a></li>
@@ -1078,7 +1079,7 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <span id="filesystem-api-filesystems"></span><h2>File systems<a class="headerlink" href="#file-systems" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Only the <a class="reference internal" href="#filesystem-api-memfs"><span class="std std-ref">MEMFS</span></a> filesystem is included by default. All others must be enabled explicitly, using <code class="docutils literal notranslate"><span class="pre">-lnodefs.js</span></code> (<a class="reference internal" href="#filesystem-api-nodefs"><span class="std std-ref">NODEFS</span></a>), <code class="docutils literal notranslate"><span class="pre">-lidbfs.js</span></code> (<a class="reference internal" href="#filesystem-api-idbfs"><span class="std std-ref">IDBFS</span></a>), <code class="docutils literal notranslate"><span class="pre">-lworkerfs.js</span></code> (<a class="reference internal" href="#filesystem-api-workerfs"><span class="std std-ref">WORKERFS</span></a>), or <code class="docutils literal notranslate"><span class="pre">-lproxyfs.js</span></code> (PROXYFS).</p>
+<p>Only the <a class="reference internal" href="#filesystem-api-memfs"><span class="std std-ref">MEMFS</span></a> filesystem is included by default. All others must be enabled explicitly, using <code class="docutils literal notranslate"><span class="pre">-lnodefs.js</span></code> (<a class="reference internal" href="#filesystem-api-nodefs"><span class="std std-ref">NODEFS</span></a>), <code class="docutils literal notranslate"><span class="pre">-lidbfs.js</span></code> (<a class="reference internal" href="#filesystem-api-idbfs"><span class="std std-ref">IDBFS</span></a>), <code class="docutils literal notranslate"><span class="pre">-lworkerfs.js</span></code> (<a class="reference internal" href="#filesystem-api-workerfs"><span class="std std-ref">WORKERFS</span></a>), or <code class="docutils literal notranslate"><span class="pre">-lproxyfs.js</span></code> (<a class="reference internal" href="#filesystem-api-proxyfs"><span class="std std-ref">PROXYFS</span></a>).</p>
 </div>
 <section id="memfs">
 <span id="filesystem-api-memfs"></span><h3>MEMFS<a class="headerlink" href="#memfs" title="Permalink to this headline">¶</a></h3>
@@ -1109,6 +1110,18 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <p>This file system is only for use when running code inside a worker.</p>
 </div>
 <p>This file system provides read-only access to <code class="docutils literal notranslate"><span class="pre">File</span></code> and <code class="docutils literal notranslate"><span class="pre">Blob</span></code> objects inside a worker without copying the entire data into memory and can potentially be used for huge files.</p>
+</section>
+<section id="proxyfs">
+<span id="filesystem-api-proxyfs"></span><h3>PROXYFS<a class="headerlink" href="#proxyfs" title="Permalink to this headline">¶</a></h3>
+<p>This allows a module to mount another module’s file system. This is useful when separate modules need to share a file system without manually syncing file contents. For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Module 2 can use the path &quot;/fs1&quot; to access and modify Module 1&#39;s filesystem</span>
+<span class="nx">module2</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s2">&quot;/fs1&quot;</span><span class="p">);</span>
+<span class="nx">module2</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">module2</span><span class="p">.</span><span class="nx">PROXYFS</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">root</span><span class="o">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+    <span class="nx">fs</span><span class="o">:</span> <span class="nx">module1</span><span class="p">.</span><span class="nx">FS</span>
+<span class="p">},</span> <span class="s2">&quot;/fs1&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="devices">
@@ -2196,7 +2209,7 @@ if it is a symlink.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.26',
+            VERSION:'2.0.27 (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

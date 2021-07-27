@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 2.0.26 documentation</title>
+  <title>Release Notes &mdash; Emscripten 2.0.27 (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.27 (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -442,8 +442,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#returning-values">Returning values</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
@@ -697,6 +697,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#proxyfs">PROXYFS</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
@@ -1060,7 +1061,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <section id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 2.0.26 (Jul 02, 2021) is listed below.</p>
+<p>The ChangeLog for Emscripten 2.0.27 (dev) (Jul 27, 2021) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that version numbers do not necessarily reflect the amount of changes
@@ -1081,8 +1082,27 @@ to browse the changes between the tags.
 
 See docs/process.md for more on how version tagging works.
 
-2.0.26
+2.0.27
 ------
+- Added `EM_ASYNC_JS` macro - similar to `EM_JS`, but allows using `await`
+  inside the JS block and automatically integrates with Asyncify without
+  the need for listing the declared function in `ASYNCIFY_IMPORTS` (#9709).
+
+2.0.26 - 07/26/2021
+-------------------
+- When building ports with the `embuilder` tool some of the names of the
+  libraries have changed (they now match the filenames in the `tools/ports/`
+  directory). For example `sdl-image` is now `sdl_image` (#14737).
+- Undefined data symbols (in static executables) are no longer silently ignored
+  at link time.  The previous behaviour (which was to silently give all
+  undefined data symbols address zero, which could lead to bugs)
+  can be enabled by passing either `-Wl,--allow-undefined` or
+  `-Wl,--unresolved-symbols=ignore-all`.
+- The alignment of `long double`, which is a 128-bit floating-point value
+  implemented in software, is reduced from 16 to 8. The lower alignment allows
+  `max_align_t` to properly match the alignment we use for malloc, which is 8
+  (raising malloc&#39;s alignment to achieve correctness the other way would come
+  with a performance regression). (#10072)
 - The `alignMemory` function is now a library function and therefore not
   included by default.  Debug builds will automatically abort if you try
   to use this function without including it.  The normal library `__deps`
@@ -1096,6 +1116,12 @@ See docs/process.md for more on how version tagging works.
   `emscripten_dlopen()` declared in `emscropten/emscripten.h`.  See
   `docs/api_reference/emscripten.h.rst` (or the online version) for more
   details.
+- Constructors, functions and methods bound with Embind can now be `await`ed.
+  When Asyncify is used somewhere in the callstack, previously Embind would
+  return `0` / `null` / `false` / instance with a NULL pointer, making it
+  impossible to wait for the function to actually finish and retrieve its
+  result. Now in those cases it will return a `Promise` instead that will
+  resolve with the function&#39;s return value upon completion. (#11890)
 
 2.0.25 - 06/30/2021
 -------------------
@@ -5820,7 +5846,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.26',
+            VERSION:'2.0.27 (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

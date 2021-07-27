@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 2.0.26 documentation</title>
+  <title>Asyncify &mdash; Emscripten 2.0.27 (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.27 (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="API Reference" href="../api_reference/index.html"/>
         <link rel="prev" title="C++ exceptions support" href="exceptions.html"/> 
@@ -442,8 +442,8 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#returning-values">Returning values</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#optimizing">Optimizing</a></li>
@@ -697,6 +697,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#proxyfs">PROXYFS</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
@@ -1136,19 +1137,19 @@ loop, and the timer can happen!</p>
 <p>Aside from <code class="docutils literal notranslate"><span class="pre">emscripten_sleep</span></code> and the other standard sync APIs Asyncify
 supports, you can also add your own functions. To do so, you must create a JS
 function that is called from wasm (since Emscripten controls pausing and
-resuming the wasm from the JS runtime). One way to do that is with a JS library
-function; another is to use <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code>, which we’ll use in this next example:</p>
+resuming the wasm from the JS runtime).</p>
+<p>One way to do that is with a JS library function. Another is to use
+<code class="docutils literal notranslate"><span class="pre">EM_ASYNC_JS</span></code>, which we’ll use in this next example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.c</span>
 <span class="cp">#include</span> <span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
 
-<span class="n">EM_JS</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">do_fetch</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
-  <span class="n">Asyncify</span><span class="p">.</span><span class="n">handleAsync</span><span class="p">(</span><span class="n">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
-    <span class="k">const</span> <span class="n">response</span> <span class="o">=</span> <span class="n">await</span> <span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">);</span>
-    <span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
-    <span class="c1">// (normally you would do something with the fetch here)</span>
-  <span class="p">});</span>
+<span class="n">EM_ASYNC_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">do_fetch</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+  <span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
+  <span class="k">const</span> <span class="n">response</span> <span class="o">=</span> <span class="n">await</span> <span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">);</span>
+  <span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
+  <span class="c1">// (normally you would do something with the fetch here)</span>
+  <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
 <span class="p">});</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
@@ -1158,44 +1159,13 @@ function; another is to use <code class="docutils literal notranslate"><span cla
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>If you can’t use the modern <code class="docutils literal notranslate"><span class="pre">async</span></code>-<code class="docutils literal notranslate"><span class="pre">await</span></code> syntax, there is a variant with an explicit <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback too:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.c</span>
-<span class="cp">#include</span> <span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-
-<span class="n">EM_JS</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">do_fetch</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
-  <span class="n">Asyncify</span><span class="p">.</span><span class="n">handleSleep</span><span class="p">(</span><span class="n">wakeUp</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
-    <span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
-      <span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
-      <span class="c1">// (normally you would do something with the fetch here)</span>
-      <span class="n">wakeUp</span><span class="p">();</span>
-    <span class="p">});</span>
-  <span class="p">});</span>
-<span class="p">});</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">puts</span><span class="p">(</span><span class="s">&quot;before&quot;</span><span class="p">);</span>
-  <span class="n">do_fetch</span><span class="p">();</span>
-  <span class="n">puts</span><span class="p">(</span><span class="s">&quot;after&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>The async operation happens in the <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code> function <code class="docutils literal notranslate"><span class="pre">do_fetch()</span></code>, which
-calls <code class="docutils literal notranslate"><span class="pre">Asyncify.handleAsync</span></code> or <code class="docutils literal notranslate"><span class="pre">Asyncify.handleSleep</span></code>. It gives that
-function the code to be run, and gets a <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> function that it calls in the
-asynchronous future at the right time. After we call <code class="docutils literal notranslate"><span class="pre">wakeUp()</span></code> the compiled C
-code resumes normally.</p>
 <p>In this example the async operation is a <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, which means we need to wait
-for a Promise. While that is async, note how the C code in <code class="docutils literal notranslate"><span class="pre">main()</span></code> is
-completely synchronous!</p>
+for a Promise. While that operation is async, note how the C code in <code class="docutils literal notranslate"><span class="pre">main()</span></code>
+is completely synchronous!</p>
 <p>To run this example, first compile it with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span> <span class="o">-</span><span class="n">s</span> <span class="s1">&#39;ASYNCIFY_IMPORTS=[&quot;do_fetch&quot;]&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span>
 </pre></div>
 </div>
-<p>Note that you must tell the compiler that <code class="docutils literal notranslate"><span class="pre">do_fetch()</span></code> can do an
-asynchronous operation, using <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, otherwise it won’t
-instrument the code to allow pausing and resuming; see more details later down.</p>
 <p>To run this, you must run a <a class="reference internal" href="../getting_started/FAQ.html#faq-local-webserver"><span class="std std-ref">local webserver</span></a>
 and then browse to <code class="docutils literal notranslate"><span class="pre">http://localhost:8000/a.html</span></code>.
 You will see something like this:</p>
@@ -1208,71 +1178,59 @@ You will see something like this:</p>
 <p>That shows that the C code only continued to execute after the async JS
 completed.</p>
 </section>
+<section id="ways-to-use-async-apis-in-older-engines">
+<h2>Ways to use async APIs in older engines<a class="headerlink" href="#ways-to-use-async-apis-in-older-engines" title="Permalink to this headline">¶</a></h2>
+<p>If your target JS engine doesn’t support the modern <code class="docutils literal notranslate"><span class="pre">async/await</span></code> JS
+syntax, you can desugar the above implementation of <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> to use Promises
+directly with <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code> and <code class="docutils literal notranslate"><span class="pre">Asyncify.handleAsync</span></code> instead:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">do_fetch</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">Asyncify</span><span class="p">.</span><span class="n">handleAsync</span><span class="p">(</span><span class="n">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">function</span> <span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
+      <span class="c1">// (normally you would do something with the fetch here)</span>
+      <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>When using this form, the compiler doesn’t statically know that <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> is
+asynchronous anymore. Instead, you must tell the compiler that <code class="docutils literal notranslate"><span class="pre">do_fetch()</span></code>
+can do an asynchronous operation using <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, otherwise it won’t
+instrument the code to allow pausing and resuming (see more details later down):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span> <span class="o">-</span><span class="n">s</span> <span class="s1">&#39;ASYNCIFY_IMPORTS=[&quot;do_fetch&quot;]&#39;</span>
+</pre></div>
+</div>
+<p>Finally, if you can’t use Promises either, you can desugar the example to use
+<code class="docutils literal notranslate"><span class="pre">Asyncify.handleSleep</span></code>, which will pass a <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback to your
+function implementation. When this <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback is invoked, the C/C++
+code will resume:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">do_fetch</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">Asyncify</span><span class="p">.</span><span class="n">handleSleep</span><span class="p">(</span><span class="n">function</span> <span class="p">(</span><span class="n">wakeUp</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
+    <span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">function</span> <span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
+      <span class="c1">// (normally you would do something with the fetch here)</span>
+      <span class="n">wakeUp</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Note that when using this form, you can’t return a value from the function itself.
+Instead, you need to pass it as an argument to the <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback and
+propagate it by returning the result of <code class="docutils literal notranslate"><span class="pre">Asyncify.handleSleep</span></code> in <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code>
+itself.</p>
+</section>
 <section id="more-on-asyncify-imports">
 <h2>More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code><a class="headerlink" href="#more-on-asyncify-imports" title="Permalink to this headline">¶</a></h2>
 <p>As in the above example, you can add JS functions that do an async operation but
-look synchronous from the perspective of C. The key thing is to add such methods
-to <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, regardless of whether the JS function is from a JS
-library or <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code>. That list of imports is the list of imports to the wasm
-module that the Asyncify instrumentation must be aware of. Giving it that list
-tells it that all other JS calls will <strong>not</strong> do an async operation, which lets
-it not add overhead where it isn’t needed.</p>
-</section>
-<section id="returning-values">
-<h2>Returning values<a class="headerlink" href="#returning-values" title="Permalink to this headline">¶</a></h2>
-<p>You can also return values from async JS functions. Here is an example:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.c</span>
-<span class="cp">#include</span> <span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-
-<span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="n">get_digest_size</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">str</span><span class="p">),</span> <span class="p">{</span>
-  <span class="c1">// Note how we return the output of handleAsync() here.</span>
-  <span class="k">return</span> <span class="n">Asyncify</span><span class="p">.</span><span class="n">handleAsync</span><span class="p">(</span><span class="n">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="k">const</span> <span class="n">text</span> <span class="o">=</span> <span class="n">UTF8ToString</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
-    <span class="k">const</span> <span class="n">encoder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextEncoder</span><span class="p">();</span>
-    <span class="k">const</span> <span class="n">data</span> <span class="o">=</span> <span class="n">encoder</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
-    <span class="n">out</span><span class="p">(</span><span class="s">&quot;ask for digest for &quot;</span> <span class="o">+</span> <span class="n">text</span><span class="p">);</span>
-    <span class="k">const</span> <span class="n">digestValue</span> <span class="o">=</span> <span class="n">await</span> <span class="n">window</span><span class="p">.</span><span class="n">crypto</span><span class="p">.</span><span class="n">subtle</span><span class="p">.</span><span class="n">digest</span><span class="p">(</span><span class="s">&quot;SHA-256&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
-    <span class="n">out</span><span class="p">(</span><span class="s">&quot;got digest of length &quot;</span> <span class="o">+</span> <span class="n">digestValue</span><span class="p">.</span><span class="n">byteLength</span><span class="p">);</span>
-    <span class="c1">// Return the value as you normally would.</span>
-    <span class="k">return</span> <span class="n">digestValue</span><span class="p">.</span><span class="n">byteLength</span><span class="p">;</span>
-  <span class="p">});</span>
-<span class="p">});</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">silly</span> <span class="o">=</span> <span class="s">&quot;some silly text&quot;</span><span class="p">;</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&#39;s digest size is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">silly</span><span class="p">,</span> <span class="n">get_digest_size</span><span class="p">(</span><span class="n">silly</span><span class="p">));</span>
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>You can build this with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span><span class="n">s</span> <span class="s1">&#39;ASYNCIFY_IMPORTS=[&quot;get_digest_size&quot;]&#39;</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">O2</span>
-</pre></div>
-</div>
-<p>This example calls the Promise-returning <code class="docutils literal notranslate"><span class="pre">window.crypto.subtle()</span></code> API (the
-example is based off of
-<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#Basic_example">this MDN example</a>
-).</p>
-<p>Note that we must propagate the value returned from <code class="docutils literal notranslate"><span class="pre">handleAsync()</span></code>. The calling C code then
-gets it normally, after the Promise completes.</p>
-<p>If you’re using the <code class="docutils literal notranslate"><span class="pre">handleSleep</span></code> API, the value needs to be also passed to the <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback, instead of being returned from our handler:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// ...</span>
-<span class="k">return</span> <span class="n">Asyncify</span><span class="p">.</span><span class="n">handleSleep</span><span class="p">(</span><span class="n">wakeUp</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="k">const</span> <span class="n">text</span> <span class="o">=</span> <span class="n">UTF8ToString</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
-  <span class="k">const</span> <span class="n">encoder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextEncoder</span><span class="p">();</span>
-  <span class="k">const</span> <span class="n">data</span> <span class="o">=</span> <span class="n">encoder</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
-  <span class="n">out</span><span class="p">(</span><span class="s">&quot;ask for digest for &quot;</span> <span class="o">+</span> <span class="n">text</span><span class="p">);</span>
-  <span class="n">window</span><span class="p">.</span><span class="n">crypto</span><span class="p">.</span><span class="n">subtle</span><span class="p">.</span><span class="n">digest</span><span class="p">(</span><span class="s">&quot;SHA-256&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">digestValue</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="n">out</span><span class="p">(</span><span class="s">&quot;got digest of length &quot;</span> <span class="o">+</span> <span class="n">digestValue</span><span class="p">.</span><span class="n">byteLength</span><span class="p">);</span>
-    <span class="c1">// Return the value by sending it to wakeUp(). It will then be returned</span>
-    <span class="c1">// from handleSleep() on the outside.</span>
-    <span class="n">wakeUp</span><span class="p">(</span><span class="n">digestValue</span><span class="p">.</span><span class="n">byteLength</span><span class="p">);</span>
-  <span class="p">});</span>
-<span class="p">});</span>
-<span class="c1">// ...</span>
-</pre></div>
-</div>
+look synchronous from the perspective of C. If you don’t use <code class="docutils literal notranslate"><span class="pre">EM_ASYNC_JS</span></code>,
+it’s vital to add such methods to <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>. That list of imports is
+the list of imports to the wasm module that the Asyncify instrumentation must be
+aware of. Giving it that list tells it that all other JS calls will <strong>not</strong> do
+an async operation, which lets it not add overhead where it isn’t needed.</p>
 </section>
 <section id="usage-with-embind">
 <h2>Usage with Embind<a class="headerlink" href="#usage-with-embind" title="Permalink to this headline">¶</a></h2>
@@ -1508,7 +1466,7 @@ examples.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.26',
+            VERSION:'2.0.27 (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

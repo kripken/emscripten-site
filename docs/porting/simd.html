@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.26 documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 2.0.27 (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.26 documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.27 (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ exceptions support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -442,8 +442,8 @@
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="asyncify.html#returning-values">Returning values</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="asyncify.html#optimizing">Optimizing</a></li>
@@ -697,6 +697,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#proxyfs">PROXYFS</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#devices">Devices</a></li>
@@ -1239,7 +1240,7 @@
 <td><p>💡 emulated with scalar store</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_movemask_ps</p></td>
-<td><p>💣 No Wasm SIMD support. Emulated in scalar. <a class="reference external" href="https://github.com/WebAssembly/simd/issues/131">simd/#131</a></p></td>
+<td><p>✅ wasm_i32x4_bitmask</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_move_ss</p></td>
 <td><p>💡 emulated with a shuffle. VM must guess type.</p></td>
@@ -1861,13 +1862,13 @@
 <td><p>💡 emulated with a shuffle. VM must guess type.</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_movemask_epi8</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_i8x16_bitmask</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_movemask_pd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>✅ wasm_i64x2_bitmask</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_mul_epu32</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with wasm_u64x2_extmul_low_u32x4 + 2 shuffles</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_mul_pd</p></td>
 <td><p>✅ wasm_f64x2_mul</p></td>
@@ -1876,10 +1877,10 @@
 <td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_mulhi_epi16</p></td>
-<td><p>⚠️ emulated with a SIMD four widen+two mul+generic shuffle</p></td>
+<td><p>⚠️ emulated with a 2x SIMD extmul+generic shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_mulhi_epu16</p></td>
-<td><p>⚠️ emulated with a SIMD four widen+two mul+generic shuffle</p></td>
+<td><p>⚠️ emulated with a 2x SIMD extmul+generic shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_mullo_epi16</p></td>
 <td><p>✅ wasm_i16x8_mul</p></td>
@@ -2349,10 +2350,10 @@
 <td><p>✅ wasm_f32x4_ceil</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_ceil_sd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_ceil_ss</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_cmpeq_epi64</p></td>
 <td><p>⚠️ emulated with a SIMD cmp+and+shuffle</p></td>
@@ -2418,10 +2419,10 @@
 <td><p>✅ wasm_f32x4_floor</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_floor_sd</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_floor_ss</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_insert_epi32</p></td>
 <td><p>✅ wasm_i32x4_replace_lane</p></td>
@@ -2466,7 +2467,7 @@
 <td><p>💣 scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_mul_epi32</p></td>
-<td><p>❌ scalarized</p></td>
+<td><p>⚠️ emulated with wasm_i64x2_extmul_low_i32x4 + 2 shuffles</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_mullo_epi32</p></td>
 <td><p>✅ wasm_i32x4_mul</p></td>
@@ -2475,16 +2476,16 @@
 <td><p>✅ wasm_u16x8_narrow_i32x4</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_round_pd</p></td>
-<td><p>💣 scalarized</p></td>
+<td><p>✅ wasm_f64x2_ceil/wasm_f64x2_floor/wasm_f64x2_nearest/wasm_f64x2_trunc</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_round_ps</p></td>
-<td><p>💣 scalarized</p></td>
+<td><p>✅ wasm_f32x4_ceil/wasm_f32x4_floor/wasm_f32x4_nearest/wasm_f32x4_trunc</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_round_sd</p></td>
-<td><p>💣 scalarized</p></td>
+<td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_round_ss</p></td>
-<td><p>💣 scalarized</p></td>
+<td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_stream_load_si128</p></td>
 <td><p>🟡 wasm_v128_load. VM must guess type. <span class="raw-html"><br /></span> Unaligned load on x86 CPUs.</p></td>
@@ -3149,7 +3150,7 @@ wide intrinsics.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.26',
+            VERSION:'2.0.27 (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
