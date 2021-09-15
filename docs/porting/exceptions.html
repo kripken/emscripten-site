@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C++ exceptions support &mdash; Emscripten 2.0.27 (dev) documentation</title>
+  <title>C++ exceptions support &mdash; Emscripten 2.0.29 (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.27 (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.29 (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="Porting SIMD code targeting WebAssembly" href="simd.html"/> 
@@ -435,8 +435,8 @@
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">C++ exceptions support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#overhead">Overhead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#javascript-based-exception-support">JavaScript-based exception support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#webassembly-exception-handling-proposal">WebAssembly exception handling proposal</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asyncify</a><ul>
@@ -1052,15 +1052,8 @@
             
   <section id="c-exceptions-support">
 <h1>C++ exceptions support<a class="headerlink" href="#c-exceptions-support" title="Permalink to this headline">¶</a></h1>
-<p>C++ exceptions support can be enabled in emscripten using <code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code>.
-Note that unlike on most platforms, C++ exceptions are disabled by default due
-to their current overhead, see later.</p>
-<p>Passing <code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code> at compile time will pass the relevant flags to
-clang, and at link time it also links in system libraries with exceptions
-support.</p>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<p>For example, build the following program with <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-fexceptions</span></code>:</p>
+<p>By default, exception catching is disabled in Emscripten.</p>
+<p>For example, if you compile the following program:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
@@ -1075,19 +1068,42 @@ support.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Running it will print <code class="docutils literal notranslate"><span class="pre">throw...</span></code> and then <code class="docutils literal notranslate"><span class="pre">catch!</span></code>.</p>
+<p>The first <code class="docutils literal notranslate"><span class="pre">throw</span></code> will abort the program and you’ll see something like this in the output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>throw...
+exception thrown: 5246024 - Exception catching is disabled, this exception cannot be caught. Compile with -s NO_DISABLE_EXCEPTION_CATCHING or -s EXCEPTION_CATCHING_ALLOWED=[..] to catch.
+</pre></div>
+</div>
+<p>If you want to opt-in, you have two following options.</p>
+<section id="javascript-based-exception-support">
+<h2>JavaScript-based exception support<a class="headerlink" href="#javascript-based-exception-support" title="Permalink to this headline">¶</a></h2>
+<p>First, you can enable exceptions via Emscripten’s JavaScript-based support.</p>
+<p>To enable it, pass <code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code> at both compile time and link time.</p>
+<p>When you rebuild the example above with this flag, the output will change to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>throw...
+catch!
+</pre></div>
+</div>
+<p>Note that this option has relatively high overhead, but it will work on all JavaScript
+engines with WebAssembly support. You can reduce the overhead by specifying a
+list of allowed functions in which exceptions are enabled, see the
+<code class="docutils literal notranslate"><span class="pre">EXCEPTION_CATCHING_ALLOWED</span></code> setting.</p>
 </section>
-<section id="overhead">
-<h2>Overhead<a class="headerlink" href="#overhead" title="Permalink to this headline">¶</a></h2>
-<p>Until wasm gets direct support for exceptions, Emscripten supports them using
-JavaScript for throwing and catching. As a result, every time we might need to
-catch an exception we call out into JavaScript to a try-catch there. This
-increases code size and adds significant overhead.</p>
-<p>You can reduce the overhead by specifying a list of allowed functions in
-which exceptions are enabled, see the <code class="docutils literal notranslate"><span class="pre">EXCEPTION_CATCHING_ALLOWED</span></code> setting.</p>
-<p>In the future direct support for exceptions in wasm will avoid that overhead.
-Usage will be as mentioned earlier, but with <code class="docutils literal notranslate"><span class="pre">-fwasm-exceptions</span></code> instead of
-<code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code>.</p>
+<section id="webassembly-exception-handling-proposal">
+<h2>WebAssembly exception handling proposal<a class="headerlink" href="#webassembly-exception-handling-proposal" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively, you can opt-in to the <a class="reference external" href="https://github.com/WebAssembly/exception-handling/blob/master/proposals/exception-handling/Exceptions.md">native WebAssembly exception handling</a>
+proposal.</p>
+<p>To enable it, pass <code class="docutils literal notranslate"><span class="pre">-fwasm-exceptions</span></code> at both compile time and link time.</p>
+<p>Rebuilding the example with this flag will result in the same output as with
+<code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code> above:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>throw...
+catch!
+</pre></div>
+</div>
+<p>This option leverages a new feature that brings built-in instructions for
+throwing and catching exceptions to WebAssembly.</p>
+<p>As a result, it can reduce code size and performance overhead compared
+to the JavaScript-based implementation. However, it’s still brand-new
+and <a class="reference external" href="https://webassembly.org/roadmap/">not yet supported by default in most engines</a>.</p>
 </section>
 </section>
 
@@ -1202,7 +1218,7 @@ Usage will be as mentioned earlier, but with <code class="docutils literal notra
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.27 (dev)',
+            VERSION:'2.0.29 (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

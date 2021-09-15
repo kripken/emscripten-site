@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 2.0.27 (dev) documentation</title>
+  <title>Release Notes &mdash; Emscripten 2.0.29 (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.27 (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 2.0.29 (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -435,8 +435,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ exceptions support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#example">Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#overhead">Overhead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based exception support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-proposal">WebAssembly exception handling proposal</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
@@ -1061,7 +1061,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <section id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 2.0.27 (dev) (Aug 13, 2021) is listed below.</p>
+<p>The ChangeLog for Emscripten 2.0.29 (dev) (Sep 15, 2021) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that version numbers do not necessarily reflect the amount of changes
@@ -1082,8 +1082,27 @@ to browse the changes between the tags.
 
 See docs/process.md for more on how version tagging works.
 
-2.0.27
+2.0.30
 ------
+2.0.29
+-----
+- Bug fixes
+2.0.28 - 08/23/2021
+------
+- Added some support for signal handling libc functions (raise, kill,
+  sigaction, sigpending, etc).  We still don&#39;t have a way to deliver signals from
+  the outside but these at least now work for sending signals to the current
+  thread (JS context) (#14883).
+- Remove the workaround used in emcmake and emmake that removed directories
+  with sh.exe from PATH on Windows when MinGW Makefiles generator was used.
+  This was needed with CMake versions older than 3.17.0. If you get an error
+  &quot;sh.exe was found in your PATH&quot; on Windows, you can either update to CMake
+  3.17.0 or newer, or remove the offending directory from your PATH. See
+  https://github.com/Kitware/CMake/commit/82ddcf0db1d220564145122c3cce25d25ee0e254
+  for more information. (#14930)
+
+2.0.27 - 08/12/2021
+-------------------
 - Added `EM_ASYNC_JS` macro - similar to `EM_JS`, but allows using `await`
   inside the JS block and automatically integrates with Asyncify without
   the need for listing the declared function in `ASYNCIFY_IMPORTS` (#9709).
@@ -5848,7 +5867,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.27 (dev)',
+            VERSION:'2.0.29 (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
