@@ -192,7 +192,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#build-system-issues">Build system issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#faux-dynamic-linking">Faux Dynamic Linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
 </ul>
@@ -220,8 +220,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#background">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#overview-of-dynamic-linking">Overview of Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#practical-details">Practical Details</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#general-dynamic-linking">General Dynamic Linking</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dlopen-dynamic-linking"><code class="docutils literal notranslate"><span class="pre">dlopen()</span></code> Dynamic Linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#load-time-dynamic-linking">Load-time Dynamic Linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#runtime-dynamic-linking-with-dlopen">Runtime Dynamic Linking with <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#system-libraries">System Libraries</a></li>
@@ -486,7 +486,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#build-system-issues">Build system issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#faux-dynamic-linking">Faux Dynamic Linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
 </ul>
@@ -1072,15 +1072,15 @@
 <span id="id1"></span><h1>Dynamic Linking<a class="headerlink" href="#dynamic-linking" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Dynamic linking in emscripten is still somewhat experimental and subject to change.  This documentation is also curently somewhat outdated the in the process of being refreshed.</p>
+<p>This documentation is somewhat outdated and is in the process of being refreshed.</p>
 </div>
 <p>Emscripten supports linking object files (and ar archives that contain
 object files) statically.  This lets most build systems work with Emscripten
 with little or no changes (see <a class="reference internal" href="Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a>).</p>
 <p>In addition, Emscripten also has support for a form of <strong>dynamic</strong> linking of
 WebAssembly modules.  This can add overhead, so for best performance static
-linking should still be prefered.  However, this overhead can can be reduced
-with the use of certain command line flags, see below for details.</p>
+linking should still be preferred.  However, this overhead can can be reduced
+with the use of certain command line flags. See below for details.</p>
 <section id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <p>Before we get to dynamic linking, let’s talk about static linking.
@@ -1126,9 +1126,9 @@ external dependencies.</p>
 <section id="overview-of-dynamic-linking">
 <h2>Overview of Dynamic Linking<a class="headerlink" href="#overview-of-dynamic-linking" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten’s dynamic linking is fairly simple: you build several
-separate code “modules” containing JavaScript, and can link them at
-runtime. The linking basically connects up the unresolved symbols in
-each module with the implemented symbols in the others, in the simplest
+separate code “modules” from your source code, and can link them at
+runtime. The linking basically connects up the undefined symbols in
+each module with the defined symbols in the others, in the simplest
 of ways. It does not currently support some corner cases.</p>
 <p>System libraries do utilize some more advanced linking features that
 include such corner cases. For that reason, Emscripten tries to simplify
@@ -1139,17 +1139,15 @@ the problem as follows: There are two types of shared modules:</p>
 </ol>
 <p>A project should contain <strong>exactly one</strong> main module. It can then be
 linked at runtime to multiple side modules. This model also makes other
-things simpler, like only the singleton main module has the general
-JavaScript environment setup code to connect to the web page and so
-forth; side modules contain just the pure compiled WebAssembly and
-nothing more.</p>
-<p>The one tricky aspect to this design is that a side module might need a
-system library that the main doesn’t know about. See the section on
+things simpler, like only the singleton main module includes the
+JavaScript environment and side modules are pure WebAssembly modules.</p>
+<p>The one tricky aspect to this design is that a side module might depend on a
+system library that the main module did not depend on. See the section on
 system libraries, below, for how to handle that.</p>
 <p>Note that the “main module” doesn’t need to contain the <code class="docutils literal notranslate"><span class="pre">main()</span></code>
 function. It could just as easily be in a side module. What makes the
-main module the “main” module is just that there is only one main
-module, and only it has system libs linked in.</p>
+main module the “main” module is that there is only one main module, and
+only it has system libraries linked in.</p>
 <p>(Note that system libraries are linked in to the main module
 <em>statically</em>. We still have some optimizations from doing it that way,
 even if we can’t dead code eliminate as well as we’d like.)</p>
@@ -1157,44 +1155,47 @@ even if we can’t dead code eliminate as well as we’d like.)</p>
 <section id="practical-details">
 <h2>Practical Details<a class="headerlink" href="#practical-details" title="Permalink to this headline">¶</a></h2>
 <p>If you want to jump to see running code, you can look in the test suite.
-There are <code class="docutils literal notranslate"><span class="pre">test_dylink_*</span></code> tests that test general dynamic linking, and
+There are <code class="docutils literal notranslate"><span class="pre">test_dylink_*</span></code> tests that test dynamic linking in general, and
 <code class="docutils literal notranslate"><span class="pre">test_dlfcn_*</span></code> tests that test <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code> specifically. Otherwise,
 we describe the procedure now.</p>
-<section id="general-dynamic-linking">
-<h3>General Dynamic Linking<a class="headerlink" href="#general-dynamic-linking" title="Permalink to this headline">¶</a></h3>
+<section id="load-time-dynamic-linking">
+<h3>Load-time Dynamic Linking<a class="headerlink" href="#load-time-dynamic-linking" title="Permalink to this headline">¶</a></h3>
+<p>Load-time dynamic linking refers to case when the side module are loaded
+along with the main module, during startup and they are linked together
+before your application starts to run.</p>
 <ul class="simple">
-<li><p>Build one part of your code as the main module, using
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MAIN_MODULE=1</span></code>.</p></li>
-<li><p>Build other parts of your code as side modules, using
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SIDE_MODULE=1</span></code>.</p></li>
+<li><p>Build one part of your code as the main module, linking it using
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MAIN_MODULE</span></code>.</p></li>
+<li><p>Build other parts of your code as side modules, linking it using
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SIDE_MODULE</span></code>.</p></li>
 </ul>
-<p>Important: since 1.38.16 you need to set <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXPORT_ALL=1</span></code> (for
-SIDE_MODULEs, as well as the MAIN_MODULE if it exposes functions to the
-modules). Alternatively, use <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXPORTED_FUNCTIONS</span></code> to declare the
-exported functions. Without either of them, modules are useless.</p>
-<p>Note that both should have suffix <code class="docutils literal notranslate"><span class="pre">.js</span></code> or <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> (<code class="docutils literal notranslate"><span class="pre">emcc</span></code> uses
-suffixes to know what to emit). If you want, you can then rename the
-side modules to <code class="docutils literal notranslate"><span class="pre">.so</span></code> or such (but it is just a superficial change.)</p>
-<p>You then need to tell the main module to load the sides. You can do that
-using the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object, with something like</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Module</span><span class="o">.</span><span class="n">dynamicLibraries</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;libsomething.js&#39;</span><span class="p">];</span>
+<p>For the main module the output suffix should be <code class="docutils literal notranslate"><span class="pre">.js</span></code> (the WebAssembly
+file will be generated alongside it just like normal).  For the side
+module the output will be just a WebAssembly module we recommend the
+output suffix <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> or <code class="docutils literal notranslate"><span class="pre">.so</span></code> (which is the shared libraries suffix used by
+UNIX systems).</p>
+<p>In order to have the side modules loaded at startup you need to tell the
+main module about their existence.  You can do this by specifying them on
+the command line when you link the main module. e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">s</span> <span class="n">MAIN_MODULE</span> <span class="n">main</span><span class="o">.</span><span class="n">c</span> <span class="n">libsomething</span><span class="o">.</span><span class="n">wasm</span>
 </pre></div>
 </div>
-<p>At runtime, when you run the main module, if it sees
-<code class="docutils literal notranslate"><span class="pre">dynamicLibraries</span></code> on <code class="docutils literal notranslate"><span class="pre">Module</span></code>, then it loads them one by one and
-links them. The running application then can access code from any of the
+<p>At runtime, the JavaScript loading code will load <code class="docutils literal notranslate"><span class="pre">libsomthing.wasm</span></code> (along
+with any other side modules) along with the main module before the application
+starts to run.  The running application then can access code from any of the
 modules linked together.</p>
 </section>
-<section id="dlopen-dynamic-linking">
-<h3><code class="docutils literal notranslate"><span class="pre">dlopen()</span></code> Dynamic Linking<a class="headerlink" href="#dlopen-dynamic-linking" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">dlopen()</span></code> is slightly simpler than general dynamic linking. The
-procedure begins in the same way, with the same flags used to build the
-main and side modules. The difference is that you do not use
-<code class="docutils literal notranslate"><span class="pre">Module.dynamicLibraries</span></code>; instead, you must load the side module into
-the filesystem, so that <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> (or <code class="docutils literal notranslate"><span class="pre">fopen</span></code>, etc.) can access it
-(except for <code class="docutils literal notranslate"><span class="pre">dlopen(NULL)</span></code> which means to open the current executable,
-which just works without filesystem integration). That’s basically it -
-you can then use <code class="docutils literal notranslate"><span class="pre">dlopen(),</span> <span class="pre">dlsym()</span></code>, etc. normally.</p>
+<section id="runtime-dynamic-linking-with-dlopen">
+<h3>Runtime Dynamic Linking with <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code><a class="headerlink" href="#runtime-dynamic-linking-with-dlopen" title="Permalink to this headline">¶</a></h3>
+<p>Runtime dynamic linking can be performed by the calling the <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code>
+function to load side modules after the program is already running. The
+procedure begins in the same way, with the same flags used to build the main and
+side modules.  The difference is that you do not specify the side modules on the
+command line when linking the main module; instead, you must load the side
+module into the filesystem, so that <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> (or <code class="docutils literal notranslate"><span class="pre">fopen</span></code>, etc.) can access
+it (except for <code class="docutils literal notranslate"><span class="pre">dlopen(NULL)</span></code> which means to open the current executable,
+which just works without filesystem integration). That’s basically it - you can
+then use <code class="docutils literal notranslate"><span class="pre">dlopen(),</span> <span class="pre">dlsym()</span></code>, etc. normally.</p>
 </section>
 </section>
 <section id="system-libraries">
@@ -1202,7 +1203,7 @@ you can then use <code class="docutils literal notranslate"><span class="pre">dl
 <p>As mentioned earlier, system libraries are handled in a special way by
 the Emscripten linker, and in dynamic linking, only the main module is
 linked against system libraries. A possible issue is if a side module
-needs a system library that the main does not. If so, you’ll get a
+depends on a system library that the main does not. If so, you’ll get a
 runtime error. This section explains what to do to fix that.</p>
 <p>To get around this, you can build the main module with
 <code class="docutils literal notranslate"><span class="pre">EMCC_FORCE_STDLIBS=1</span></code> in the environment to force inclusion of all
@@ -1222,10 +1223,14 @@ also possible to use normal dead code elimination, by building with
 <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MAIN_MODULE=2</span></code> (instead of 1). In that mode, the main module is
 built normally, with no special behavior for keeping code alive. It is
 then your responsibility to make sure that code that side modules need
-is kept alive. You can do this in the usual ways, like adding to
-<code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code>. See <code class="docutils literal notranslate"><span class="pre">other.test_minimal_dynamic</span></code> for an
-example of this in action. There is also the corresponding
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SIDE_MODULE=2</span></code> for side modules.</p>
+is kept alive. You can do this either by adding to <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> or
+tagging the symbol <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code> in the source code.
+See <code class="docutils literal notranslate"><span class="pre">other.test_minimal_dynamic</span></code> for an example of this in action.</p>
+<p>If you are doing load time dynamic linking then any symbols needed by
+the side modules specified on the command line will be kept alive
+automatically. For this reason we strongly recommend using <code class="docutils literal notranslate"><span class="pre">MAIN_MODULE=2</span></code>
+when doing load time dynamic linking.</p>
+<p>There is also the corresponding <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SIDE_MODULE=2</span></code> for side modules.</p>
 </section>
 <section id="miscellaneous-notes">
 <h2>Miscellaneous Notes<a class="headerlink" href="#miscellaneous-notes" title="Permalink to this headline">¶</a></h2>
@@ -1238,7 +1243,7 @@ symbols remain unresolved, and code can start to run even if there are.
 It will run successfully if they are not called in practice. If they
 are, you will get a runtime error. What went wrong should be clear from
 the stack trace (in an unminified build); building with
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ASSERTIONS=1</span></code> can help some more.</p>
+<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ASSERTIONS</span></code> can help some more.</p>
 </section>
 <section id="limitations">
 <h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
@@ -1249,14 +1254,16 @@ that includes side modules; you can use <code class="docutils literal notranslat
 startup
 <a class="reference external" href="https://emscripten.org/docs/porting/files/packaging_files.html#preloading-files">[doc]</a>
 <a class="reference external" href="https://groups.google.com/forum/#!topic/emscripten-discuss/cE3hUV3fDSw">[discuss]</a>.</p></li>
-<li><p>See also <cite>webAssembly standalone &lt;https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone&gt;`_</cite> for more on side modules in this context.</p></li>
 </ul>
 </section>
 <section id="pthreads-support">
 <h3>Pthreads support<a class="headerlink" href="#pthreads-support" title="Permalink to this headline">¶</a></h3>
-<p>Dynamic linking + pthreads is not supported. It would require new wasm
-spec features (a way to share the Table), or some serious workarounds in
-the toolchain.</p>
+<p>Dynamic linking + pthreads is is still experimental.  While you can link with
+<code class="docutils literal notranslate"><span class="pre">MAIN_MODULE</span></code> and <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> emscripten will produce a warning by default
+when you do this.</p>
+<p>While load-time dynamic linking should largely work and does not have any major
+known issues, runtime dynamic linking (with <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code>) has limited support
+when used with pthreads.</p>
 </section>
 </section>
 </section>
