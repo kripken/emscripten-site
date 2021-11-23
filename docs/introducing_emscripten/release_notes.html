@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 2.0.33-git (dev) documentation</title>
+  <title>Release Notes &mdash; Emscripten 3.0.1-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.0.1-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -1061,7 +1061,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <section id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 2.0.33-git (dev) (Oct 21, 2021) is listed below.</p>
+<p>The ChangeLog for Emscripten 3.0.1-git (dev) (Nov 22, 2021) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that version numbers do not necessarily reflect the amount of changes
@@ -1082,8 +1082,46 @@ to browse the changes between the tags.
 
 See docs/process.md for more on how version tagging works.
 
-2.0.33
-------
+3.0.1
+-----
+
+3.0.0 - 11/22/2021
+------------------
+- A set of internally-unused functions were removed from `parseTools.js`.  While
+  emscripten no longer needs any of these functions, there is slim chance that
+  some external JS library is depending on them.  Please file issues if any such
+  library code is found.  The removed/unused functions are:
+   `removePointing`, `pointingLevels`, `removeAllPointing`, `isVoidType`,
+   `isStructPointerType`, `isArrayType`, `isStructType`, `isVectorType`,
+   `isStructuralType` `getStructuralTypeParts`, `getStructuralTypePartBits`,
+   `isFunctionDef`, `isPossiblyFunctionType`, `isFunctionType`, `getReturnType`,
+   `splitTokenList`, `_IntToHex`, `IEEEUnHex`, `Compiletime.isPointerType`,
+   `Compiletime.isStructType`, `Compiletime.INT_TYPES`, `isType`.
+- The example `shell.html` and `shell_minimal.html` templaces no longer override
+  `printErr` on the module object.  This means error message from emscripten and
+  stderr from the application will go to the default location of `console.warn`
+  rather than `console.error`.  This only effects application that use the
+  example shell html files.
+- The version of musl libc used by emscripten was upgraded from v1.1.15 to
+  v1.2.2.  There could be some minor size regressions (or gains) due to changes
+  in upstream musl code but we don&#39;t expect anything major.  Since this is a
+  fairly substantial change (at least internally) we are bumping the major
+  version of Emscripten to 3. (#13006)
+- Added support for specifying the text encoding to be used in response filenames
+  by passing the encoding as a file suffix (e.g. &quot;a.rsp.utf-8&quot; or &quot;a.rsp.cp1252&quot;).
+  If not specified, the encoding is autodetected as either UTF-8 or Python
+  default &quot;locale.getpreferredencoding()&quot;. (#15406, #15292, #15426)
+
+2.0.34 - 11/04/2021
+-------------------
+- Symbols marked as visibility hidden are no longer exported from C/C++
+  code when building with `SIDE_MODULE`, `MAIN_MODULE` or `LINKABLE`.  If you
+  need to export a hidden symbol you can still do so by adding it to
+  EXPORTED_FUNCTIONS.
+
+2.0.33 - 11/01/2021
+-------------------
+- Bug fixes
 
 2.0.32 - 10/19/2021
 -------------------
@@ -1120,6 +1158,9 @@ See docs/process.md for more on how version tagging works.
 - Add JavaScript API `Emval.{toHandle, toValue}` as well as a C++ method
   `val::as_handle()` to allow passing values between the `val` class and
   `EM_JS`/ `EM_ASM` JavaScript snippets. (#15279)
+- Added SAFE_HEAP=2 option which tests safe heap behavior for wasm-only builds
+  (allowing unaligned memory accesses, which would not work in Wasm2JS but in
+   wasm would be correct but potentially slow).
 
 2.0.31 - 10/01/2021
 -------------------
@@ -5913,7 +5954,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.33-git (dev)',
+            VERSION:'3.0.1-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

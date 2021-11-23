@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 2.0.33-git (dev) documentation</title>
+  <title>FAQ &mdash; Emscripten 3.0.1-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.0.1-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -1371,37 +1371,25 @@ then compile the object to JavaScript, you need that option on the second comman
 </section>
 <section id="why-do-i-get-a-nameerror-or-a-problem-occurred-in-evaluating-content-after-a-s-when-i-use-a-s-option">
 <h2>Why do I get a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">problem</span> <span class="pre">occurred</span> <span class="pre">in</span> <span class="pre">evaluating</span> <span class="pre">content</span> <span class="pre">after</span> <span class="pre">a</span> <span class="pre">&quot;-s&quot;</span></code> when I use a <code class="docutils literal notranslate"><span class="pre">-s</span></code> option?<a class="headerlink" href="#why-do-i-get-a-nameerror-or-a-problem-occurred-in-evaluating-content-after-a-s-when-i-use-a-s-option" title="Permalink to this headline">¶</a></h2>
-<p>That may occur when running something like</p>
+<p>That may occur when using the old list syntax for <code class="docutils literal notranslate"><span class="pre">-s</span></code> settings:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this fails on most Linuxes</span>
-<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;addOnPostRun&#39;</span><span class="p">]</span>
+<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span>
 
 <span class="c1"># this fails on macOS</span>
-<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="s2">&quot;[&#39;addOnPostRun&#39;]&quot;</span>
+<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="s2">&quot;[&#39;foo&#39;]&quot;</span>
 </pre></div>
 </div>
-<p>You may need to quote things like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this works in the shell on most Linuxes and on macOS</span>
-<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="s2">&quot;EXPORTED_RUNTIME_METHODS=[&#39;addOnPostRun&#39;]&quot;</span>
-
-<span class="c1"># or you may need something like this in a Makefile</span>
-<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span>\<span class="s2">&quot;[&#39;addOnPostRun&#39;]</span><span class="se">\&quot;</span>
+<p>A new, simpler way to specify these lists is to simply use
+comma separated lists:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="n">foo</span><span class="p">,</span><span class="n">bar</span>
 </pre></div>
 </div>
-<p>The proper syntax depends on the OS and shell you are in, and if you are writing
-in a Makefile, etc. Things like spaces may also matter in some shells, for
-example you may need to avoid empty spaces between list items:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this works in the shell on most Linuxes and on macOS</span>
-<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="s2">&quot;EXPORTED_RUNTIME_METHODS=[&#39;foo&#39;,&#39;bar&#39;]&quot;</span>
+<p>It is also possible to use a <strong>response file</strong>, that is,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="nd">@extra</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p>(note there is no space after the <code class="docutils literal notranslate"><span class="pre">,</span></code>).</p>
-<p>For simplicity, you may want to use a <strong>response file</strong>, that is,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># this works in the shell on most Linuxes and on macOS</span>
-<span class="n">emcc</span> <span class="n">a</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">s</span> <span class="s2">&quot;EXPORTED_RUNTIME_METHODS=@extra.txt&quot;</span>
-</pre></div>
-</div>
-<p>and then <code class="docutils literal notranslate"><span class="pre">extra.txt</span></code> can be a plain file that contains <code class="docutils literal notranslate"><span class="pre">['foo','bar']</span></code>. This
-avoids any issues with the shell environment parsing the string.</p>
+<p>with <code class="docutils literal notranslate"><span class="pre">extra.txt</span></code> being a plain text file that contains <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">bar</span></code> on
+seperate lines.</p>
 </section>
 <section id="how-do-i-specify-s-options-in-a-cmake-project">
 <h2>How do I specify <code class="docutils literal notranslate"><span class="pre">-s</span></code> options in a CMake project?<a class="headerlink" href="#how-do-i-specify-s-options-in-a-cmake-project" title="Permalink to this headline">¶</a></h2>
@@ -1416,7 +1404,7 @@ notation, that is, without a space:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># same as before but no space after -s</span>
 <span class="nb">set</span><span class="p">(</span><span class="n">CMAKE_CXX_FLAGS</span> <span class="s2">&quot;$</span><span class="si">{CMAKE_CXX_FLAGS}</span><span class="s2"> -sUSE_SDL=2&quot;</span><span class="p">)</span>
 <span class="c1"># example of target_link_options with a list of names</span>
-<span class="n">target_link_options</span><span class="p">(</span><span class="n">example</span> <span class="n">PRIVATE</span> <span class="s2">&quot;-sEXPORTED_FUNCTIONS=[_main]&quot;</span><span class="p">)</span>
+<span class="n">target_link_options</span><span class="p">(</span><span class="n">example</span> <span class="n">PRIVATE</span> <span class="s2">&quot;-sEXPORTED_FUNCTIONS=_main&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note also that <code class="docutils literal notranslate"><span class="pre">_main</span></code> does not need to be quoted, even though it’s a string
@@ -1589,7 +1577,7 @@ you can use <code class="docutils literal notranslate"><span class="pre">PYTHON_
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.33-git (dev)',
+            VERSION:'3.0.1-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

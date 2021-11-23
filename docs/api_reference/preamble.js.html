@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 2.0.33-git (dev) documentation</title>
+  <title>preamble.js &mdash; Emscripten 3.0.1-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 2.0.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.0.1-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -1055,7 +1055,7 @@
 <p>The JavaScript APIs in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/preamble.js">preamble.js</a> provide programmatic access for interacting with the compiled C code, including: calling compiled C functions, accessing memory, converting pointers to JavaScript <code class="docutils literal notranslate"><span class="pre">Strings</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings</span></code> to pointers (with different encodings/formats), and other convenience functions.</p>
 <p>We call this “<code class="docutils literal notranslate"><span class="pre">preamble.js</span></code>” because Emscripten’s output JS, at a high level, contains the preamble (from <code class="docutils literal notranslate"><span class="pre">src/preamble.js</span></code>), then the compiled code, then the postamble. (In slightly more detail, the preamble contains utility functions and setup, while the postamble connects things and handles running the application.)</p>
 <p>The preamble code is included in the output JS, which is then optimized all together by the compiler, together with any <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> and <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> files you added and code from any JavaScript libraries (<code class="docutils literal notranslate"><span class="pre">--js-library</span></code>). That means that you can call methods from the preamble directly, and the compiler will see that you need them, and not remove them as being unused.</p>
-<p>If you want to call preamble methods from somewhere the compiler can’t see, like another script tag on the HTML, you need to <strong>export</strong> them. To do so, add them to <code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code> (for example, <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">'EXPORTED_RUNTIME_METHODS=[&quot;ccall&quot;,</span> <span class="pre">&quot;cwrap&quot;]'</span></code> will export <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code>). Once exported, you can access them on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object (as <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code>, for example).</p>
+<p>If you want to call preamble methods from somewhere the compiler can’t see, like another script tag on the HTML, you need to <strong>export</strong> them. To do so, add them to <code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code> (for example, <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXPORTED_RUNTIME_METHODS=ccall,cwrap</span></code> will export <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code>). Once exported, you can access them on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object (as <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code>, for example).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you try to use <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code> or another runtime method without exporting it, you will get an error. In a build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ASSERTIONS=1</span></code>, the compiler emits code to show you a useful error message, which will explain that you need to export it. In general, if you see something odd, it’s useful to build with assertions.</p>
@@ -1094,7 +1094,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">ccall</span></code> uses the C stack for temporary values. If you pass a string then it is only “alive” until the call is complete. If the code being called saves the pointer to be used later, it may point to invalid data.</p></li>
 <li><p>If you need a string to live forever, you can create it, for example, using <code class="docutils literal notranslate"><span class="pre">_malloc</span></code> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><code class="xref js js-func docutils literal notranslate"><span class="pre">stringToUTF8()</span></code></a>. However, you must later delete it manually!</p></li>
 <li><p>LLVM optimizations can inline and remove functions, after which you will not be able to call them. Similarly, function names minified by the <em>Closure Compiler</em> are inaccessible. In either case, the solution is to add the functions to the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list when you invoke <em>emcc</em>:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-s EXPORTED_FUNCTIONS=&quot;[&#39;_main&#39;, &#39;_myfunc&#39;]&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-s EXPORTED_FUNCTIONS=_main,_myfunc&quot;
 </pre></div>
 </div>
 <p>(Note that we also export <code class="docutils literal notranslate"><span class="pre">main</span></code> - if we didn’t, the compiler would assume we don’t need it.) Exported functions can then be called as normal:</p>
@@ -1160,7 +1160,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">cwrap</span></code> uses the C stack for temporary values. If you pass a string then it is only “alive” until the call is complete. If the code being called saves the pointer to be used later, it may point to invalid data. If you need a string to live forever, you can create it, for example, using <code class="docutils literal notranslate"><span class="pre">_malloc</span></code> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><code class="xref js js-func docutils literal notranslate"><span class="pre">stringToUTF8()</span></code></a>. However, you must later delete it manually!</p></li>
 <li><p>LLVM optimizations can inline and remove functions, after which you will not be able to “wrap” them. Similarly, function names minified by the <em>Closure Compiler</em> are inaccessible. In either case, the solution is to add the functions to the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list when you invoke <em>emcc</em> :</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cwrap</span></code> does not actually call compiled code (only calling the wrapper it returns does that). That means that it is safe to call <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> early, before the runtime is fully initialized (but calling the returned wrapped function must wait for the runtime, of course, like calling compiled code in general).</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-s EXPORTED_FUNCTIONS=&quot;[&#39;_main&#39;, &#39;_myfunc&#39;]&quot;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-s EXPORTED_FUNCTIONS=_main,_myfunc
 </pre></div>
 </div>
 <p>Exported functions can be called as normal:</p>
@@ -1672,7 +1672,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.33-git (dev)',
+            VERSION:'3.0.1-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
