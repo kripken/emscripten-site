@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 3.0.1-git (dev) documentation</title>
+  <title>Building Projects &mdash; Emscripten 3.1.1-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.0.1-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.1-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -708,6 +708,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#new-file-system-wasmfs">New File System: WasmFS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#including-file-system-support">Including File System Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
@@ -1227,7 +1228,7 @@ emcc -g project.o -o project.js
 <h2>Using libraries<a class="headerlink" href="#using-libraries" title="Permalink to this headline">¶</a></h2>
 <p>Built-in support is available for a number of standard libraries: <em>libc</em>, <em>libc++</em> and <em>SDL</em>. These will automatically be linked when you compile code that uses them (you do not even need to add <code class="docutils literal notranslate"><span class="pre">-lSDL</span></code>, but see below for more SDL-specific details).</p>
 <p>If your project uses other libraries, for example
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/zlib">zlib</a>
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/zlib">zlib</a>
 or <em>glib</em>, you will need to build and link them. The normal approach is to build
 the libraries (to object files, or <code class="docutils literal notranslate"><span class="pre">.a</span></code> archives of them) and then link those
 with your main program to emit JavaScript+WebAssembly.</p>
@@ -1296,18 +1297,18 @@ work.</p>
 </section>
 <section id="faux-dynamic-linking">
 <h3>Faux Dynamic Linking<a class="headerlink" href="#faux-dynamic-linking" title="Permalink to this headline">¶</a></h3>
-<p>Emscripten’s goal is to generate the fastest and smallest possible code, and for
-that reason it focuses on generating a single JavaScript file for an entire
-project. For that reason, dynamic linking should be avoided when possible.</p>
-<p>For this reason, by default, when the <cite>-shared</cite> flag use used to build a shared
-library, Emscripten will produce an <code class="docutils literal notranslate"><span class="pre">.so</span></code> library that is actually just a
-regular <code class="docutils literal notranslate"><span class="pre">.o</span></code> object file (Under the hood it uses <cite>ld -r</cite> to combine objects
-into a single larger object).  When these faux “shared libraries” are linked
-into your application they are effectively linked as static libraries.  When
-building these shared libraries <em>Emcc</em> will ignore other shared libraries on the
-command line.  This is to ensure that the same dynamic library is not linked
-multiple times in intermediate build stages, which would result in duplicate
-symbol errors.</p>
+<p>Emscripten’s goal is to generate the fastest and smallest possible code. For
+that reason it focuses on compiling an entire project into a single Wasm file,
+avoiding dynamic linking when possible.</p>
+<p>By default, when the <cite>-shared</cite> flag is used to build a shared library,
+Emscripten will produce an <code class="docutils literal notranslate"><span class="pre">.so</span></code> library that is actually just a regular
+<code class="docutils literal notranslate"><span class="pre">.o</span></code> object file (Under the hood it uses <cite>ld -r</cite> to combine objects into a
+single larger object).  When these faux “shared libraries” are linked into your
+application they are effectively linked as static libraries.  When building
+these shared libraries <em>Emcc</em> will ignore other shared libraries on the command
+line.  This is to ensure that the same dynamic library is not linked multiple
+times in intermediate build stages, which would result in duplicate symbol
+errors.</p>
 <p>See <a class="reference internal" href="Dynamic-Linking.html#dynamic-linking"><span class="std std-ref">experimental support</span></a> for how to build true dynamic
 libraries, which can be linked together either at load time, or at runtime (via
 dlopen).</p>
@@ -1396,8 +1397,8 @@ set via an environment variable.  e.g:</p>
 </section>
 <section id="examples-test-code">
 <h2>Examples / test code<a class="headerlink" href="#examples-test-code" title="Permalink to this headline">¶</a></h2>
-<p>The Emscripten test suite (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/runner.py">tests/runner.py</a>) contains a number of good examples — large C/C++ projects that are built using their normal build systems as described above: <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/freetype">freetype</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/openjpeg">openjpeg</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/zlib">zlib</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/bullet">bullet</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/poppler">poppler</a>.</p>
-<p>It is also worth looking at the build scripts in the <a class="reference external" href="https://github.com/kripken/ammo.js/blob/master/make.py">ammo.js</a> project.</p>
+<p>The Emscripten test suite (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/runner.py">tests/runner.py</a>) contains a number of good examples — large C/C++ projects that are built using their normal build systems as described above: <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/freetype">freetype</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/openjpeg">openjpeg</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/zlib">zlib</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/bullet">bullet</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/poppler">poppler</a>.</p>
+<p>It is also worth looking at the build scripts in the <a class="reference external" href="https://github.com/kripken/ammo.js/blob/main/CMakeLists.txt">ammo.js</a> project.</p>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
@@ -1535,7 +1536,7 @@ but a build system might have it hardcoded, or require you to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.0.1-git (dev)',
+            VERSION:'3.1.1-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

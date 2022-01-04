@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 3.0.1-git (dev) documentation</title>
+  <title>Release Notes &mdash; Emscripten 3.1.1-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.0.1-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.1-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -192,7 +192,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-issues">Build system issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#faux-dynamic-linking">Faux Dynamic Linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
 </ul>
@@ -220,8 +220,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Dynamic-Linking.html#background">Background</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Dynamic-Linking.html#overview-of-dynamic-linking">Overview of Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Dynamic-Linking.html#practical-details">Practical Details</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Dynamic-Linking.html#general-dynamic-linking">General Dynamic Linking</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Dynamic-Linking.html#dlopen-dynamic-linking"><code class="docutils literal notranslate"><span class="pre">dlopen()</span></code> Dynamic Linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Dynamic-Linking.html#load-time-dynamic-linking">Load-time Dynamic Linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Dynamic-Linking.html#runtime-dynamic-linking-with-dlopen">Runtime Dynamic Linking with <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Dynamic-Linking.html#system-libraries">System Libraries</a></li>
@@ -486,7 +486,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-issues">Build system issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#build-system-self-execution">Build system self-execution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#dynamic-linking">Dynamic linking</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#faux-dynamic-linking">Faux Dynamic Linking</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#configure-may-run-checks-that-appear-to-fail">Configure may run checks that appear to fail</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../compiling/Building-Projects.html#archive-a-files">Archive (.a) files</a></li>
 </ul>
@@ -708,6 +708,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#new-file-system-wasmfs">New File System: WasmFS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#including-file-system-support">Including File System Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#persistent-data">Persistent data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
@@ -1079,7 +1080,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <section id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 3.0.1-git (dev) (Nov 22, 2021) is listed below.</p>
+<p>The ChangeLog for Emscripten 3.1.1-git (dev) (Jan 04, 2022) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that version numbers do not necessarily reflect the amount of changes
@@ -1100,8 +1101,27 @@ to browse the changes between the tags.
 
 See docs/process.md for more on how version tagging works.
 
-3.0.1
+3.1.1
 -----
+
+3.1.0 - 12/22/2021
+------------------
+- Emscripten in starting to use ES6 features in its core libraries (at last!).
+  For most users targeting the default set of browsers this is a code size win.
+  For projects targeting older browsers (e.g. `-sMIN_CHROME_VERSION=10`),
+  emscripten will now run closure compiler in `WHITESPACE_ONLY` mode in order to
+  traspile any ES6 down to ES5.  When this automatic transpilation is performed
+  we generate a warning which can be disabled (using `-Wno-transpile`) or by
+  explicitly opting in-to or out-of closure using `--closure=1` or
+  `--closure=0`. (#15763).
+
+3.0.1 - 12/17/2021
+------------------
+- Deprecate `EMMAKEN_CFLAGS` is favor of `EMCC_CFLAGS`.
+- Fixed an issue where user provided --js-library directives would not be
+  processed as the last item after all system provided JS libraries have been
+  added to the build. This fix enables overriding WebGL 2 symbols from user JS
+  libraries.
 
 3.0.0 - 11/22/2021
 ------------------
@@ -1486,6 +1506,9 @@ See docs/process.md for more on how version tagging works.
 - Several pthreads exit-related fixes (#12985) (#10524).
 - Fix IDBFS syncing with existing directories (#13574).
 - Add libmodplug port and allow mod files to be played in SDL2 (#13478).
+- `emscripten_GetProcAddress` is now part of `libGL`. Normally the change is not
+  noticeable, unless you build in `STRICT` mode and do not already have `-lGL`
+  to link in that library. If not, add `-lGL`. (#13524)
 
 2.0.14: 02/14/2021
 ------------------
@@ -5972,7 +5995,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.0.1-git (dev)',
+            VERSION:'3.1.1-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
