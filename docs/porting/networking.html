@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Networking &mdash; Emscripten 3.1.1-git (dev) documentation</title>
+  <title>Networking &mdash; Emscripten 3.1.3-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.1-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.3-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Porting SIMD code targeting WebAssembly" href="simd.html"/>
         <link rel="prev" title="Pthreads support" href="pthreads.html"/> 
@@ -859,6 +859,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#lto">LTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
 </ul>
@@ -1071,42 +1072,90 @@
             
   <section id="networking">
 <h1>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten compiled applications have a number of ways to connect with online servers. Check the subtopics here to learn about the different strategies that are available.</p>
-<p>If you are familiar with networking concepts provided by different web APIs, such as XmlHttpRequest, Fetch, WebSockets and WebRTC, you can quickly get started by leveraging what you already know: by calling out from C/C++ code to JavaScript (see the “Connecting C++ and JavaScript” section), you can establish networked connections by writing regular JavaScript. For C/C++ developers, Emscripten provides a few approaches, described here.</p>
+<p>Emscripten compiled applications have a number of ways to connect with online
+servers. Check the subtopics here to learn about the different strategies that
+are available.</p>
+<p>If you are familiar with networking concepts provided by different web APIs,
+such as XmlHttpRequest, Fetch, WebSockets and WebRTC, you can quickly get
+started by leveraging what you already know: by calling out from C/C++ code to
+JavaScript (see the “Connecting C++ and JavaScript” section), you can establish
+networked connections by writing regular JavaScript. For C/C++ developers,
+Emscripten provides a few approaches, described here.</p>
 <section id="emscripten-websockets-api">
 <h2>Emscripten WebSockets API<a class="headerlink" href="#emscripten-websockets-api" title="Permalink to this headline">¶</a></h2>
-<p>WebSockets API provides connection-oriented message-framed bidirectional asynchronous networking communication to the browser. It is the closest to TCP on the web that web sites can access, direct access to TCP sockets is not possible from web browsers.</p>
-<p>Emscripten provides a passthrough API for accessing the WebSockets API from C/C++ code. This is useful for developers who would prefer not to write any JavaScript code, or deal with the C/C++ and JavaScript language interop. See the system include file &lt;emscripten/websocket.h&gt; for details. One benefit that the Emscripten WebSockets API provides over manual WebSockets access in JavaScript is the ability to share access to a WebSocket handle across multiple threads, something that can be time consuming to develop from scratch.</p>
-<p>To target Emscripten WebSockets API, you must link it in with a “-lwebsocket.js” linker directive.</p>
+<p>WebSockets API provides connection-oriented message-framed bidirectional
+asynchronous networking communication to the browser. It is the closest to TCP
+on the web that web sites can access, direct access to TCP sockets is not
+possible from web browsers.</p>
+<p>Emscripten provides a passthrough API for accessing the WebSockets API from
+C/C++ code. This is useful for developers who would prefer not to write any
+JavaScript code, or deal with the C/C++ and JavaScript language interop. See the
+system include file <code class="docutils literal notranslate"><span class="pre">&lt;emscripten/websocket.h&gt;</span></code> for details. One benefit that
+the Emscripten WebSockets API provides over manual WebSockets access in
+JavaScript is the ability to share access to a WebSocket handle across multiple
+threads, something that can be time consuming to develop from scratch.</p>
+<p>To target Emscripten WebSockets API, you must link it in with a
+<code class="docutils literal notranslate"><span class="pre">-lwebsocket.js</span></code> linker directive.</p>
 </section>
 <section id="emulated-posix-tcp-sockets-over-websockets">
 <h2>Emulated POSIX TCP Sockets over WebSockets<a class="headerlink" href="#emulated-posix-tcp-sockets-over-websockets" title="Permalink to this headline">¶</a></h2>
-<p>If you have existing TCP networking code written in C/C++ that utilizes the Posix Sockets API, by default Emscripten attempts to emulate such connections to take place over the WebSocket protocol instead. For this to work, you will need to use something like WebSockify on the server side to enable the TCP server stack to receive incoming WebSocket connections. This emulation is not very complete at the moment, it is likely that you will run into problems out of the box and need to adapt the code to work within the limitations that this emulation provides.</p>
-<p>This is the default build mode for Emscripten. Use the linker flag <cite>-s WEBSOCKET_URL</cite> or <cite>Module[‘websocket’][‘url’]</cite> to specify the WebSocket URL to connect to, and the linker flag <cite>-s WEBSOCKET_SUBPROTOCOL</cite> or <cite>Module[‘websocket’][‘subprotocol’]</cite> to control the connection type (‘binary’ or ‘text’).</p>
+<p>If you have existing TCP networking code written in C/C++ that utilizes the
+Posix Sockets API, by default Emscripten attempts to emulate such connections to
+take place over the WebSocket protocol instead. For this to work, you will need
+to use something like WebSockify on the server side to enable the TCP server
+stack to receive incoming WebSocket connections. This emulation is not very
+complete at the moment, it is likely that you will run into problems out of the
+box and need to adapt the code to work within the limitations that this
+emulation provides.</p>
+<p>This is the default build mode for Emscripten. Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span>
+<span class="pre">WEBSOCKET_URL</span></code> or <code class="docutils literal notranslate"><span class="pre">Module['websocket']['url']</span></code> to specify the WebSocket URL
+to connect to, and the linker flag <code class="docutils literal notranslate"><span class="pre">-sWEBSOCKET_SUBPROTOCOL</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Module['websocket']['subprotocol']</span></code> to control the connection type
+(<code class="docutils literal notranslate"><span class="pre">'binary'</span></code> or <code class="docutils literal notranslate"><span class="pre">'text'</span></code>).</p>
 </section>
 <section id="full-posix-sockets-over-websocket-proxy-server">
 <h2>Full POSIX Sockets over WebSocket Proxy Server<a class="headerlink" href="#full-posix-sockets-over-websocket-proxy-server" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten provides a native POSIX Sockets proxy server program, located in directory tools/websocket_to_posix_proxy/, that allows full POSIX Sockets API access from a web browser. This support works by proxying all POSIX Sockets API calls from the browser to the Emscripten POSIX Sockets proxy server (via transparent use of WebSockets API), and the proxy server then performs the native TCP/UDP calls on behalf of the page. This allows a web browser page to run full TCP &amp; UDP connections, act as a server to accept incoming connections, and perform host name lookups and reverse lookups. Because all API calls are individually proxied, this support can be slow. This support is mostly useful for developing testing infrastructure and debugging.</p>
+<p>Emscripten provides a native POSIX Sockets proxy server program, located in
+directory <code class="docutils literal notranslate"><span class="pre">tools/websocket_to_posix_proxy/</span></code>, that allows full POSIX Sockets
+API access from a web browser. This support works by proxying all POSIX Sockets
+API calls from the browser to the Emscripten POSIX Sockets proxy server (via
+transparent use of the WebSockets API), and the proxy server then performs the
+native TCP/UDP calls on behalf of the page. This allows a web browser page to
+run full TCP &amp; UDP connections, act as a server to accept incoming connections,
+and perform host name lookups and reverse lookups. Because all API calls are
+individually proxied, this support can be slow. This support is mostly useful
+for developing testing infrastructure and debugging.</p>
 <dl class="simple">
 <dt>The following POSIX sockets functions are proxied in this manner:</dt><dd><ul class="simple">
-<li><p><cite>socket()</cite>, <cite>socketpair()</cite>, <cite>shutdown()</cite>, <cite>bind()</cite>, <cite>connect()</cite>, <cite>listen()</cite>, <cite>accept()</cite>, <cite>getsockname()</cite>, <cite>getpeername()</cite>, <cite>send()</cite>, <cite>recv()</cite>, <cite>sendto()</cite>, <cite>recvfrom()</cite>, <cite>sendmsg()</cite>, <cite>recvmsg()</cite>, <cite>getsockopt()</cite>, <cite>setsockopt()</cite>, <cite>getaddrinfo(), `getnameinfo()</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">socket()</span></code>, <code class="docutils literal notranslate"><span class="pre">socketpair()</span></code>, <code class="docutils literal notranslate"><span class="pre">shutdown()</span></code>, <code class="docutils literal notranslate"><span class="pre">bind()</span></code>, <code class="docutils literal notranslate"><span class="pre">connect()</span></code>, <code class="docutils literal notranslate"><span class="pre">listen()</span></code>, <code class="docutils literal notranslate"><span class="pre">accept()</span></code>, <code class="docutils literal notranslate"><span class="pre">getsockname()</span></code>, <code class="docutils literal notranslate"><span class="pre">getpeername()</span></code>, <code class="docutils literal notranslate"><span class="pre">send()</span></code>, <code class="docutils literal notranslate"><span class="pre">recv()</span></code>, <code class="docutils literal notranslate"><span class="pre">sendto()</span></code>, <code class="docutils literal notranslate"><span class="pre">recvfrom()</span></code>, <code class="docutils literal notranslate"><span class="pre">sendmsg()</span></code>, <code class="docutils literal notranslate"><span class="pre">recvmsg()</span></code>, <code class="docutils literal notranslate"><span class="pre">getsockopt()</span></code>, <code class="docutils literal notranslate"><span class="pre">setsockopt()</span></code>, <code class="docutils literal notranslate"><span class="pre">getaddrinfo()</span></code>, <code class="docutils literal notranslate"><span class="pre">getnameinfo()</span></code>.</p></li>
 </ul>
 </dd>
 <dt>The following POSIX sockets functions are currently not proxied (and will not work):</dt><dd><ul class="simple">
-<li><p><cite>poll()</cite>, <cite>close()</cite> (use <cite>shutdown()</cite> instead), <cite>select()</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">poll()</span></code>, <code class="docutils literal notranslate"><span class="pre">close()</span></code> (use <code class="docutils literal notranslate"><span class="pre">shutdown()</span></code> instead), <code class="docutils literal notranslate"><span class="pre">select()</span></code></p></li>
 </ul>
 </dd>
 </dl>
-<p>To use POSIX sockets proxying, link the application with flags “-lwebsocket.js -s PROXY_POSIX_SOCKETS=1 -s USE_PTHREADS=1 -s PROXY_TO_PTHREAD=1”. That is, POSIX sockets proxying builds on top of the Emscripten WebSockets library, and requires multithreading and proxying the application main() to a pthread.</p>
-<p>For an example of how the POSIX Sockets proxy server works in an Emscripten client program, see the file tests/websocket/tcp_echo_client.cpp.</p>
+<p>To use POSIX sockets proxying, link the application with flags <code class="docutils literal notranslate"><span class="pre">-lwebsocket.js</span>
+<span class="pre">-sPROXY_POSIX_SOCKETS=1</span> <span class="pre">-sUSE_PTHREADS=1</span> <span class="pre">-sPROXY_TO_PTHREAD=1</span></code>. That is,
+POSIX sockets proxying builds on top of the Emscripten WebSockets library, and
+requires multithreading and proxying the application <code class="docutils literal notranslate"><span class="pre">main()</span></code> to a pthread.</p>
+<p>For an example of how the POSIX Sockets proxy server works in an Emscripten
+client program, see the file <code class="docutils literal notranslate"><span class="pre">tests/websocket/tcp_echo_client.cpp</span></code>.</p>
 </section>
 <section id="xmlhttprequests-and-fetch-api">
 <h2>XmlHttpRequests and Fetch API<a class="headerlink" href="#xmlhttprequests-and-fetch-api" title="Permalink to this headline">¶</a></h2>
-<p>For HTTP transfers, one can use the browser built-in XmlHttpRequest (XHR) API and the newer Fetch API. These can be accessed directly from JavaScript. Emscripten also provides passthrough APIs to perform HTTP requests. For more information, see the emscripten_async_wget*() C API and the Emscripten Fetch API.</p>
+<p>For HTTP transfers, one can use the browser built-in XmlHttpRequest (XHR) API
+and the newer Fetch API. These can be accessed directly from JavaScript.
+Emscripten also provides passthrough APIs to perform HTTP requests. For more
+information, see the <code class="docutils literal notranslate"><span class="pre">emscripten_async_wget*()</span></code> C API and the Emscripten Fetch
+API.</p>
 </section>
 <section id="webrtc-and-udp">
 <h2>WebRTC and UDP<a class="headerlink" href="#webrtc-and-udp" title="Permalink to this headline">¶</a></h2>
-<p>Direct UDP communication is not available in browsers, but as a close alternative, the WebRTC specification provides a mechanism to perform UDP-like communication with WebRTC Data Channels. Currently Emscripten does not provide a C/C++ API for interacting with WebRTC.</p>
+<p>Direct UDP communication is not available in browsers, but as a close
+alternative, the WebRTC specification provides a mechanism to perform UDP-like
+communication with WebRTC Data Channels. Currently Emscripten does not provide a
+C/C++ API for interacting with WebRTC.</p>
 </section>
 </section>
 
@@ -1221,7 +1270,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.1-git (dev)',
+            VERSION:'3.1.3-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

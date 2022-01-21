@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; Emscripten 3.1.1-git (dev) documentation</title>
+  <title>Release Notes &mdash; Emscripten 3.1.3-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.1-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.3-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Introducing Emscripten" href="index.html"/>
         <link rel="next" title="Talks and Publications" href="Talks-and-Publications.html"/>
         <link rel="prev" title="Open Source License" href="emscripten_license.html"/> 
@@ -859,6 +859,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#lto">LTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
 </ul>
@@ -1080,7 +1081,7 @@ links to a detailed diff report, which lists all the incremental changes since
 the previous release.</p>
 <section id="changelog">
 <span id="id2"></span><h2>ChangeLog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
-<p>The ChangeLog for Emscripten 3.1.1-git (dev) (Jan 04, 2022) is listed below.</p>
+<p>The ChangeLog for Emscripten 3.1.3-git (dev) (Jan 21, 2022) is listed below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This document describes changes between tagged Emscripten SDK versions.
 
 Note that version numbers do not necessarily reflect the amount of changes
@@ -1101,8 +1102,36 @@ to browse the changes between the tags.
 
 See docs/process.md for more on how version tagging works.
 
-3.1.1
+3.1.3
 -----
+
+3.1.2 - 20/01/2022
+------------------
+- A new setting, `POLYFILL`, was added which is on by default but can be disabled
+  (via `-sNO_POLYFILL`) to prevent emscripten from outputing needed polyfills.
+  For default browser targets, no polyfills are needed so this option only has
+  meaning when targeting older browsers.
+- `EVAL_CTORS` has been rewritten and improved. The main differences from before
+  are that it is much more capable (it can now eval parts of functions and not
+  just all or nothing, and it can eval more wasm constructs like globals). It is
+  no longer run by default, so to use it you should build with `-s EVAL_CTORS`.
+  See `settings.js` for more details. (#16011)
+- `wasmX` test suites that are defined in `test_core.py` have been renamed to
+  `coreX` to better reflect where they are defined.  The old suite names such
+  as `wasm2` will continue to work for now as aliases.
+
+3.1.1 - 08/01/2022
+------------------
+- Happy new year!
+- Updated SDL 2 port to upstream version 2.0.18 (from a patched 2.0.10). This
+  includes all downstream patches and many upstream changes.
+- libc++ library updated to llvm-13. (#15901)
+- libc++-abi library updated to llvm-13. (#15904)
+- compiler-rt library updated to llvm-13. (#15906)
+- Added new internal/debugging related environment variable
+  EM_FORCE_RESPONSE_FILES that can be set to 0 to force disable the use of
+  response files, and to 1 to force enable response files. If not set,
+  response files will be used if command lines are long (&gt; 8192 chars). (#15973)
 
 3.1.0 - 12/22/2021
 ------------------
@@ -5995,7 +6024,7 @@ v1.0.1: 11/11/2012
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.1-git (dev)',
+            VERSION:'3.1.3-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

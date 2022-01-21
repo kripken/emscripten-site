@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 3.1.1-git (dev) documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 3.1.3-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.1-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.3-git (dev) documentation" href="../../index.html"/>
         <link rel="next" title="Optimizing WebGL" href="Optimizing-WebGL.html"/>
         <link rel="prev" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="../tools_reference/emcmdprompt.html"/> 
 
@@ -858,6 +858,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#lto">LTO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#running-by-itself">Running by itself</a></li>
 </ul>
@@ -1163,6 +1164,51 @@ linker can handle a mix wasm object files and LTO object files.  Passing
 <p>Thus, to allow maximal LTO opportunities with the LLVM wasm backend, build all
 source files with <code class="docutils literal notranslate"><span class="pre">-flto</span></code> and also link with <code class="docutils literal notranslate"><span class="pre">flto</span></code>.</p>
 </section>
+<section id="eval-ctors">
+<h2>EVAL_CTORS<a class="headerlink" href="#eval-ctors" title="Permalink to this headline">¶</a></h2>
+<p>Building with <code class="docutils literal notranslate"><span class="pre">-sEVAL_CTORS</span></code> will evaluate as much code as possible at
+compile time. That includes both the “global ctor” functions (functions LLVM
+emits that run before <code class="docutils literal notranslate"><span class="pre">main()</span></code>) as well as <code class="docutils literal notranslate"><span class="pre">main()</span></code> itself. As much as can
+be evaluated will be, and the resulting state is then “snapshotted” into the
+wasm. Then when the program is run it will begin from that state, and not need
+to execute that code, which can save time.</p>
+<p>This optimization can either reduce or increase code size. If a small amount
+of code generates many changes in memory, for example, then overall size may
+increase. It is best to build with this flag and then measure code and startup
+speed and see if the tradeoff is worthwhile in your program.</p>
+<p>You can make an effort to write EVAL_CTORS-friendly code, by deferring things
+that cannot be evalled as much as possible. For example, calls to imports stop
+this optimization, and so if you have a game engine that creates a GL context
+and then does some pure computation to set up unrelated data structures in
+memory, then you could reverse that order. Then the pure computation could run
+first, and be evalled away, and the GL context creation call to an import would
+not prevent that. Other things you can do are to avoid using <code class="docutils literal notranslate"><span class="pre">argc/argv</span></code>, to
+avoid using <code class="docutils literal notranslate"><span class="pre">getenv()</span></code>, and so forth.</p>
+<p>Logging is shown when using this option so that you can see whether things can
+be improved. Here is an example of output from <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-sEVAL_CTORS</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trying</span> <span class="n">to</span> <span class="nb">eval</span> <span class="n">__wasm_call_ctors</span>
+  <span class="o">...</span><span class="n">partial</span> <span class="n">evalling</span> <span class="n">successful</span><span class="p">,</span> <span class="n">but</span> <span class="n">stopping</span> <span class="n">since</span> <span class="n">could</span> <span class="ow">not</span> <span class="nb">eval</span><span class="p">:</span> <span class="n">call</span> <span class="n">import</span><span class="p">:</span> <span class="n">wasi_snapshot_preview1</span><span class="o">.</span><span class="n">environ_sizes_get</span>
+       <span class="n">recommendation</span><span class="p">:</span> <span class="n">consider</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">external</span><span class="o">-</span><span class="nb">input</span>
+  <span class="o">...</span><span class="n">stopping</span>
+</pre></div>
+</div>
+<p>The first line indicates an attempt to eval LLVM’s function that runs global
+ctors. It evalled some of the function but then it stopped on the WASI import
+<code class="docutils literal notranslate"><span class="pre">environ_sizes_get</span></code>, which means it is trying to read from the environment.
+As the output says, you can tell <code class="docutils literal notranslate"><span class="pre">EVAL_CTORS</span></code> to ignore external input, which
+will ignore such things. You can enable that with mode <code class="docutils literal notranslate"><span class="pre">2</span></code>, that is, build
+with <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-sEVAL_CTORS=2</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trying</span> <span class="n">to</span> <span class="nb">eval</span> <span class="n">__wasm_call_ctors</span>
+  <span class="o">...</span><span class="n">success</span> <span class="n">on</span> <span class="n">__wasm_call_ctors</span><span class="o">.</span>
+<span class="n">trying</span> <span class="n">to</span> <span class="nb">eval</span> <span class="n">main</span>
+  <span class="o">...</span><span class="n">stopping</span> <span class="p">(</span><span class="ow">in</span> <span class="n">block</span><span class="p">)</span> <span class="n">since</span> <span class="n">could</span> <span class="ow">not</span> <span class="nb">eval</span><span class="p">:</span> <span class="n">call</span> <span class="n">import</span><span class="p">:</span> <span class="n">wasi_snapshot_preview1</span><span class="o">.</span><span class="n">fd_write</span>
+  <span class="o">...</span><span class="n">stopping</span>
+</pre></div>
+</div>
+<p>Now it has succeeded to eval <code class="docutils literal notranslate"><span class="pre">__wasm_call_ctors</span></code> completely. It then moved on
+to <code class="docutils literal notranslate"><span class="pre">main</span></code>, where it stopped because of a call to WASI’s <code class="docutils literal notranslate"><span class="pre">fd_write</span></code>, that is,
+a call to print something.</p>
+</section>
 <section id="very-large-codebases">
 <h2>Very large codebases<a class="headerlink" href="#very-large-codebases" title="Permalink to this headline">¶</a></h2>
 <p>The previous section on reducing code size can be helpful on very large codebases. In addition, here are some other topics that might be useful.</p>
@@ -1333,7 +1379,7 @@ source files with <code class="docutils literal notranslate"><span class="pre">-
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.1-git (dev)',
+            VERSION:'3.1.3-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
