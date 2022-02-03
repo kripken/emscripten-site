@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.3-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.4-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.3-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.4-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -1125,7 +1125,7 @@ the simple C++ <code class="docutils literal notranslate"><span class="pre">lerp
 </div>
 <p>To compile the above example using <em>embind</em>, we invoke <em>emcc</em> with the
 <a class="reference internal" href="../../tools_reference/emcc.html#emcc-bind"><span class="std std-ref">bind</span></a> option:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">--</span><span class="n">bind</span> <span class="o">-</span><span class="n">o</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">js</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">cpp</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">lembind</span> <span class="o">-</span><span class="n">o</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">js</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">cpp</span>
 </pre></div>
 </div>
 <p>The resulting <strong>quick_example.js</strong> file can be loaded as a node module
@@ -1177,7 +1177,7 @@ bindings for library files the compiler must be explicitly instructed to include
 the object file.</p>
 <p>For example, to generate bindings for a hypothetical <strong>library.a</strong> compiled
 with Emscripten run <em>emcc</em> with <code class="docutils literal notranslate"><span class="pre">--whole-archive</span></code> compiler flag:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">--</span><span class="n">bind</span> <span class="o">-</span><span class="n">o</span> <span class="n">library</span><span class="o">.</span><span class="n">js</span> <span class="o">-</span><span class="n">Wl</span><span class="p">,</span><span class="o">--</span><span class="n">whole</span><span class="o">-</span><span class="n">archive</span> <span class="n">library</span><span class="o">.</span><span class="n">a</span> <span class="o">-</span><span class="n">Wl</span><span class="p">,</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">whole</span><span class="o">-</span><span class="n">archive</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">lembind</span> <span class="o">-</span><span class="n">o</span> <span class="n">library</span><span class="o">.</span><span class="n">js</span> <span class="o">-</span><span class="n">Wl</span><span class="p">,</span><span class="o">--</span><span class="n">whole</span><span class="o">-</span><span class="n">archive</span> <span class="n">library</span><span class="o">.</span><span class="n">a</span> <span class="o">-</span><span class="n">Wl</span><span class="p">,</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">whole</span><span class="o">-</span><span class="n">archive</span>
 </pre></div>
 </div>
 </section>
@@ -1253,14 +1253,14 @@ resulting JavaScript code will no longer match the symbol names used in the
 </div>
 <p>In order to prevent the closure compiler from renaming the symbols in the
 above example code it needs to be rewritten as follows:</p>
-<blockquote>
-<div><p>var instance = new Module[“MyClass”](10, “hello”);
-instance[“incrementX”]();
-instance[“x”]; // 11
-instance[“x”] = 20; // 20
-Module[“MyClass”][“getStringFromInstance”](instance); // “hello”
-instance.delete();</p>
-</div></blockquote>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Module</span><span class="p">[</span><span class="s2">&quot;MyClass&quot;</span><span class="p">](</span><span class="mf">10</span><span class="p">,</span> <span class="s2">&quot;hello&quot;</span><span class="p">);</span>
+<span class="nx">instance</span><span class="p">[</span><span class="s2">&quot;incrementX&quot;</span><span class="p">]();</span>
+<span class="nx">instance</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">];</span> <span class="c1">// 11</span>
+<span class="nx">instance</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">20</span><span class="p">;</span> <span class="c1">// 20</span>
+<span class="nx">Module</span><span class="p">[</span><span class="s2">&quot;MyClass&quot;</span><span class="p">][</span><span class="s2">&quot;getStringFromInstance&quot;</span><span class="p">](</span><span class="nx">instance</span><span class="p">);</span> <span class="c1">// &quot;hello&quot;</span>
+<span class="nx">instance</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
+</pre></div>
+</div>
 <p>Note that this is only needed for code seen by the optimizer, for example as in
 <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> or <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> as mentioned above, or on <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> or <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code>.
 For other code, that is not optimized by closure compiler, you do not need to
@@ -1855,7 +1855,7 @@ the context, and from this context we can create an <code class="docutils litera
 <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">set()</span></code> its properties (again using <code class="docutils literal notranslate"><span class="pre">val</span></code>)
 and then play the tone.</p>
 <p>The example can be compiled on the Linux/macOS terminal with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O2</span> <span class="o">-</span><span class="n">Wall</span> <span class="o">-</span><span class="n">Werror</span> <span class="o">--</span><span class="n">bind</span> <span class="o">-</span><span class="n">o</span> <span class="n">oscillator</span><span class="o">.</span><span class="n">html</span> <span class="n">oscillator</span><span class="o">.</span><span class="n">cpp</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O2</span> <span class="o">-</span><span class="n">Wall</span> <span class="o">-</span><span class="n">Werror</span> <span class="o">-</span><span class="n">lembind</span> <span class="o">-</span><span class="n">o</span> <span class="n">oscillator</span><span class="o">.</span><span class="n">html</span> <span class="n">oscillator</span><span class="o">.</span><span class="n">cpp</span>
 </pre></div>
 </div>
 </section>
@@ -2126,7 +2126,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.3-git (dev)',
+            VERSION:'3.1.4-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
