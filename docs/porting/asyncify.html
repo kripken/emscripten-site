@@ -714,6 +714,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#noderawfs">NODERAWFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/Filesystem-API.html#proxyfs">PROXYFS</a></li>
@@ -1258,12 +1259,50 @@ an async operation, which lets it not add overhead where it isn’t needed.</p>
 and want to <code class="docutils literal notranslate"><span class="pre">await</span></code> a dynamically retrieved <code class="docutils literal notranslate"><span class="pre">Promise</span></code>, you can call an
 <code class="docutils literal notranslate"><span class="pre">await()</span></code> method directly on the <code class="docutils literal notranslate"><span class="pre">val</span></code> instance:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">val</span> <span class="n">my_object</span> <span class="o">=</span> <span class="cm">/* ... */</span><span class="p">;</span>
-<span class="n">val</span> <span class="n">result</span> <span class="o">=</span> <span class="n">my_object</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="s">&quot;someAsyncMethod&quot;</span><span class="p">).</span><span class="n">await</span><span class="p">();</span>
+<span class="n">val</span> <span class="n">result</span> <span class="o">=</span> <span class="n">my_object</span><span class="p">.</span><span class="n">call</span><span class="o">&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;someAsyncMethod&quot;</span><span class="p">).</span><span class="n">await</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>In this case you don’t need to worry about <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, since it’s an
 internal implementation detail of <code class="docutils literal notranslate"><span class="pre">val::await</span></code> and Emscripten takes care of it
 automatically.</p>
+<p>Note that when Asyncify is used with Embind and the code is invoked from
+JavaScript, then it will be implicitly treated as an <code class="docutils literal notranslate"><span class="pre">async</span></code> function,
+returning a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> to the return value, as demonstrated below.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;emscripten/bind.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">delayAndReturn</span><span class="p">(</span><span class="kt">bool</span> <span class="n">sleep</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">sleep</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">example</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;delayAndReturn&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">delayAndReturn</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Build with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span><span class="n">bind</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span>
+</pre></div>
+</div>
+<p>Then invoke from JavaScript</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span> <span class="nx">syncResult</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">syncResult</span><span class="p">);</span> <span class="c1">// 42</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">await</span> <span class="nx">syncResult</span><span class="p">);</span> <span class="c1">// also 42 because `await` is no-op</span>
+
+<span class="kd">let</span> <span class="nx">asyncResult</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">asyncResult</span><span class="p">);</span> <span class="c1">// Promise { &lt;pending&gt; }</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">await</span> <span class="nx">asyncResult</span><span class="p">);</span> <span class="c1">// 42</span>
+</pre></div>
+</div>
+<p>In contrast to JavaScript <code class="docutils literal notranslate"><span class="pre">async</span></code> functions which always return a <code class="docutils literal notranslate"><span class="pre">Promise</span></code>,
+the return value is determined at run time, and a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> is only returned
+if Asyncify calls are encountered (such as <code class="docutils literal notranslate"><span class="pre">emscripten_sleep()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">val::await()</span></code>, etc).</p>
+<p>If the code path is undetermined, the caller may either check if the returned
+value is an <code class="docutils literal notranslate"><span class="pre">instanceof</span> <span class="pre">Promise</span></code> or simply <code class="docutils literal notranslate"><span class="pre">await</span></code> on the returned value.</p>
 </section>
 <section id="usage-with-ccall">
 <h2>Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code><a class="headerlink" href="#usage-with-ccall" title="Permalink to this headline">¶</a></h2>

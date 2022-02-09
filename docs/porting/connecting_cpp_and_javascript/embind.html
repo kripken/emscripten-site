@@ -714,6 +714,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/Filesystem-API.html#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/Filesystem-API.html#memfs">MEMFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/Filesystem-API.html#nodefs">NODEFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/Filesystem-API.html#noderawfs">NODERAWFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/Filesystem-API.html#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/Filesystem-API.html#workerfs">WORKERFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/Filesystem-API.html#proxyfs">PROXYFS</a></li>
@@ -1358,10 +1359,10 @@ converted to and from JavaScript Arrays and <a class="reference internal" href="
     <span class="kt">int</span> <span class="n">age</span><span class="p">;</span>
 <span class="p">};</span>
 
-    <span class="c1">// Array fields are treated as if they were std::array&lt;type,size&gt;</span>
-    <span class="k">struct</span> <span class="nc">ArrayInStruct</span> <span class="p">{</span>
-            <span class="kt">int</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-    <span class="p">};</span>
+<span class="c1">// Array fields are treated as if they were std::array&lt;type,size&gt;</span>
+<span class="k">struct</span> <span class="nc">ArrayInStruct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">field</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="p">};</span>
 
 <span class="n">PersonRecord</span> <span class="nf">findPersonAtLocation</span><span class="p">(</span><span class="n">Point2f</span><span class="p">);</span>
 
@@ -1376,15 +1377,15 @@ converted to and from JavaScript Arrays and <a class="reference internal" href="
         <span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">PersonRecord</span><span class="o">::</span><span class="n">age</span><span class="p">)</span>
         <span class="p">;</span>
 
-            <span class="n">value_object</span><span class="o">&lt;</span><span class="n">ArrayInStruct</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;ArrayInStruct&quot;</span><span class="p">)</span>
-                    <span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">&quot;field&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ArrayInStruct</span><span class="o">::</span><span class="n">field</span><span class="p">)</span> <span class="c1">// Need to register the array type</span>
-                    <span class="p">;</span>
+    <span class="n">value_object</span><span class="o">&lt;</span><span class="n">ArrayInStruct</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;ArrayInStruct&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">field</span><span class="p">(</span><span class="s">&quot;field&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ArrayInStruct</span><span class="o">::</span><span class="n">field</span><span class="p">)</span> <span class="c1">// Need to register the array type</span>
+        <span class="p">;</span>
 
-            <span class="c1">// Register std::array&lt;int, 2&gt; because ArrayInStruct::field is interpreted as such</span>
-            <span class="n">value_array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;array_int_2&quot;</span><span class="p">)</span>
-                    <span class="p">.</span><span class="n">element</span><span class="p">(</span><span class="n">index</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">())</span>
-                    <span class="p">.</span><span class="n">element</span><span class="p">(</span><span class="n">index</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">())</span>
-                    <span class="p">;</span>
+    <span class="c1">// Register std::array&lt;int, 2&gt; because ArrayInStruct::field is interpreted as such</span>
+    <span class="n">value_array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;array_int_2&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">element</span><span class="p">(</span><span class="n">index</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">())</span>
+        <span class="p">.</span><span class="n">element</span><span class="p">(</span><span class="n">index</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">())</span>
+        <span class="p">;</span>
 
     <span class="n">function</span><span class="p">(</span><span class="s">&quot;findPersonAtLocation&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">findPersonAtLocation</span><span class="p">);</span>
 <span class="p">}</span>

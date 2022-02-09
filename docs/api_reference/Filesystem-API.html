@@ -714,6 +714,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#file-systems">File systems</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#memfs">MEMFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#nodefs">NODEFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#noderawfs">NODERAWFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#filesystem-api-idbfs">IDBFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#workerfs">WORKERFS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#proxyfs">PROXYFS</a></li>
@@ -1124,6 +1125,15 @@ group permissions are defined but ignored in <a class="reference internal" href=
 </div>
 <p>This file system lets a program in <em>node</em> map directories (via a mount operation) on the host filesystem to directories in Emscripten’s virtual filesystem. It uses node’s synchronous <a class="reference external" href="http://nodejs.org/api/fs.html">FS API</a> to immediately persist any data written to the Emscripten file system to your local disk.</p>
 <p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/fs/test_nodefs_rw.c">this test</a> for an example.</p>
+</section>
+<section id="noderawfs">
+<span id="filesystem-api-noderawfs"></span><h3>NODERAWFS<a class="headerlink" href="#noderawfs" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This file system is only for use when running inside <a class="reference internal" href="../site/glossary.html#term-node-js"><span class="xref std std-term">node.js</span></a>.</p>
+</div>
+<p>This is a special backend as it replaces all normal filesystem access with direct Node.js operations, without the need to do <cite>FS.mount()</cite>. The initial working directory will be same as process.cwd() instead of VFS root directory.  Because this mode directly uses Node.js to access the real local filesystem on your OS, the code will not necessarily be portable between OSes - it will be as portable as a Node.js program would be, which means that differences in how the underlying OS handles permissions and errors and so forth may be noticeable.  This has mostly been tested on Linux so far.</p>
+<p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/d936e807c4d7a6163827c1fdc4a8e87abe41db44/tests/fs/test_nodefs_rw.c#L31">this</a> section on NODEFS, where you can see a mount operation - this is not needed in NODERAWFS.</p>
 </section>
 <section id="filesystem-api-idbfs">
 <span id="idbfs"></span><h3>IDBFS<a class="headerlink" href="#filesystem-api-idbfs" title="Permalink to this headline">¶</a></h3>
