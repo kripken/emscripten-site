@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.4-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.6-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.4-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.6-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -748,6 +748,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/module.html">Module object</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#creating-the-module-object">Creating the Module object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#compilation-settings">Compilation settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#affecting-execution">Affecting execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/module.html#other-methods">Other methods</a></li>
 </ul>
@@ -1270,13 +1271,15 @@ to enable the closure compiler.</p>
 </section>
 <section id="memory-management">
 <h2>Memory management<a class="headerlink" href="#memory-management" title="Permalink to this headline">¶</a></h2>
-<p>JavaScript, specifically ECMA-262 Edition 5.1, does not support <a class="reference external" href="http://en.wikipedia.org/wiki/Finalizer">finalizers</a>
-or weak references with callbacks. Therefore there is no way for Emscripten
-to automatically call the destructors on C++ objects.</p>
+<p>JavaScript only gained support for <a class="reference external" href="http://en.wikipedia.org/wiki/Finalizer">finalizers</a> in ECMAScript 2021, or ECMA-262
+Edition 12. The new API is called <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry">FinalizationRegistry</a> and it still does not
+offer any guarantees that the provided finalization callback will be called.
+Embind uses this for cleanup if available, but only for smart pointers,
+and only as a last resort.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>JavaScript code must explicitly delete any C++ object handles
-it has received, or the Emscripten heap will grow indefinitely.</p>
+<p>It is strongly recommended that JavaScript code explicitly deletes
+any C++ object handles it has received.</p>
 </div>
 <p>The <code class="xref js js-func docutils literal notranslate"><span class="pre">delete()</span></code> JavaScript method is provided to manually signal that
 a C++ object is no longer needed and can be deleted:</p>
@@ -2127,7 +2130,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.4-git (dev)',
+            VERSION:'3.1.6-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

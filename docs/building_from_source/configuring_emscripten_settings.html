@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.4-git (dev) documentation</title>
+  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.6-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.4-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.6-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Verifying the Emscripten Development Environment" href="verify_emscripten_environment.html"/>
         <link rel="prev" title="Emscripten Toolchain Requirements" href="toolchain_what_is_needed.html"/> 
@@ -1080,28 +1080,33 @@ temporary directory for intermediate build files.</p>
 <p>This article explains how to create and update the file when you are building Emscripten <a class="reference internal" href="index.html#installing-from-source"><span class="std std-ref">manually</span></a> from source.</p>
 <section id="creating-the-compiler-configuration-file">
 <h2>Creating the compiler configuration file<a class="headerlink" href="#creating-the-compiler-configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>The settings file is created the first time a user runs <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a> (or any of the other Emscripten tools):</p>
-<ol class="arabic">
+<p>A settings file is required to run <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a> (or any of the other
+Emscripten tools).  When you first run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> it will direct you to the
+<code class="docutils literal notranslate"><span class="pre">--generate-config</span></code> command line option which can be used to generate config
+file in the default location.</p>
+<ol class="arabic simple">
 <li><p>Navigate to the directory where you cloned the Emscripten repository.</p></li>
-<li><p>Enter the command:</p>
+<li><p>Enter the command:</p></li>
+</ol>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emcc</span> <span class="o">--</span><span class="n">help</span>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emcc</span> <span class="o">--</span><span class="n">generate</span><span class="o">-</span><span class="n">config</span>
 </pre></div>
 </div>
-<p>You should get a <code class="docutils literal notranslate"><span class="pre">Welcome</span> <span class="pre">to</span> <span class="pre">Emscripten!</span></code> message. Behind the scenes, Emscripten generates a file called <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> in your home folder.</p>
+<p>You should get a <code class="docutils literal notranslate"><span class="pre">An</span> <span class="pre">Emscripten</span> <span class="pre">settings</span> <span class="pre">file</span> <span class="pre">has</span> <span class="pre">been</span> <span class="pre">generated</span> <span class="pre">at:</span></code>
+message, along with the contents of the config file.</p>
 </div></blockquote>
-</li>
-</ol>
-<p>Emscripten makes a “best guess” at the correct locations for tools and updates the file appropriately. Where possible it will look for “system” apps (like Python and Java).</p>
+<p>Emscripten makes a “best guess” at the correct locations for tools and updates
+the file appropriately. Where possible it will look for “system” apps (like
+Python and Java).</p>
 <p>In most cases it is necessary to edit the generated file and modify at least the
 <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> and <code class="docutils literal notranslate"><span class="pre">BINARYEN_ROOT</span></code> settings to point to the correct location of
 your local LLVM and Binaryen installations respectively.</p>
 </section>
 <section id="locating-the-compiler-configuration-file-emscripten">
 <h2>Locating the compiler configuration file (.emscripten)<a class="headerlink" href="#locating-the-compiler-configuration-file-emscripten" title="Permalink to this headline">¶</a></h2>
-<p>The settings file (<code class="docutils literal notranslate"><span class="pre">.emscripten</span></code>) is created by default within the emscripten directory:</p>
-<p>In cases where the emscripten directory is read-only the users home directoy
-will be used:</p>
+<p>The settings file (<code class="docutils literal notranslate"><span class="pre">.emscripten</span></code>) is created by default within the emscripten
+directory (alongsize <code class="docutils literal notranslate"><span class="pre">emcc</span></code> itself).  In cases where the emscripten directory
+is read-only the users home directory will be used:</p>
 <blockquote>
 <div><ul>
 <li><p>On Linux and macOS this file is named <strong>~/.emscripten</strong>, where ~ is the
@@ -1121,7 +1126,7 @@ user’s home directory.</p>
 <p class="admonition-title">Note</p>
 <p>While the syntax is identical, the appearance of the default <strong>.emscripten</strong> file created by <em>emcc</em> is quite different than that created by <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">emsdk</span></a>. This is because <em>emsdk</em> manages multiple target environments, and where possible hard codes the locations of those tools when a new environment is activated. The default file, by contrast, is managed by the user — and is designed to make that task as easy as possible.</p>
 </div>
-<p>The file simply assigns paths to a number of <em>variables</em> representing the main tools used by Emscripten. For example, if the user installed python to the <strong>C:/Python27/</strong> directory, then the file might have the line:</p>
+<p>The file simply assigns paths to a number of <em>variables</em> representing the main tools used by Emscripten. For example, if the user installed python to the <strong>C:\Python38\</strong> directory, then the file might have the line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYTHON</span> <span class="o">=</span> <span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">Python38</span><span class="se">\\</span><span class="s1">python.exe&#39;</span>
 </pre></div>
 </div>
@@ -1262,7 +1267,7 @@ user’s home directory.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.4-git (dev)',
+            VERSION:'3.1.6-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
