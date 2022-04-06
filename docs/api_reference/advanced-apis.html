@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Advanced APIs &mdash; Emscripten 3.1.8-git (dev) documentation</title>
+  <title>Advanced APIs &mdash; Emscripten 3.1.9-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.8-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.9-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Tools Reference" href="../tools_reference/index.html"/>
         <link rel="prev" title="Wasm Workers API" href="wasm_workers.html"/> 
@@ -1097,7 +1097,10 @@
             
   <section id="advanced-apis">
 <span id="api-reference-advanced-apis"></span><h1>Advanced APIs<a class="headerlink" href="#advanced-apis" title="Permalink to this headline">¶</a></h1>
-<p>This section lists APIs that are not suitable for general use, but which may be useful to developers in some circumstances. These include APIs that are difficult or complicated to use, or which are intended primarily for developers working on the Emscripten core.</p>
+<p>This section lists APIs that are not suitable for general use, but which may be
+useful to developers in some circumstances. These include APIs that are
+difficult or complicated to use, or which are intended primarily for developers
+working on the Emscripten core.</p>
 <div class="contents local topic" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
@@ -1108,19 +1111,30 @@
 </div>
 <section id="settings-js">
 <span id="id1"></span><h2><a class="toc-backref" href="#id4">settings.js</a><a class="headerlink" href="#settings-js" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/settings.js">settings.js</a> contains default values and options used in various places by the compiler.</p>
+<p><a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/settings.js">settings.js</a> contains default values and options used in various places by the
+compiler.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Many <strong>settings.js</strong> options are highly brittle - certain combinations of options, and combinations of certain options used with some source code, can cause Emscripten to fail badly. This is intended for use by “advanced users”, and possibly even only people developing Emscripten itself.</p>
+<p>Many <strong>settings.js</strong> options are highly brittle - certain
+combinations of options, and combinations of certain options used with some
+source code, can cause Emscripten to fail badly. This is intended for use by
+“advanced users”, and possibly even only people developing Emscripten itself.</p>
 </div>
-<p>The options in <strong>settings.js</strong> are normally set as command line parameters to <em>emcc</em>:</p>
+<p>The options in <strong>settings.js</strong> are normally set as command line parameters to
+<em>emcc</em>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">s</span> <span class="n">OPT</span><span class="o">=</span><span class="n">VALUE</span>
 </pre></div>
 </div>
-<p>While it is possible to edit <strong>settings.js</strong> manually, this is <em>highly discouraged</em>. In general <strong>settings.js</strong> defines low-level options that should not be modified. Note also that the compiler changes some options depending on other settings. For example, <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> is enabled by default, but disabled in optimized builds (<code class="docutils literal notranslate"><span class="pre">-O1+</span></code>).</p>
-<p>The small number of options that developers may have cause to change should be modified when the <em>emcc</em> tool is invoked. For example, <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">_int_sqrt</span>
-</pre></div>
+<p>While it is possible to edit <strong>settings.js</strong> manually, this is <em>highly
+discouraged</em>. In general <strong>settings.js</strong> defines low-level options that should
+not be modified. Note also that the compiler changes some options depending on
+other settings. For example, <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> is enabled by default, but disabled
+in optimized builds (<code class="docutils literal notranslate"><span class="pre">-O1+</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information on what options can be used to configure Emscripten, read
+<code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code> or visit
+<a class="reference external" href="https://emsettings.surma.technology">the emsettings page</a>.</p>
 </div>
 </section>
 <section id="preamble-js">
@@ -1129,11 +1143,16 @@
 <dl class="function">
 <dt id="allocate">
 <code class="sig-name descname">allocate</code><span class="sig-paren">(</span><em class="sig-param">slab</em>, <em class="sig-param">allocator</em><span class="sig-paren">)</span><a class="headerlink" href="#allocate" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is marked as <em>internal</em> because it is difficult to use (it has been optimized for multiple syntaxes to save space in generated code). Normally developers should instead allocate memory using <code class="docutils literal notranslate"><span class="pre">_malloc()</span></code>, initialize it with <a class="reference internal" href="preamble.js.html#setValue" title="setValue"><code class="xref js js-func docutils literal notranslate"><span class="pre">setValue()</span></code></a>, etc., but this function may be useful for advanced developers in certain cases.</p>
+<dd><p>This is marked as <em>internal</em> because it is difficult to use (it has been
+optimized for multiple syntaxes to save space in generated code). Normally
+developers should instead allocate memory using <code class="docutils literal notranslate"><span class="pre">_malloc()</span></code>, initialize it
+with <a class="reference internal" href="preamble.js.html#setValue" title="setValue"><code class="xref js js-func docutils literal notranslate"><span class="pre">setValue()</span></code></a>, etc., but this function may be useful for advanced
+developers in certain cases.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>slab</strong> – An array of data, or a number. If a number, then the size of the block to allocate, in <em>bytes</em>.</p></li>
+<li><p><strong>slab</strong> – An array of data, or a number. If a number, then the size of the
+block to allocate, in <em>bytes</em>.</p></li>
 <li><p><strong>allocator</strong> – How to allocate memory, see ALLOC_*</p></li>
 </ul>
 </dd>
@@ -1143,7 +1162,9 @@
 </section>
 <section id="advanced-file-system-api">
 <h2><a class="toc-backref" href="#id6">Advanced File System API</a><a class="headerlink" href="#advanced-file-system-api" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> covers the public API that will be relevant to most developers. The following functions are only needed for advanced use-cases (for example, writing a new local file system) or legacy file system compatibility.</p>
+<p><a class="reference internal" href="Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> covers the public API that will be relevant to most
+developers. The following functions are only needed for advanced use-cases (for
+example, writing a new local file system) or legacy file system compatibility.</p>
 <dl class="function">
 <dt id="FS.hashName">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">hashName</code><span class="sig-paren">(</span><em class="sig-param">parentid</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.hashName" title="Permalink to this definition">¶</a></dt>
@@ -1352,7 +1373,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.8-git (dev)',
+            VERSION:'3.1.9-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
