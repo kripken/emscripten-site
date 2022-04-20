@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; Emscripten 3.1.9-git (dev) documentation</title>
+  <title>Wasm Workers API &mdash; Emscripten 3.1.9-git (dev) documentation</title>
   
 
   
@@ -34,8 +34,9 @@
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="Emscripten 3.1.9-git (dev) documentation" href="../../index.html"/>
-        <link rel="next" title="emscripten.h" href="emscripten.h.html"/>
-        <link rel="prev" title="Asyncify" href="../porting/asyncify.html"/> 
+        <link rel="up" title="API Reference" href="index.html"/>
+        <link rel="next" title="Advanced APIs" href="advanced-apis.html"/>
+        <link rel="prev" title="fiber.h" href="fiber.h.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -499,7 +500,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="emscripten.h.html">emscripten.h</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="emscripten.h.html#inline-assembly-javascript">Inline assembly/JavaScript</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="emscripten.h.html#defines">Defines</a></li>
@@ -802,36 +803,27 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="proxying.h.html">proxying.h</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="proxying.h.html#api-reference">API Reference</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="proxying.h.html#types">Types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="proxying.h.html#functions">Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="proxying.h.html#c-api">C++ API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Wasm Workers API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-example">Quick Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pthreads-vs-wasm-workers-which-one-to-use">Pthreads vs Wasm Workers: Which One to Use?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-can-proxy-js-functions">Pthreads can proxy JS functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-have-cancellation-points">Pthreads have cancellation points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-may-start-up-synchronously-wasm-workers-always-start-asynchronously">Pthreads may start up synchronously - Wasm Workers always start asynchronously</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthread-topology-is-flat-wasm-workers-are-hierarchical">Pthread topology is flat - Wasm Workers are hierarchical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa">Pthreads can use the Wasm Worker synchronization API, but not vice versa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-have-a-thread-main-function-and-atexit-handlers">Pthreads have a “thread main” function and atexit handlers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-have-a-per-thread-incoming-proxy-message-queue-wasm-workers-do-not">Pthreads have a per-thread incoming proxy message queue, Wasm Workers do not</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-synchronize-wallclock-times">Pthreads synchronize wallclock times</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#input-events-api-backproxies-only-to-pthreads">Input events API backproxies only to pthreads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthread-vs-emscripten-lock-implementation-differences">Pthread vs emscripten_lock implementation differences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#memory-requirements">Memory requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generated-code-size">Generated code size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#api-differences">API Differences</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="wasm_workers.html">Wasm Workers API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#quick-example">Quick Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#introduction">Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#pthreads-vs-wasm-workers-which-one-to-use">Pthreads vs Wasm Workers: Which One to Use?</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-can-proxy-js-functions">Pthreads can proxy JS functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-have-cancellation-points">Pthreads have cancellation points</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-may-start-up-synchronously-wasm-workers-always-start-asynchronously">Pthreads may start up synchronously - Wasm Workers always start asynchronously</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthread-topology-is-flat-wasm-workers-are-hierarchical">Pthread topology is flat - Wasm Workers are hierarchical</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa">Pthreads can use the Wasm Worker synchronization API, but not vice versa</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-have-a-thread-main-function-and-atexit-handlers">Pthreads have a “thread main” function and atexit handlers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-have-a-per-thread-incoming-proxy-message-queue-wasm-workers-do-not">Pthreads have a per-thread incoming proxy message queue, Wasm Workers do not</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthreads-synchronize-wallclock-times">Pthreads synchronize wallclock times</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#input-events-api-backproxies-only-to-pthreads">Input events API backproxies only to pthreads</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#pthread-vs-emscripten-lock-implementation-differences">Pthread vs emscripten_lock implementation differences</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#memory-requirements">Memory requirements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#generated-code-size">Generated code size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="wasm_workers.html#api-differences">API Differences</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#limitations">Limitations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#example-code">Example Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-code">Example Code</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="advanced-apis.html">Advanced APIs</a><ul>
@@ -895,7 +887,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#module-splitting">Module Splitting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -1078,7 +1069,9 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;API Reference</div>
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;API Reference</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Wasm Workers API</div>
   </div>
  
 </div>
@@ -1094,48 +1087,322 @@
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;API Reference</div>
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;API Reference</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Wasm Workers API</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <section id="api-reference">
-<span id="api-reference-index"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
-<p>This section lists Emscripten’s public API, organised by header file. At a very
-high level it consists of:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="emscripten.h.html#emscripten-h"><span class="std std-ref">emscripten.h</span></a>:
-APIs for integrating with the browser environment.</p></li>
-<li><p><a class="reference internal" href="html5.h.html#html5-h"><span class="std std-ref">html5.h</span></a>:
-Low level glue bindings for interfacing with HTML5 APIs from native code.</p></li>
-<li><p><a class="reference internal" href="preamble.js.html#preamble-js"><span class="std std-ref">preamble.js</span></a>:
-APIs for working with compiled code from JavaScript.</p></li>
-<li><p><a class="reference internal" href="Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> (<strong>library_fs.js</strong>):
-APIs for managing file systems and synchronous file operations.</p></li>
-<li><p><a class="reference internal" href="fetch.html#fetch-api"><span class="std std-ref">Fetch API</span></a>:
-API for managing accesses to network XHR and IndexedDB.</p></li>
-<li><p><a class="reference internal" href="wasm_workers.html#wasm-workers"><span class="std std-ref">Wasm Workers API</span></a>:
-Enables writing multithreaded programs using a web-like API.</p></li>
-<li><p><a class="reference internal" href="module.html#module"><span class="std std-ref">Module object</span></a>:
-Global JavaScript object that can be used to control code execution and access
-exported methods.</p></li>
-<li><p><a class="reference internal" href="val.h.html#val-h"><span class="std std-ref">val.h</span></a>:
-Embind API to support transliteration of JavaScript code to C++.</p></li>
-<li><p><a class="reference internal" href="bind.h.html#bind-h"><span class="std std-ref">bind.h (under-construction)</span></a>:
-Embind API for binding C++ functions and classes so that they can be called
-from JavaScript in a natural way.</p></li>
-<li><p><a class="reference internal" href="trace.h.html#trace-h"><span class="std std-ref">trace.h</span></a>:
-A tracing API for doing memory usage analysis.</p></li>
-<li><p><a class="reference internal" href="fiber.h.html#fiber-h"><span class="std std-ref">fiber.h</span></a>:
-API for working with Fibers (co-operative threads)</p></li>
-<li><p><a class="reference internal" href="proxying.h.html#proxying-h"><span class="std std-ref">proxying.h</span></a>:
-API for synchronously or asynchronously proxying work to a target pthread.</p></li>
-<li><p><a class="reference internal" href="advanced-apis.html#api-reference-advanced-apis"><span class="std std-ref">Advanced APIs</span></a>:
-APIs for advanced users/core developers.</p></li>
-</ul>
-<div class="toctree-wrapper compound">
+  <section id="wasm-workers-api">
+<span id="wasm-workers"></span><h1>Wasm Workers API<a class="headerlink" href="#wasm-workers-api" title="Permalink to this headline">¶</a></h1>
+<p>The Wasm Workers API enables C/C++ code to leverage Web Workers and shared
+WebAssembly.Memory (SharedArrayBuffer) to build multithreaded programs
+via a direct web-like programming API.</p>
+<section id="quick-example">
+<h2>Quick Example<a class="headerlink" href="#quick-example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;emscripten/wasm_worker.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span> <span class="nf">run_in_worker</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello from wasm worker!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">emscripten_wasm_worker_t</span> <span class="n">worker</span> <span class="o">=</span> <span class="n">emscripten_malloc_wasm_worker</span><span class="p">(</span><span class="cm">/*stack size: */</span><span class="mi">1024</span><span class="p">);</span>
+  <span class="n">emscripten_wasm_worker_post_function_v</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">run_in_worker</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
 </div>
+<p>Build the code by passing the Emscripten flag <code class="docutils literal notranslate"><span class="pre">-sWASM_WORKERS</span></code> at both compile
+and link steps. The example code creates a new Worker on the main browser thread,
+which shares the same WebAssembly.Module and WebAssembly.Memory object. Then a
+<code class="docutils literal notranslate"><span class="pre">postMessage()</span></code> is passed to the Worker to ask it to execute the function
+<code class="docutils literal notranslate"><span class="pre">run_in_worker()</span></code> to print a string.</p>
+<p>To explicitly control the memory allocation placement when creating a worker, use the
+function <code class="docutils literal notranslate"><span class="pre">emscripten_create_wasm_worker()</span></code>.</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>In WebAssembly programs, the Memory object that contains the application state can be
+shared across multiple Workers. This enables direct, high performance (and if explicit
+care is not taken, racy!) access to synchronously share data state between multiple
+Workers (shared state multithreading).</p>
+<dl class="simple">
+<dt>Emscripten supports two multithreading APIs to leverage this web feature:</dt><dd><ul class="simple">
+<li><p>POSIX Threads (Pthreads) API, and</p></li>
+<li><p>Wasm Workers API.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The Pthreads API has a long history with native C programming and the POSIX standard,
+while Wasm Workers API is unique to Emscripten compiler only.</p>
+<p>These two APIs provide largely the same feature set, but have important differences,
+which this documentation seeks to explain to help decide which API one should target.</p>
+</section>
+<section id="pthreads-vs-wasm-workers-which-one-to-use">
+<h2>Pthreads vs Wasm Workers: Which One to Use?<a class="headerlink" href="#pthreads-vs-wasm-workers-which-one-to-use" title="Permalink to this headline">¶</a></h2>
+<p>The intended audience and use cases of these two multithreading APIs are slightly
+different.</p>
+<p>The focus on Pthreads API is on portability and cross-platform compatibility. This API
+is best used in scenarios where portability is most important, e.g. when a codebase is
+cross-compiled to multiple platforms, like building both a native Linux x64 executable and an
+Emscripten WebAssembly based web site.</p>
+<p>Pthreads API in Emscripten seeks to carefully emulate compatibility and the features that
+the native Pthreads platforms already provide. This helps porting large C/C++ codebases
+over to WebAssembly.</p>
+<p>Wasm Workers API on the other hand seeks to provide a “direct mapping” to the web
+multithreading primitives as they exist on the web, and call it a day. If an application
+is only developed to target WebAssembly, and portability is not a concern, then using Wasm
+Workers can provide great benefits in the form of simpler compiled output, less complexity,
+smaller code size and possibly better performance.</p>
+<p>However this benefit might not be an obvious win. The Pthreads API was designed to be useful
+from the synchronous C/C++ language, whereas Web Workers are designed to be useful from
+asynchronous JavaScript. WebAssembly C/C++ programs can find themselves somewhere in
+the middle.</p>
+<p>Pthreads and Wasm Workers share several similarities:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Both can use emscripten_atomic_* Atomics API,</p></li>
+<li><p>Both can use GCC __sync_* Atomics API,</p></li>
+<li><p>Both can use C11 and C++11 Atomics APIs,</p></li>
+<li><p>Both types of threads have a local stack.</p></li>
+<li><p>Both types of threads have thread-local storage (TLS) support via <code class="docutils literal notranslate"><span class="pre">thread_local</span></code> (C++11),
+<code class="docutils literal notranslate"><span class="pre">_Thread_local</span></code> (C11) and <code class="docutils literal notranslate"><span class="pre">__thread</span></code> (GNU11) keywords.</p></li>
+<li><p>Both types of threads support TLS via explicitly linked in Wasm globals (see
+<code class="docutils literal notranslate"><span class="pre">tests/wasm_worker/wasm_worker_tls_wasm_assembly.c/.S</span></code> for example code)</p></li>
+<li><p>Both types of threads have a concept of a thread ID (<code class="docutils literal notranslate"><span class="pre">pthread_self()</span></code> for pthreads,
+<code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_self_id()</span></code> for Wasm Workers)</p></li>
+<li><p>Both types of threads can perform an event-based and an infinite loop programming model.</p></li>
+<li><p>Both can use <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> and <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code> API to execute JS code on the calling thread.</p></li>
+<li><p>Both can call out to JS library functions (linked in with <code class="docutils literal notranslate"><span class="pre">--js-library</span></code> directive) to
+execute JS code on the calling thread.</p></li>
+<li><p>Neither pthreads nor Wasm Workers can be used in conjunction with <code class="docutils literal notranslate"><span class="pre">-sSINGLE_FILE</span></code> linker flag.</p></li>
+</ul>
+</div></blockquote>
+<p>However, the differences are more notable.</p>
+<section id="pthreads-can-proxy-js-functions">
+<h3>Pthreads can proxy JS functions<a class="headerlink" href="#pthreads-can-proxy-js-functions" title="Permalink to this headline">¶</a></h3>
+<p>Only pthreads can use the <code class="docutils literal notranslate"><span class="pre">MAIN_THREAD_EM_ASM*()</span></code> and <code class="docutils literal notranslate"><span class="pre">MAIN_THREAD_ASYNC_EM_ASM()</span></code> functions and
+the <code class="docutils literal notranslate"><span class="pre">foo__proxy:</span> <span class="pre">'sync'/'async'</span></code> proxying directive in JS libraries.</p>
+<p>Wasm Workers on the other hand do not provide a built-in JS function proxying facility. Proxying a JS
+function with Wasm Workers can be done by explicitly passing the address of that function to the
+<code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_post_function_*</span></code> API.</p>
+<p>If you need to synchronously wait for the posted function to finish from within a Worker, use one of
+the <code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_*()</span></code> thread synchronization functions to sleep the calling thread until
+the callee has finished the operation.</p>
+<p>Note that Wasm Workers cannot</p>
+</section>
+<section id="pthreads-have-cancellation-points">
+<h3>Pthreads have cancellation points<a class="headerlink" href="#pthreads-have-cancellation-points" title="Permalink to this headline">¶</a></h3>
+<p>At the expense of performance and code size, pthreads implement a notion of <strong>POSIX cancellation
+points</strong> (<code class="docutils literal notranslate"><span class="pre">pthread_cancel()</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_testcancel()</span></code>).</p>
+<p>Wasm Workers are more lightweight and performant by not enabling that concept.</p>
+</section>
+<section id="pthreads-may-start-up-synchronously-wasm-workers-always-start-asynchronously">
+<h3>Pthreads may start up synchronously - Wasm Workers always start asynchronously<a class="headerlink" href="#pthreads-may-start-up-synchronously-wasm-workers-always-start-asynchronously" title="Permalink to this headline">¶</a></h3>
+<p>Creating new Workers can be slow. Spawning a Worker in JavaScript is an asynchronous operation. In order
+to support synchronous pthread startup (for applications that need it) and to improve thread startup
+performance, pthreads are hosted in a cached Emscripten runtime managed Worker pool.</p>
+<p>Wasm Workers omit this concept, and as result Wasm Workers will always start up asynchronously.
+If you need to detect when a Wasm Worker has started up, post a ping-pong function and reply pair
+manually between the Worker and its creator. If you need to spin up new threads quickly, consider
+managing a pool of Wasm Workers yourself.</p>
+</section>
+<section id="pthread-topology-is-flat-wasm-workers-are-hierarchical">
+<h3>Pthread topology is flat - Wasm Workers are hierarchical<a class="headerlink" href="#pthread-topology-is-flat-wasm-workers-are-hierarchical" title="Permalink to this headline">¶</a></h3>
+<p>On the web, if a Worker spawns a child Worker of its own, it will create a nested Worker hierarchy
+that the main thread cannot directly access. To sidestep portability issues stemming from this kind
+of topology, pthreads flatten the Worker creation chain under the hood so that only the main browser thread
+ever spawns threads.</p>
+<p>Wasm Workers do not implement this kind of topology flattening, and creating a Wasm Worker in a
+Wasm Worker will produce a nested Worker hierarchy. If you need to create Wasm Workers from within
+a Wasm Worker, consider which type of hierarchy you would like, and if necessary, flatten the
+hierarchy manually by posting the Worker creation over to the main thread yourself.</p>
+<p>Note that support for nested Workers varies across browsers. As of 02/2022, nested Workers are <a class="reference external" href="https://bugs.webkit.org/show_bug.cgi?id=22723">not
+supported in Safari</a>. See <a class="reference external" href="https://github.com/johanholmerin/nested-worker">here</a> for a polyfill.</p>
+</section>
+<section id="pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa">
+<h3>Pthreads can use the Wasm Worker synchronization API, but not vice versa<a class="headerlink" href="#pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa" title="Permalink to this headline">¶</a></h3>
+<p>The multithreading synchronization primitives offered in <code class="docutils literal notranslate"><span class="pre">emscripten/wasm_worker.h</span></code>
+(<code class="docutils literal notranslate"><span class="pre">emscripten_lock_*</span></code>, <code class="docutils literal notranslate"><span class="pre">emscripten_semaphore_*</span></code>, <code class="docutils literal notranslate"><span class="pre">emscripten_condvar_*</span></code>) can be freely invoked
+from within pthreads if one so wishes, but Wasm Workers cannot utilize any of the synchronization
+functionality in the Pthread API (<code class="docutils literal notranslate"><span class="pre">pthread_mutex_*</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_cond_</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_rwlock_*</span></code>, etc),
+since they lack the needed pthread runtime.</p>
+</section>
+<section id="pthreads-have-a-thread-main-function-and-atexit-handlers">
+<h3>Pthreads have a “thread main” function and atexit handlers<a class="headerlink" href="#pthreads-have-a-thread-main-function-and-atexit-handlers" title="Permalink to this headline">¶</a></h3>
+<p>The startup/execution model of pthreads is to start up executing a given thread entry point function.
+When that function exits, the pthread will also (by default) quit, and the Worker hosting that pthread
+will return to the Worker pool to wait for another thread to be created on it.</p>
+<p>Wasm Workers instead implement the direct web-like model, where a newly created Worker sits idle in its
+event loop, waiting for functions to be posted to it. When those functions finish, the Worker will
+return to its event loop, waiting to receive more functions (or worker scope web events) to execute.
+A Wasm Worker will only quit with a call to <code class="docutils literal notranslate"><span class="pre">emscripten_terminate_wasm_worker(worker_id)</span></code> or
+<code class="docutils literal notranslate"><span class="pre">emscripten_terminate_all_wasm_workers()</span></code>.</p>
+<p>Pthreads allow one to register thread exit handlers via <code class="docutils literal notranslate"><span class="pre">pthread_atexit</span></code>, which will be called when
+the thread quits. Wasm Workers do not have this concept.</p>
+</section>
+<section id="pthreads-have-a-per-thread-incoming-proxy-message-queue-wasm-workers-do-not">
+<h3>Pthreads have a per-thread incoming proxy message queue, Wasm Workers do not<a class="headerlink" href="#pthreads-have-a-per-thread-incoming-proxy-message-queue-wasm-workers-do-not" title="Permalink to this headline">¶</a></h3>
+<p>In order to enable flexible synchronous execution of code on other threads, and to implement support
+APIs for example for MEMFS filesystem and Offscreen Framebuffer (WebGL emulated from a Worker) features,
+main browser thread and each pthread have a system-backed “proxy message queue” to receive messages.</p>
+<p>This enables user code to call API functions <code class="docutils literal notranslate"><span class="pre">emscripten_sync_run_in_main_thread*()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">emscripten_sync_run_in_main_runtime_thread()</span></code>, <code class="docutils literal notranslate"><span class="pre">emscripten_async_run_in_main_runtime_thread()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">emscripten_dispatch_to_thread()</span></code>, etc. from <code class="docutils literal notranslate"><span class="pre">emscripten/threading.h</span></code> to perform proxied calls.</p>
+<p>Wasm Workers do not provide this functionality. If needed, such messaging should be implemented manually
+by users via regular multithreaded synchronized programming techniques (mutexes, futexes, semaphores, etc.)</p>
+</section>
+<section id="pthreads-synchronize-wallclock-times">
+<h3>Pthreads synchronize wallclock times<a class="headerlink" href="#pthreads-synchronize-wallclock-times" title="Permalink to this headline">¶</a></h3>
+<p>Another portability aiding emulation feature that Pthreads provide is that the time values returned by
+<code class="docutils literal notranslate"><span class="pre">emscripten_get_now()</span></code> are synchronized to a common time base across all threads.</p>
+<p>Wasm Workers omit this concept, and it is recommended to use the function <code class="docutils literal notranslate"><span class="pre">emscripten_performance_now()</span></code>
+for high performance timing in a Wasm Worker, and avoid comparing resulting values across Workers, or
+manually synchronize them.</p>
+</section>
+<section id="input-events-api-backproxies-only-to-pthreads">
+<h3>Input events API backproxies only to pthreads<a class="headerlink" href="#input-events-api-backproxies-only-to-pthreads" title="Permalink to this headline">¶</a></h3>
+<p>The multithreaded input API provided in <code class="docutils literal notranslate"><span class="pre">emscripten/html5.h</span></code> only works with the pthread API. When
+calling any of the functions <code class="docutils literal notranslate"><span class="pre">emscripten_set_*_callback_on_thread()</span></code>, one can choose the target
+pthread to be the recipient of the received events.</p>
+<p>With Wasm Workers, if desired, “backproxying” events from the main browser thread to a Wasm Worker
+should be implemented manually e.g. by using the <code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_post_function_*()</span></code> API family.</p>
+<p>However note that backproxying input events has a drawback that it prevents security sensitive operations,
+like fullscreen requests, pointer locking and audio playback resuming, since handling the input event
+is detached from the event callback context executing the initial operation.</p>
+</section>
+<section id="pthread-vs-emscripten-lock-implementation-differences">
+<h3>Pthread vs emscripten_lock implementation differences<a class="headerlink" href="#pthread-vs-emscripten-lock-implementation-differences" title="Permalink to this headline">¶</a></h3>
+<p>The mutex implementation from <code class="docutils literal notranslate"><span class="pre">pthread_mutex_*</span></code> has a few different creation options, one being a
+“recursive” mutex.</p>
+<p>The lock implemented by <code class="docutils literal notranslate"><span class="pre">emscripten_lock_*</span></code> API is not recursive (and does not provide an option).</p>
+<p>Pthreads also offer a programming guard against a programming error that one thread would not release
+a lock that is owned by another thread. <code class="docutils literal notranslate"><span class="pre">emscripten_lock_*</span></code> API does not track lock ownership.</p>
+</section>
+<section id="memory-requirements">
+<h3>Memory requirements<a class="headerlink" href="#memory-requirements" title="Permalink to this headline">¶</a></h3>
+<p>Pthreads have a fixed dependency to dynamic memory allocation, and perform calls to <code class="docutils literal notranslate"><span class="pre">malloc</span></code> and <code class="docutils literal notranslate"><span class="pre">free</span></code>
+to allocate thread specific data, stacks and TLS slots.</p>
+<p>With the exception of the helper function <code class="docutils literal notranslate"><span class="pre">emscripten_malloc_wasm_worker()</span></code>, Wasm Workers are not dependent
+on a dynamic memory allocator. Memory allocation needs are met by the caller at Worker creation time, and
+can be statically placed if desired.</p>
+</section>
+<section id="generated-code-size">
+<h3>Generated code size<a class="headerlink" href="#generated-code-size" title="Permalink to this headline">¶</a></h3>
+<p>The disk size overhead from pthreads is on the order of a few hundred KBs. Wasm Workers runtime on the other
+hand is optimized for tiny deployments, just a few hundred bytes on disk.</p>
+</section>
+<section id="api-differences">
+<h3>API Differences<a class="headerlink" href="#api-differences" title="Permalink to this headline">¶</a></h3>
+<p>To further understand the different APIs available between Pthreads and Wasm Workers, refer to the following
+table.</p>
+<table style='border:solid 2px;' cellpadding=10>
+  <tr><td class='cellborder'>Feature</td>
+  <td class='cellborder'>Pthreads</td>
+  <td class='cellborder'>Wasm Workers</td> </tr>
+
+  <tr><td class='cellborder'>Thread termination</td>
+  <td class='cellborder'>Thread calls <pre>pthread_exit(status)</pre>or main thread calls <pre>pthread_kill(code)</pre></td>
+  <td class='cellborder'>Worker cannot terminate itself, parent thread terminates by calling <pre>emscripten_terminate_wasm_worker(worker)</pre></td></tr>
+
+  <tr><td class='cellborder'>Thread stack</td>
+  <td class='cellborder'>Specify in pthread_attr_t structure.</td>
+  <td class='cellborder'>Manage thread stack area explicitly with <pre>emscripten_create_wasm_worker_*_tls()</pre> functions, or
+    <br>automatically allocate stack with <pre>emscripten_malloc_wasm_worker()</pre> API.</td></tr>
+
+  <tr><td class='cellborder'>Thread Local Storage (TLS)</td>
+  <td class='cellborder'>Supported transparently.</td>
+  <td class='cellborder'>Supported either explicitly with <pre>emscripten_create_wasm_worker_*_tls()</pre> functions, or
+    <br>automatically via <pre>emscripten_malloc_wasm_worker()</pre> API.</td></tr>
+
+  <tr><td class='cellborder'>Thread ID</td>
+  <td class='cellborder'>Creating a pthread obtains its ID. Call <pre>pthread_self()</pre> to acquire ID of calling thread.</td>
+  <td class='cellborder'>Creating a Worker obtains its ID. Call <pre>emscripten_wasm_worker_self_id()</pre> acquire ID of calling thread.</td></tr>
+
+  <tr><td class='cellborder'>High resolution timer</td>
+  <td class='cellborder'>``emscripten_get_now()``</td>
+  <td class='cellborder'>``emscripten_performance_now()``</td></tr>
+
+  <tr><td class='cellborder'>Synchronous blocking on main thread</td>
+  <td class='cellborder'>Synchronization primitives internally fall back to busy spin loops.</td>
+  <td class='cellborder'>Explicit spin vs sleep synchronization primitives.</td></tr>
+
+  <tr><td class='cellborder'>Futex API</td>
+  <td class='cellborder'><pre>emscripten_futex_wait</pre><pre>emscripten_futex_wake</pre> in emscripten/threading.h</td>
+  <td class='cellborder'><pre>emscripten_wasm_wait_i32</pre><pre>emscripten_wasm_wait_i64</pre><pre>emscripten_wasm_notify</pre> in emscripten/wasm_workers.h</td></tr>
+
+  <tr><td class='cellborder'>Asynchronous futex wait</td>
+  <td class='cellborder'>N/A</td>
+  <td class='cellborder'><pre>emscripten_atomic_wait_async()</pre><pre>emscripten_*_async_acquire()</pre>However these are a difficult footgun, read <a href='https://github.com/WebAssembly/threads/issues/176'>WebAssembly/threads issue #176</a></td></tr>
+
+  <tr><td class='cellborder'>C/C++ Function Proxying</td>
+  <td class='cellborder'>emscripten/threading.h API for proxying function calls to other threads.</td>
+  <td class='cellborder'>Use emscripten_wasm_worker_post_function_*() API to message functions to other threads. These messages follow event queue semantics rather than proxy queue semantics.</td></tr>
+
+  <tr><td class='cellborder'>Build flags</td>
+  <td class='cellborder'>Compile and link with -pthread</td>
+  <td class='cellborder'>Compile and link with -sWASM_WORKERS</td></tr>
+
+  <tr><td class='cellborder'>Preprocessor directives</td>
+  <td class='cellborder'>__EMSCRIPTEN_SHARED_MEMORY__=1 and __EMSCRIPTEN_PTHREADS__=1 are active</td>
+  <td class='cellborder'>__EMSCRIPTEN_SHARED_MEMORY__=1 and __EMSCRIPTEN_WASM_WORKERS__=1 are active</td></tr>
+
+  <tr><td class='cellborder'>JS library directives</td>
+  <td class='cellborder'>USE_PTHREADS and SHARED_MEMORY are active</td>
+  <td class='cellborder'>USE_PTHREADS, SHARED_MEMORY and WASM_WORKER are active</td></tr>
+
+  <tr><td class='cellborder'>Atomics API</td>
+  <td colspan=2>Supported, use any of <a href="https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html">__atomic_* API</a>, <a href="https://llvm.org/docs/Atomics.html#libcalls-sync">__sync_* API</a> or <a href="https://en.cppreference.com/w/cpp/atomic/atomic">C++11 std::atomic API</a>.</td></tr>
+
+  <tr><td class='cellborder'>Nonrecursive mutex</td>
+  <td class='cellborder'><pre>pthread_mutex_*</pre></td>
+  <td class='cellborder'><pre>emscripten_lock_*</pre></td></tr>
+
+  <tr><td class='cellborder'>Recursive mutex</td>
+  <td class='cellborder'><pre>pthread_mutex_*</pre></td>
+  <td class='cellborder'>N/A</td></tr>
+
+  <tr><td class='cellborder'>Semaphores</td>
+  <td class='cellborder'>N/A</td>
+  <td class='cellborder'><pre>emscripten_semaphore_*</pre></td></tr>
+
+  <tr><td class='cellborder'>Condition Variables</td>
+  <td class='cellborder'><pre>pthread_cond_*</pre></td>
+  <td class='cellborder'><pre>emscripten_condvar_*</pre></td></tr>
+
+  <tr><td class='cellborder'>Read-Write locks</td>
+  <td class='cellborder'><pre>pthread_rwlock_*</pre></td>
+  <td class='cellborder'>N/A</td></tr>
+
+  <tr><td class='cellborder'>Spinlocks</td>
+  <td class='cellborder'><pre>pthread_spin_*</pre></td>
+  <td class='cellborder'><pre>emscripten_lock_busyspin*</pre></td></tr>
+
+  <tr><td class='cellborder'>WebGL Offscreen Framebuffer</td>
+  <td class='cellborder'><pre>Supported with -sOFFSCREEN_FRAMEBUFFER</pre></td>
+  <td class='cellborder'><pre>Not supported.</pre></td></tr>
+
+</table></section>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>The following build options are not supported at the moment with Wasm Workers:</p>
+<ul class="simple">
+<li><p>-sSINGLE_FILE</p></li>
+<li><p>Dynamic linking (-sLINKABLE, -sMAIN_MODULE, -sSIDE_MODULE)</p></li>
+<li><p>-sPROXY_TO_WORKER</p></li>
+<li><p>-sPROXY_TO_PTHREAD</p></li>
+</ul>
+</section>
+<section id="example-code">
+<h2>Example Code<a class="headerlink" href="#example-code" title="Permalink to this headline">¶</a></h2>
+<p>See the directory tests/wasm_workers/ for code examples on different Wasm Workers API functionality.</p>
+</section>
 </section>
 
 
@@ -1144,10 +1411,10 @@ APIs for advanced users/core developers.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="emscripten.h.html" class="btn btn-neutral float-right" title="emscripten.h"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="advanced-apis.html" class="btn btn-neutral float-right" title="Advanced APIs"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../porting/asyncify.html" class="btn btn-neutral" title="Asyncify"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="fiber.h.html" class="btn btn-neutral" title="fiber.h"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1196,7 +1463,9 @@ APIs for advanced users/core developers.</p></li>
   <div class="breadcrumb-box">
      <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;API Reference</div>
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;API Reference</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Wasm Workers API</div>
   </div>
  
 </div> -->
@@ -1219,7 +1488,7 @@ APIs for advanced users/core developers.</p></li>
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:API%20Reference%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/api_reference/index&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Wasm%20Workers%20API%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/api_reference/wasm_workers&labels=bug">Page bug</a>
       </li>
   </ul>
   
