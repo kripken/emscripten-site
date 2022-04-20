@@ -887,6 +887,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#module-splitting">Module Splitting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -1192,9 +1193,9 @@ along with the main module, during startup and they are linked together
 before your application starts to run.</p>
 <ul class="simple">
 <li><p>Build one part of your code as the main module, linking it using
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MAIN_MODULE</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE</span></code>.</p></li>
 <li><p>Build other parts of your code as side modules, linking it using
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SIDE_MODULE</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code>.</p></li>
 </ul>
 <p>For the main module the output suffix should be <code class="docutils literal notranslate"><span class="pre">.js</span></code> (the WebAssembly
 file will be generated alongside it just like normal).  For the side
@@ -1204,7 +1205,7 @@ UNIX systems).</p>
 <p>In order to have the side modules loaded at startup you need to tell the
 main module about their existence.  You can do this by specifying them on
 the command line when you link the main module. e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">s</span> <span class="n">MAIN_MODULE</span> <span class="n">main</span><span class="o">.</span><span class="n">c</span> <span class="n">libsomething</span><span class="o">.</span><span class="n">wasm</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">sMAIN_MODULE</span> <span class="n">main</span><span class="o">.</span><span class="n">c</span> <span class="n">libsomething</span><span class="o">.</span><span class="n">wasm</span>
 </pre></div>
 </div>
 <p>At runtime, the JavaScript loading code will load <code class="docutils literal notranslate"><span class="pre">libsomthing.wasm</span></code> (along
@@ -1247,7 +1248,7 @@ all the code compiled remains in the output, including all system
 libraries linked in, and also all the JS library code.</p>
 <p>That is the default behavior since it is the least surprising. But it is
 also possible to use normal dead code elimination, by building with
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">MAIN_MODULE=2</span></code> (instead of 1). In that mode, the main module is
+<code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE=2</span></code> (instead of 1). In that mode, the main module is
 built normally, with no special behavior for keeping code alive. It is
 then your responsibility to make sure that code that side modules need
 is kept alive. You can do this either by adding to <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> or
@@ -1257,7 +1258,7 @@ See <code class="docutils literal notranslate"><span class="pre">other.test_mini
 the side modules specified on the command line will be kept alive
 automatically. For this reason we strongly recommend using <code class="docutils literal notranslate"><span class="pre">MAIN_MODULE=2</span></code>
 when doing load time dynamic linking.</p>
-<p>There is also the corresponding <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">SIDE_MODULE=2</span></code> for side modules.</p>
+<p>There is also the corresponding <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE=2</span></code> for side modules.</p>
 </section>
 <section id="miscellaneous-notes">
 <h2>Miscellaneous Notes<a class="headerlink" href="#miscellaneous-notes" title="Permalink to this headline">¶</a></h2>
@@ -1270,7 +1271,7 @@ symbols remain unresolved, and code can start to run even if there are.
 It will run successfully if they are not called in practice. If they
 are, you will get a runtime error. What went wrong should be clear from
 the stack trace (in an unminified build); building with
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ASSERTIONS</span></code> can help some more.</p>
+<code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> can help some more.</p>
 </section>
 <section id="limitations">
 <h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>

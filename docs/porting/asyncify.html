@@ -887,6 +887,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#module-splitting">Module Splitting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -1151,7 +1152,7 @@ The following expands on the Emscripten examples from that post.</p>
 </pre></div>
 </div>
 <p>You can compile that with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">sASYNCIFY</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1208,7 +1209,7 @@ resuming the wasm from the JS runtime).</p>
 for a Promise. While that operation is async, note how the C code in <code class="docutils literal notranslate"><span class="pre">main()</span></code>
 is completely synchronous!</p>
 <p>To run this example, first compile it with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sASYNCIFY</span>
 </pre></div>
 </div>
 <p>To run this, you must run a <a class="reference internal" href="../getting_started/FAQ.html#faq-local-webserver"><span class="std std-ref">local webserver</span></a>
@@ -1244,7 +1245,7 @@ directly with <code class="docutils literal notranslate"><span class="pre">EM_JS
 asynchronous anymore. Instead, you must tell the compiler that <code class="docutils literal notranslate"><span class="pre">do_fetch()</span></code>
 can do an asynchronous operation using <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, otherwise it won’t
 instrument the code to allow pausing and resuming (see more details later down):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span> <span class="o">-</span><span class="n">s</span> <span class="s1">&#39;ASYNCIFY_IMPORTS=[&quot;do_fetch&quot;]&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sASYNCIFY</span> <span class="o">-</span><span class="n">sASYNCIFY_IMPORTS</span><span class="o">=</span><span class="n">do_fetch</span>
 </pre></div>
 </div>
 <p>Finally, if you can’t use Promises either, you can desugar the example to use
@@ -1308,7 +1309,7 @@ returning a <code class="docutils literal notranslate"><span class="pre">Promise
 </pre></div>
 </div>
 <p>Build with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span><span class="n">bind</span> <span class="o">-</span><span class="n">s</span> <span class="n">ASYNCIFY</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span><span class="n">bind</span> <span class="o">-</span><span class="n">sASYNCIFY</span>
 </pre></div>
 </div>
 <p>Then invoke from JavaScript</p>
@@ -1422,8 +1423,8 @@ later callback, when nothing else is on the stack.</p>
 <section id="migrating-from-older-apis">
 <h2>Migrating from older APIs<a class="headerlink" href="#migrating-from-older-apis" title="Permalink to this headline">¶</a></h2>
 <p>If you have code uses the old Emterpreter-Async API, or the old Asyncify, then
-almost everything should just work when you replace <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EMTERPRETIFY</span></code> usage
-with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ASYNCIFY</span></code>. In particular all the things like <code class="docutils literal notranslate"><span class="pre">emscripten_wget</span></code>
+almost everything should just work when you replace <code class="docutils literal notranslate"><span class="pre">-sEMTERPRETIFY</span></code> usage
+with <code class="docutils literal notranslate"><span class="pre">-sASYNCIFY</span></code>. In particular all the things like <code class="docutils literal notranslate"><span class="pre">emscripten_wget</span></code>
 should just work as they did before.</p>
 <p>Some minor differences include:</p>
 <blockquote>

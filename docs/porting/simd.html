@@ -887,6 +887,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#module-splitting">Module Splitting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -1198,7 +1199,7 @@
 <p>Certain intrinsics in the table below are marked “virtual”. This means that there does not actually exist a native x86 SSE instruction set opcode to implement them, but native compilers offer the function as a convenience. Different compilers might generate a different instruction sequence for these.</p>
 <p>In addition to consulting the tables below, you can turn on diagnostics for slow, emulated functions by defining the macro <cite>WASM_SIMD_COMPAT_SLOW</cite>. This will print out warnings if you attempt to use any of the slow paths (corresponding to ❌ or 💣 in the legend).</p>
 <table class="colwidths-given docutils align-default" id="id6">
-<caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt;</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt; and -msse</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -1550,7 +1551,7 @@
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different SSE2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE2">Intel Intrinsics Guide on SSE2</a>.</p>
 <table class="colwidths-given docutils align-default" id="id7">
-<caption><span class="caption-text">x86 SSE2 intrinsics available via #include &lt;emmintrin.h&gt;</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSE2 intrinsics available via #include &lt;emmintrin.h&gt; and -msse2</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -2229,7 +2230,7 @@
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different SSE3 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE3">Intel Intrinsics Guide on SSE3</a>.</p>
 <table class="colwidths-given docutils align-default" id="id8">
-<caption><span class="caption-text">x86 SSE3 intrinsics available via #include &lt;pmmintrin.h&gt;</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSE3 intrinsics available via #include &lt;pmmintrin.h&gt; and -msse3</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -2289,7 +2290,7 @@
 </table>
 <p>The following table highlights the availability and expected performance of different SSSE3 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSSE3">Intel Intrinsics Guide on SSSE3</a>.</p>
 <table class="colwidths-given docutils align-default" id="id9">
-<caption><span class="caption-text">x86 SSSE3 intrinsics available via #include &lt;tmmintrin.h&gt;</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSSE3 intrinsics available via #include &lt;tmmintrin.h&gt; and -mssse3</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -2359,7 +2360,7 @@
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different SSE4.1 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_1">Intel Intrinsics Guide on SSE4.1</a>.</p>
 <table class="colwidths-given docutils align-default" id="id10">
-<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt;</span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt; and -msse4.1</span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -2557,7 +2558,7 @@
 </table>
 <p>The following table highlights the availability and expected performance of different SSE4.2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_2">Intel Intrinsics Guide on SSE4.2</a>.</p>
 <table class="colwidths-given docutils align-default" id="id11">
-<caption><span class="caption-text">x86 SSE4.2 intrinsics available via #include &lt;nmmintrin.h&gt;</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 SSE4.2 intrinsics available via #include &lt;nmmintrin.h&gt; and -msse4.2</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />
@@ -2582,7 +2583,7 @@
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different AVX intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=AVX">Intel Intrinsics Guide on AVX</a>.</p>
 <table class="colwidths-given docutils align-default" id="id12">
-<caption><span class="caption-text">x86 AVX intrinsics available via #include &lt;immintrin.h&gt;</span><a class="headerlink" href="#id12" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">x86 AVX intrinsics available via #include &lt;immintrin.h&gt; and -mavx</span><a class="headerlink" href="#id12" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 60%" />

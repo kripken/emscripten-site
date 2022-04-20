@@ -887,6 +887,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#module-splitting">Module Splitting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -1176,7 +1177,7 @@ to prevent C++ name mangling.</p>
 </div>
 <p>To compile this code run the following command in the Emscripten
 home directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">_int_sqrt</span> <span class="o">-</span><span class="n">s</span> <span class="n">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="n">ccall</span><span class="p">,</span><span class="n">cwrap</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">_int_sqrt</span> <span class="o">-</span><span class="n">sEXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="n">ccall</span><span class="p">,</span><span class="n">cwrap</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> tells the compiler what we want to be accessible from the
@@ -1233,7 +1234,7 @@ C++ functions won’t work.</p></li>
 from JavaScript:</p>
 <ul>
 <li><p>Exporting is done at compile time. For example:
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXPORTED_FUNCTIONS=_main,_other_function</span></code> exports
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_FUNCTIONS=_main,_other_function</span></code> exports
 <code class="docutils literal notranslate"><span class="pre">main()</span></code> and <code class="docutils literal notranslate"><span class="pre">other_function()</span></code>.</p></li>
 <li><p>Note that you need <code class="docutils literal notranslate"><span class="pre">_</span></code> at the
 beginning of the function names in the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list.</p></li>
@@ -1262,7 +1263,7 @@ didn’t see, like another script tag on the HTML or in the JS console like
 we did in this tutorial, then because of optimizations
 and minification you should export ccall from the runtime, using
 <code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code>, for example using
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">EXPORTED_RUNTIME_METHODS=ccall,cwrap</span></code>,
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_RUNTIME_METHODS=ccall,cwrap</span></code>,
 and call it on <code class="docutils literal notranslate"><span class="pre">Module</span></code> (which contains
 everything exported, in a safe way that is not influenced by minification
 or optimizations).</p></li>
@@ -1288,7 +1289,7 @@ or optimizations).</p></li>
 </pre></div>
 </div>
 <p>Compile the library with emcc:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc api_example.c -o api_example.js -s MODULARIZE -s <span class="nv">EXPORTED_RUNTIME_METHODS</span><span class="o">=</span>ccall
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc api_example.c -o api_example.js -sMODULARIZE -sEXPORTED_RUNTIME_METHODS<span class="o">=</span>ccall
 </pre></div>
 </div>
 <p>Require the library and call its procedures from node:</p>
@@ -1675,7 +1676,7 @@ function pointer. Passing that integer to C code then lets it call that value as
 a function pointer, and the JavaScript function you sent to <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> will
 be called.</p>
 <p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237">test_add_function in tests/test_core.py</a> for an example.</p>
-<p>You should build with <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ALLOW_TABLE_GROWTH</span></code> to allow new functions to be
+<p>You should build with <code class="docutils literal notranslate"><span class="pre">-sALLOW_TABLE_GROWTH</span></code> to allow new functions to be
 added to the table. Otherwise by default the table has a fixed size.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1730,7 +1731,7 @@ to process the data, and finally frees the buffer.</p>
 integer. This could be something like <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">my_function(char</span> <span class="pre">*buf)</span></code>.</p>
 <p>The converse case of exporting allocated memory into JavaScript can be
 tricky when wasm-based memory is allowed to <strong>grow</strong>, by compiling with
-<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ALLOW_MEMORY_GROWTH</span></code>. Increasing the size of memory changes
+<code class="docutils literal notranslate"><span class="pre">-sALLOW_MEMORY_GROWTH</span></code>. Increasing the size of memory changes
 to a new buffer and existing array views essentially become invalid,
 so you cannot simply do this:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">func</span><span class="p">()</span> <span class="p">{</span>

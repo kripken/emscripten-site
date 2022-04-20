@@ -887,6 +887,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#eval-ctors">EVAL_CTORS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#very-large-codebases">Very large codebases</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#running-by-itself">Running by itself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#module-splitting">Module Splitting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#other-optimization-issues">Other optimization issues</a><ul>
@@ -1107,7 +1108,7 @@
 <p>By default, support for pthreads is not enabled. To enable code generation for pthreads, the following command line flags exist:</p>
 <ul class="simple">
 <li><p>Pass the compiler flag <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> when compiling any .c/.cpp files, AND when linking to generate the final output .js file.</p></li>
-<li><p>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;expression&gt;</span></code> to specify a predefined pool of web workers to populate at page <code class="docutils literal notranslate"><span class="pre">preRun</span></code> time before application <code class="docutils literal notranslate"><span class="pre">main()</span></code> is called. This is important because if the workers do not already exist then we may need to wait for the next browser event iteration for certain things, see below. <code class="docutils literal notranslate"><span class="pre">&lt;expression&gt;</span></code> can be any valid JavaScript expression, including integers like <code class="docutils literal notranslate"><span class="pre">8</span></code> for a fixed number of threads or, say, <code class="docutils literal notranslate"><span class="pre">navigator.hardwareConcurrency</span></code> to create as many threads as there are CPU cores.</p></li>
+<li><p>Optionally, pass the linker flag <code class="docutils literal notranslate"><span class="pre">-sPTHREAD_POOL_SIZE=&lt;expression&gt;</span></code> to specify a predefined pool of web workers to populate at page <code class="docutils literal notranslate"><span class="pre">preRun</span></code> time before application <code class="docutils literal notranslate"><span class="pre">main()</span></code> is called. This is important because if the workers do not already exist then we may need to wait for the next browser event iteration for certain things, see below. <code class="docutils literal notranslate"><span class="pre">&lt;expression&gt;</span></code> can be any valid JavaScript expression, including integers like <code class="docutils literal notranslate"><span class="pre">8</span></code> for a fixed number of threads or, say, <code class="docutils literal notranslate"><span class="pre">navigator.hardwareConcurrency</span></code> to create as many threads as there are CPU cores.</p></li>
 </ul>
 <p>There should be no other changes required. In C/C++ code, the preprocessor check <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__EMSCRIPTEN_PTHREADS__</span></code> can be used to detect whether Emscripten is currently targeting pthreads.</p>
 <div class="admonition note">
@@ -1121,7 +1122,7 @@ without threads, and pick between them at runtime.</p>
 <section id="additional-flags">
 <h2>Additional flags<a class="headerlink" href="#additional-flags" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PROXY_TO_PTHREAD</span></code>: In this mode your original <code class="docutils literal notranslate"><span class="pre">main()</span></code> is replaced by
+<li><p><code class="docutils literal notranslate"><span class="pre">-sPROXY_TO_PTHREAD</span></code>: In this mode your original <code class="docutils literal notranslate"><span class="pre">main()</span></code> is replaced by
 a new one that creates a pthread and runs the original <code class="docutils literal notranslate"><span class="pre">main()</span></code> on it. As a
 result, your application’s <code class="docutils literal notranslate"><span class="pre">main()</span></code> is run off the browser main (UI) thread,
 which is good for responsiveness. The browser main thread does still run code
@@ -1210,10 +1211,10 @@ an effect such as a memory write. There are several solutions to this:</p>
 <ol class="arabic simple">
 <li><p>Return to the main event loop (for example, use
 <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop</span></code>, or Asyncify).</p></li>
-<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PTHREAD_POOL_SIZE=&lt;expression&gt;</span></code>. Using a pool
+<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-sPTHREAD_POOL_SIZE=&lt;expression&gt;</span></code>. Using a pool
 creates the Web Workers before main is called, so they can just be used
 when <code class="docutils literal notranslate"><span class="pre">pthread_create</span></code> is called.</p></li>
-<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">PROXY_TO_PTHREAD</span></code>, which will run <code class="docutils literal notranslate"><span class="pre">main()</span></code> on
+<li><p>Use the linker flag <code class="docutils literal notranslate"><span class="pre">-sPROXY_TO_PTHREAD</span></code>, which will run <code class="docutils literal notranslate"><span class="pre">main()</span></code> on
 a worker for you. When doing so, <code class="docutils literal notranslate"><span class="pre">pthread_create</span></code> is proxied to the
 main browser thread, where it can return to the main event loop as needed.</p></li>
 </ol>
