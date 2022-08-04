@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Module object &mdash; Emscripten 3.1.16-git (dev) documentation</title>
+  <title>Module object &mdash; Emscripten 3.1.19-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.16-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="val.h" href="val.h.html"/>
         <link rel="prev" title="Fetch API" href="fetch.html"/> 
@@ -462,6 +462,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
@@ -1299,7 +1300,7 @@ them out, like this: <code class="docutils literal notranslate"><span class="pre
 <dl class="function">
 <dt id="Module.getPreloadedPackage">
 <code class="sig-prename descclassname">Module.</code><code class="sig-name descname">getPreloadedPackage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Module.getPreloadedPackage" title="Permalink to this definition">¶</a></dt>
-<dd><p>If you want to manually manage the download of .data file packages for custom caching, progress reporting and error handling behavior, you can implement the <code class="docutils literal notranslate"><span class="pre">Module.getPreloadedPackage</span> <span class="pre">=</span> <span class="pre">function(remotePackageName,</span> <span class="pre">remotePackageSize)</span></code> callback to provide the contents of the data files back to the file loading scripts. The return value of this callback should be an Arraybuffer with the contents of the downloade file data. See file <code class="docutils literal notranslate"><span class="pre">tests/manual_download_data.html</span></code> and the test <code class="docutils literal notranslate"><span class="pre">browser.test_preload_file_with_manual_data_download</span></code> for an example.</p>
+<dd><p>If you want to manually manage the download of .data file packages for custom caching, progress reporting and error handling behavior, you can implement the <code class="docutils literal notranslate"><span class="pre">Module.getPreloadedPackage</span> <span class="pre">=</span> <span class="pre">function(remotePackageName,</span> <span class="pre">remotePackageSize)</span></code> callback to provide the contents of the data files back to the file loading scripts. The return value of this callback should be an Arraybuffer with the contents of the downloade file data. See file <code class="docutils literal notranslate"><span class="pre">test/manual_download_data.html</span></code> and the test <code class="docutils literal notranslate"><span class="pre">browser.test_preload_file_with_manual_data_download</span></code> for an example.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1307,7 +1308,7 @@ them out, like this: <code class="docutils literal notranslate"><span class="pre
 <code class="sig-prename descclassname">Module.</code><code class="sig-name descname">instantiateWasm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Module.instantiateWasm" title="Permalink to this definition">¶</a></dt>
 <dd><p>When targeting WebAssembly, Module.instantiateWasm is an optional user-implemented callback function that the Emscripten runtime calls to perform the WebAssembly instantiation action. The callback function will be called with two parameters, <code class="docutils literal notranslate"><span class="pre">imports</span></code> and <code class="docutils literal notranslate"><span class="pre">successCallback</span></code>. <code class="docutils literal notranslate"><span class="pre">imports</span></code> is a JS object which contains all the function imports that need to be passed to the WebAssembly Module when instantiating, and once instantiated, this callback function should call <code class="docutils literal notranslate"><span class="pre">successCallback()</span></code> with the generated WebAssembly Instance object.</p>
 <p>The instantiation can be performed either synchronously or asynchronously. The return value of this function should contain the <code class="docutils literal notranslate"><span class="pre">exports</span></code> object of the instantiated WebAssembly Module, or an empty dictionary object <code class="docutils literal notranslate"><span class="pre">{}</span></code> if the instantiation is performed asynchronously, or <code class="docutils literal notranslate"><span class="pre">false</span></code> if instantiation failed.</p>
-<p>Overriding the WebAssembly instantiation procedure via this function is useful when you have other custom asynchronous startup actions or downloads that can be performed in parallel to WebAssembly compilation. Implementing this callback allows performing all of these in parallel. See the file <code class="docutils literal notranslate"><span class="pre">tests/manual_wasm_instantiate.html</span></code> and the test <code class="docutils literal notranslate"><span class="pre">browser.test_manual_wasm_instantiate</span></code> for an example of how this construct works in action.</p>
+<p>Overriding the WebAssembly instantiation procedure via this function is useful when you have other custom asynchronous startup actions or downloads that can be performed in parallel to WebAssembly compilation. Implementing this callback allows performing all of these in parallel. See the file <code class="docutils literal notranslate"><span class="pre">test/manual_wasm_instantiate.html</span></code> and the test <code class="docutils literal notranslate"><span class="pre">browser.test_manual_wasm_instantiate</span></code> for an example of how this construct works in action.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Sanitizers or source map is currently not supported if overriding WebAssembly instantiation with Module.instantiateWasm. Providing Module.instantiateWasm when source map or sanitizer is enabled can prevent WebAssembly instantiation from finishing.</p>
@@ -1442,7 +1443,7 @@ the network.  This attribute is expected to be a string and it defaults to <code
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.16-git (dev)',
+            VERSION:'3.1.19-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 3.1.16-git (dev) documentation</title>
+  <title>Interacting with code &mdash; Emscripten 3.1.19-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.16-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -462,6 +462,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../asyncify.html#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#optimizing">Optimizing</a></li>
@@ -1165,7 +1166,7 @@ and returns the result, while <a class="reference internal" href="../../api_refe
 function and returns a JavaScript function you can call normally.
 <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a> is therefore more useful if you plan to call a compiled
 function a number of times.</p>
-<p>Consider the <strong>tests/hello_function.cpp</strong> file shown below. The
+<p>Consider the <strong>test/hello_function.cpp</strong> file shown below. The
 <code class="docutils literal notranslate"><span class="pre">int_sqrt()</span></code> function to be compiled is wrapped in <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>
 to prevent C++ name mangling.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Copyright</span> <span class="mi">2012</span> <span class="n">The</span> <span class="n">Emscripten</span> <span class="n">Authors</span><span class="o">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="o">.</span>
@@ -1186,7 +1187,7 @@ to prevent C++ name mangling.</p>
 </div>
 <p>To compile this code run the following command in the Emscripten
 home directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">tests</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">_int_sqrt</span> <span class="o">-</span><span class="n">sEXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="n">ccall</span><span class="p">,</span><span class="n">cwrap</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">test</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">_int_sqrt</span> <span class="o">-</span><span class="n">sEXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="n">ccall</span><span class="p">,</span><span class="n">cwrap</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> tells the compiler what we want to be accessible from the
@@ -1463,7 +1464,7 @@ libraries for relevant external symbols.</p>
 where you’ll find parts of Emscripten’s <em>libc</em>). You can put
 the JavaScript implementation in your own library file and add it using
 the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-js-library"><span class="std std-ref">emcc option</span></a> <code class="docutils literal notranslate"><span class="pre">--js-library</span></code>. See
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L5043">test_js_libraries</a> in <strong>tests/test_other.py</strong> for a complete working
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L5043">test_js_libraries</a> in <strong>test/test_other.py</strong> for a complete working
 example, including the syntax you should use inside the JavaScript library
 file.</p>
 <p>As a simple example, consider the case where you have some C code like this:</p>
@@ -1687,7 +1688,7 @@ stripped and no underscore added.</p></li>
 function pointer. Passing that integer to C code then lets it call that value as
 a function pointer, and the JavaScript function you sent to <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> will
 be called.</p>
-<p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237">test_add_function in tests/test_core.py</a> for an example.</p>
+<p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237">test_add_function in test/test_core.py</a> for an example.</p>
 <p>You should build with <code class="docutils literal notranslate"><span class="pre">-sALLOW_TABLE_GROWTH</span></code> to allow new functions to be
 added to the table. Otherwise by default the table has a fixed size.</p>
 <div class="admonition note">
@@ -1706,7 +1707,7 @@ parameter types.</p>
 </ul>
 <p>For example, if you add a function that takes an integer and does not return
 anything, you can do <code class="docutils literal notranslate"><span class="pre">addFunction(your_function,</span> <span class="pre">'vi');</span></code>. See
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/interop/test_add_function_post.js">tests/interop/test_add_function_post.js</a> for an example.</p>
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/interop/test_add_function_post.js">test/interop/test_add_function_post.js</a> for an example.</p>
 </div>
 </section>
 <section id="access-memory-from-javascript">
@@ -1717,7 +1718,7 @@ pointer (a number representing a memory address). <code class="docutils literal 
 LLVM IR type, one of <code class="docutils literal notranslate"><span class="pre">i8</span></code>, <code class="docutils literal notranslate"><span class="pre">i16</span></code>, <code class="docutils literal notranslate"><span class="pre">i32</span></code>, <code class="docutils literal notranslate"><span class="pre">i64</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>,
 <code class="docutils literal notranslate"><span class="pre">double</span></code> or a pointer type like <code class="docutils literal notranslate"><span class="pre">i8*</span></code> (or just <code class="docutils literal notranslate"><span class="pre">*</span></code>).</p>
 <p>There are examples of these functions being used in the tests — see
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/core/test_utf.in">tests/core/test_utf.in</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L4597">tests/test_core.py</a>.</p>
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/core/test_utf.in">test/core/test_utf.in</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L4597">test/test_core.py</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is a lower-level operation than <a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> and
@@ -1959,7 +1960,7 @@ natural fit for the project and its build system.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.16-git (dev)',
+            VERSION:'3.1.19-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

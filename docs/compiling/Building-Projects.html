@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 3.1.16-git (dev) documentation</title>
+  <title>Building Projects &mdash; Emscripten 3.1.19-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.16-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -462,6 +462,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
@@ -1264,7 +1265,7 @@ emcc -g project.o -o project.js
 <h2>Using libraries<a class="headerlink" href="#using-libraries" title="Permalink to this headline">¶</a></h2>
 <p>Built-in support is available for a number of standard libraries: <em>libc</em>, <em>libc++</em> and <em>SDL</em>. These will automatically be linked when you compile code that uses them (you do not even need to add <code class="docutils literal notranslate"><span class="pre">-lSDL</span></code>, but see below for more SDL-specific details).</p>
 <p>If your project uses other libraries, for example
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/zlib">zlib</a>
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/zlib">zlib</a>
 or <em>glib</em>, you will need to build and link them. The normal approach is to build
 the libraries (to object files, or <code class="docutils literal notranslate"><span class="pre">.a</span></code> archives of them) and then link those
 with your main program to emit JavaScript+WebAssembly.</p>
@@ -1285,7 +1286,7 @@ emcc project.o libstuff.a -o final.html
 <section id="emscripten-ports">
 <h2>Emscripten Ports<a class="headerlink" href="#emscripten-ports" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten Ports is a collection of useful libraries, ported to Emscripten. They reside <a class="reference external" href="https://github.com/emscripten-ports">on github</a>, and have integration support in <em>emcc</em>. When you request that a port be used, emcc will fetch it from the remote server, set it up and build it locally, then link it with your project, add necessary include to your build commands, etc. For example, SDL2 is in ports, and you can request that it be used with <code class="docutils literal notranslate"><span class="pre">-sUSE_SDL=2</span></code>. For example,</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc tests/sdl2glshader.c -sUSE_SDL<span class="o">=</span><span class="m">2</span> -sLEGACY_GL_EMULATION -o sdl2.html
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc test/sdl2glshader.c -sUSE_SDL<span class="o">=</span><span class="m">2</span> -sLEGACY_GL_EMULATION -o sdl2.html
 </pre></div>
 </div>
 <p>You should see some notifications about SDL2 being used, and built if it wasn’t previously. You can then view <code class="docutils literal notranslate"><span class="pre">sdl2.html</span></code> in your browser.</p>
@@ -1435,7 +1436,7 @@ set via an environment variable.  e.g:</p>
 </section>
 <section id="examples-test-code">
 <h2>Examples / test code<a class="headerlink" href="#examples-test-code" title="Permalink to this headline">¶</a></h2>
-<p>The Emscripten test suite (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/runner.py">tests/runner.py</a>) contains a number of good examples — large C/C++ projects that are built using their normal build systems as described above: <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/freetype">freetype</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/openjpeg">openjpeg</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/zlib">zlib</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/bullet">bullet</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/tests/third_party/poppler">poppler</a>.</p>
+<p>The Emscripten test suite (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/runner.py">test/runner.py</a>) contains a number of good examples — large C/C++ projects that are built using their normal build systems as described above: <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/freetype">freetype</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/openjpeg">openjpeg</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/zlib">zlib</a>, <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/bullet">bullet</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/poppler">poppler</a>.</p>
 <p>It is also worth looking at the build scripts in the <a class="reference external" href="https://github.com/kripken/ammo.js/blob/main/CMakeLists.txt">ammo.js</a> project.</p>
 </section>
 <section id="troubleshooting">
@@ -1574,7 +1575,7 @@ but a build system might have it hardcoded, or require you to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.16-git (dev)',
+            VERSION:'3.1.19-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 3.1.16-git (dev) documentation</title>
+  <title>Asyncify &mdash; Emscripten 3.1.19-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.16-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="API Reference" href="../api_reference/index.html"/>
         <link rel="prev" title="C++ exceptions support" href="exceptions.html"/> 
@@ -462,6 +462,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#optimizing">Optimizing</a></li>
@@ -1287,6 +1288,42 @@ the list of imports to the wasm module that the Asyncify instrumentation must be
 aware of. Giving it that list tells it that all other JS calls will <strong>not</strong> do
 an async operation, which lets it not add overhead where it isn’t needed.</p>
 </section>
+<section id="asyncify-with-dynamic-linking">
+<h2>Asyncify with Dynamic Linking<a class="headerlink" href="#asyncify-with-dynamic-linking" title="Permalink to this headline">¶</a></h2>
+<p>If you want to use Asyncify in dynamic libraries, those methods which are imported
+from other linked modules (and that will be on the stack in an async operation)
+should be listed in <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// sleep.cpp</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
+
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep_for_seconds</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>In the side module, you can compile sleep.cpp in the ordinal emscripten dynamic
+linking manner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">sleep</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">libsleep</span><span class="o">.</span><span class="n">wasm</span> <span class="o">-</span><span class="n">sASYNCIFY</span> <span class="o">-</span><span class="n">sSIDE_MODULE</span>
+</pre></div>
+</div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// main.cpp</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
+
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep_for_seconds</span><span class="p">();</span><span class="w"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">sleep_for_seconds</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>In the main module, the compiler doesn’t statically know that <code class="docutils literal notranslate"><span class="pre">sleep_for_seconds</span></code> is
+asynchronous. Therefore, you must add <code class="docutils literal notranslate"><span class="pre">sleep_for_seconds</span></code> to the <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>
+list.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">main</span><span class="o">.</span><span class="n">cpp</span> <span class="n">libsleep</span><span class="o">.</span><span class="n">wasm</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">sASYNCIFY</span> <span class="o">-</span><span class="n">sASYNCIFY_IMPORTS</span><span class="o">=</span><span class="n">sleep_for_seconds</span> <span class="o">-</span><span class="n">sMAIN_MODULE</span>
+</pre></div>
+</div>
+</section>
 <section id="usage-with-embind">
 <h2>Usage with Embind<a class="headerlink" href="#usage-with-embind" title="Permalink to this headline">¶</a></h2>
 <p>If you’re using <a class="reference internal" href="connecting_cpp_and_javascript/embind.html#embind-val-guide"><span class="std std-ref">Embind</span></a> for interaction with JavaScript
@@ -1559,7 +1596,7 @@ examples.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.16-git (dev)',
+            VERSION:'3.1.19-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

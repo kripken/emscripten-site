@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.16-git (dev) documentation</title>
+  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.19-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.16-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Files and File Systems" href="index.html"/>
         <link rel="next" title="Multimedia and Graphics" href="../multimedia_and_graphics/index.html"/>
         <link rel="prev" title="Packaging Files" href="packaging_files.html"/> 
@@ -462,6 +462,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../asyncify.html#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../asyncify.html#optimizing">Optimizing</a></li>
@@ -1123,8 +1124,8 @@
 </div>
 <section id="test-code">
 <h2>Test code<a class="headerlink" href="#test-code" title="Permalink to this headline">¶</a></h2>
-<p>An example of how to implement a synchronous virtual XHR backed file system is provided in the test code at <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L1313">tests/test_browser.py</a> (see <code class="docutils literal notranslate"><span class="pre">test_chunked_synchronous_xhr</span></code>). The test case also contains an HTTP server (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L14">test_chunked_synchronous_xhr_server</a>) showing CORS headers that might need to be set (if the resources are hosted from the same domain Emscripten runs from, there is no issue).</p>
-<p>The tests use <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/checksummer.c">checksummer.c</a> as the Emscripten-compiled program. This is simply a vanilla C program using synchronous <em>libc</em> file system calls like <code class="docutils literal notranslate"><span class="pre">fopen()</span></code>, <code class="docutils literal notranslate"><span class="pre">fread()</span></code>, <code class="docutils literal notranslate"><span class="pre">fclose()</span></code> etc.</p>
+<p>An example of how to implement a synchronous virtual XHR backed file system is provided in the test code at <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L1313">test/test_browser.py</a> (see <code class="docutils literal notranslate"><span class="pre">test_chunked_synchronous_xhr</span></code>). The test case also contains an HTTP server (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L14">test_chunked_synchronous_xhr_server</a>) showing CORS headers that might need to be set (if the resources are hosted from the same domain Emscripten runs from, there is no issue).</p>
+<p>The tests use <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/checksummer.c">checksummer.c</a> as the Emscripten-compiled program. This is simply a vanilla C program using synchronous <em>libc</em> file system calls like <code class="docutils literal notranslate"><span class="pre">fopen()</span></code>, <code class="docutils literal notranslate"><span class="pre">fread()</span></code>, <code class="docutils literal notranslate"><span class="pre">fclose()</span></code> etc.</p>
 <p>JavaScript code is added (using <em>emcc</em>’s <a class="reference internal" href="../../tools_reference/emcc.html#emcc-pre-js"><span class="std std-ref">pre-js</span></a> option) to map the file system calls in <strong>checksummer.c</strong> to a file in the virtual file system. This file is <em>created</em> early in Emscripten initialisation using <a class="reference internal" href="../../api_reference/Filesystem-API.html#FS.createLazyFile" title="FS.createLazyFile"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.createLazyFile()</span></code></a>, but only loaded with content from the server when the file is first accessed by compiled code. The added JavaScript code also sets up communication between the web worker and the main thread.</p>
 </section>
 <section id="instructions">
@@ -1187,7 +1188,7 @@
       <span class="nb">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">run_process</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
       <span class="bp">self</span><span class="o">.</span><span class="n">assertExists</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">run_browser</span><span class="p">(</span><span class="s1">&#39;main.html&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;/report_result?hello from worker, and :&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;data for w&#39;</span> <span class="k">if</span> <span class="n">file_data</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">run_browser</span><span class="p">(</span><span class="s1">&#39;main.html&#39;</span><span class="p">,</span> <span class="s1">&#39;/report_result?hello from worker, and :&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;data for w&#39;</span> <span class="k">if</span> <span class="n">file_data</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">assertContained</span><span class="p">(</span><span class="s1">&#39;you should not see this text when in a worker!&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_js</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">))</span> <span class="c1"># code should run standalone too</span>
 
@@ -1360,7 +1361,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.16-git (dev)',
+            VERSION:'3.1.19-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

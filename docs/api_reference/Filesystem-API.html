@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 3.1.16-git (dev) documentation</title>
+  <title>File System API &mdash; Emscripten 3.1.19-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.16-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Fetch API" href="fetch.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -462,6 +462,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
@@ -1117,7 +1118,7 @@ group permissions are defined but ignored in <a class="reference internal" href=
 </div>
 <p>Emscripten predominantly compiles code that uses synchronous file I/O, so the majority of the <code class="docutils literal notranslate"><span class="pre">FS</span></code> member functions offer a synchronous interface (with errors being reported by raising exceptions of type <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/system/lib/libc/musl/arch/emscripten/bits/errno.h">FS.ErrnoError</a>).</p>
 <p>File data in Emscripten is partitioned by mounted file systems. Several file systems are provided. An instance of <a class="reference internal" href="#filesystem-api-memfs"><span class="std std-ref">MEMFS</span></a> is mounted to <code class="docutils literal notranslate"><span class="pre">/</span></code> by default. The subdirectories <cite>/home/web_user</cite> and <cite>/tmp</cite> are also created automatically, in addition to several other special devices and streams (e.g. <cite>/dev/null</cite>, <cite>/dev/random</cite>, <cite>/dev/stdin</cite>, <cite>/proc/self/fd</cite>); see <cite>FS.staticInit()</cite> in the FS library for full details. Instances of <a class="reference internal" href="#filesystem-api-nodefs"><span class="std std-ref">NODEFS</span></a> and <a class="reference internal" href="#filesystem-api-idbfs"><span class="std std-ref">IDBFS</span></a> can be mounted to other directories if your application needs to <a class="reference internal" href="#filesystem-api-persist-data"><span class="std std-ref">persist data</span></a>.</p>
-<p>The automatic tests in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L4285">tests/test_core.py</a> (search for <code class="docutils literal notranslate"><span class="pre">test_files</span></code>) contain many examples of how to use this API. The <a class="reference internal" href="../getting_started/Tutorial.html#tutorial-files"><span class="std std-ref">tutorial</span></a> also shows how to pre-load a file so that it can be read from compiled C/C++.</p>
+<p>The automatic tests in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L4285">test/test_core.py</a> (search for <code class="docutils literal notranslate"><span class="pre">test_files</span></code>) contain many examples of how to use this API. The <a class="reference internal" href="../getting_started/Tutorial.html#tutorial-files"><span class="std std-ref">tutorial</span></a> also shows how to pre-load a file so that it can be read from compiled C/C++.</p>
 <p>A high level overview of the way File Systems work in Emscripten-ported code is provided in the <a class="reference internal" href="../porting/files/file_systems_overview.html#file-system-overview"><span class="std std-ref">File System Overview</span></a>.</p>
 <section id="new-file-system-wasmfs">
 <h2>New File System: WasmFS<a class="headerlink" href="#new-file-system-wasmfs" title="Permalink to this headline">¶</a></h2>
@@ -1158,7 +1159,7 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <p>This file system is only for use when running inside <a class="reference internal" href="../site/glossary.html#term-node-js"><span class="xref std std-term">node.js</span></a>.</p>
 </div>
 <p>This file system lets a program in <em>node</em> map directories (via a mount operation) on the host filesystem to directories in Emscripten’s virtual filesystem. It uses node’s synchronous <a class="reference external" href="http://nodejs.org/api/fs.html">FS API</a> to immediately persist any data written to the Emscripten file system to your local disk.</p>
-<p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/fs/test_nodefs_rw.c">this test</a> for an example.</p>
+<p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/fs/test_nodefs_rw.c">this test</a> for an example.</p>
 </section>
 <section id="noderawfs">
 <span id="filesystem-api-noderawfs"></span><h3>NODERAWFS<a class="headerlink" href="#noderawfs" title="Permalink to this headline">¶</a></h3>
@@ -1351,7 +1352,7 @@ system’s persistent data.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>A real example of this functionality can be seen in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tests/fs/test_idbfs_sync.c">test_idbfs_sync.c</a>.</p>
+<p>A real example of this functionality can be seen in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/fs/test_idbfs_sync.c">test_idbfs_sync.c</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2380,7 +2381,7 @@ if it is a symlink.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.16-git (dev)',
+            VERSION:'3.1.19-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
