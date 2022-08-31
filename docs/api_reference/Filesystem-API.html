@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System API &mdash; Emscripten 3.1.19-git (dev) documentation</title>
+  <title>File System API &mdash; Emscripten 3.1.21-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.21-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Fetch API" href="fetch.html"/>
         <link rel="prev" title="preamble.js" href="preamble.js.html"/> 
@@ -85,10 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
@@ -200,6 +197,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -495,6 +493,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1190,12 +1189,12 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <section id="proxyfs">
 <span id="filesystem-api-proxyfs"></span><h3>PROXYFS<a class="headerlink" href="#proxyfs" title="Permalink to this headline">¶</a></h3>
 <p>This allows a module to mount another module’s file system. This is useful when separate modules need to share a file system without manually syncing file contents. For example:</p>
-<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Module 2 can use the path &quot;/fs1&quot; to access and modify Module 1&#39;s filesystem</span>
-<span class="nx">module2</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s2">&quot;/fs1&quot;</span><span class="p">);</span>
-<span class="nx">module2</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">module2</span><span class="p">.</span><span class="nx">PROXYFS</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">root</span><span class="o">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-    <span class="nx">fs</span><span class="o">:</span> <span class="nx">module1</span><span class="p">.</span><span class="nx">FS</span>
-<span class="p">},</span> <span class="s2">&quot;/fs1&quot;</span><span class="p">);</span>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="c1">// Module 2 can use the path &quot;/fs1&quot; to access and modify Module 1&#39;s filesystem</span><span class="w"></span>
+<span class="nx">module2</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s2">&quot;/fs1&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">module2</span><span class="p">.</span><span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">module2</span><span class="p">.</span><span class="nx">PROXYFS</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">root</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nx">fs</span><span class="o">:</span><span class="w"> </span><span class="nx">module1</span><span class="p">.</span><span class="nx">FS</span><span class="w"></span>
+<span class="p">},</span><span class="w"> </span><span class="s2">&quot;/fs1&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -1279,26 +1278,26 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <li><p><strong>type</strong> – The <a class="reference internal" href="#filesystem-api-filesystems"><span class="std std-ref">file system type</span></a>: <code class="docutils literal notranslate"><span class="pre">MEMFS</span></code>, <code class="docutils literal notranslate"><span class="pre">NODEFS</span></code>, <code class="docutils literal notranslate"><span class="pre">IDBFS</span></code> or <code class="docutils literal notranslate"><span class="pre">WORKERFS</span></code>.</p></li>
 <li><p><strong>opts</strong> (<em>object</em>) – <p>A generic settings object used by the underlying file system.</p>
 <p><code class="docutils literal notranslate"><span class="pre">NODEFS</span></code> uses the <cite>root</cite> parameter to map the Emscripten directory to the physical directory. For example, to mount the current folder as a NODEFS instance:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">NODEFS</span><span class="p">,</span> <span class="p">{</span> <span class="nx">root</span><span class="o">:</span> <span class="s1">&#39;.&#39;</span> <span class="p">},</span> <span class="s1">&#39;/working&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">NODEFS</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">root</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;.&#39;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s1">&#39;/working&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">WORKERFS</span></code> accepts <cite>files</cite> and <cite>blobs</cite> parameters to map a provided flat list of files into the <code class="docutils literal notranslate"><span class="pre">mountpoint</span></code> directory:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="s1">&#39;blob data&#39;</span><span class="p">]);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">WORKERFS</span><span class="p">,</span> <span class="p">{</span>
-  <span class="nx">blobs</span><span class="o">:</span> <span class="p">[{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;blob.txt&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">blob</span> <span class="p">}],</span>
-  <span class="nx">files</span><span class="o">:</span> <span class="nx">files</span><span class="p">,</span> <span class="c1">// Array of File objects or FileList</span>
-<span class="p">},</span> <span class="s1">&#39;/working&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Blob</span><span class="p">([</span><span class="s1">&#39;blob data&#39;</span><span class="p">]);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">WORKERFS</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">blobs</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;blob.txt&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="p">}],</span><span class="w"></span>
+<span class="w">  </span><span class="nx">files</span><span class="o">:</span><span class="w"> </span><span class="nx">files</span><span class="p">,</span><span class="w"> </span><span class="c1">// Array of File objects or FileList</span><span class="w"></span>
+<span class="p">},</span><span class="w"> </span><span class="s1">&#39;/working&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>You can also pass in a package of files, created by <code class="docutils literal notranslate"><span class="pre">tools/file_packager</span></code> with <code class="docutils literal notranslate"><span class="pre">--separate-metadata</span></code>. You must
 provide the metadata as a JSON object, and the data as a blob:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// load metadata and blob using XMLHttpRequests, or IndexedDB, or from someplace else</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">WORKERFS</span><span class="p">,</span> <span class="p">{</span>
-  <span class="nx">packages</span><span class="o">:</span> <span class="p">[{</span> <span class="nx">metadata</span><span class="o">:</span> <span class="nx">meta</span><span class="p">,</span> <span class="nx">blob</span><span class="o">:</span> <span class="nx">blob</span> <span class="p">}]</span>
-<span class="p">},</span> <span class="s1">&#39;/working&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// load metadata and blob using XMLHttpRequests, or IndexedDB, or from someplace else</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/working&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">WORKERFS</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">packages</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">metadata</span><span class="o">:</span><span class="w"> </span><span class="nx">meta</span><span class="p">,</span><span class="w"> </span><span class="nx">blob</span><span class="o">:</span><span class="w"> </span><span class="nx">blob</span><span class="w"> </span><span class="p">}]</span><span class="w"></span>
+<span class="p">},</span><span class="w"> </span><span class="s1">&#39;/working&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </p></li>
@@ -1336,20 +1335,20 @@ synchronous and don’t require synchronization.</p>
 underlying synchronization between Emscripten`s internal data, and the file
 system’s persistent data.</p>
 <p>For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">myAppStartup</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">);</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">IDBFS</span><span class="p">,</span> <span class="p">{},</span> <span class="s1">&#39;/data&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">myAppStartup</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">mount</span><span class="p">(</span><span class="nx">IDBFS</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="s1">&#39;/data&#39;</span><span class="p">);</span><span class="w"></span>
 
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">syncfs</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// handle callback</span>
-  <span class="p">});</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">syncfs</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// handle callback</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kd">function</span> <span class="nx">myAppShutdown</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">syncfs</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// handle callback</span>
-  <span class="p">});</span>
-<span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">myAppShutdown</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">syncfs</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// handle callback</span><span class="w"></span>
+<span class="w">  </span><span class="p">});</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>A real example of this functionality can be seen in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/fs/test_idbfs_sync.c">test_idbfs_sync.c</a>.</p>
@@ -1367,7 +1366,7 @@ system’s persistent data.</p>
 <dt id="FS.mkdir">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new directory node in the file system. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;/data&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1388,9 +1387,9 @@ system’s persistent data.</p>
 <dt id="FS.mkdev">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">mkdev</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">mode</em>, <em class="sig-param">dev</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.mkdev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new device node in the file system referencing the registered device driver (<a class="reference internal" href="#FS.registerDevice" title="FS.registerDevice"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.registerDevice()</span></code></a>) for <code class="docutils literal notranslate"><span class="pre">dev</span></code>. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">FS</span><span class="p">.</span><span class="nx">makedev</span><span class="p">(</span><span class="mf">64</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">registerDevice</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">mkdev</span><span class="p">(</span><span class="s1">&#39;/dummy&#39;</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">FS</span><span class="p">.</span><span class="nx">makedev</span><span class="p">(</span><span class="mf">64</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">registerDevice</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="p">{});</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">mkdev</span><span class="p">(</span><span class="s1">&#39;/dummy&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1409,8 +1408,8 @@ system’s persistent data.</p>
 <dt id="FS.symlink">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">symlink</code><span class="sig-paren">(</span><em class="sig-param">oldpath</em>, <em class="sig-param">newpath</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.symlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a symlink node at <code class="docutils literal notranslate"><span class="pre">newpath</span></code> linking to <code class="docutils literal notranslate"><span class="pre">oldpath</span></code>. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;foobar&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">symlink</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;foobar&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">symlink</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;link&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1427,8 +1426,8 @@ system’s persistent data.</p>
 <dt id="FS.rename">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">rename</code><span class="sig-paren">(</span><em class="sig-param">oldpath</em>, <em class="sig-param">newpath</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.rename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Renames the node at <code class="docutils literal notranslate"><span class="pre">oldpath</span></code> to <code class="docutils literal notranslate"><span class="pre">newpath</span></code>. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;foobar&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">rename</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;newfile&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;foobar&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">rename</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;newfile&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1446,8 +1445,8 @@ system’s persistent data.</p>
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">rmdir</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.rmdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes an empty directory located at <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 <p>Example</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">rmdir</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">mkdir</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">rmdir</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1465,8 +1464,8 @@ system’s persistent data.</p>
 <dd><p>Unlinks the node at <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
 <p>This removes a name from the file system. If that name was the last link to a file (and no processes have the file open) the file is deleted.</p>
 <p>For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;/foobar.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello, world&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="s1">&#39;/foobar.txt&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;/foobar.txt&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Hello, world&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="s1">&#39;/foobar.txt&#39;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1576,8 +1575,8 @@ int main() {
 <p>The underlying implementation does not support user or group permissions. The caller is always treated as the owner of the folder, and only permissions relevant to the owner apply.</p>
 </div>
 <p>For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;forbidden&#39;</span><span class="p">,</span> <span class="s1">&#39;can\&#39;t touch this&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">chmod</span><span class="p">(</span><span class="s1">&#39;forbidden&#39;</span><span class="p">,</span> <span class="mo">0000</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;forbidden&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;can\&#39;t touch this&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">chmod</span><span class="p">(</span><span class="s1">&#39;forbidden&#39;</span><span class="p">,</span><span class="w"> </span><span class="mo">0000</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1808,10 +1807,10 @@ int main() {
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">stream</em>, <em class="sig-param">buffer</em>, <em class="sig-param">offset</em>, <em class="sig-param">length</em><span class="optional">[</span>, <em class="sig-param">position</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#FS.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read <code class="docutils literal notranslate"><span class="pre">length</span></code> bytes from the stream, storing them into <code class="docutils literal notranslate"><span class="pre">buffer</span></code> starting at <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
 <p>By default, reading starts from the stream’s current offset, however, a specific offset can be specified with the <code class="docutils literal notranslate"><span class="pre">position</span></code> argument. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">stream</span> <span class="o">=</span> <span class="nx">FS</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;abinaryfile&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">buf</span> <span class="o">=</span> <span class="ow">new</span> <span class="nb">Uint8Array</span><span class="p">(</span><span class="mf">4</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">buf</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">4</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">FS</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;abinaryfile&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;r&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Uint8Array</span><span class="p">(</span><span class="mf">4</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span><span class="w"> </span><span class="nx">buf</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1832,10 +1831,10 @@ int main() {
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">stream</em>, <em class="sig-param">buffer</em>, <em class="sig-param">offset</em>, <em class="sig-param">length</em><span class="optional">[</span>, <em class="sig-param">position</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#FS.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes <code class="docutils literal notranslate"><span class="pre">length</span></code> bytes from <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, starting at <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
 <p>By default, writing starts from the stream’s current offset, however, a specific offset can be specified with the <code class="docutils literal notranslate"><span class="pre">position</span></code> argument. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="ow">new</span> <span class="nb">Uint8Array</span><span class="p">(</span><span class="mf">32</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">stream</span> <span class="o">=</span> <span class="nx">FS</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;dummy&#39;</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Uint8Array</span><span class="p">(</span><span class="mf">32</span><span class="p">);</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">FS</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;dummy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;w+&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">stream</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">close</span><span class="p">(</span><span class="nx">stream</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1878,8 +1877,8 @@ Read flags, as defined in <a class="reference internal" href="#FS.open" title="F
 <dt id="FS.writeFile">
 <code class="sig-prename descclassname">FS.</code><code class="sig-name descname">writeFile</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">data</em>, <em class="sig-param">opts</em><span class="sig-paren">)</span><a class="headerlink" href="#FS.writeFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the entire contents of <code class="docutils literal notranslate"><span class="pre">data</span></code> to the file at <code class="docutils literal notranslate"><span class="pre">path</span></code>. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;foobar&#39;</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">contents</span> <span class="o">=</span> <span class="nx">FS</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">encoding</span><span class="o">:</span> <span class="s1">&#39;utf8&#39;</span> <span class="p">});</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;foobar&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">contents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">FS</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">encoding</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;utf8&#39;</span><span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1906,8 +1905,8 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 <p>Firefox and Chrome have recently disabled synchronous binary XHRs, which means this cannot work for JavaScript in regular HTML pages (but it works within Web Workers).</p>
 </div>
 <p>Example</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">createLazyFile</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;other/page.htm&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-<span class="nx">FS</span><span class="p">.</span><span class="nx">createLazyFile</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;/get_file.php?name=baz&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">FS</span><span class="p">.</span><span class="nx">createLazyFile</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;foo&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;other/page.htm&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span><span class="w"></span>
+<span class="nx">FS</span><span class="p">.</span><span class="nx">createLazyFile</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;/get_file.php?name=baz&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1964,55 +1963,55 @@ Write flags, as defined in <a class="reference internal" href="#FS.open" title="
 </dd>
 </dl>
 <p>Example Code</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">EM_ASM</span><span class="p">(</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;willMovePath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oldpath</span><span class="p">,</span> <span class="nx">newpath</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;About to move &quot;&#39;</span> <span class="o">+</span> <span class="nx">oldpath</span> <span class="o">+</span> <span class="s1">&#39;&quot; to &quot;&#39;</span> <span class="o">+</span> <span class="nx">newpath</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onMovePath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oldpath</span><span class="p">,</span> <span class="nx">newpath</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Moved &quot;&#39;</span> <span class="o">+</span> <span class="nx">oldpath</span> <span class="o">+</span> <span class="s1">&#39;&quot; to &quot;&#39;</span> <span class="o">+</span> <span class="nx">newpath</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;willDeletePath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;About to delete &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onDeletePath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Deleted &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onOpenFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">flags</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Opened &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot; with flags &#39;</span> <span class="o">+</span> <span class="nx">flags</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onReadFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">bytesRead</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Read &#39;</span> <span class="o">+</span> <span class="nx">bytesRead</span> <span class="o">+</span> <span class="s1">&#39; bytes from &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onWriteToFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">bytesWritten</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Wrote to file &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot; with &#39;</span> <span class="o">+</span> <span class="nx">bytesWritten</span> <span class="o">+</span> <span class="s1">&#39; bytes written&#39;</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onSeekFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">position</span><span class="p">,</span> <span class="nx">whence</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Seek on &quot;&#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39;&quot; with position &#39;</span> <span class="o">+</span> <span class="nx">position</span> <span class="o">+</span> <span class="s1">&#39; and whence &#39;</span> <span class="o">+</span> <span class="nx">whence</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onCloseFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Closed &#39;</span> <span class="o">+</span> <span class="nx">path</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onMakeDirectory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">mode</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Created directory &#39;</span> <span class="o">+</span> <span class="nx">path</span> <span class="o">+</span> <span class="s1">&#39; with mode &#39;</span> <span class="o">+</span> <span class="nx">mode</span><span class="p">);</span>
-  <span class="p">};</span>
-  <span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onMakeSymlink&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">oldpath</span><span class="p">,</span> <span class="nx">newpath</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Created symlink from &#39;</span> <span class="o">+</span> <span class="nx">oldpath</span> <span class="o">+</span> <span class="s1">&#39; to &#39;</span> <span class="o">+</span> <span class="nx">newpath</span><span class="p">);</span>
-  <span class="p">};</span>
-<span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">EM_ASM</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;willMovePath&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">oldpath</span><span class="p">,</span><span class="w"> </span><span class="nx">newpath</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;About to move &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">oldpath</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot; to &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">newpath</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onMovePath&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">oldpath</span><span class="p">,</span><span class="w"> </span><span class="nx">newpath</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Moved &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">oldpath</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot; to &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">newpath</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;willDeletePath&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;About to delete &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onDeletePath&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Deleted &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onOpenFile&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">flags</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Opened &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot; with flags &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">flags</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onReadFile&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">bytesRead</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Read &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">bytesRead</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; bytes from &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onWriteToFile&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">bytesWritten</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Wrote to file &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot; with &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">bytesWritten</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; bytes written&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onSeekFile&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">position</span><span class="p">,</span><span class="w"> </span><span class="nx">whence</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Seek on &quot;&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;&quot; with position &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; and whence &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">whence</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onCloseFile&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Closed &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onMakeDirectory&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">mode</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Created directory &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; with mode &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">mode</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="nx">FS</span><span class="p">.</span><span class="nx">trackingDelegate</span><span class="p">[</span><span class="s1">&#39;onMakeSymlink&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">oldpath</span><span class="p">,</span><span class="w"> </span><span class="nx">newpath</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">out</span><span class="p">(</span><span class="s1">&#39;Created symlink from &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">oldpath</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39; to &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">newpath</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="nx">FILE</span> <span class="o">*</span><span class="nx">file</span><span class="p">;</span>
-<span class="nx">file</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="s2">&quot;/test.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">);</span>
-<span class="nx">fputs</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
-<span class="nx">fclose</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
-<span class="nx">rename</span><span class="p">(</span><span class="s2">&quot;/test.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;/renamed.txt&quot;</span><span class="p">);</span>
-<span class="nx">file</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">);</span>
-<span class="kr">char</span> <span class="nx">str</span><span class="p">[</span><span class="mf">256</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-<span class="nx">fgets</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="mf">255</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
-<span class="nx">printf</span><span class="p">(</span><span class="s2">&quot;File read returned &#39;%s&#39;\n&quot;</span><span class="p">,</span> <span class="nx">str</span><span class="p">);</span>
-<span class="nx">fclose</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
-<span class="nx">remove</span><span class="p">(</span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">);</span>
-<span class="nx">mkdir</span><span class="p">(</span><span class="s2">&quot;/home/test&quot;</span><span class="p">,</span> <span class="nx">S_IRWXU</span> <span class="o">|</span> <span class="nx">S_IRWXG</span> <span class="o">|</span> <span class="nx">S_IROTH</span> <span class="o">|</span> <span class="nx">S_IXOTH</span><span class="p">);</span>
-<span class="nx">symlink</span><span class="p">(</span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;/file.txt&quot;</span><span class="p">);</span>
+<span class="nx">FILE</span><span class="w"> </span><span class="o">*</span><span class="nx">file</span><span class="p">;</span><span class="w"></span>
+<span class="nx">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">fopen</span><span class="p">(</span><span class="s2">&quot;/test.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;w&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">fputs</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">file</span><span class="p">);</span><span class="w"></span>
+<span class="nx">fclose</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span><span class="w"></span>
+<span class="nx">rename</span><span class="p">(</span><span class="s2">&quot;/test.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">fopen</span><span class="p">(</span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;r&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="kr">char</span><span class="w"> </span><span class="nx">str</span><span class="p">[</span><span class="mf">256</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+<span class="nx">fgets</span><span class="p">(</span><span class="nx">str</span><span class="p">,</span><span class="w"> </span><span class="mf">255</span><span class="p">,</span><span class="w"> </span><span class="nx">file</span><span class="p">);</span><span class="w"></span>
+<span class="nx">printf</span><span class="p">(</span><span class="s2">&quot;File read returned &#39;%s&#39;\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">str</span><span class="p">);</span><span class="w"></span>
+<span class="nx">fclose</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span><span class="w"></span>
+<span class="nx">remove</span><span class="p">(</span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="nx">mkdir</span><span class="p">(</span><span class="s2">&quot;/home/test&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">S_IRWXU</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">S_IRWXG</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">S_IROTH</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">S_IXOTH</span><span class="p">);</span><span class="w"></span>
+<span class="nx">symlink</span><span class="p">(</span><span class="s2">&quot;/renamed.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/file.txt&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Example Output</p>
@@ -2205,10 +2204,10 @@ For example, consider a symlink <code class="docutils literal notranslate"><span
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>an object with the format:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nx">path</span><span class="o">:</span> <span class="nx">resolved_path</span><span class="p">,</span>
-  <span class="nx">node</span><span class="o">:</span> <span class="nx">resolved_node</span>
-<span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="nx">resolved_path</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">node</span><span class="o">:</span><span class="w"> </span><span class="nx">resolved_node</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </p>
@@ -2233,17 +2232,17 @@ if it is a symlink.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>an object with the format:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nx">isRoot</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">,</span>
-  <span class="nx">exists</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">,</span>
-  <span class="nx">error</span><span class="o">:</span> <span class="ne">Error</span><span class="p">,</span>
-  <span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">,</span>
-  <span class="nx">path</span><span class="o">:</span> <span class="nx">resolved_path</span><span class="p">,</span>
-  <span class="nx">object</span><span class="o">:</span> <span class="nx">resolved_node</span><span class="p">,</span>
-  <span class="nx">parentExists</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">,</span>
-  <span class="nx">parentPath</span><span class="o">:</span> <span class="nx">resolved_parent_path</span><span class="p">,</span>
-  <span class="nx">parentObject</span><span class="o">:</span> <span class="nx">resolved_parent_node</span>
-<span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">isRoot</span><span class="o">:</span><span class="w"> </span><span class="kr">boolean</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">exists</span><span class="o">:</span><span class="w"> </span><span class="kr">boolean</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="ne">Error</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="nx">resolved_path</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">object</span><span class="o">:</span><span class="w"> </span><span class="nx">resolved_node</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">parentExists</span><span class="o">:</span><span class="w"> </span><span class="kr">boolean</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">parentPath</span><span class="o">:</span><span class="w"> </span><span class="nx">resolved_parent_path</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">parentObject</span><span class="o">:</span><span class="w"> </span><span class="nx">resolved_parent_node</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </p>
@@ -2381,7 +2380,7 @@ if it is a symlink.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.19-git (dev)',
+            VERSION:'3.1.21-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 3.1.19-git (dev) documentation</title>
+  <title>emscripten.h &mdash; Emscripten 3.1.21-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.21-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -85,10 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
@@ -200,6 +197,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -495,6 +493,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -2567,12 +2566,12 @@ int <code class="sig-name descname">emscripten_print_double</code><span class="s
 <p>Only a single callback function may be registered to handle any given event, so calling a given registration function more than once will cause the first callback to be replaced. Similarly, passing a <code class="docutils literal notranslate"><span class="pre">NULL</span></code> callback function to any <code class="docutils literal notranslate"><span class="pre">emscripten_set_socket_*_callback</span></code> call will de-register the callback registered for that event.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">userData</span></code> pointer allows arbitrary data specified during event registration to be passed to the callback, this is particularly useful for passing <code class="docutils literal notranslate"><span class="pre">this</span></code> pointers around in Object Oriented code.</p>
 <p>In addition to being able to register network callbacks from C it is also possible for native JavaScript code to directly use the underlying mechanism used to implement the callback registration. For example, the following code shows simple logging callbacks that are registered by default when <code class="docutils literal notranslate"><span class="pre">SOCKET_DEBUG</span></code> is enabled:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket error &#39;</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);});</span>
-<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket open fd = &#39;</span> <span class="o">+</span> <span class="nx">fd</span><span class="p">);});</span>
-<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;listen&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket listen fd = &#39;</span> <span class="o">+</span> <span class="nx">fd</span><span class="p">);});</span>
-<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;connection&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket connection fd = &#39;</span> <span class="o">+</span> <span class="nx">fd</span><span class="p">);});</span>
-<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket message fd = &#39;</span> <span class="o">+</span> <span class="nx">fd</span><span class="p">);});</span>
-<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span> <span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket close fd = &#39;</span> <span class="o">+</span> <span class="nx">fd</span><span class="p">);});</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;error&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket error &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">error</span><span class="p">);});</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket open fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;listen&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket listen fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;connection&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket connection fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;message&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket message fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;close&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket close fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Most of the JavaScript callback functions above get passed the file descriptor of the socket that triggered the callback, the on error callback however gets passed an <em>array</em> that contains the file descriptor, the error code and an error message.</p>
@@ -3065,7 +3064,7 @@ to constantly check for after any wasm code runs. See
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.19-git (dev)',
+            VERSION:'3.1.21-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

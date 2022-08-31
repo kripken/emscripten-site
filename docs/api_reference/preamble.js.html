@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 3.1.19-git (dev) documentation</title>
+  <title>preamble.js &mdash; Emscripten 3.1.21-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.21-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -85,10 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
@@ -200,6 +197,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -495,6 +493,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1135,13 +1134,13 @@
 <dd><p>Call a compiled C function from JavaScript.</p>
 <p>The function executes a compiled C function from JavaScript and returns the result. C++ name mangling means that “normal” C++ functions cannot be called; the function must either be defined in a <strong>.c</strong> file or be a C++ function defined with <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">returnType</span></code> and <code class="docutils literal notranslate"><span class="pre">argTypes</span></code> let you specify the types of parameters and the return value. The possible types are <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code>, which correspond to the appropriate JavaScript types. Use <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code> for any numeric type or C pointer, <code class="docutils literal notranslate"><span class="pre">string</span></code> for C <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represent strings, <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code> for a boolean type, <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code> for JavaScript arrays and typed arrays, containing 8-bit integer data - that is, the data is written into a C array of 8-bit integers; and in particular if you provide a typed array here, it must be a Uint8Array or Int8Array. If you want to receive an array of another type of data, you can manually allocate memory and write to it, then provide a pointer here (as a <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, as pointers are just numbers).</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span>
-<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;c_add&#39;</span><span class="p">,</span> <span class="c1">// name of C function</span>
-  <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="c1">// return type</span>
-  <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">],</span> <span class="c1">// argument types</span>
-  <span class="p">[</span><span class="mf">10</span><span class="p">,</span> <span class="mf">20</span><span class="p">]);</span> <span class="c1">// arguments</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;c_add&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// name of C function</span><span class="w"></span>
+<span class="w">  </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="p">],</span><span class="w"> </span><span class="c1">// argument types</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">20</span><span class="p">]);</span><span class="w"> </span><span class="c1">// arguments</span><span class="w"></span>
 
-<span class="c1">// result is 30</span>
+<span class="c1">// result is 30</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1154,7 +1153,7 @@
 </pre></div>
 </div>
 <p>(Note that we also export <code class="docutils literal notranslate"><span class="pre">main</span></code> - if we didn’t, the compiler would assume we don’t need it.) Exported functions can then be called as normal:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">a_result</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;myfunc&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mf">10</span><span class="p">])</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">a_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;myfunc&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mf">10</span><span class="p">])</span><span class="w"></span>
 </pre></div>
 </div>
 </li>
@@ -1200,14 +1199,14 @@
 <code class="sig-name descname">cwrap</code><span class="sig-paren">(</span><em class="sig-param">ident</em>, <em class="sig-param">returnType</em>, <em class="sig-param">argTypes</em><span class="sig-paren">)</span><a class="headerlink" href="#cwrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a native JavaScript wrapper for a C function.</p>
 <p>This is similar to <a class="reference internal" href="#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a>, but returns a JavaScript function that can be reused as many time as needed. The C function can be defined in a C file, or be a C-compatible C++ function defined using <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> (to prevent name mangling).</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span>
-<span class="kd">var</span> <span class="nx">c_javascript_add</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">cwrap</span><span class="p">(</span><span class="s1">&#39;c_add&#39;</span><span class="p">,</span> <span class="c1">// name of C function</span>
-  <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="c1">// return type</span>
-  <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">]);</span> <span class="c1">// argument types</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">c_javascript_add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">cwrap</span><span class="p">(</span><span class="s1">&#39;c_add&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// name of C function</span><span class="w"></span>
+<span class="w">  </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="p">]);</span><span class="w"> </span><span class="c1">// argument types</span><span class="w"></span>
 
-<span class="c1">// Call c_javascript_add normally</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c_javascript_add</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span> <span class="mf">20</span><span class="p">));</span> <span class="c1">// 30</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c_javascript_add</span><span class="p">(</span><span class="mf">20</span><span class="p">,</span> <span class="mf">30</span><span class="p">));</span> <span class="c1">// 50</span>
+<span class="c1">// Call c_javascript_add normally</span><span class="w"></span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c_javascript_add</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">20</span><span class="p">));</span><span class="w"> </span><span class="c1">// 30</span><span class="w"></span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">c_javascript_add</span><span class="p">(</span><span class="mf">20</span><span class="p">,</span><span class="w"> </span><span class="mf">30</span><span class="p">));</span><span class="w"> </span><span class="c1">// 50</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1220,8 +1219,8 @@
 </pre></div>
 </div>
 <p>Exported functions can be called as normal:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">my_func</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">cwrap</span><span class="p">(</span><span class="s1">&#39;myfunc&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
-<span class="nx">my_func</span><span class="p">(</span><span class="mf">12</span><span class="p">)</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">my_func</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">cwrap</span><span class="p">(</span><span class="s1">&#39;myfunc&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span><span class="w"></span>
+<span class="nx">my_func</span><span class="p">(</span><span class="mf">12</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </li>
@@ -1454,13 +1453,13 @@
 <p class="admonition-title">Warning</p>
 <p>This function is deprecated, you should call the function <code class="docutils literal notranslate"><span class="pre">stringToUTF8</span></code> instead, which provides a secure bounded version of the same functionality instead.</p>
 </div>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Allocate space for string and extra &#39;0&#39; at the end</span>
-<span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="o">+</span><span class="mf">1</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Allocate space for string and extra &#39;0&#39; at the end</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="o">+</span><span class="mf">1</span><span class="p">);</span><span class="w"></span>
 
-<span class="c1">// Write the string to memory</span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">writeStringToMemory</span><span class="p">(</span><span class="nx">myString</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">);</span>
+<span class="c1">// Write the string to memory</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">writeStringToMemory</span><span class="p">(</span><span class="nx">myString</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer</span><span class="p">);</span><span class="w"></span>
 
-<span class="c1">// We can now send buffer into a C function, it is just a normal char* pointer</span>
+<span class="c1">// We can now send buffer into a C function, it is just a normal char* pointer</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1493,11 +1492,11 @@
 <code class="sig-name descname">writeAsciiToMemory</code><span class="sig-paren">(</span><em class="sig-param">str</em>, <em class="sig-param">buffer</em>, <em class="sig-param">dontAddNull</em><span class="sig-paren">)</span><a class="headerlink" href="#writeAsciiToMemory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes an ASCII string to a specified address in the heap. Note that memory should to be allocated for the string before it is written.</p>
 <p>The string is assumed to only have characters in the ASCII character set. If ASSERTIONS are enabled and this is not the case, it will fail.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Allocate space for string</span>
-<span class="kd">var</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Allocate space for string</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span><span class="w"></span>
 
-<span class="c1">// Write the string to memory</span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">writeStringToMemory</span><span class="p">(</span><span class="nx">myString</span><span class="p">,</span> <span class="nx">buffer</span><span class="p">);</span>
+<span class="c1">// Write the string to memory</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">writeStringToMemory</span><span class="p">(</span><span class="nx">myString</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1728,7 +1727,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.19-git (dev)',
+            VERSION:'3.1.21-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

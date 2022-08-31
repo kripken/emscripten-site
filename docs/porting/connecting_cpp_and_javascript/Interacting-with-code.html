@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 3.1.19-git (dev) documentation</title>
+  <title>Interacting with code &mdash; Emscripten 3.1.21-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.21-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -85,10 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/release_notes.html">Release Notes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/release_notes.html">Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
@@ -200,6 +197,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -495,6 +493,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1224,13 +1223,13 @@ and enter the above commands as three separate commands, pressing
 mathematics.</p>
 <p><a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> is similar, but receives another parameter with the
 parameters to pass to the function:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span>
-<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;int_sqrt&#39;</span><span class="p">,</span> <span class="c1">// name of C function</span>
-  <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="c1">// return type</span>
-  <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span> <span class="c1">// argument types</span>
-  <span class="p">[</span><span class="mf">28</span><span class="p">]);</span> <span class="c1">// arguments</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;int_sqrt&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// name of C function</span><span class="w"></span>
+<span class="w">  </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span><span class="w"> </span><span class="c1">// argument types</span><span class="w"></span>
+<span class="w">  </span><span class="p">[</span><span class="mf">28</span><span class="p">]);</span><span class="w"> </span><span class="c1">// arguments</span><span class="w"></span>
 
-<span class="c1">// result is 5</span>
+<span class="c1">// result is 5</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1303,13 +1302,13 @@ or optimizations).</p></li>
 </pre></div>
 </div>
 <p>Require the library and call its procedures from node:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./api_example.js&#39;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./api_example.js&#39;</span><span class="p">);</span><span class="w"></span>
 
-<span class="nx">factory</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">instance</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="nx">instance</span><span class="p">.</span><span class="nx">_sayHi</span><span class="p">();</span> <span class="c1">// direct calling works</span>
-  <span class="nx">instance</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s2">&quot;sayHi&quot;</span><span class="p">);</span> <span class="c1">// using ccall etc. also work</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">instance</span><span class="p">.</span><span class="nx">_daysInWeek</span><span class="p">());</span> <span class="c1">// values can be returned, etc.</span>
-<span class="p">});</span>
+<span class="nx">factory</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">instance</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">instance</span><span class="p">.</span><span class="nx">_sayHi</span><span class="p">();</span><span class="w"> </span><span class="c1">// direct calling works</span><span class="w"></span>
+<span class="w">  </span><span class="nx">instance</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s2">&quot;sayHi&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// using ccall etc. also work</span><span class="w"></span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">instance</span><span class="p">.</span><span class="nx">_daysInWeek</span><span class="p">());</span><span class="w"> </span><span class="c1">// values can be returned, etc.</span><span class="w"></span>
+<span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> option makes <code class="docutils literal notranslate"><span class="pre">emcc</span></code> emit code in a modular format that is
@@ -1365,7 +1364,7 @@ running the script using <a class="reference internal" href="../../api_reference
 JavaScript code from C/C++ using <code class="docutils literal notranslate"><span class="pre">eval()</span></code>. For example, to call the
 browser’s <code class="docutils literal notranslate"><span class="pre">alert()</span></code> function with the text ‘hi’, you would call the
 following JavaScript:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">emscripten_run_script</span><span class="p">(</span><span class="s2">&quot;alert(&#39;hi&#39;)&quot;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">emscripten_run_script</span><span class="p">(</span><span class="s2">&quot;alert(&#39;hi&#39;)&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1490,17 +1489,17 @@ in an <code class="docutils literal notranslate"><span class="pre">extern</span>
 implementation to <strong>library.js</strong> (or your own file). Like our other
 examples of calling JavaScript from C, the example below just creates
 a dialog box using a simple <code class="docutils literal notranslate"><span class="pre">alert()</span></code> function.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">my_js</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">);</span>
-<span class="p">},</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">my_js</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="p">},</span><span class="w"></span>
 </pre></div>
 </div>
 <p>If you add it to your own file, you should write something like</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
-  <span class="nx">my_js</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">);</span>
-  <span class="p">},</span>
-<span class="p">});</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">my_js</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mergeInto</span></code> just copies the properties on the second parameter onto the
@@ -1530,53 +1529,53 @@ the recommended approach for most cases. Another option is another <code class="
 <p>Alternatively, if you prefer to use a JS library file, you can
 have a function replace itself and have it called during
 initialization.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 
-  <span class="c1">// Solution for bind or referencing other functions directly</span>
-  <span class="nx">good_02__postset</span><span class="o">:</span> <span class="s1">&#39;_good_02();&#39;</span><span class="p">,</span>
-  <span class="nx">good_02</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">_good_02</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
-  <span class="p">},</span>
+<span class="w">  </span><span class="c1">// Solution for bind or referencing other functions directly</span><span class="w"></span>
+<span class="w">  </span><span class="nx">good_02__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;_good_02();&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">good_02</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">_good_02</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
 
-  <span class="c1">// Solution for closures</span>
-  <span class="nx">good_03__postset</span><span class="o">:</span> <span class="s1">&#39;_good_03();&#39;</span><span class="p">,</span>
-  <span class="nx">good_03</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">callCount</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
-    <span class="nx">_good_03</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span> <span class="o">++</span><span class="nx">callCount</span><span class="p">);</span>
-    <span class="p">};</span>
-  <span class="p">},</span>
+<span class="w">  </span><span class="c1">// Solution for closures</span><span class="w"></span>
+<span class="w">  </span><span class="nx">good_03__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;_good_03();&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">good_03</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="nx">_good_03</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span><span class="w"> </span><span class="o">++</span><span class="nx">callCount</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
 
-  <span class="c1">// Solution for curry/transform</span>
-  <span class="nx">good_05__postset</span><span class="o">:</span> <span class="s1">&#39;_good_05();&#39;</span><span class="p">,</span>
-  <span class="nx">good_05</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">_good_05</span> <span class="o">=</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
- <span class="p">},</span>
+<span class="w">  </span><span class="c1">// Solution for curry/transform</span><span class="w"></span>
+<span class="w">  </span><span class="nx">good_05__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;_good_05();&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">good_05</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">_good_05</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="p">},</span><span class="w"></span>
 
-<span class="p">});</span>
+<span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>A <cite>__postset</cite> is a string the compiler will emit directly to the
 output file. For the example above this code will be emitted.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span> <span class="kd">function</span> <span class="nx">_good_02</span><span class="p">()</span> <span class="p">{</span>
-   <span class="nx">_good_o2</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
- <span class="p">}</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">_good_02</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nx">_good_o2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
 
- <span class="kd">function</span> <span class="nx">_good_03</span><span class="p">()</span> <span class="p">{</span>
-   <span class="kd">var</span> <span class="nx">callCount</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
-   <span class="nx">_good_03</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span> <span class="o">++</span><span class="nx">callCount</span><span class="p">);</span>
-   <span class="p">};</span>
- <span class="p">}</span>
+<span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">_good_03</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="kd">var</span><span class="w"> </span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">   </span><span class="nx">_good_03</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span><span class="w"> </span><span class="o">++</span><span class="nx">callCount</span><span class="p">);</span><span class="w"></span>
+<span class="w">   </span><span class="p">};</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"></span>
 
- <span class="kd">function</span> <span class="nx">_good_05</span><span class="p">()</span> <span class="p">{</span>
-   <span class="nx">_good_05</span> <span class="o">=</span> <span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span> <span class="mf">0</span><span class="p">);</span>
-<span class="p">};</span>
+<span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">_good_05</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nx">_good_05</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="c1">// Call each function once so it will replace itself</span>
-<span class="nx">_good_02</span><span class="p">();</span>
-<span class="nx">_good_03</span><span class="p">();</span>
-<span class="nx">_good_05</span><span class="p">();</span>
+<span class="c1">// Call each function once so it will replace itself</span><span class="w"></span>
+<span class="nx">_good_02</span><span class="p">();</span><span class="w"></span>
+<span class="nx">_good_03</span><span class="p">();</span><span class="w"></span>
+<span class="nx">_good_05</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
 <p>You can also put most of your code in the <code class="docutils literal notranslate"><span class="pre">xxx__postset</span></code> strings.
@@ -1584,39 +1583,39 @@ The example below each method declares a dependency on <code class="docutils lit
 and are otherwise dummy functions. <code class="docutils literal notranslate"><span class="pre">$method_support</span></code> itself has a
 corresponding <code class="docutils literal notranslate"><span class="pre">__postset</span></code> property with all the code to set the
 various methods to the functions we actually want.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
-  <span class="nx">$method_support</span><span class="o">:</span> <span class="p">{},</span>
-  <span class="nx">$method_support__postset</span><span class="o">:</span> <span class="p">[</span>
-    <span class="s1">&#39;(function() {                                  &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  var SomeLib = function() {                   &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  SomeLib.prototype.getCallCount = function() {&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;    return this.callCount;                     &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  SomeLib.prototype.process = function() {     &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;    ++this.callCount;                          &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  SomeLib.prototype.reset = function() {       &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  var inst = new SomeLib();                    &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  _method_01 = inst.getCallCount.bind(inst);   &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  _method_02 = inst.process.bind(inst);        &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;  _method_03 = inst.reset.bind(inst);          &#39;</span><span class="p">,</span>
-    <span class="s1">&#39;}());                                          &#39;</span><span class="p">,</span>
-  <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">),</span>
-  <span class="nx">method_01</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
-  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
-  <span class="nx">method_02</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
-  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
-  <span class="nx">method_03</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
-  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
- <span class="p">});</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">$method_support</span><span class="o">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">$method_support__postset</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;(function() {                                  &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  var SomeLib = function() {                   &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  SomeLib.prototype.getCallCount = function() {&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;    return this.callCount;                     &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  SomeLib.prototype.process = function() {     &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;    ++this.callCount;                          &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  SomeLib.prototype.reset = function() {       &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  var inst = new SomeLib();                    &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  _method_01 = inst.getCallCount.bind(inst);   &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  _method_02 = inst.process.bind(inst);        &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;  _method_03 = inst.reset.bind(inst);          &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s1">&#39;}());                                          &#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_02</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_03</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span><span class="w"></span>
+<span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Note: If you are using node 4.1 or newer you can use multi-line strings.
@@ -1624,37 +1623,37 @@ They are only used at compile time not runtime so output will still run in
 ES5 based environments.</p>
 <p>Another option is to put most of your code in an object, not
 a function,</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span> <span class="p">{</span>
-  <span class="nx">$method_support__postset</span><span class="o">:</span> <span class="s1">&#39;method_support();&#39;</span><span class="p">,</span>
-  <span class="nx">$method_support</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">SomeLib</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">callCount</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
-    <span class="p">};</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">mergeInto</span><span class="p">(</span><span class="nx">LibraryManager</span><span class="p">.</span><span class="nx">library</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">$method_support__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;method_support();&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nx">$method_support</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">SomeLib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
 
-    <span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getCallCount</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span>
-    <span class="p">};</span>
+<span class="w">    </span><span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getCallCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
 
-    <span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">process</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span>
-    <span class="p">};</span>
+<span class="w">    </span><span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">process</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
 
-    <span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">reset</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">callCount</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span>
-    <span class="p">};</span>
+<span class="w">    </span><span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">reset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">};</span><span class="w"></span>
 
-    <span class="kd">var</span> <span class="nx">inst</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">SomeLib</span><span class="p">();</span>
-    <span class="nx">_method_01</span> <span class="o">=</span> <span class="nx">inst</span><span class="p">.</span><span class="nx">getCallCount</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
-    <span class="nx">_method_02</span> <span class="o">=</span> <span class="nx">inst</span><span class="p">.</span><span class="nx">process</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
-    <span class="nx">_method_03</span> <span class="o">=</span> <span class="nx">inst</span><span class="p">.</span><span class="nx">reset</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
-  <span class="p">},</span>
-  <span class="nx">method_01</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
-  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
-  <span class="nx">method_02</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
-  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
-  <span class="nx">method_03</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{},</span>
-  <span class="nx">method_01__deps</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
- <span class="p">});</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">inst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">SomeLib</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="nx">_method_01</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inst</span><span class="p">.</span><span class="nx">getCallCount</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nx">_method_02</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inst</span><span class="p">.</span><span class="nx">process</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nx">_method_03</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inst</span><span class="p">.</span><span class="nx">reset</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_02</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_03</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span><span class="w"></span>
+<span class="w"> </span><span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>See the <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/src">library_*.js</a> files for other examples.</p>
@@ -1733,10 +1732,10 @@ and <a class="reference internal" href="../../api_reference/preamble.js.html#set
 of data from JavaScript to be processed by compiled code. For example, the
 following code allocates a buffer, copies in some data, calls a C function
 to process the data, and finally frees the buffer.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">buf</span> <span class="o">=</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myTypedArray</span><span class="p">.</span><span class="nx">length</span><span class="o">*</span><span class="nx">myTypedArray</span><span class="p">.</span><span class="nx">BYTES_PER_ELEMENT</span><span class="p">);</span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">myTypedArray</span><span class="p">,</span> <span class="nx">buf</span><span class="p">);</span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;my_function&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span> <span class="p">[</span><span class="nx">buf</span><span class="p">]);</span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">_free</span><span class="p">(</span><span class="nx">buf</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myTypedArray</span><span class="p">.</span><span class="nx">length</span><span class="o">*</span><span class="nx">myTypedArray</span><span class="p">.</span><span class="nx">BYTES_PER_ELEMENT</span><span class="p">);</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">myTypedArray</span><span class="p">,</span><span class="w"> </span><span class="nx">buf</span><span class="p">);</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;my_function&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="nx">buf</span><span class="p">]);</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">_free</span><span class="p">(</span><span class="nx">buf</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">my_function</span></code> is a C function that receives a single integer parameter
@@ -1747,34 +1746,34 @@ tricky when wasm-based memory is allowed to <strong>grow</strong>, by compiling 
 <code class="docutils literal notranslate"><span class="pre">-sALLOW_MEMORY_GROWTH</span></code>. Increasing the size of memory changes
 to a new buffer and existing array views essentially become invalid,
 so you cannot simply do this:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">func</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">let</span> <span class="nx">someView</span> <span class="o">=</span> <span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
-  <span class="nx">compute</span><span class="p">(</span><span class="nx">someView</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">someView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nx">compute</span><span class="p">(</span><span class="nx">someView</span><span class="p">);</span><span class="w"></span>
 
-  <span class="c1">// This may grow memory, which would invalidate all views.</span>
-  <span class="nx">maybeGrow</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">// This may grow memory, which would invalidate all views.</span><span class="w"></span>
+<span class="w">  </span><span class="nx">maybeGrow</span><span class="p">();</span><span class="w"></span>
 
-  <span class="c1">// If we grew, this use of an invalidated view will fail. Failure in this</span>
-  <span class="c1">// case will return undefined, the same as reading out of bounds from a</span>
-  <span class="c1">// typed array. If the operation were someView.subarray(), however, then it</span>
-  <span class="c1">// would throw an error.</span>
-  <span class="k">return</span> <span class="nx">someView</span><span class="p">[</span><span class="nx">z</span><span class="p">];</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="c1">// If we grew, this use of an invalidated view will fail. Failure in this</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// case will return undefined, the same as reading out of bounds from a</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// typed array. If the operation were someView.subarray(), however, then it</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// would throw an error.</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">someView</span><span class="p">[</span><span class="nx">z</span><span class="p">];</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Emscripten will refresh the canonical views like <code class="docutils literal notranslate"><span class="pre">HEAPU8</span></code> for you, which you
 can use to refresh your own views:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">func</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">let</span> <span class="nx">someView</span> <span class="o">=</span> <span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
-  <span class="nx">compute</span><span class="p">(</span><span class="nx">someView</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">someView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nx">compute</span><span class="p">(</span><span class="nx">someView</span><span class="p">);</span><span class="w"></span>
 
-  <span class="c1">// This may grow memory, which would invalidate all views.</span>
-  <span class="nx">maybeGrow</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">// This may grow memory, which would invalidate all views.</span><span class="w"></span>
+<span class="w">  </span><span class="nx">maybeGrow</span><span class="p">();</span><span class="w"></span>
 
-  <span class="c1">// Create a new, fresh view after the possible growth.</span>
-  <span class="nx">someView</span> <span class="o">=</span> <span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
-  <span class="k">return</span> <span class="nx">someView</span><span class="p">[</span><span class="nx">z</span><span class="p">];</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="c1">// Create a new, fresh view after the possible growth.</span><span class="w"></span>
+<span class="w">  </span><span class="nx">someView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">someView</span><span class="p">[</span><span class="nx">z</span><span class="p">];</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Another option to avoid such problems is to copy the data, when that makes
@@ -1803,14 +1802,14 @@ convenient way to do this.</p>
 <p>For example, to set an environment variable <code class="docutils literal notranslate"><span class="pre">MY_FILE_ROOT</span></code> to be
 <code class="docutils literal notranslate"><span class="pre">&quot;/usr/lib/test/&quot;</span></code> you could add the following JavaScript to your
 <code class="docutils literal notranslate"><span class="pre">Module</span></code> <a class="reference internal" href="../../api_reference/module.html#module-creating"><span class="std std-ref">setup code</span></a>:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">preRun</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="nx">ENV</span><span class="p">.</span><span class="nx">MY_FILE_ROOT</span> <span class="o">=</span> <span class="s2">&quot;/usr/lib/test&quot;</span><span class="p">})</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">preRun</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="nx">ENV</span><span class="p">.</span><span class="nx">MY_FILE_ROOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/usr/lib/test&quot;</span><span class="p">})</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Note that Emscripten will set default values for some environment variables
 (e.g. LANG) after you have configured <code class="docutils literal notranslate"><span class="pre">ENV</span></code>, if you have not set your own
 values. If you want such variables to remain unset, you can explicitly set
 their value to <cite>undefined</cite>. For example:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">preRun</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="nx">ENV</span><span class="p">.</span><span class="nx">LANG</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">})</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">preRun</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="nx">ENV</span><span class="p">.</span><span class="nx">LANG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">})</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -1960,7 +1959,7 @@ natural fit for the project and its build system.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.19-git (dev)',
+            VERSION:'3.1.21-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

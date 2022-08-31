@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>WebIDL Binder &mdash; Emscripten 3.1.19-git (dev) documentation</title>
+  <title>WebIDL Binder &mdash; Emscripten 3.1.21-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.19-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.21-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Files and File Systems" href="../files/index.html"/>
         <link rel="prev" title="Embind" href="embind.html"/> 
@@ -85,10 +85,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/release_notes.html">Release Notes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../introducing_emscripten/release_notes.html#changelog">ChangeLog</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/release_notes.html">Release Notes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html#presentations">Presentations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html#papers">Papers</a></li>
@@ -200,6 +197,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -495,6 +493,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#manually-using-emcc">Manually using emcc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#detecting-emscripten-in-preprocessor">Detecting Emscripten in Preprocessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#using-a-compiler-wrapper">Using a compiler wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#pkg-config">pkg-config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#examples-test-code">Examples / test code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../compiling/Building-Projects.html#troubleshooting">Troubleshooting</a></li>
 </ul>
@@ -1146,16 +1145,16 @@
 </pre></div>
 </div>
 <p>The following IDL file can be used to describe them:</p>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>interface Foo {
-  void Foo();
-  <span class="nb">long</span> getVal();
-  void setVal(<span class="nb">long</span> v);
-};
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>interface<span class="w"> </span>Foo<span class="w"> </span>{<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>Foo();<span class="w"></span>
+<span class="w">  </span><span class="nb">long</span><span class="w"> </span>getVal();<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>setVal(<span class="nb">long</span><span class="w"> </span>v);<span class="w"></span>
+};<span class="w"></span>
 
-interface Bar {
-  void Bar(<span class="nb">long</span> val);
-  void doSomething();
-};
+interface<span class="w"> </span>Bar<span class="w"> </span>{<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>Bar(<span class="nb">long</span><span class="w"> </span>val);<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>doSomething();<span class="w"></span>
+};<span class="w"></span>
 </pre></div>
 </div>
 <p>The mapping between the IDL definition and the C++ is fairly obvious. The main things to notice are:</p>
@@ -1210,10 +1209,10 @@ interface Bar {
 <p>When using the WebIDL binder, often what you are doing is creating a library. In that
 case, the <cite>MODULARIZE</cite> option makes sense to use. It wraps the entire JavaScript output
 in a function, and returns a Promise which resolves to the initialized Module instance.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">instance</span><span class="p">;</span>
-<span class="nx">Module</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">module</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="nx">instance</span> <span class="o">=</span> <span class="nx">module</span><span class="p">;</span>
-<span class="p">});</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">instance</span><span class="p">;</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">module</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nx">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">module</span><span class="p">;</span><span class="w"></span>
+<span class="p">});</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The promise is resolved when it is safe to run compiled code, i.e. after it
@@ -1227,12 +1226,12 @@ global scope, and in some cases you want to create more than one.</p>
 <section id="using-c-classes-in-javascript">
 <h2>Using C++ classes in JavaScript<a class="headerlink" href="#using-c-classes-in-javascript" title="Permalink to this headline">¶</a></h2>
 <p>Once binding is complete, C++ objects can be created and used in JavaScript as though they were normal JavaScript objects. For example, continuing the above example, you can create the <code class="docutils literal notranslate"><span class="pre">Foo</span></code> and <code class="docutils literal notranslate"><span class="pre">Bar</span></code> objects and call methods on them.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">setVal</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
-<span class="nx">alert</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">getVal</span><span class="p">());</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span><span class="w"></span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">setVal</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span><span class="w"></span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">getVal</span><span class="p">());</span><span class="w"></span>
 
-<span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span>
-<span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span><span class="w"></span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition important">
@@ -1246,9 +1245,9 @@ global scope, and in some cases you want to create more than one.</p>
 </div>
 <p>JavaScript will automatically garbage collect any of the wrapped C++ objects when there are no more references. If the C++ object doesn’t require specific clean up (i.e. it doesn’t have a destructor) then no other action needs to be taken.</p>
 <p>If a C++ object does need to be cleaned up, you must explicitly call <a class="reference internal" href="../../api_reference/module.html#Module.destroy" title="Module.destroy"><code class="xref js js-func docutils literal notranslate"><span class="pre">Module.destroy(obj)</span></code></a> to invoke its destructor — then drop all references to the object so that it can be garbage collected. For example, if <code class="docutils literal notranslate"><span class="pre">Bar</span></code> were to allocate memory that requires cleanup:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span>
-<span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span> <span class="c1">// If the C++ object requires clean up</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">Bar</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span><span class="w"></span>
+<span class="nx">b</span><span class="p">.</span><span class="nx">doSomething</span><span class="p">();</span><span class="w"></span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span><span class="w"> </span><span class="c1">// If the C++ object requires clean up</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1264,18 +1263,18 @@ global scope, and in some cases you want to create more than one.</p>
 <span class="kt">int</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
-attribute <span class="nb">long</span> attr;
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL<span class="w"></span>
+attribute<span class="w"> </span><span class="nb">long</span><span class="w"> </span>attr;<span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// JavaScript</span>
-<span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">attr</span> <span class="o">=</span> <span class="mf">7</span><span class="p">;</span>
-<span class="c1">// Equivalent to:</span>
-<span class="nx">f</span><span class="p">.</span><span class="nx">set_attr</span><span class="p">(</span><span class="mf">7</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// JavaScript</span><span class="w"></span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">Foo</span><span class="p">();</span><span class="w"></span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">attr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">7</span><span class="p">;</span><span class="w"></span>
+<span class="c1">// Equivalent to:</span><span class="w"></span>
+<span class="nx">f</span><span class="p">.</span><span class="nx">set_attr</span><span class="p">(</span><span class="mf">7</span><span class="p">);</span><span class="w"></span>
 
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">attr</span><span class="p">);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">get_attr</span><span class="p">());</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">attr</span><span class="p">);</span><span class="w"></span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">get_attr</span><span class="p">());</span><span class="w"></span>
 </pre></div>
 </div>
 <p>For read-only attributes, see <a class="reference internal" href="#webidl-binder-const"><span class="std std-ref">Const</span></a>.</p>
@@ -1288,8 +1287,8 @@ attribute <span class="nb">long</span> attr;
 <span class="n">MyClass</span><span class="o">*</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">*</span><span class="w"> </span><span class="n">input</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
-MyClass process(MyClass input);
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL<span class="w"></span>
+MyClass<span class="w"> </span>process(MyClass<span class="w"> </span>input);<span class="w"></span>
 </pre></div>
 </div>
 <p>This assumption isn’t true for base types like void,int,bool,DOMString,etc.</p>
@@ -1298,8 +1297,8 @@ MyClass process(MyClass input);
 <span class="n">MyClass</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
-[Ref] MyClass process([Ref] MyClass input);
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL<span class="w"></span>
+[Ref]<span class="w"> </span>MyClass<span class="w"> </span>process([Ref]<span class="w"> </span>MyClass<span class="w"> </span>input);<span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1311,8 +1310,8 @@ MyClass process(MyClass input);
 <span class="n">MyClass</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
-[Value] MyClass process([Ref] MyClass input);
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL<span class="w"></span>
+[Value]<span class="w"> </span>MyClass<span class="w"> </span>process([Ref]<span class="w"> </span>MyClass<span class="w"> </span>input);<span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -1324,8 +1323,8 @@ MyClass process(MyClass input);
 <span class="k">const</span><span class="w"> </span><span class="n">myObject</span><span class="o">*</span><span class="w"> </span><span class="nf">getAsConst</span><span class="p">();</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
-[Const] myObject getAsConst();
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL<span class="w"></span>
+[Const]<span class="w"> </span>myObject<span class="w"> </span>getAsConst();<span class="w"></span>
 </pre></div>
 </div>
 <p>Attributes that correspond to const data members must be specified with the <code class="docutils literal notranslate"><span class="pre">readonly</span></code> keyword, not with <code class="docutils literal notranslate"><span class="pre">[Const]</span></code>. For example:</p>
@@ -1333,8 +1332,8 @@ MyClass process(MyClass input);
 <span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">numericalConstant</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> WebIDL
-readonly attribute <span class="nb">long</span> numericalConstant;
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL<span class="w"></span>
+readonly<span class="w"> </span>attribute<span class="w"> </span><span class="nb">long</span><span class="w"> </span>numericalConstant;<span class="w"></span>
 </pre></div>
 </div>
 <p>This will generate a <code class="docutils literal notranslate"><span class="pre">get_numericalConstant()</span></code> method in the bindings, but not a corresponding setter. The attribute will also be defined as read-only in JavaScript, meaning that trying to set it will have no effect on the value, and will throw an error in strict mode.</p>
@@ -1346,10 +1345,10 @@ readonly attribute <span class="nb">long</span> numericalConstant;
 <section id="un-deletable-classes-nodelete">
 <h2>Un-deletable classes (NoDelete)<a class="headerlink" href="#un-deletable-classes-nodelete" title="Permalink to this headline">¶</a></h2>
 <p>If a class cannot be deleted (because the destructor is private), specify <code class="docutils literal notranslate"><span class="pre">[NoDelete]</span></code> in the IDL file.</p>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[NoDelete]
-interface Foo {
-...
-};
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[NoDelete]<span class="w"></span>
+interface<span class="w"> </span>Foo<span class="w"> </span>{<span class="w"></span>
+...<span class="w"></span>
+};<span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -1357,17 +1356,17 @@ interface Foo {
 <h2>Defining inner classes and classes inside namespaces (Prefix)<a class="headerlink" href="#defining-inner-classes-and-classes-inside-namespaces-prefix" title="Permalink to this headline">¶</a></h2>
 <p>C++ classes that are declared inside a namespace (or another class) must use the IDL file <code class="docutils literal notranslate"><span class="pre">Prefix</span></code> keyword to specify the scope. The prefix is then used whenever the class is referred to in C++ glue code.</p>
 <p>For example, the following IDL definition ensures that <code class="docutils literal notranslate"><span class="pre">Inner</span></code> class is referred to as <code class="docutils literal notranslate"><span class="pre">MyNameSpace::Inner</span></code></p>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[Prefix<span class="o">=</span><span class="s2">&quot;MyNameSpace::&quot;</span>]
-interface Inner {
-..
-};
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[Prefix<span class="o">=</span><span class="s2">&quot;MyNameSpace::&quot;</span>]<span class="w"></span>
+interface<span class="w"> </span>Inner<span class="w"> </span>{<span class="w"></span>
+..<span class="w"></span>
+};<span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="operators">
 <h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
 <p>You can bind to C++ operators using <code class="docutils literal notranslate"><span class="pre">[Operator=]</span></code>:</p>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[Operator<span class="o">=</span><span class="s2">&quot;+=&quot;</span>] TYPE1 add(TYPE2 x);
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[Operator<span class="o">=</span><span class="s2">&quot;+=&quot;</span>]<span class="w"> </span>TYPE1<span class="w"> </span>add(TYPE2<span class="w"> </span>x);<span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1440,17 +1439,17 @@ interface Inner {
 <section id="sub-classing-c-base-classes-in-javascript-jsimplementation">
 <h2>Sub-classing C++ base classes in JavaScript (JSImplementation)<a class="headerlink" href="#sub-classing-c-base-classes-in-javascript-jsimplementation" title="Permalink to this headline">¶</a></h2>
 <p>The <em>WebIDL Binder</em> allows C++ base classes to be sub-classed in JavaScript. In the IDL fragment below, <code class="docutils literal notranslate"><span class="pre">JSImplementation=&quot;Base&quot;</span></code> means that the associated interface (<code class="docutils literal notranslate"><span class="pre">ImplJS</span></code>) will be a JavaScript implementation of the C++ class <code class="docutils literal notranslate"><span class="pre">Base</span></code>.</p>
-<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[JSImplementation<span class="o">=</span><span class="s2">&quot;Base&quot;</span>]
-interface ImplJS {
-  void ImplJS();
-  void virtualFunc();
-  void virtualFunc2();
-};
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span>[JSImplementation<span class="o">=</span><span class="s2">&quot;Base&quot;</span>]<span class="w"></span>
+interface<span class="w"> </span>ImplJS<span class="w"> </span>{<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>ImplJS();<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>virtualFunc();<span class="w"></span>
+<span class="w">  </span>void<span class="w"> </span>virtualFunc2();<span class="w"></span>
+};<span class="w"></span>
 </pre></div>
 </div>
 <p>After running the bindings generator and compiling, you can implement the interface in JavaScript as shown:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">ImplJS</span><span class="p">();</span>
-<span class="nx">c</span><span class="p">.</span><span class="nx">virtualFunc</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="p">..</span> <span class="p">};</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ImplJS</span><span class="p">();</span><span class="w"></span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">virtualFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">..</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
 <p>When C++ code has a pointer to a <code class="docutils literal notranslate"><span class="pre">Base</span></code> instance and calls <code class="docutils literal notranslate"><span class="pre">virtualFunc()</span></code>, that call will reach the JavaScript code defined above.</p>
@@ -1672,7 +1671,7 @@ interface ImplJS {
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.19-git (dev)',
+            VERSION:'3.1.21-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
