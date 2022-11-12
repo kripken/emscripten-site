@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 3.1.25-git (dev) documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 3.1.26-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.25-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.26-git (dev) documentation" href="../../index.html"/>
         <link rel="next" title="Optimizing WebGL" href="Optimizing-WebGL.html"/>
         <link rel="prev" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="../tools_reference/emcmdprompt.html"/> 
 
@@ -449,9 +449,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#optimization-considerations">Optimization considerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ exceptions support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based exception support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-proposal">WebAssembly exception handling proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using exceptions and setjmp-longjmp together</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#javascript-based-setjmp-longjmp-support">JavaScript-based setjmp-longjmp Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#webassembly-exception-handling-based-setjmp-longjmp-support">WebAssembly Exception Handling-based setjmp-longjmp Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
@@ -1006,10 +1015,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#reporting-bugs">Reporting bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#contributing-to-the-site">Contributing to the site</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#building-the-site">Building the site</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../site/about.html#installing-sphinx">Installing Sphinx</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../site/about.html#ubuntu">Ubuntu</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#installing-sphinx">Installing Sphinx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#site-builds">Site builds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#sdk-builds">SDK Builds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#build-version">Build version</a></li>
@@ -1105,7 +1111,7 @@
 <p>Generally you should first compile and run your code without optimizations (the default). Once you are sure that the code runs correctly, you can use the techniques in this article to make it load and run faster.</p>
 <section id="how-to-optimize-code">
 <h2>How to optimize code<a class="headerlink" href="#how-to-optimize-code" title="Permalink to this headline">¶</a></h2>
-<p>Code is optimized by specifying <a class="reference internal" href="../tools_reference/emcc.html#emcc-compiler-optimization-options"><span class="std std-ref">optimization flags</span></a> when running <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a>. The levels include: <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><span class="std std-ref">-O0</span></a> (no optimization), <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><span class="std std-ref">-Os</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><span class="std std-ref">-Oz</span></a>, and <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><span class="std std-ref">-O3</span></a>.</p>
+<p>Code is optimized by specifying <a class="reference internal" href="../tools_reference/emcc.html#emcc-compiler-optimization-options"><span class="std std-ref">optimization flags</span></a> when running <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a>. The levels include: <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><span class="std std-ref">-O0</span></a> (no optimization), <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-os"><span class="std std-ref">-Os</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-oz"><span class="std std-ref">-Oz</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-og"><span class="std std-ref">-Og</span></a>, and <a class="reference internal" href="../tools_reference/emcc.html#emcc-o3"><span class="std std-ref">-O3</span></a>.</p>
 <p>For example, to compile with optimization level <code class="docutils literal notranslate"><span class="pre">-O2</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc -O2 file.cpp
 </pre></div>
@@ -1418,7 +1424,7 @@ a call to print something.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.25-git (dev)',
+            VERSION:'3.1.26-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

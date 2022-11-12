@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.25-git (dev) documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.26-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.25-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.26-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -450,9 +450,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#optimization-considerations">Optimization considerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ exceptions support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based exception support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-proposal">WebAssembly exception handling proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using exceptions and setjmp-longjmp together</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#javascript-based-setjmp-longjmp-support">JavaScript-based setjmp-longjmp Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#webassembly-exception-handling-based-setjmp-longjmp-support">WebAssembly Exception Handling-based setjmp-longjmp Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
@@ -1007,10 +1016,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#reporting-bugs">Reporting bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#contributing-to-the-site">Contributing to the site</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../site/about.html#building-the-site">Building the site</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../site/about.html#installing-sphinx">Installing Sphinx</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../site/about.html#ubuntu">Ubuntu</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../site/about.html#installing-sphinx">Installing Sphinx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#site-builds">Site builds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#sdk-builds">SDK Builds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../site/about.html#build-version">Build version</a></li>
@@ -1161,6 +1167,12 @@ Like <code class="docutils literal notranslate"><span class="pre">-O2</span></co
 </div>
 </dd>
 </dl>
+<dl class="simple" id="emcc-og">
+<dt><code class="docutils literal notranslate"><span class="pre">-Og</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>. In future versions, this option might disable different
+optimizations in order to improve debuggability.</p>
+</dd>
+</dl>
 <dl class="simple" id="emcc-os">
 <dt><code class="docutils literal notranslate"><span class="pre">-Os</span></code></dt><dd><p>[compile+link]
 Like <code class="docutils literal notranslate"><span class="pre">-O3</span></code>, but focuses more on code size (and may make tradeoffs with speed). This can affect both wasm and JavaScript.</p>
@@ -1279,6 +1291,11 @@ Preserve function names in profiling, but otherwise minify whitespace and names 
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--tracing</span></code></dt><dd><p>[link]
 Enable the <a class="reference internal" href="../api_reference/trace.h.html#trace-h"><span class="std std-ref">Emscripten Tracing API</span></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--reproduce=&lt;file.tar&gt;</span></code></dt><dd><p>[compile+link]
+Write tar file containing inputs and command to reproduce invocation.  When
+sharing this file be aware that it will any object files, source files and
+libraries that that were passed to the compiler.</p>
 </dd>
 </dl>
 <dl id="emcc-emit-symbol-map">
@@ -1715,7 +1732,7 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.25-git (dev)',
+            VERSION:'3.1.26-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
