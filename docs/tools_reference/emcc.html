@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.26-git (dev) documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.31-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.26-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.31-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -408,7 +408,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
@@ -452,10 +452,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using exceptions and setjmp-longjmp together</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#debugging-exceptions">Debugging Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a><ul>
@@ -1368,25 +1367,40 @@ Like <code class="docutils literal notranslate"><span class="pre">--extern-pre-j
 </dl>
 <dl id="emcc-embed-file">
 <dt><code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
-Specify a file (with path) to embed inside the generated JavaScript. The path is relative to the current directory at compile time. If a directory is passed here, its entire contents will be embedded.</p>
-<p>For example, if the command includes <code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">dir/file.dat</span></code>, then <code class="docutils literal notranslate"><span class="pre">dir/file.dat</span></code> must exist relative to the directory where you run <em>emcc</em>.</p>
+Specify a file (with path) to embed inside the generated WebAssembly module.
+The path is relative to the current directory at compile time. If a directory
+is passed here, its entire contents will be embedded.</p>
+<p>For example, if the command includes <code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">dir/file.dat</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">dir/file.dat</span></code> must exist relative to the directory where you run <em>emcc</em>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Embedding files is much less efficient than <a class="reference internal" href="#emcc-preload-file"><span class="std std-ref">preloading</span></a> them. You should only use it for small files, in small numbers. Instead use <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code>, which emits efficient binary data.</p>
+<p>Embedding files is generally more efficient than <a class="reference internal" href="#emcc-preload-file"><span class="std std-ref">preloading</span></a> as it avoids copying the file data at runtime.</p>
 </div>
-<p>For more information about the <code class="docutils literal notranslate"><span class="pre">--embed-file</span></code> options, see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
+<p>For more information about the <code class="docutils literal notranslate"><span class="pre">--embed-file</span></code> options, see
+<a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
 </dd>
 </dl>
 <dl id="emcc-preload-file">
 <dt><code class="docutils literal notranslate"><span class="pre">--preload-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>[link]
-Specify a file to preload before running the compiled code asynchronously. The path is relative to the current directory at compile time. If a directory is passed here, its entire contents will be embedded.</p>
-<p>Preloaded files are stored in <strong>filename.data</strong>, where <strong>filename.html</strong> is the main file you are compiling to. To run your code, you will need both the <strong>.html</strong> and the <strong>.data</strong>.</p>
+Specify a file to preload before running the compiled code asynchronously. The
+path is relative to the current directory at compile time. If a directory is
+passed here, its entire contents will be embedded.</p>
+<p>Preloaded files are stored in <strong>filename.data</strong>, where <strong>filename.html</strong> is
+the main file you are compiling to. To run your code, you will need both the
+<strong>.html</strong> and the <strong>.data</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>, except that it is only relevant when generating HTML (it uses asynchronous binary <a class="reference internal" href="../site/glossary.html#term-xhr"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
+<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>,
+except that it is only relevant when generating HTML (it uses asynchronous
+binary <a class="reference internal" href="../site/glossary.html#term-xhr"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
 </div>
-<p><em>emcc</em> runs <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tools/file_packager.py">tools/file_packager</a> to do the actual packaging of embedded and preloaded files. You can run the file packager yourself if you want (see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files-file-packager"><span class="std std-ref">Packaging using the file packager tool</span></a>). You should then put the output of the file packager in an emcc <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, so that it executes before your main compiled code.</p>
-<p>For more information about the <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> options, see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
+<p><em>emcc</em> runs <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tools/file_packager.py">tools/file_packager</a>
+to do the actual packaging of embedded and preloaded files. You can run the
+file packager yourself if you want (see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files-file-packager"><span class="std std-ref">Packaging using the file packager tool</span></a>).
+You should then put the output of the file packager in an emcc <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>,
+so that it executes before your main compiled code.</p>
+<p>For more information about the <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> options, see
+<a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-exclude-file">
@@ -1732,7 +1746,7 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.26-git (dev)',
+            VERSION:'3.1.31-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

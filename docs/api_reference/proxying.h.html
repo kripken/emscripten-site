@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>proxying.h &mdash; Emscripten 3.1.26-git (dev) documentation</title>
+  <title>proxying.h &mdash; Emscripten 3.1.31-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.26-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.31-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Wasm Workers API" href="wasm_workers.html"/>
         <link rel="prev" title="fiber.h" href="fiber.h.html"/> 
@@ -408,7 +408,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from javascript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
@@ -452,10 +452,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using exceptions and setjmp-longjmp together</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#debugging-exceptions">Debugging Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a><ul>
@@ -1198,6 +1197,17 @@ Returns 1 if the work was successfully enqueued or 0 otherwise.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="c.emscripten_proxy_async_with_callback">
+int <code class="sig-name descname">emscripten_proxy_async_with_callback</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void* (<em>*func</em>)(void*), void* arg, void (*callback)(void* arg, void* result), void*<em> callback_arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_async_with_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enqueue <cite>func</cite> on the given queue and thread. Once (and if) it finishes
+executing, it will asynchronously proxy <cite>callback</cite> back to the current thread
+on the same queue. The result of the proxied function will be passed as the
+second argument to the callback. Returns 1 if the initial work was
+successfully enqueued and the target thread notified or 0 otherwise. If the
+callback cannot be scheduled (for example due to OOM), the program is aborted.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="c.emscripten_proxy_sync">
 int <code class="sig-name descname">emscripten_proxy_sync</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void (<em>*func</em>)(void*), void*<em> arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enqueue <code class="docutils literal notranslate"><span class="pre">func</span></code> to be called with argument <code class="docutils literal notranslate"><span class="pre">arg</span></code> on the given queue and
@@ -1255,6 +1265,14 @@ defined within namespace <code class="docutils literal notranslate"><span class=
 <span id="_CPPv3N13ProxyingQueue10proxyAsyncE"></span><span id="_CPPv2N13ProxyingQueue10proxyAsyncE"></span>bool <code class="sig-name descname">proxyAsync</code><span class="sig-paren">(</span>pthread_t <em>target</em>, std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue10proxyAsyncE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_async</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code> if the
 function was successfully enqueued and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv4N13ProxyingQueue22proxyAsyncWithCallbackE">
+<span id="_CPPv3N13ProxyingQueue22proxyAsyncWithCallbackE"></span><span id="_CPPv2N13ProxyingQueue22proxyAsyncWithCallbackE"></span>bool <code class="sig-name descname">proxyAsyncWithCallback</code><span class="sig-paren">(</span>pthread_t <em>target</em>, std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>func</em>std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue22proxyAsyncWithCallbackE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_async_with_callback</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code> and
+schedule <code class="docutils literal notranslate"><span class="pre">callback</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code> if the function was successfully
+enqueued and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
 </dd></dl>
 
 <dl class="member">
@@ -1389,7 +1407,7 @@ if the function was successfully marked done with
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.26-git (dev)',
+            VERSION:'3.1.31-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
