@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dynamic Linking &mdash; Emscripten 3.1.31-git (dev) documentation</title>
+  <title>Dynamic Linking &mdash; Emscripten 3.1.32-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.31-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.32-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Running HTML files with emrun" href="Running-html-files-with-emrun.html"/>
         <link rel="prev" title="Building to WebAssembly" href="WebAssembly.html"/> 
@@ -453,7 +453,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#debugging-exceptions">Debugging Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#debugging-exceptions">Debugging Exceptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../porting/exceptions.html#stack-traces">Stack Traces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/exceptions.html#exception-messages">Exception Messages</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
@@ -841,6 +845,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#limitations">Limitations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#example-code">Example Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#development-overview">Development Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#programming-example">Programming Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#synchronizing-audio-thread-with-the-main-thread">Synchronizing audio thread with the main thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#more-examples">More Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a><ul>
@@ -1292,10 +1303,9 @@ the stack trace (in an unminified build); building with
 <section id="limitations">
 <h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Chromium does not support compiling &gt;4kB WASM on the main thread, and
-that includes side modules; you can use <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code> (in
-<code class="docutils literal notranslate"><span class="pre">emcc</span></code> or <code class="docutils literal notranslate"><span class="pre">file_packager.py</span></code>) to make Emscripten compile them on
-startup
+<li><p>Chromium does not support compiling &gt;4kB WASM on the main thread, and that
+includes side modules; you can use <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code> (in <code class="docutils literal notranslate"><span class="pre">emcc</span></code> or
+<code class="docutils literal notranslate"><span class="pre">file_packager.py</span></code>) to make Emscripten compile them on startup
 <a class="reference external" href="https://emscripten.org/docs/porting/files/packaging_files.html#preloading-files">[doc]</a>
 <a class="reference external" href="https://groups.google.com/forum/#!topic/emscripten-discuss/cE3hUV3fDSw">[discuss]</a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code defined within side modules depends on <code class="docutils literal notranslate"><span class="pre">eval</span></code> support are
@@ -1305,12 +1315,26 @@ is therefore incompatible with <code class="docutils literal notranslate"><span 
 </section>
 <section id="pthreads-support">
 <h3>Pthreads support<a class="headerlink" href="#pthreads-support" title="Permalink to this headline">¶</a></h3>
-<p>Dynamic linking + pthreads is is still experimental.  While you can link with
-<code class="docutils literal notranslate"><span class="pre">MAIN_MODULE</span></code> and <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> emscripten will produce a warning by default
-when you do this.</p>
-<p>While load-time dynamic linking should largely work and does not have any major
-known issues, runtime dynamic linking (with <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code>) has limited support
-when used with pthreads.</p>
+<p>Dynamic linking + pthreads is is still experimental.  As such, linking with both
+<code class="docutils literal notranslate"><span class="pre">MAIN_MODULE</span></code> and <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> will produce a warning.</p>
+<p>While load-time dynamic linking works without any complications, runtime dynamic
+linking via <code class="docutils literal notranslate"><span class="pre">dlopen</span></code>/<code class="docutils literal notranslate"><span class="pre">dlsym</span></code> can require some extra consideration.  The
+reason for this is that keeping the indirection function pointer table in sync
+between threads has to be done by emscripten library code.  Each time a new
+library is loaded or a new symbol is requested via <code class="docutils literal notranslate"><span class="pre">dlsym</span></code>, table slots can be
+added and these changes need to be mirrored on every thread in the process.</p>
+<p>Changes to the table are protected by a mutex, and before any thread returns
+from <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> or <code class="docutils literal notranslate"><span class="pre">dlsym</span></code> it will wait until all other threads are sync.  In
+order to make this synchronization as seamless as possible, we hook into the
+low level primitives of <cite>emscripten_futex_wait</cite> and <cite>emscirpten_yield</cite>.</p>
+<p>For most use cases all this happens under hood and no special action is needed.
+However, there there is one class of application that currently may require
+modification.  If your applications busy waits, or directly uses the
+<code class="docutils literal notranslate"><span class="pre">atomic.waitXX</span></code> instructions (or the clang
+<code class="docutils literal notranslate"><span class="pre">__builtin_wasm_memory_atomic_waitXX</span></code> builtins) you maybe need to switch it
+to use <code class="docutils literal notranslate"><span class="pre">emscripten_futex_wait</span></code> or order avoid deadlocks.  If you don’t use
+<code class="docutils literal notranslate"><span class="pre">emscripten_futex_wait</span></code> while you block, you could potentially block other
+threads that are calling <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> and/or <code class="docutils literal notranslate"><span class="pre">dlsym</span></code>.</p>
 </section>
 </section>
 </section>
@@ -1426,7 +1450,7 @@ when used with pthreads.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.31-git (dev)',
+            VERSION:'3.1.32-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

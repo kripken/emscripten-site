@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C++ Exceptions Support &mdash; Emscripten 3.1.31-git (dev) documentation</title>
+  <title>C++ Exceptions Support &mdash; Emscripten 3.1.32-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.31-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.32-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C setjmp-longjmp Support" href="setjmp-longjmp.html"/>
         <link rel="prev" title="Porting SIMD code targeting WebAssembly" href="simd.html"/> 
@@ -453,7 +453,11 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#debugging-exceptions">Debugging Exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging-exceptions">Debugging Exceptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#stack-traces">Stack Traces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exception-messages">Exception Messages</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
@@ -843,6 +847,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#example-code">Example Code</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#development-overview">Development Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#programming-example">Programming Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#synchronizing-audio-thread-with-the-main-thread">Synchronizing audio thread with the main thread</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html#more-examples">More Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#settings-js">settings.js</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/advanced-apis.html#preamble-js">preamble.js</a></li>
@@ -1136,7 +1147,7 @@ exception thrown: 5246024 - Exception catching is disabled, this exception canno
 </div>
 <p>If you want to opt-in, you have two following options.</p>
 <section id="javascript-based-exception-support">
-<h2>JavaScript-based Exception Support<a class="headerlink" href="#javascript-based-exception-support" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>JavaScript-based Exception Support<a class="headerlink" href="#javascript-based-exception-support" title="Permalink to this headline">¶</a></h2>
 <p>First, you can enable exceptions via Emscripten’s JavaScript-based support. To
 enable it, pass <code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code> at both compile time and link time.</p>
 <p>When you rebuild the example above with this flag, the output will change to:</p>
@@ -1150,7 +1161,7 @@ specifying a list of allowed functions in which exceptions are enabled, see the
 <code class="docutils literal notranslate"><span class="pre">EXCEPTION_CATCHING_ALLOWED</span></code> setting.</p>
 </section>
 <section id="webassembly-exception-handling-based-support">
-<h2>WebAssembly Exception Handling-based Support<a class="headerlink" href="#webassembly-exception-handling-based-support" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>WebAssembly Exception Handling-based Support<a class="headerlink" href="#webassembly-exception-handling-based-support" title="Permalink to this headline">¶</a></h2>
 <p>Alternatively, you can opt-in to the <a class="reference external" href="https://github.com/WebAssembly/exception-handling/blob/master/proposals/exception-handling/Exceptions.md">native WebAssembly exception handling</a>
 proposal. To enable it, pass <code class="docutils literal notranslate"><span class="pre">-fwasm-exceptions</span></code> at both compile time and link
 time.</p>
@@ -1168,13 +1179,34 @@ be supported in all WebAssembly engines yet</a>.</p>
 </section>
 <section id="debugging-exceptions">
 <h2>Debugging Exceptions<a class="headerlink" href="#debugging-exceptions" title="Permalink to this headline">¶</a></h2>
-<p>When <a class="reference internal" href="Debugging.html#debugging-assertions"><span class="std std-ref">ASSERTIONS</span></a> is enabled, uncaught exceptions
-will print stack traces for debugging. <a class="reference internal" href="Debugging.html#debugging-assertions"><span class="std std-ref">ASSERTIONS</span></a>
-is enabled by default in <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><span class="std std-ref">-O0</span></a> and disabled in optimized builds
-(<a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a> and above). You can enable it by passing <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code>
-to the <code class="docutils literal notranslate"><span class="pre">emcc</span></code> command line in optimized builds as well.</p>
-<p>You can also catch and examine C++ exceptions from JavaScript. See
-<a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript"><span class="std std-ref">Handling C++ exceptions from JavaScript</span></a>.</p>
+<section id="stack-traces">
+<h3>Stack Traces<a class="headerlink" href="#stack-traces" title="Permalink to this headline">¶</a></h3>
+<p>For <a class="reference internal" href="#webassembly-exception-handling-based-support"><span class="std std-ref">native Wasm exceptions</span></a>, when <a class="reference internal" href="Debugging.html#debugging-assertions"><span class="std std-ref">ASSERTIONS</span></a> is enabled, uncaught exceptions will print stack traces
+for debugging. <a class="reference internal" href="Debugging.html#debugging-assertions"><span class="std std-ref">ASSERTIONS</span></a> is enabled by default
+in <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><span class="std std-ref">-O0</span></a> and disabled in optimized builds (<a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a>
+and above). You can enable it by passing <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> to the <code class="docutils literal notranslate"><span class="pre">emcc</span></code>
+command line in optimized builds as well. To display Wasm function names in
+stack traces, you also need <a class="reference internal" href="../tools_reference/emcc.html#emcc-profiling-funcs"><span class="std std-ref">–profiling-funcs</span></a>
+(or <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g</span></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-gsource-map"><span class="std std-ref">-gsource-map</span></a>).</p>
+<p>In JavaScript, you can also examine the stack traces using
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Exception/stack">WebAssembly.Exception.prototype.stack</a>
+property. For example:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// some code that calls WebAssembly</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// Do something with e.stack</span><span class="w"></span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Stack traces within Wasm code are not supported in <a class="reference internal" href="#javascript-based-exception-support"><span class="std std-ref">JavaScipt-based
+exceptions</span></a>.</p>
+</section>
+<section id="exception-messages">
+<h3>Exception Messages<a class="headerlink" href="#exception-messages" title="Permalink to this headline">¶</a></h3>
+<p>You can also catch and examine the type and the message of C++ exceptions from
+JavaScript. See <a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript"><span class="std std-ref">Handling C++ exceptions from JavaScript</span></a>.</p>
+</section>
 </section>
 <section id="using-exceptions-and-setjmp-longjmp-together">
 <h2>Using Exceptions and setjmp-longjmp Together<a class="headerlink" href="#using-exceptions-and-setjmp-longjmp-together" title="Permalink to this headline">¶</a></h2>
@@ -1293,7 +1325,7 @@ to the <code class="docutils literal notranslate"><span class="pre">emcc</span><
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.31-git (dev)',
+            VERSION:'3.1.32-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
