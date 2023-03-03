@@ -35,7 +35,7 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="Emscripten 3.1.33-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
-        <link rel="next" title="Wasm Workers API" href="wasm_workers.html"/>
+        <link rel="next" title="stack.h" href="stack.h.html"/>
         <link rel="prev" title="fiber.h" href="fiber.h.html"/> 
 
   
@@ -825,6 +825,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="stack.h.html">stack.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wasm_workers.html">Wasm Workers API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#introduction">Introduction</a></li>
@@ -1209,22 +1210,13 @@ Returns 1 if the work was successfully enqueued or 0 otherwise.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="c.emscripten_proxy_async_with_callback">
-int <code class="sig-name descname">emscripten_proxy_async_with_callback</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void* (<em>*func</em>)(void*), void* arg, void (*callback)(void* arg, void* result), void*<em> callback_arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_async_with_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enqueue <cite>func</cite> on the given queue and thread. Once (and if) it finishes
-executing, it will asynchronously proxy <cite>callback</cite> back to the current thread
-on the same queue. The result of the proxied function will be passed as the
-second argument to the callback. Returns 1 if the initial work was
-successfully enqueued and the target thread notified or 0 otherwise. If the
-callback cannot be scheduled (for example due to OOM), the program is aborted.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="c.emscripten_proxy_sync">
 int <code class="sig-name descname">emscripten_proxy_sync</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void (<em>*func</em>)(void*), void*<em> arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enqueue <code class="docutils literal notranslate"><span class="pre">func</span></code> to be called with argument <code class="docutils literal notranslate"><span class="pre">arg</span></code> on the given queue and
 thread then wait for <code class="docutils literal notranslate"><span class="pre">func</span></code> to be executed synchronously before returning.
-Returns 1 if the <code class="docutils literal notranslate"><span class="pre">func</span></code> was successfully completed and 0 otherwise.</p>
+Returns 1 if the <code class="docutils literal notranslate"><span class="pre">func</span></code> was successfully completed and 0 otherwise,
+including if the target thread is canceled or exits before the work is
+completed.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1232,9 +1224,32 @@ Returns 1 if the <code class="docutils literal notranslate"><span class="pre">fu
 int <code class="sig-name descname">emscripten_proxy_sync_with_ctx</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void (<em>*func</em>)(<a class="reference internal" href="#c.em_proxying_ctx" title="em_proxying_ctx">em_proxying_ctx</a>*, void*), void*<em> arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_sync_with_ctx" title="Permalink to this definition">¶</a></dt>
 <dd><p>The same as <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_sync</span></code> except that instead of waiting for the
 proxied function to return, it waits for the proxied task to be explicitly
-marked finished with <code class="docutils literal notranslate"><span class="pre">emscripten_proxying_finish</span></code>. <code class="docutils literal notranslate"><span class="pre">func</span></code> need not call
-<code class="docutils literal notranslate"><span class="pre">emscripten_proxying_finish</span></code> itself; it could instead store the context
-pointer and call <code class="docutils literal notranslate"><span class="pre">emscripten_proxying_finish</span></code> at an arbitrary later time.</p>
+marked finished with <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_finish</span></code>. <code class="docutils literal notranslate"><span class="pre">func</span></code> need not call
+<code class="docutils literal notranslate"><span class="pre">emscripten_proxy_finish</span></code> itself; it could instead store the context pointer
+and call <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_finish</span></code> at an arbitrary later time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_proxy_callback">
+int <code class="sig-name descname">emscripten_proxy_callback</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void (<em>*func</em>)(void*), void (*callback)(void*), void (*cancel)(void*), void*<em> arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enqueue <code class="docutils literal notranslate"><span class="pre">func</span></code> on the given queue and thread. Once (and if) it finishes
+executing, it will asynchronously proxy <code class="docutils literal notranslate"><span class="pre">callback</span></code> back to the current
+thread on the same queue, or if the target thread dies before the work can be
+completed, <code class="docutils literal notranslate"><span class="pre">cancel</span></code> will be proxied back instead. All three function will
+receive the same argument, <code class="docutils literal notranslate"><span class="pre">arg</span></code>. Returns 1 if <code class="docutils literal notranslate"><span class="pre">func</span></code> was successfully
+enqueued and the target thread notified or 0 otherwise.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="c.emscripten_proxy_callback_with_ctx">
+int <code class="sig-name descname">emscripten_proxy_callback_with_ctx</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_proxying_queue" title="em_proxying_queue">em_proxying_queue</a>*<em> q</em>, pthread_t<em> target_thread</em>, void (<em>*func</em>)(<a class="reference internal" href="#c.em_proxying_ctx" title="em_proxying_ctx">em_proxying_ctx</a>*, void*), void (*callback)(void*), void (*cancel)(void*), void*<em> arg</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_proxy_callback_with_ctx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enqueue <code class="docutils literal notranslate"><span class="pre">func</span></code> on the given queue and thread. Once (and if) it finishes the
+task by calling <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_finish</span></code> on the given <code class="docutils literal notranslate"><span class="pre">em_proxying_ctx</span></code>,
+it will asynchronously proxy <code class="docutils literal notranslate"><span class="pre">callback</span></code> back to the current thread on the
+same queue, or if the target thread dies before the work can be completed,
+<code class="docutils literal notranslate"><span class="pre">cancel</span></code> will be proxied back instead. All three function will receive the
+same argument, <code class="docutils literal notranslate"><span class="pre">arg</span></code>. Returns 1 if <code class="docutils literal notranslate"><span class="pre">func</span></code> was successfully enqueued and
+the target thread notified or 0 otherwise.</p>
 </dd></dl>
 
 </section>
@@ -1280,14 +1295,6 @@ function was successfully enqueued and <code class="docutils literal notranslate
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv4N13ProxyingQueue22proxyAsyncWithCallbackE">
-<span id="_CPPv3N13ProxyingQueue22proxyAsyncWithCallbackE"></span><span id="_CPPv2N13ProxyingQueue22proxyAsyncWithCallbackE"></span>bool <code class="sig-name descname">proxyAsyncWithCallback</code><span class="sig-paren">(</span>pthread_t <em>target</em>, std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>func</em>std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>callback</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue22proxyAsyncWithCallbackE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_async_with_callback</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code> and
-schedule <code class="docutils literal notranslate"><span class="pre">callback</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code> if the function was successfully
-enqueued and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
-</dd></dl>
-
-<dl class="member">
 <dt id="_CPPv4N13ProxyingQueue9proxySyncE">
 <span id="_CPPv3N13ProxyingQueue9proxySyncE"></span><span id="_CPPv2N13ProxyingQueue9proxySyncE"></span>bool <code class="sig-name descname">proxySync</code><span class="sig-paren">(</span><em class="property">const</em> pthread_t <em>target</em>, <em class="property">const</em> std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;<em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue9proxySyncE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_sync</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code> if the
@@ -1297,9 +1304,26 @@ function was successfully completed or <code class="docutils literal notranslate
 <dl class="member">
 <dt id="_CPPv4N13ProxyingQueue16proxySyncWithCtxE">
 <span id="_CPPv3N13ProxyingQueue16proxySyncWithCtxE"></span><span id="_CPPv2N13ProxyingQueue16proxySyncWithCtxE"></span>bool <code class="sig-name descname">proxySyncWithCtx</code><span class="sig-paren">(</span><em class="property">const</em> pthread_t <em>target</em>, <em class="property">const</em> std::function&lt;void<span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N13ProxyingQueue11ProxyingCtxE" title="ProxyingQueue::ProxyingCtx">ProxyingCtx</a><span class="sig-paren">)</span>&gt; &amp;<em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue16proxySyncWithCtxE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_sync_with_ctx</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code>
-if the function was successfully marked done with
-<code class="docutils literal notranslate"><span class="pre">emscripten_proxying_finish</span></code> or <code class="docutils literal notranslate"><span class="pre">ProxyingCtx::finish</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_sync_with_ctx</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code>, returning
+<code class="docutils literal notranslate"><span class="pre">true</span></code> if the function was successfully marked done with
+<code class="docutils literal notranslate"><span class="pre">emscripten_proxy_finish</span></code> or <code class="docutils literal notranslate"><span class="pre">ProxyingCtx::finish</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code>
+otherwise.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv4N13ProxyingQueue13proxyCallbackE">
+<span id="_CPPv3N13ProxyingQueue13proxyCallbackE"></span><span id="_CPPv2N13ProxyingQueue13proxyCallbackE"></span>bool <code class="sig-name descname">proxyCallback</code><span class="sig-paren">(</span>pthread_t <em>target</em>, std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>func</em>std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>callback</em>std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>cancel</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue13proxyCallbackE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_callback</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code> and schedule either
+<code class="docutils literal notranslate"><span class="pre">callback</span></code> or <code class="docutils literal notranslate"><span class="pre">cancel</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code> if the function was
+successfully enqueued and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv4N13ProxyingQueue20proxyCallbackWithCtxE">
+<span id="_CPPv3N13ProxyingQueue20proxyCallbackWithCtxE"></span><span id="_CPPv2N13ProxyingQueue20proxyCallbackWithCtxE"></span>bool <code class="sig-name descname">proxyCallbackWithCtx</code><span class="sig-paren">(</span>pthread_t <em>target</em>, std::function&lt;void<span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N13ProxyingQueue11ProxyingCtxE" title="ProxyingQueue::ProxyingCtx">ProxyingCtx</a><span class="sig-paren">)</span>&gt; &amp;&amp;<em>func</em>, std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>callback</em>std::function&lt;void<span class="sig-paren">(</span><span class="sig-paren">)</span>&gt; &amp;&amp;<em>cancel</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13ProxyingQueue20proxyCallbackWithCtxE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">emscripten_proxy_callback_with_ctx</span></code> to execute <code class="docutils literal notranslate"><span class="pre">func</span></code> and
+schedule either <code class="docutils literal notranslate"><span class="pre">callback</span></code> or <code class="docutils literal notranslate"><span class="pre">cancel</span></code>, returning <code class="docutils literal notranslate"><span class="pre">true</span></code> if the
+function was successfully enqueued and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1314,7 +1338,7 @@ if the function was successfully marked done with
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="wasm_workers.html" class="btn btn-neutral float-right" title="Wasm Workers API"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="stack.h.html" class="btn btn-neutral float-right" title="stack.h"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="fiber.h.html" class="btn btn-neutral" title="fiber.h"><span class="fa fa-arrow-circle-left"></span> Previous</a>
