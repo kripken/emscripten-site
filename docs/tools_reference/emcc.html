@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.33-git (dev) documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.38-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -825,6 +825,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#introduction">Introduction</a></li>
@@ -1004,6 +1005,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#compiler-overview">Compiler overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#emscripten-test-suite">Emscripten Test Suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#bisecting">Bisecting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#working-with-c-structs-and-defines">Working with C structs and defines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#see-also">See also</a></li>
 </ul>
 </li>
@@ -1272,8 +1274,14 @@ you want to host it on a different server, for example).</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-gsource-map">
-<dt><code class="docutils literal notranslate"><span class="pre">-gsource-map</span></code></dt><dd><p>When linking, generate a source map using LLVM debug information (which must
-be present in object files, i.e., they should have been compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code>).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">-gsource-map</span></code></dt><dd><p>[link]
+Generate a source map using LLVM debug information (which must
+be present in object files, i.e., they should have been compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code>).
+When this option is provided, the <strong>.wasm</strong> file is updated to have a
+<code class="docutils literal notranslate"><span class="pre">sourceMappingURL</span></code> section. The resulting URL will have format:
+<code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;wasm-file-name&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">.map</span></code>. <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> defaults
+to being empty (which means the source map is served from the same directory
+as the wasm file). It can be changed using <a class="reference internal" href="#emcc-source-map-base"><span class="std std-ref">–source-map-base</span></a>.</p>
 </dd>
 </dl>
 <dl id="emcc-gn">
@@ -1439,7 +1447,8 @@ The path name to a skeleton HTML file used when generating HTML output. The shel
 </dl>
 <dl class="simple" id="emcc-source-map-base">
 <dt><code class="docutils literal notranslate"><span class="pre">--source-map-base</span> <span class="pre">&lt;base-url&gt;</span></code></dt><dd><p>[link]
-The URL for the location where WebAssembly source maps will be published. When this option is provided, the <strong>.wasm</strong> file is updated to have a <code class="docutils literal notranslate"><span class="pre">sourceMappingURL</span></code> section. The resulting URL will have format: <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;wasm-file-name&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">.map</span></code>.</p>
+The base URL for the location where WebAssembly source maps will be published. Must be used
+with <a class="reference internal" href="#emcc-gsource-map"><span class="std std-ref">-gsource-map</span></a>.</p>
 </dd>
 </dl>
 <dl id="emcc-minify">
@@ -1566,7 +1575,7 @@ Embeds a simple CPU profiler onto the generated page. Use this to perform cursor
 Embeds a memory allocation tracker onto the generated page. Use this to profile the application usage of the Emscripten HEAP.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--threadprofiler</span></code></dt><dd><p>[link]
-Embeds a thread activity profiler onto the generated page. Use this to profile the application usage of pthreads when targeting multithreaded builds (-sUSE_PTHREADS=1/2).</p>
+Embeds a thread activity profiler onto the generated page. Use this to profile the application usage of pthreads when targeting multithreaded builds (-pthread).</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-config">
@@ -1760,7 +1769,7 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.33-git (dev)',
+            VERSION:'3.1.38-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

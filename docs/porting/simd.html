@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 3.1.33-git (dev) documentation</title>
+  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 3.1.38-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ Exceptions Support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -825,6 +825,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#introduction">Introduction</a></li>
@@ -1004,6 +1005,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#compiler-overview">Compiler overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#emscripten-test-suite">Emscripten Test Suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#bisecting">Bisecting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#working-with-c-structs-and-defines">Working with C structs and defines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#see-also">See also</a></li>
 </ul>
 </li>
@@ -1142,7 +1144,7 @@
 <li><p>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, so all code should be written to use SIMD intrinsic functions or compiler vector extensions.</p></li>
 <li><p>WebAssembly SIMD does not have control over managing floating point rounding modes or handling denormals.</p></li>
 <li><p>Cache line prefetch instructions are not available, and calls to these functions will compile, but are treated as no-ops.</p></li>
-<li><p>Asymmetric memory fence operations are not available, but will be implemented as fully synchronous memory fences when SharedArrayBuffer is enabled (-sUSE_PTHREADS) or as no-ops when multithreading is not enabled (default, -sUSE_PTHREADS=0).</p></li>
+<li><p>Asymmetric memory fence operations are not available, but will be implemented as fully synchronous memory fences when SharedArrayBuffer is enabled (-pthread) or as no-ops when multithreading is not enabled (the default).</p></li>
 </ul>
 </div></blockquote>
 <p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
@@ -3224,7 +3226,7 @@ status</a>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.33-git (dev)',
+            VERSION:'3.1.38-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

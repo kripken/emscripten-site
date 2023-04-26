@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 3.1.33-git (dev) documentation</title>
+  <title>Interacting with code &mdash; Emscripten 3.1.38-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.33-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -825,6 +825,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/stack.h.html">stack.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../api_reference/wasm_workers.html">Wasm Workers API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/wasm_workers.html#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/wasm_workers.html#introduction">Introduction</a></li>
@@ -1004,6 +1005,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#compiler-overview">Compiler overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#emscripten-test-suite">Emscripten Test Suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#bisecting">Bisecting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#working-with-c-structs-and-defines">Working with C structs and defines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contributing/developers_guide.html#see-also">See also</a></li>
 </ul>
 </li>
@@ -1355,7 +1357,7 @@ to prefix function calls with <code class="docutils literal notranslate"><span c
 <div><ul>
 <li><p>Integer and floating point numbers can be passed as-is.</p></li>
 <li><p>Pointers can be passed as-is also, as they are simply integers in the generated code.</p></li>
-<li><p>JavaScript string <code class="docutils literal notranslate"><span class="pre">someString</span></code> can be converted to a <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> using <code class="docutils literal notranslate"><span class="pre">ptr</span> <span class="pre">=</span> <span class="pre">allocateUTF8(someString)</span></code>.</p>
+<li><p>JavaScript string <code class="docutils literal notranslate"><span class="pre">someString</span></code> can be converted to a <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> using <code class="docutils literal notranslate"><span class="pre">ptr</span> <span class="pre">=</span> <span class="pre">stringToNewUTF8(someString)</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The conversion to a pointer allocates memory, which needs to be
@@ -1687,9 +1689,6 @@ all your methods, and <code class="docutils literal notranslate"><span class="pr
 This is useful when all the implemented methods use a JavaScript
 singleton containing helper methods. See <code class="docutils literal notranslate"><span class="pre">library_webgl.js</span></code> for
 an example.</p></li>
-<li><p>If a JavaScript library depends on a compiled C library (like most
-of <em>libc</em>), you must edit <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/deps_info.json">src/deps_info.json</a>. Search for
-“deps_info” in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tools/system_libs.py">tools/system_libs.py</a>.</p></li>
 <li><p>The keys passed into <cite>mergeInto</cite> generate functions that are prefixed
 by <code class="docutils literal notranslate"><span class="pre">_</span></code>. In other words <code class="docutils literal notranslate"><span class="pre">my_func:</span> <span class="pre">function()</span> <span class="pre">{},</span></code> becomes
 <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">_my_func()</span> <span class="pre">{}</span></code>, as all C methods in emscripten have a <code class="docutils literal notranslate"><span class="pre">_</span></code> prefix. Keys starting with <code class="docutils literal notranslate"><span class="pre">$</span></code> have the <code class="docutils literal notranslate"><span class="pre">$</span></code>
@@ -1983,7 +1982,7 @@ you can give it a try. See <a class="reference external" href="https://emnapi-do
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.33-git (dev)',
+            VERSION:'3.1.38-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 3.1.33-git (dev) documentation</title>
+  <title>emscripten.h &mdash; Emscripten 3.1.38-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -825,6 +825,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="stack.h.html">stack.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wasm_workers.html">Wasm Workers API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#introduction">Introduction</a></li>
@@ -1004,6 +1005,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#compiler-overview">Compiler overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#emscripten-test-suite">Emscripten Test Suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#bisecting">Bisecting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#working-with-c-structs-and-defines">Working with C structs and defines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#see-also">See also</a></li>
 </ul>
 </li>
@@ -1225,10 +1227,7 @@ about memory management.</p>
   var jsString = &#39;Hello with some exotic Unicode characters: Tässä on yksi lumiukko: ☃, ole hyvä.&#39;;
   // &#39;jsString.length&#39; would return the length of the string as UTF-16
   // units, but Emscripten C strings operate as UTF-8.
-  var lengthBytes = lengthBytesUTF8(jsString)+1;
-  var stringOnWasmHeap = _malloc(lengthBytes);
-  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
-  return stringOnWasmHeap;
+  return stringToNewUTF8(jsString);
 });
 
 int main() {
@@ -1305,9 +1304,7 @@ about memory management.</p>
   var lengthBytes = lengthBytesUTF8(jsString)+1;
   // &#39;jsString.length&#39; would return the length of the string as UTF-16
   // units, but Emscripten C strings operate as UTF-8.
-  var stringOnWasmHeap = _malloc(lengthBytes);
-  stringToUTF8(jsString, stringOnWasmHeap, lengthBytes);
-  return stringOnWasmHeap;
+  return stringToNewUTF8(jsString);
 });
 printf(&quot;UTF8 string says: %s\n&quot;, str);
 free(str); // Each call to _malloc() must be paired with free(), or heap memory will leak!
@@ -3087,7 +3084,7 @@ to constantly check for after any wasm code runs. See
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.33-git (dev)',
+            VERSION:'3.1.38-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

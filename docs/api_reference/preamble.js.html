@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>preamble.js &mdash; Emscripten 3.1.33-git (dev) documentation</title>
+  <title>preamble.js &mdash; Emscripten 3.1.38-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.33-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="File System API" href="Filesystem-API.html"/>
         <link rel="prev" title="html5.h" href="html5.h.html"/> 
@@ -825,6 +825,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="stack.h.html">stack.h</a></li>
 <li class="toctree-l2"><a class="reference internal" href="wasm_workers.html">Wasm Workers API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="wasm_workers.html#introduction">Introduction</a></li>
@@ -1004,6 +1005,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#compiler-overview">Compiler overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#emscripten-test-suite">Emscripten Test Suite</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#bisecting">Bisecting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#working-with-c-structs-and-defines">Working with C structs and defines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contributing/developers_guide.html#see-also">See also</a></li>
 </ul>
 </li>
@@ -1463,34 +1465,6 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="writeStringToMemory">
-<code class="sig-name descname">writeStringToMemory</code><span class="sig-paren">(</span><em class="sig-param">string</em>, <em class="sig-param">buffer</em>, <em class="sig-param">dontAddNull</em><span class="sig-paren">)</span><a class="headerlink" href="#writeStringToMemory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a JavaScript string to a specified address in the heap.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This function is deprecated, you should call the function <code class="docutils literal notranslate"><span class="pre">stringToUTF8</span></code> instead, which provides a secure bounded version of the same functionality instead.</p>
-</div>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Allocate space for string and extra &#39;0&#39; at the end</span><span class="w"></span>
-<span class="kd">var</span><span class="w"> </span><span class="nx">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="o">+</span><span class="mf">1</span><span class="p">);</span><span class="w"></span>
-
-<span class="c1">// Write the string to memory</span><span class="w"></span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">writeStringToMemory</span><span class="p">(</span><span class="nx">myString</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer</span><span class="p">);</span><span class="w"></span>
-
-<span class="c1">// We can now send buffer into a C function, it is just a normal char* pointer</span><span class="w"></span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>string</strong> (<em>String</em>) – The string to write into memory.</p></li>
-<li><p><strong>buffer</strong> (<em>Number</em>) – The address (number) where <code class="docutils literal notranslate"><span class="pre">string</span></code> is to be written.</p></li>
-<li><p><strong>dontAddNull</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the new array is not zero-terminated.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="writeArrayToMemory">
 <code class="sig-name descname">writeArrayToMemory</code><span class="sig-paren">(</span><em class="sig-param">array</em>, <em class="sig-param">buffer</em><span class="sig-paren">)</span><a class="headerlink" href="#writeArrayToMemory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes an array to a specified address in the heap. Note that memory should to be allocated for the array before it is written.</p>
@@ -1499,29 +1473,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> – The array to write to memory.</p></li>
 <li><p><strong>buffer</strong> (<em>Number</em>) – The address (number) where <code class="docutils literal notranslate"><span class="pre">array</span></code> is to be written.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="writeAsciiToMemory">
-<code class="sig-name descname">writeAsciiToMemory</code><span class="sig-paren">(</span><em class="sig-param">str</em>, <em class="sig-param">buffer</em>, <em class="sig-param">dontAddNull</em><span class="sig-paren">)</span><a class="headerlink" href="#writeAsciiToMemory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes an ASCII string to a specified address in the heap. Note that memory should to be allocated for the string before it is written.</p>
-<p>The string is assumed to only have characters in the ASCII character set. If ASSERTIONS are enabled and this is not the case, it will fail.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Allocate space for string</span><span class="w"></span>
-<span class="kd">var</span><span class="w"> </span><span class="nx">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myString</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span><span class="w"></span>
-
-<span class="c1">// Write the string to memory</span><span class="w"></span>
-<span class="nx">Module</span><span class="p">.</span><span class="nx">writeStringToMemory</span><span class="p">(</span><span class="nx">myString</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>string</strong> – The string to write into memory.</p></li>
-<li><p><strong>buffer</strong> – The address where <code class="docutils literal notranslate"><span class="pre">string</span></code> is to be written.</p></li>
-<li><p><strong>dontAddNull</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the new string is not zero-terminated.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1744,7 +1695,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.33-git (dev)',
+            VERSION:'3.1.38-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
