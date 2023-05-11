@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fetch API &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Fetch API &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="File System API" href="Filesystem-API.html"/> 
@@ -1141,30 +1141,30 @@ network requests can be run either synchronously or asynchronously as desired.</
 <p>The use of the Fetch API is quick to illustrate via an example. The following
 application downloads a file from a web server asynchronously to memory inside
 the application heap.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/fetch.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/fetch.h&gt;</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">downloadSucceeded</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">downloadSucceeded</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// The data is now available at fetch-&gt;data[0] through fetch-&gt;data[fetch-&gt;numBytes-1];</span>
 <span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"> </span><span class="c1">// Free data associated with the fetch.</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">downloadFailed</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">downloadFailed</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span>
 <span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"> </span><span class="c1">// Also free data on failure.</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>If a relative pathname is specified to a call to emscripten_fetch, like in the
@@ -1188,14 +1188,14 @@ API interacts with the browser’s IndexedDB API, which can load and store large
 data files that are available on subsequent visits to the page. To enable
 IndexedDB storage, pass the EMSCRIPTEN_FETCH_PERSIST_FILE flag in the fetch
 attributes:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_PERSIST_FILE</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_PERSIST_FILE</span><span class="p">;</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>For a full example, see the file
@@ -1206,57 +1206,57 @@ attributes:</p>
 IndexedDB (without having to perform any XHRs). This is possible with the
 Emscripten Fetch API by passing the special HTTP action verb “EM_IDB_STORE” to
 the Emscripten Fetch operation.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;IDB store succeeded.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;IDB store succeeded.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">failure</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;IDB store failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">failure</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;IDB store failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">persistFileToIndexedDB</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">outputFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">numBytes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;EM_IDB_STORE&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_REPLACE</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_PERSIST_FILE</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">requestData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">data</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">requestDataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numBytes</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">success</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failure</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="n">outputFilename</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">persistFileToIndexedDB</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">outputFilename</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">numBytes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;EM_IDB_STORE&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_REPLACE</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_PERSIST_FILE</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">requestData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">data</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">requestDataSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numBytes</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failure</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="n">outputFilename</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Create data</span>
-<span class="w">  </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">10240</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">srand</span><span class="p">(</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span><span class="w"></span>
-<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10240</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">rand</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">10240</span><span class="p">);</span>
+<span class="w">  </span><span class="n">srand</span><span class="p">(</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10240</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="n">rand</span><span class="p">();</span>
 
-<span class="w">  </span><span class="n">persistFileToIndexedDB</span><span class="p">(</span><span class="s">&quot;outputfile.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="mi">10240</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">persistFileToIndexedDB</span><span class="p">(</span><span class="s">&quot;outputfile.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="mi">10240</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="deleting-a-file-from-indexeddb">
 <h3>Deleting a file from IndexedDB<a class="headerlink" href="#deleting-a-file-from-indexeddb" title="Permalink to this headline">¶</a></h3>
 <p>Files can be cleaned up from IndexedDB by using the HTTP action verb “EM_IDB_DELETE”:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Deleting file from IDB succeeded.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">success</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Deleting file from IDB succeeded.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">failure</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Deleting file from IDB failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">failure</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Deleting file from IDB failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;EM_IDB_DELETE&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;filename_to_delete.dat&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;EM_IDB_DELETE&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;filename_to_delete.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -1271,20 +1271,20 @@ a callback.</p>
 performed synchronously by passing the EMSCRIPTEN_FETCH_SYNCHRONOUS flag. When
 this flag is passed, the calling thread will block to sleep until the fetch
 operation finishes. See the following example.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_SYNCHRONOUS</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_SYNCHRONOUS</span><span class="p">;</span>
 <span class="w">  </span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;file.dat&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Blocks here until the operation is complete.</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// The data is now available at fetch-&gt;data[0] through fetch-&gt;data[fetch-&gt;numBytes-1];</span>
-<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>In the above code sample, the success and failure callback functions are not
@@ -1312,28 +1312,28 @@ fetch. Waitable fetches start off as asynchronous, but at any point after the
 fetch has started, the calling thread can issue a wait operation to either wait
 for the completion of the fetch, or to just poll whether the fetch operation has
 yet completed. The following code sample illustrates how this works.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_WAITABLE</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_WAITABLE</span><span class="p">;</span>
 <span class="w">  </span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;file.dat&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Starts as asynchronous.</span>
 
-<span class="w">  </span><span class="n">EMSCRIPTEN_RESULT</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_RESULT_TIMED_OUT</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">while</span><span class="p">(</span><span class="n">ret</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EMSCRIPTEN_RESULT_TIMED_OUT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="cm">/* possibly do some other work; */</span><span class="w"></span>
-<span class="w">    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_fetch_wait</span><span class="p">(</span><span class="n">fetch</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="cm">/*milliseconds to wait, 0 to just poll, INFINITY=wait until completion*/</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">EMSCRIPTEN_RESULT</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_RESULT_TIMED_OUT</span><span class="p">;</span>
+<span class="w">  </span><span class="k">while</span><span class="p">(</span><span class="n">ret</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EMSCRIPTEN_RESULT_TIMED_OUT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="cm">/* possibly do some other work; */</span>
+<span class="w">    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_fetch_wait</span><span class="p">(</span><span class="n">fetch</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="cm">/*milliseconds to wait, 0 to just poll, INFINITY=wait until completion*/</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">// The operation has finished, safe to examine the fields of the &#39;fetch&#39; pointer now.</span>
 
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// The data is now available at fetch-&gt;data[0] through fetch-&gt;data[fetch-&gt;numBytes-1];</span>
-<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Waitable fetches allow interleaving multiple tasks in one thread so that the
@@ -1365,24 +1365,24 @@ emscripten_fetch_close() can be called at any time for asynchronous and waitable
 fetches to abort the download.
 The following example illustrates these fields
 and the onprogress handler.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">downloadProgress</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s.. %.2f%% complete.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s.. %lld bytes complete.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">downloadProgress</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s.. %.2f%% complete.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s.. %lld bytes complete.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onprogress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadProgress</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onprogress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadProgress</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -1417,31 +1417,31 @@ EMSCRIPTEN_FETCH_STREAM_DATA flag to stream through the bytes in the file as
 they are downloaded. If this flag is passed, the downloaded data chunks are
 passed into the onprogress() callback in coherent file sequential order. See the
 following snippet for an example.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">downloadProgress</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s.. %.2f%%s complete. HTTP readyState: %d. HTTP status: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="s">&quot;HTTP statusText: %s. Received chunk [%llu, %llu[</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">),</span><span class="w"></span>
-<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;%&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot; bytes&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">readyState</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">statusText</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">downloadProgress</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s.. %.2f%%s complete. HTTP readyState: %d. HTTP status: %d.</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">    </span><span class="s">&quot;HTTP statusText: %s. Received chunk [%llu, %llu[</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">),</span>
+<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">totalBytes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;%&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot; bytes&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">readyState</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">statusText</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">dataOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">// Process the partial data stream fetch-&gt;data[0] thru fetch-&gt;data[fetch-&gt;numBytes-1]</span>
 <span class="w">  </span><span class="c1">// This buffer represents the file at offset fetch-&gt;dataOffset.</span>
-<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
 <span class="w">    </span><span class="p">;</span><span class="w"> </span><span class="c1">// Process fetch-&gt;data[i];</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_STREAM_DATA</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onprogress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadProgress</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">timeoutMSecs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="mi">60</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_STREAM_DATA</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onprogress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadProgress</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">timeoutMSecs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="mi">60</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>In this case, the onsuccess() handler will not receive the final file buffer at
@@ -1454,33 +1454,33 @@ downloads on them. This initiates an XHR or IndexedDB transfer that only fetches
 the desired subrange of the whole file. This is useful for example when a large
 package file contains multiple smaller ones at certain seek offsets, which can
 be dealt with separately.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/fetch.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/fetch.h&gt;</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">downloadSucceeded</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">downloadSucceeded</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// The data is now available at fetch-&gt;data[0] through fetch-&gt;data[fetch-&gt;numBytes-1];</span>
 <span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"> </span><span class="c1">// Free data associated with the fetch.</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">downloadFailed</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span><span class="w"></span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">downloadFailed</span><span class="p">(</span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span>
 <span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span><span class="w"> </span><span class="c1">// Also free data on failure.</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
+<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">// Make a Range request to only fetch bytes 10 to 20</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">headers</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;Range&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bytes=10-20&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">};</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">requestHeaders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">headers</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">headers</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;Range&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bytes=10-20&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">};</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">requestHeaders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">headers</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onsuccess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadSucceeded</span><span class="p">;</span>
+<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">onerror</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">downloadFailed</span><span class="p">;</span>
+<span class="w">  </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;myfile.dat&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -1621,7 +1621,7 @@ load.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

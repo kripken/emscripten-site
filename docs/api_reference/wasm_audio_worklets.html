@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Wasm Audio Worklets API &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Wasm Audio Worklets API &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Advanced APIs" href="advanced-apis.html"/>
         <link rel="prev" title="Wasm Workers API" href="wasm_workers.html"/> 
@@ -1182,87 +1182,87 @@ register that context to be visible to WebAssembly by calling the function
 <code class="docutils literal notranslate"><span class="pre">emscriptenRegisterAudioObject()</span></code>.</p>
 <p>Then, we will instruct the Emscripten runtime to initialize a Wasm Audio Worklet
 thread scope on this context. The code to achieve these tasks looks like:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/webaudio.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/webaudio.h&gt;</span>
 
-<span class="kt">uint8_t</span><span class="w"> </span><span class="n">audioThreadStack</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span><span class="w"></span>
+<span class="kt">uint8_t</span><span class="w"> </span><span class="n">audioThreadStack</span><span class="p">[</span><span class="mi">4096</span><span class="p">];</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_create_audio_context</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_create_audio_context</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">emscripten_start_wasm_audio_worklet_thread_async</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">audioThreadStack</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">audioThreadStack</span><span class="p">),</span><span class="w"></span>
-<span class="w">                                                   </span><span class="o">&amp;</span><span class="n">AudioThreadInitialized</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">emscripten_start_wasm_audio_worklet_thread_async</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">audioThreadStack</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">audioThreadStack</span><span class="p">),</span>
+<span class="w">                                                   </span><span class="o">&amp;</span><span class="n">AudioThreadInitialized</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>2. When the worklet thread context has been initialized, we are ready to define our
 own noise generator AudioWorkletProcessor node type:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">AudioThreadInitialized</span><span class="p">(</span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">AudioThreadInitialized</span><span class="p">(</span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">success</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// Check browser console in a debug build for detailed errors</span>
-<span class="w">  </span><span class="n">WebAudioWorkletProcessorCreateOptions</span><span class="w"> </span><span class="n">opts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;noise-generator&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="p">};</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_create_wasm_audio_worklet_processor_async</span><span class="p">(</span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AudioWorkletProcessorCreated</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">WebAudioWorkletProcessorCreateOptions</span><span class="w"> </span><span class="n">opts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;noise-generator&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="n">emscripten_create_wasm_audio_worklet_processor_async</span><span class="p">(</span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AudioWorkletProcessorCreated</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>3. After the processor has initialized, we can now instantiate and connect it as a node on the graph. Since on
 web pages audio playback can only be initiated as a response to user input, we will also register an event handler
 which resumes the audio context when the user clicks on the DOM Canvas element that exists on the page.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">AudioWorkletProcessorCreated</span><span class="p">(</span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">AudioWorkletProcessorCreated</span><span class="p">(</span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="n">success</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
+<span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">success</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// Check browser console in a debug build for detailed errors</span>
 
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">outputChannelCounts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span><span class="w"></span>
-<span class="w">  </span><span class="n">EmscriptenAudioWorkletNodeCreateOptions</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">numberOfInputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">numberOfOutputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">.</span><span class="n">outputChannelCounts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outputChannelCounts</span><span class="w"></span>
-<span class="w">  </span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">outputChannelCounts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="n">EmscriptenAudioWorkletNodeCreateOptions</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">numberOfInputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">numberOfOutputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="p">.</span><span class="n">outputChannelCounts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">outputChannelCounts</span>
+<span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="c1">// Create node</span>
-<span class="w">  </span><span class="n">EMSCRIPTEN_AUDIO_WORKLET_NODE_T</span><span class="w"> </span><span class="n">wasmAudioWorklet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_create_wasm_audio_worklet_node</span><span class="p">(</span><span class="n">audioContext</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                                            </span><span class="s">&quot;noise-generator&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">GenerateNoise</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">EMSCRIPTEN_AUDIO_WORKLET_NODE_T</span><span class="w"> </span><span class="n">wasmAudioWorklet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_create_wasm_audio_worklet_node</span><span class="p">(</span><span class="n">audioContext</span><span class="p">,</span>
+<span class="w">                                                            </span><span class="s">&quot;noise-generator&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">GenerateNoise</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">// Connect it to audio context destination</span>
-<span class="w">  </span><span class="n">EM_ASM</span><span class="p">({</span><span class="n">emscriptenGetAudioObject</span><span class="p">(</span><span class="n">$0</span><span class="p">).</span><span class="n">connect</span><span class="p">(</span><span class="n">emscriptenGetAudioObject</span><span class="p">(</span><span class="n">$1</span><span class="p">).</span><span class="n">destination</span><span class="p">)},</span><span class="w"></span>
-<span class="w">    </span><span class="n">wasmAudioWorklet</span><span class="p">,</span><span class="w"> </span><span class="n">audioContext</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">EM_ASM</span><span class="p">({</span><span class="n">emscriptenGetAudioObject</span><span class="p">(</span><span class="n">$0</span><span class="p">).</span><span class="n">connect</span><span class="p">(</span><span class="n">emscriptenGetAudioObject</span><span class="p">(</span><span class="n">$1</span><span class="p">).</span><span class="n">destination</span><span class="p">)},</span>
+<span class="w">    </span><span class="n">wasmAudioWorklet</span><span class="p">,</span><span class="w"> </span><span class="n">audioContext</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">// Resume context on mouse click</span>
-<span class="w">  </span><span class="n">emscripten_set_click_callback</span><span class="p">(</span><span class="s">&quot;canvas&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">OnCanvasClick</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">emscripten_set_click_callback</span><span class="p">(</span><span class="s">&quot;canvas&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">audioContext</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">OnCanvasClick</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
 <li><p>The code to resume the audio context on click looks like this:</p></li>
 </ol>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_BOOL</span><span class="w"> </span><span class="nf">OnCanvasClick</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenMouseEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mouseEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">audioContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="p">)</span><span class="n">userData</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">emscripten_audio_context_state</span><span class="p">(</span><span class="n">audioContext</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">AUDIO_CONTEXT_STATE_RUNNING</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">emscripten_resume_audio_context_sync</span><span class="p">(</span><span class="n">audioContext</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EM_FALSE</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_BOOL</span><span class="w"> </span><span class="nf">OnCanvasClick</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenMouseEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mouseEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="w"> </span><span class="n">audioContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">EMSCRIPTEN_WEBAUDIO_T</span><span class="p">)</span><span class="n">userData</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">emscripten_audio_context_state</span><span class="p">(</span><span class="n">audioContext</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">AUDIO_CONTEXT_STATE_RUNNING</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">emscripten_resume_audio_context_sync</span><span class="p">(</span><span class="n">audioContext</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EM_FALSE</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
 <li><p>Finally we can implement the audio callback that is to generate the noise:</p></li>
 </ol>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/em_math.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/em_math.h&gt;</span>
 
-<span class="n">EM_BOOL</span><span class="w"> </span><span class="nf">GenerateNoise</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">numInputs</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">AudioSampleFrame</span><span class="w"> </span><span class="o">*</span><span class="n">inputs</span><span class="p">,</span><span class="w"></span>
-<span class="w">                      </span><span class="kt">int</span><span class="w"> </span><span class="n">numOutputs</span><span class="p">,</span><span class="w"> </span><span class="n">AudioSampleFrame</span><span class="w"> </span><span class="o">*</span><span class="n">outputs</span><span class="p">,</span><span class="w"></span>
-<span class="w">                      </span><span class="kt">int</span><span class="w"> </span><span class="n">numParams</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">AudioParamFrame</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="p">,</span><span class="w"></span>
-<span class="w">                      </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">numOutputs</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">128</span><span class="o">*</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">numberOfChannels</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span><span class="w"></span>
+<span class="n">EM_BOOL</span><span class="w"> </span><span class="nf">GenerateNoise</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">numInputs</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">AudioSampleFrame</span><span class="w"> </span><span class="o">*</span><span class="n">inputs</span><span class="p">,</span>
+<span class="w">                      </span><span class="kt">int</span><span class="w"> </span><span class="n">numOutputs</span><span class="p">,</span><span class="w"> </span><span class="n">AudioSampleFrame</span><span class="w"> </span><span class="o">*</span><span class="n">outputs</span><span class="p">,</span>
+<span class="w">                      </span><span class="kt">int</span><span class="w"> </span><span class="n">numParams</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">AudioParamFrame</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="p">,</span>
+<span class="w">                      </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">numOutputs</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">128</span><span class="o">*</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">numberOfChannels</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
 <span class="w">      </span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span><span class="w"> </span><span class="c1">// Warning: scale down audio volume by factor of 0.2, raw noise can be really loud otherwise</span>
 
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EM_TRUE</span><span class="p">;</span><span class="w"> </span><span class="c1">// Keep the graph output going</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>And that’s it! Compile the code with the linker flags <code class="docutils literal notranslate"><span class="pre">-sAUDIO_WORKLET=1</span> <span class="pre">-sWASM_WORKERS=1</span></code> to enable targeting AudioWorklets.</p>
@@ -1397,7 +1397,7 @@ which resumes the audio context when the user clicks on the DOM Canvas element t
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

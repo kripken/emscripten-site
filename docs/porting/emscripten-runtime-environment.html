@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Runtime Environment &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Emscripten Runtime Environment &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Connecting C++ and JavaScript" href="connecting_cpp_and_javascript/index.html"/>
         <link rel="prev" title="Specific Browser Limitations" href="guidelines/browser_limitations.html"/> 
@@ -1165,32 +1165,32 @@ the browser renders at 60fps, it will call this 60 times per second). The
 iteration is still run “infinitely” but now other code can run between
 iterations and the browser does not hang.</p>
 <p>Typically you will have a small section with <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__EMSCRIPTEN__</span></code> for the two cases. For example:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/html5.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/html5.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
 <span class="c1">// Our &quot;main loop&quot; function. This callback receives the current time as</span>
 <span class="c1">// reported by the browser, and the user data we provide in the call to</span>
 <span class="c1">// emscripten_request_animation_frame_loop().</span>
-<span class="n">EM_BOOL</span><span class="w"> </span><span class="nf">one_iter</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">userData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="n">EM_BOOL</span><span class="w"> </span><span class="nf">one_iter</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">userData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Can render to the screen here, etc.</span>
-<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;one iteration&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;one iteration&quot;</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// Return true to keep the loop running.</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EM_TRUE</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EM_TRUE</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#ifdef __EMSCRIPTEN__</span>
 <span class="w">  </span><span class="c1">// Receives a function to call and some user data to provide it.</span>
-<span class="w">  </span><span class="n">emscripten_request_animation_frame_loop</span><span class="p">(</span><span class="n">one_iter</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">emscripten_request_animation_frame_loop</span><span class="p">(</span><span class="n">one_iter</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 <span class="cp">#else</span>
-<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">one_iter</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">one_iter</span><span class="p">();</span>
 <span class="w">    </span><span class="c1">// Delay to keep frame rate constant (using SDL).</span>
-<span class="w">    </span><span class="n">SDL_Delay</span><span class="p">(</span><span class="n">time_to_next_frame</span><span class="p">());</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">SDL_Delay</span><span class="p">(</span><span class="n">time_to_next_frame</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="cp">#endif</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1358,7 +1358,7 @@ as described earlier do not.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

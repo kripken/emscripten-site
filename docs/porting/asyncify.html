@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Asyncify &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="API Reference" href="../api_reference/index.html"/>
         <link rel="prev" title="C setjmp-longjmp Support" href="setjmp-longjmp.html"/> 
@@ -1149,34 +1149,34 @@ The following expands on the Emscripten examples from that post.</p>
 <span id="yielding-to-main-loop"></span><h2>Sleeping / yielding to the event loop<a class="headerlink" href="#sleeping-yielding-to-the-event-loop" title="Permalink to this headline">¶</a></h2>
 <p>Let’s begin with the example from that blogpost:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.cpp</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
 <span class="c1">// start_timer(): call JS to set an async timer for 500ms</span>
-<span class="n">EM_JS</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span><span class="w"> </span><span class="n">start_timer</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">Module</span><span class="p">.</span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">setTimeout</span><span class="p">(</span><span class="n">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">Module</span><span class="p">.</span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="mi">500</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="n">EM_JS</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span><span class="w"> </span><span class="n">start_timer</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Module</span><span class="p">.</span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="n">setTimeout</span><span class="p">(</span><span class="n">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Module</span><span class="p">.</span><span class="n">timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="mi">500</span><span class="p">);</span>
+<span class="p">});</span>
 
 <span class="c1">// check_timer(): check if that timer occurred</span>
-<span class="n">EM_JS</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="n">check_timer</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Module</span><span class="p">.</span><span class="n">timer</span><span class="p">;</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="n">EM_JS</span><span class="p">(</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="n">check_timer</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Module</span><span class="p">.</span><span class="n">timer</span><span class="p">;</span>
+<span class="p">});</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">start_timer</span><span class="p">();</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">start_timer</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">// Continuously loop while synchronously polling for the timer.</span>
-<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check_timer</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;timer happened!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sleeping...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">check_timer</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;timer happened!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sleeping...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>You can compile that with</p>
@@ -1215,22 +1215,22 @@ resuming the wasm from the JS runtime).</p>
 <p>One way to do that is with a JS library function. Another is to use
 <code class="docutils literal notranslate"><span class="pre">EM_ASYNC_JS</span></code>, which we’ll use in this next example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// example.c</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-<span class="n">EM_ASYNC_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">do_fetch</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">await</span><span class="w"> </span><span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="n">EM_ASYNC_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">do_fetch</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">await</span><span class="w"> </span><span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// (normally you would do something with the fetch here)</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="p">});</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;before&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">do_fetch</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;after&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;before&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">do_fetch</span><span class="p">();</span>
+<span class="w">  </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;after&quot;</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>In this example the async operation is a <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, which means we need to wait
@@ -1257,16 +1257,16 @@ completed.</p>
 <p>If your target JS engine doesn’t support the modern <code class="docutils literal notranslate"><span class="pre">async/await</span></code> JS
 syntax, you can desugar the above implementation of <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> to use Promises
 directly with <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code> and <code class="docutils literal notranslate"><span class="pre">Asyncify.handleAsync</span></code> instead:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">do_fetch</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Asyncify</span><span class="p">.</span><span class="n">handleAsync</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">do_fetch</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Asyncify</span><span class="p">.</span><span class="n">handleAsync</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
 <span class="w">      </span><span class="c1">// (normally you would do something with the fetch here)</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">});</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 <p>When using this form, the compiler doesn’t statically know that <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> is
@@ -1280,16 +1280,16 @@ instrument the code to allow pausing and resuming (see more details later down):
 <code class="docutils literal notranslate"><span class="pre">Asyncify.handleSleep</span></code>, which will pass a <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback to your
 function implementation. When this <code class="docutils literal notranslate"><span class="pre">wakeUp</span></code> callback is invoked, the C/C++
 code will resume:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">do_fetch</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Asyncify</span><span class="p">.</span><span class="n">handleSleep</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">(</span><span class="n">wakeUp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EM_JS</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">do_fetch</span><span class="p">,</span><span class="w"> </span><span class="p">(),</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Asyncify</span><span class="p">.</span><span class="n">handleSleep</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">(</span><span class="n">wakeUp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;waiting for a fetch&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">fetch</span><span class="p">(</span><span class="s">&quot;a.html&quot;</span><span class="p">).</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;got the fetch response&quot;</span><span class="p">);</span>
 <span class="w">      </span><span class="c1">// (normally you would do something with the fetch here)</span>
-<span class="w">      </span><span class="n">wakeUp</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">});</span><span class="w"></span>
-<span class="w">  </span><span class="p">});</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<span class="w">      </span><span class="n">wakeUp</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 <p>Note that when using this form, you can’t return a value from the function itself.
@@ -1316,11 +1316,11 @@ an async operation, which lets it not add overhead where it isn’t needed.</p>
 from other linked modules (and that will be on the stack in an async operation)
 should be listed in <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// sleep.cpp</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
 
-<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep_for_seconds</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep_for_seconds</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>In the side module, you can compile sleep.cpp in the ordinal emscripten dynamic
@@ -1329,14 +1329,14 @@ linking manner:</p>
 </pre></div>
 </div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// main.cpp</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
 
-<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep_for_seconds</span><span class="p">();</span><span class="w"></span>
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">sleep_for_seconds</span><span class="p">();</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">sleep_for_seconds</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">sleep_for_seconds</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>In the main module, the compiler doesn’t statically know that <code class="docutils literal notranslate"><span class="pre">sleep_for_seconds</span></code> is
@@ -1351,8 +1351,8 @@ list.</p>
 <p>If you’re using <a class="reference internal" href="connecting_cpp_and_javascript/embind.html#embind-val-guide"><span class="std std-ref">Embind</span></a> for interaction with JavaScript
 and want to <code class="docutils literal notranslate"><span class="pre">await</span></code> a dynamically retrieved <code class="docutils literal notranslate"><span class="pre">Promise</span></code>, you can call an
 <code class="docutils literal notranslate"><span class="pre">await()</span></code> method directly on the <code class="docutils literal notranslate"><span class="pre">val</span></code> instance:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">val</span><span class="w"> </span><span class="n">my_object</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* ... */</span><span class="p">;</span><span class="w"></span>
-<span class="n">val</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_object</span><span class="p">.</span><span class="n">call</span><span class="o">&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;someAsyncMethod&quot;</span><span class="p">).</span><span class="n">await</span><span class="p">();</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">val</span><span class="w"> </span><span class="n">my_object</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* ... */</span><span class="p">;</span>
+<span class="n">val</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_object</span><span class="p">.</span><span class="n">call</span><span class="o">&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;someAsyncMethod&quot;</span><span class="p">).</span><span class="n">await</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>In this case you don’t need to worry about <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, since it’s an
@@ -1361,19 +1361,19 @@ automatically.</p>
 <p>Note that when Asyncify is used with Embind and the code is invoked from
 JavaScript, then it will be implicitly treated as an <code class="docutils literal notranslate"><span class="pre">async</span></code> function,
 returning a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> to the return value, as demonstrated below.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
 
-<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">delayAndReturn</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">sleep</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sleep</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">delayAndReturn</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">sleep</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sleep</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">emscripten_sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">example</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;delayAndReturn&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">delayAndReturn</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">example</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;delayAndReturn&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">delayAndReturn</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Build with</p>
@@ -1381,13 +1381,13 @@ returning a <code class="docutils literal notranslate"><span class="pre">Promise
 </pre></div>
 </div>
 <p>Then invoke from JavaScript</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">syncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span><span class="w"></span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span><span class="w"></span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// also 42 because `await` is no-op</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">syncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// also 42 because `await` is no-op</span>
 
-<span class="kd">let</span><span class="w"> </span><span class="nx">asyncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w"></span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">asyncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// Promise { &lt;pending&gt; }</span><span class="w"></span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">asyncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span><span class="w"></span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">asyncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">asyncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// Promise { &lt;pending&gt; }</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">asyncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
 </pre></div>
 </div>
 <p>In contrast to JavaScript <code class="docutils literal notranslate"><span class="pre">async</span></code> functions which always return a <code class="docutils literal notranslate"><span class="pre">Promise</span></code>,
@@ -1404,9 +1404,9 @@ value is an <code class="docutils literal notranslate"><span class="pre">instanc
 <code class="docutils literal notranslate"><span class="pre">ccall</span></code> will then return a Promise, which will resolve with the result of the
 function once the computation completes.</p>
 <p>In this example, a function “func” is called which returns a Number.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s2">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="p">{</span><span class="k">async</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">result</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;js_func: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">result</span><span class="p">);</span><span class="w"></span>
-<span class="p">});</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s2">&quot;func&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="p">{</span><span class="k">async</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">result</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;js_func: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">result</span><span class="p">);</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </section>
@@ -1618,7 +1618,7 @@ examples.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

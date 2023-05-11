@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C setjmp-longjmp Support &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>C setjmp-longjmp Support &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="C++ Exceptions Support" href="exceptions.html"/> 
@@ -1144,8 +1144,8 @@ by using the buffer. <code class="docutils literal notranslate"><span class="pre
 which <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> was called.</p>
 <p>Emscripten’s support has a restriction that indirect calls to <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> are not
 supported. For example, the below does not work:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">jmp_buf</span><span class="w"> </span><span class="n">env</span><span class="p">;</span><span class="w"></span>
-<span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">jmp_buf</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setjmp</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">jmp_buf</span><span class="w"> </span><span class="n">env</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">jmp_buf</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setjmp</span><span class="p">;</span>
 <span class="n">fp</span><span class="p">(</span><span class="n">env</span><span class="p">);</span><span class="w"> </span><span class="c1">// Doesn&#39;t work</span>
 </pre></div>
 </div>
@@ -1178,40 +1178,40 @@ setjmp-longjmp support use the same mechanisms. Because of that, you should use
 the same kind of EH and setjmp-longjmp support when using exceptions and
 setjmp-longjmp together.</p>
 <p>For example, to use the JavaScript-based EH and setjmp-longjmp support together:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++ -fexceptions test.cpp -o test.js
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++<span class="w"> </span>-fexceptions<span class="w"> </span>test.cpp<span class="w"> </span>-o<span class="w"> </span>test.js
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">-sSUPPORT_LONGJMP</span></code>, which defaults to <code class="docutils literal notranslate"><span class="pre">emscripten</span></code> or <code class="docutils literal notranslate"><span class="pre">wasm</span></code> depending on
 the exception mode, is enabled by default, so you don’t need to pass it
 explicitly.</p>
 <p>To use the WebAssembly EH and setjmp-longjmp support together:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++ -fwasm-exceptions -sSUPPORT_LONGJMP<span class="o">=</span>wasm test.cpp -o test.js
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++<span class="w"> </span>-fwasm-exceptions<span class="w"> </span>-sSUPPORT_LONGJMP<span class="o">=</span>wasm<span class="w"> </span>test.cpp<span class="w"> </span>-o<span class="w"> </span>test.js
 </pre></div>
 </div>
 <p>There is one specific restriction for using WebAssembly EH-based support for
 exceptions and setjmp-longjmp at the same time. You cannot call <code class="docutils literal notranslate"><span class="pre">setjmp</span></code>
 within a C++ <code class="docutils literal notranslate"><span class="pre">catch</span></code> clause. For example, the following will error out during
 compile time:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">setjmp</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span><span class="w"> </span><span class="c1">// Doesn&#39;t work</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> within a <code class="docutils literal notranslate"><span class="pre">try</span></code> clause is fine. Calling another user
 function that calls <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> within a <code class="docutils literal notranslate"><span class="pre">catch</span></code> clause is also fine.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">setjmp</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span><span class="w"> </span><span class="c1">// Works</span>
-<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span>
 
-<span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">function_that_calls_setjmp</span><span class="p">();</span><span class="w"> </span><span class="c1">// Works</span>
-<span class="p">}</span><span class="w"></span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -1328,7 +1328,7 @@ function that calls <code class="docutils literal notranslate"><span class="pre"
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

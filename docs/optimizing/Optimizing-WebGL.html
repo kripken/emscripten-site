@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing WebGL &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Optimizing WebGL &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="next" title="Debugging with Sanitizers" href="../debugging/Sanitizers.html"/>
         <link rel="prev" title="Optimizing Code" href="Optimizing-Code.html"/> 
 
@@ -1155,22 +1155,22 @@
 <li><p>Consider lazily setting GL state only when it needs to take effect. For example, in the following call stream</p>
 <blockquote>
 <div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// First draw</span>
-<span class="n">glBindBuffer</span><span class="p">(...);</span><span class="w"></span>
-<span class="n">glVertexAttribPointer</span><span class="p">(...);</span><span class="w"></span>
-<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span><span class="w"></span>
-<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span><span class="w"></span>
-<span class="n">glDrawArrays</span><span class="p">(...);</span><span class="w"></span>
+<span class="n">glBindBuffer</span><span class="p">(...);</span>
+<span class="n">glVertexAttribPointer</span><span class="p">(...);</span>
+<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span>
+<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span>
+<span class="n">glDrawArrays</span><span class="p">(...);</span>
 
 <span class="c1">// Second draw (back-to-back)</span>
-<span class="n">glBindBuffer</span><span class="p">(...);</span><span class="w"></span>
-<span class="n">glVertexAttribPointer</span><span class="p">(...);</span><span class="w"></span>
+<span class="n">glBindBuffer</span><span class="p">(...);</span>
+<span class="n">glVertexAttribPointer</span><span class="p">(...);</span>
 <span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
 <span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
 <span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
 <span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
-<span class="n">glDrawArrays</span><span class="p">(...);</span><span class="w"></span>
+<span class="n">glDrawArrays</span><span class="p">(...);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1254,21 +1254,21 @@
 <li><p>A side effect of the above is that when the functionality was merged to core, the specific function names to call for the feature has changed, i.e. on WebGL1/GLES 2 contexts, one would call the function <code class="docutils literal notranslate"><span class="pre">glDrawBuffersEXT()</span></code>, but with WebGL2/GLES 3.0, one should call the unsuffixed function <code class="docutils literal notranslate"><span class="pre">glDrawBuffers()</span></code> instead.</p></li>
 <li><p>The full list of WebGL 1 extensions that were adopted to the core WebGL 2 specification is:</p>
 <blockquote>
-<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ANGLE_instanced_arrays</span><span class="w"></span>
-<span class="n">EXT_blend_minmax</span><span class="w"></span>
-<span class="n">EXT_color_buffer_half_float</span><span class="w"></span>
-<span class="n">EXT_frag_depth</span><span class="w"></span>
-<span class="n">EXT_sRGB</span><span class="w"></span>
-<span class="n">EXT_shader_texture_lod</span><span class="w"></span>
-<span class="n">OES_element_index_uint</span><span class="w"></span>
-<span class="n">OES_standard_derivatives</span><span class="w"></span>
-<span class="n">OES_texture_float</span><span class="w"></span>
-<span class="n">OES_texture_half_float</span><span class="w"></span>
-<span class="n">OES_texture_half_float_linear</span><span class="w"></span>
-<span class="n">OES_vertex_array_object</span><span class="w"></span>
-<span class="n">WEBGL_color_buffer_float</span><span class="w"></span>
-<span class="n">WEBGL_depth_texture</span><span class="w"></span>
-<span class="n">WEBGL_draw_buffers</span><span class="w"></span>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ANGLE_instanced_arrays</span>
+<span class="n">EXT_blend_minmax</span>
+<span class="n">EXT_color_buffer_half_float</span>
+<span class="n">EXT_frag_depth</span>
+<span class="n">EXT_sRGB</span>
+<span class="n">EXT_shader_texture_lod</span>
+<span class="n">OES_element_index_uint</span>
+<span class="n">OES_standard_derivatives</span>
+<span class="n">OES_texture_float</span>
+<span class="n">OES_texture_half_float</span>
+<span class="n">OES_texture_half_float_linear</span>
+<span class="n">OES_vertex_array_object</span>
+<span class="n">WEBGL_color_buffer_float</span>
+<span class="n">WEBGL_depth_texture</span>
+<span class="n">WEBGL_draw_buffers</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1395,7 +1395,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

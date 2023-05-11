@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Debugging &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="Audio" href="Audio.html"/> 
@@ -1151,12 +1151,12 @@
 <span id="debugging-emcc-debug"></span><h2>Debug mode (EMCC_DEBUG)<a class="headerlink" href="#debug-mode-emcc-debug" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG</span></code> environment variable can be set to enable Emscripten’s debug mode:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux or macOS</span>
-<span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span> emcc test/hello_world.cpp -o hello.html
+<span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>emcc<span class="w"> </span>test/hello_world.cpp<span class="w"> </span>-o<span class="w"> </span>hello.html
 
 <span class="c1"># Windows</span>
-<span class="nb">set</span> <span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span>
-emcc test/hello_world.cpp -o hello.html
-<span class="nb">set</span> <span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">set</span><span class="w"> </span><span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">1</span>
+emcc<span class="w"> </span>test/hello_world.cpp<span class="w"> </span>-o<span class="w"> </span>hello.html
+<span class="nb">set</span><span class="w"> </span><span class="nv">EMCC_DEBUG</span><span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
 <p>With <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=1</span></code> set, <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a> emits debug output and generates intermediate files for the compiler’s various stages. <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG=2</span></code> additionally generates intermediate files for each JavaScript optimizer pass.</p>
@@ -1172,7 +1172,7 @@ directory (e.g. <strong>/tmp</strong> on UNIX).</p>
 <section id="compiler-settings">
 <span id="debugging-compilation-settings"></span><h2>Compiler settings<a class="headerlink" href="#compiler-settings" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten has a number of compiler settings that can be useful for debugging. These are set using the <a class="reference internal" href="../tools_reference/emcc.html#emcc-s-option-value"><span class="std std-ref">emcc -s</span></a> option, and will override any optimization flags. For example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc -O1 -sASSERTIONS test/hello_world
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc<span class="w"> </span>-O1<span class="w"> </span>-sASSERTIONS<span class="w"> </span>test/hello_world
 </pre></div>
 </div>
 <p>Some important settings are:</p>
@@ -1236,28 +1236,28 @@ the user will need to create some WASM code which will extract the meaning from
 the exception. In the example code below we created a function that receives the
 address of a <code class="docutils literal notranslate"><span class="pre">std::exception</span></code>, and by casting the pointer
 returns the <code class="docutils literal notranslate"><span class="pre">what</span></code> function call result.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span>
 
-<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">getExceptionMessage</span><span class="p">(</span><span class="kt">intptr_t</span><span class="w"> </span><span class="n">exceptionPtr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">exceptionPtr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">what</span><span class="p">());</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">getExceptionMessage</span><span class="p">(</span><span class="kt">intptr_t</span><span class="w"> </span><span class="n">exceptionPtr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">exceptionPtr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">what</span><span class="p">());</span>
+<span class="p">}</span>
 
-<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">Bindings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;getExceptionMessage&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">getExceptionMessage</span><span class="p">);</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">Bindings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;getExceptionMessage&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">getExceptionMessage</span><span class="p">);</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <p>This requires using the linker flags <code class="docutils literal notranslate"><span class="pre">-lembind</span> <span class="pre">-sEXPORT_EXCEPTION_HANDLING_HELPERS</span></code>.
 Once such a function has been created, exception handling code in javascript
 can call it when receiving an exception from WASM. Here the function is used
 in order to log the thrown exception.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// some code that calls WebAssembly</span><span class="w"></span>
-<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">));</span><span class="w"></span>
-<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="p">...</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// some code that calls WebAssembly</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">));</span>
+<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>It’s important to notice that this example code will work only for thrown
@@ -1266,11 +1266,11 @@ strings or dynamically allocated exceptions, the handling code will need to
 take that into account. For example, if your code needs to handle both native
 C++ exceptions and JavaScript exceptions you could use the following code to
 distinguish between them:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">exception</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="o">?</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="nx">exception</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">exception</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;number&#39;</span>
+<span class="w">    </span><span class="o">?</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="nx">exception</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -1350,7 +1350,7 @@ usage, see
 <p>Emscripten also has a <code class="docutils literal notranslate"><span class="pre">--memoryprofiler</span></code> option that displays memory usage
 in a visual manner, letting you see how fragmented it is and so forth. To use
 it, you can do something like</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc test/hello_world.c --memoryprofiler -o page.html
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc<span class="w"> </span>test/hello_world.c<span class="w"> </span>--memoryprofiler<span class="w"> </span>-o<span class="w"> </span>page.html
 </pre></div>
 </div>
 <p>Note that you need to emit HTML as in that example, as the memory profiler
@@ -1377,12 +1377,12 @@ up on the memory profiler display.</p>
 </ul>
 <p>To run the <em>AutoDebugger</em>, compile with the environment variable <code class="docutils literal notranslate"><span class="pre">EMCC_AUTODEBUG=1</span></code> set. For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux or macOS</span>
-<span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span><span class="m">1</span> emcc test/hello_world.cpp -o hello.html
+<span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>emcc<span class="w"> </span>test/hello_world.cpp<span class="w"> </span>-o<span class="w"> </span>hello.html
 
 <span class="c1"># Windows</span>
-<span class="nb">set</span> <span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span><span class="m">1</span>
-emcc test/hello_world.cpp -o hello.html
-<span class="nb">set</span> <span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">set</span><span class="w"> </span><span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span><span class="m">1</span>
+emcc<span class="w"> </span>test/hello_world.cpp<span class="w"> </span>-o<span class="w"> </span>hello.html
+<span class="nb">set</span><span class="w"> </span><span class="nv">EMCC_AUTODEBUG</span><span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
 <section id="autodebugger-regression-workflow">
@@ -1527,7 +1527,7 @@ and other issues don’t cause false positives.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

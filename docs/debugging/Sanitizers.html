@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging with Sanitizers &mdash; Emscripten 3.1.38-git (dev) documentation</title>
+  <title>Debugging with Sanitizers &mdash; Emscripten 3.1.39-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.38-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.39-git (dev) documentation" href="../../index.html"/>
         <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html"/>
         <link rel="prev" title="Optimizing WebGL" href="../optimizing/Optimizing-WebGL.html"/> 
 
@@ -1141,41 +1141,41 @@ checked at the end of the program execution. That is, it will notify you if
 anything wrote to that location while the program ran. This only detects writes,
 not reads, and does not help to find where the bad write actually is.</p>
 <p>Consider the following program, <code class="docutils literal notranslate"><span class="pre">null-assign.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Without UBSan you get an error when the program exits:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc null-assign.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>null-assign.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
 </pre></div>
 </div>
 <p>With UBSan, you get the exact line number where this happened:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc -fsanitize<span class="o">=</span>undefined null-assign.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>undefined<span class="w"> </span>null-assign.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">null-assign.c:3:5: runtime error: store to null pointer of type &#39;int&#39;</span>
 <span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
 </pre></div>
 </div>
 <p>Consider the following program, <code class="docutils literal notranslate"><span class="pre">null-read.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Without UBSan there is no feedback:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc null-read.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>null-read.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="gp">$</span>
 </pre></div>
 </div>
 <p>With UBSan, you get the exact line number where this happened:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc -fsanitize<span class="o">=</span>undefined null-assign.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>undefined<span class="w"> </span>null-assign.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">null-read.c:3:9: runtime error: load of null pointer of type &#39;int&#39;</span>
 </pre></div>
 </div>
@@ -1187,11 +1187,11 @@ attack surface. For this reason, there is a minimal UBSan runtime that is
 designed for production uses.</p>
 <p>The minimal runtime is supported by Emscripten. To use it, pass the flag
 <code class="docutils literal notranslate"><span class="pre">-fsanitize-minimal-runtime</span></code> in addition to your <code class="docutils literal notranslate"><span class="pre">-fsanitize</span></code> flag.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc -fsanitize<span class="o">=</span>null -fsanitize-minimal-runtime null-read.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>null<span class="w"> </span>-fsanitize-minimal-runtime<span class="w"> </span>null-read.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">ubsan: type-mismatch</span>
-<span class="gp">$ </span>emcc -fsanitize<span class="o">=</span>null -fsanitize-minimal-runtime null-assign.c
-<span class="gp">$ </span>node a.out.js
+<span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>null<span class="w"> </span>-fsanitize-minimal-runtime<span class="w"> </span>null-assign.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">ubsan: type-mismatch</span>
 <span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
 </pre></div>
@@ -1225,30 +1225,30 @@ valid, it will be caught, just like if that access happened from wasm.</p>
 <section id="buffer-overflow">
 <h4>Buffer Overflow<a class="headerlink" href="#buffer-overflow" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">buffer_overflow.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span><span class="w"></span>
-<span class="w">  </span><span class="n">memset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="w">  </span><span class="n">memset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc -gsource-map -fsanitize<span class="o">=</span>address -sALLOW_MEMORY_GROWTH buffer_overflow.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>buffer_overflow.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">=================================================================</span>
 <span class="go">==42==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x02965e5a at pc 0x000015f0 bp 0x02965a30 sp 0x02965a30</span>
 <span class="go">WRITE of size 11 at 0x02965e5a thread T0</span>
-<span class="gp">    #</span><span class="m">0</span> 0x15f0 <span class="k">in</span> __asan_memset+0x15f0 <span class="o">(</span>a.out.wasm+0x15f0<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span> 0xc46 <span class="k">in</span> __original_main stack_buffer_overflow.c:5:3
-<span class="gp">    #</span><span class="m">2</span> 0xcbc <span class="k">in</span> main+0xcbc <span class="o">(</span>a.out.wasm+0xcbc<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span> 0x800019bc <span class="k">in</span> Object.Module._main a.out.js:6588:32
-<span class="gp">    #</span><span class="m">4</span> 0x80001aeb <span class="k">in</span> Object.callMain a.out.js:6891:30
-<span class="gp">    #</span><span class="m">5</span> 0x80001b25 <span class="k">in</span> doRun a.out.js:6949:60
-<span class="gp">    #</span><span class="m">6</span> 0x80001b33 <span class="k">in</span> run a.out.js:6963:5
-<span class="gp">    #</span><span class="m">7</span> 0x80001ad6 <span class="k">in</span> runCaller a.out.js:6870:29
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x15f0<span class="w"> </span><span class="k">in</span><span class="w"> </span>__asan_memset+0x15f0<span class="w"> </span><span class="o">(</span>a.out.wasm+0x15f0<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xc46<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>stack_buffer_overflow.c:5:3
+<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xcbc<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xcbc<span class="w"> </span><span class="o">(</span>a.out.wasm+0xcbc<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019bc<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6588:32
+<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001aeb<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6891:30
+<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b25<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6949:60
+<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b33<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6963:5
+<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ad6<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6870:29
 
 <span class="go">Address 0x02965e5a is located in stack of thread T0 at offset 26 in frame</span>
-<span class="gp">    #</span><span class="m">0</span> 0x11  <span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x11<span class="w">  </span><span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
 
 <span class="go">  This frame has 1 object(s):</span>
 <span class="go">    [16, 26) &#39;x&#39; (line 4) &lt;== Memory access at offset 26 overflows this variable</span>
@@ -1262,41 +1262,41 @@ valid, it will be caught, just like if that access happened from wasm.</p>
 <section id="use-after-free">
 <h4>Use After Free<a class="headerlink" href="#use-after-free" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_free.cpp</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span><span class="w"></span>
-<span class="w">  </span><span class="k">delete</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="n">array</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+<span class="w">  </span><span class="k">delete</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="n">array</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>em++ -gsource-map -fsanitize<span class="o">=</span>address -sALLOW_MEMORY_GROWTH use_after_free.cpp
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>em++<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>use_after_free.cpp
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">=================================================================</span>
 <span class="go">==42==ERROR: AddressSanitizer: heap-use-after-free on address 0x03203e40 at pc 0x00000c1b bp 0x02965e70 sp 0x02965e7c</span>
 <span class="go">READ of size 4 at 0x03203e40 thread T0</span>
-<span class="gp">    #</span><span class="m">0</span> 0xc1b <span class="k">in</span> __original_main use_after_free.cpp:4:10
-<span class="gp">    #</span><span class="m">1</span> 0xc48 <span class="k">in</span> main+0xc48 <span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0xc1b<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:4:10
+<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
 
 <span class="go">0x03203e40 is located 0 bytes inside of 400-byte region [0x03203e40,0x03203fd0)</span>
 <span class="go">freed by thread T0 here:</span>
-<span class="gp">    #</span><span class="m">0</span> 0x5fe8 <span class="k">in</span> operator delete<span class="o">[](</span>void*<span class="o">)</span>+0x5fe8 <span class="o">(</span>a.out.wasm+0x5fe8<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span> 0xb76 <span class="k">in</span> __original_main use_after_free.cpp:3:3
-<span class="gp">    #</span><span class="m">2</span> 0xc48 <span class="k">in</span> main+0xc48 <span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span> 0x800019b5 <span class="k">in</span> Object.Module._main a.out.js:6581:32
-<span class="gp">    #</span><span class="m">4</span> 0x80001ade <span class="k">in</span> Object.callMain a.out.js:6878:30
-<span class="gp">    #</span><span class="m">5</span> 0x80001b18 <span class="k">in</span> doRun a.out.js:6936:60
-<span class="gp">    #</span><span class="m">6</span> 0x80001b26 <span class="k">in</span> run a.out.js:6950:5
-<span class="gp">    #</span><span class="m">7</span> 0x80001ac9 <span class="k">in</span> runCaller a.out.js:6857:29
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5fe8<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>delete<span class="o">[](</span>void*<span class="o">)</span>+0x5fe8<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5fe8<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb76<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:3:3
+<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b5<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6581:32
+<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ade<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6878:30
+<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b18<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6936:60
+<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b26<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6950:5
+<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ac9<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6857:29
 
 <span class="go">previously allocated by thread T0 here:</span>
-<span class="gp">    #</span><span class="m">0</span> 0x5db4 <span class="k">in</span> operator new<span class="o">[](</span>unsigned long<span class="o">)</span>+0x5db4 <span class="o">(</span>a.out.wasm+0x5db4<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span> 0xb41 <span class="k">in</span> __original_main use_after_free.cpp:2:16
-<span class="gp">    #</span><span class="m">2</span> 0xc48 <span class="k">in</span> main+0xc48 <span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span> 0x800019b5 <span class="k">in</span> Object.Module._main a.out.js:6581:32
-<span class="gp">    #</span><span class="m">4</span> 0x80001ade <span class="k">in</span> Object.callMain a.out.js:6878:30
-<span class="gp">    #</span><span class="m">5</span> 0x80001b18 <span class="k">in</span> doRun a.out.js:6936:60
-<span class="gp">    #</span><span class="m">6</span> 0x80001b26 <span class="k">in</span> run a.out.js:6950:5
-<span class="gp">    #</span><span class="m">7</span> 0x80001ac9 <span class="k">in</span> runCaller a.out.js:6857:29
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5db4<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>new<span class="o">[](</span>unsigned<span class="w"> </span>long<span class="o">)</span>+0x5db4<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5db4<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb41<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:2:16
+<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b5<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6581:32
+<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ade<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6878:30
+<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b18<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6936:60
+<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b26<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6950:5
+<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ac9<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6857:29
 
 <span class="go">SUMMARY: AddressSanitizer: heap-use-after-free (a.out.wasm+0xc1a)</span>
 <span class="go">...</span>
@@ -1306,26 +1306,26 @@ valid, it will be caught, just like if that access happened from wasm.</p>
 <section id="memory-leaks">
 <h4>Memory Leaks<a class="headerlink" href="#memory-leaks" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">leak.cpp</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>em++ -gsource-map -fsanitize<span class="o">=</span>address -sALLOW_MEMORY_GROWTH -sEXIT_RUNTIME leak.cpp
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>em++<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>-sEXIT_RUNTIME<span class="w"> </span>leak.cpp
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 
 <span class="go">=================================================================</span>
 <span class="go">==42==ERROR: LeakSanitizer: detected memory leaks</span>
 
 <span class="go">Direct leak of 40 byte(s) in 1 object(s) allocated from:</span>
-<span class="gp">    #</span><span class="m">0</span> 0x5ce5 <span class="k">in</span> operator new<span class="o">[](</span>unsigned long<span class="o">)</span>+0x5ce5 <span class="o">(</span>a.out.wasm+0x5ce5<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span> 0xb24 <span class="k">in</span> __original_main leak.cpp:2:3
-<span class="gp">    #</span><span class="m">2</span> 0xb3a <span class="k">in</span> main+0xb3a <span class="o">(</span>a.out.wasm+0xb3a<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span> 0x800019b8 <span class="k">in</span> Object.Module._main a.out.js:6584:32
-<span class="gp">    #</span><span class="m">4</span> 0x80001ae1 <span class="k">in</span> Object.callMain a.out.js:6881:30
-<span class="gp">    #</span><span class="m">5</span> 0x80001b1b <span class="k">in</span> doRun a.out.js:6939:60
-<span class="gp">    #</span><span class="m">6</span> 0x80001b29 <span class="k">in</span> run a.out.js:6953:5
-<span class="gp">    #</span><span class="m">7</span> 0x80001acc <span class="k">in</span> runCaller a.out.js:6860:29
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5ce5<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>new<span class="o">[](</span>unsigned<span class="w"> </span>long<span class="o">)</span>+0x5ce5<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5ce5<span class="o">)</span>
+<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb24<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>leak.cpp:2:3
+<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xb3a<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xb3a<span class="w"> </span><span class="o">(</span>a.out.wasm+0xb3a<span class="o">)</span>
+<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b8<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6584:32
+<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ae1<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6881:30
+<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b1b<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6939:60
+<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b29<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6953:5
+<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001acc<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6860:29
 
 <span class="go">SUMMARY: AddressSanitizer: 40 byte(s) leaked in 1 allocation(s).</span>
 </pre></div>
@@ -1335,12 +1335,12 @@ valid, it will be caught, just like if that access happened from wasm.</p>
 <code class="docutils literal notranslate"><span class="pre">__lsan_do_recoverable_leak_check</span></code> manually.</p>
 <p>You can detect that AddressSanitizer is enabled and run <code class="docutils literal notranslate"><span class="pre">__lsan_do_leak_check</span></code>
 by doing:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sanitizer/lsan_interface.h&gt;</span><span class="cp"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sanitizer/lsan_interface.h&gt;</span>
 
 <span class="cp">#if defined(__has_feature)</span>
 <span class="cp">#if __has_feature(address_sanitizer)</span>
 <span class="w">  </span><span class="c1">// code for ASan-enabled builds</span>
-<span class="w">  </span><span class="n">__lsan_do_leak_check</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">__lsan_do_leak_check</span><span class="p">();</span>
 <span class="cp">#endif</span>
 <span class="cp">#endif</span>
 </pre></div>
@@ -1356,20 +1356,20 @@ does not instrument all memory accesses, and as a result is much faster than
 <section id="use-after-return">
 <h4>Use After Return<a class="headerlink" href="#use-after-return" title="Permalink to this headline">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_return.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">__asan_default_options</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;detect_stack_use_after_return=1&quot;</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">__asan_default_options</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;detect_stack_use_after_return=1&quot;</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="o">*</span><span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="o">*</span><span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>Note that to do this check, you have to use the ASan option
@@ -1380,16 +1380,16 @@ generated JavaScript. <code class="docutils literal notranslate"><span class="pr
 <p>This option is fairly expensive because it converts stack allocations into
 heap allocations, and these allocations are not reused so that future accesses
 can cause traps. Hence, it is not enabled by default.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc -gsource-map -fsanitize<span class="o">=</span>address -sALLOW_MEMORY_GROWTH use_after_return.c
-<span class="gp">$ </span>node a.out.js
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>use_after_return.c
+<span class="gp">$ </span>node<span class="w"> </span>a.out.js
 <span class="go">=================================================================</span>
 <span class="go">==42==ERROR: AddressSanitizer: stack-use-after-return on address 0x02a95010 at pc 0x00000d90 bp 0x02965f70 sp 0x02965f7c</span>
 <span class="go">WRITE of size 4 at 0x02a95010 thread T0</span>
-<span class="gp">    #</span><span class="m">0</span> 0xd90 <span class="k">in</span> __original_main use_after_return.c:13:10
-<span class="gp">    #</span><span class="m">1</span> 0xe0a <span class="k">in</span> main+0xe0a <span class="o">(</span>a.out.wasm+0xe0a<span class="o">)</span>
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0xd90<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_return.c:13:10
+<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xe0a<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xe0a<span class="w"> </span><span class="o">(</span>a.out.wasm+0xe0a<span class="o">)</span>
 
 <span class="go">Address 0x02a95010 is located in stack of thread T0 at offset 16 in frame</span>
-<span class="gp">    #</span><span class="m">0</span> 0x11  <span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
+<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x11<span class="w">  </span><span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
 
 <span class="go">  This frame has 1 object(s):</span>
 <span class="go">    [16, 56) &#39;buf&#39; (line 8) &lt;== Memory access at offset 16 is inside this variable</span>
@@ -1404,7 +1404,7 @@ can cause traps. Hence, it is not enabled by default.</p>
 <section id="configuration">
 <h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
 <p>ASan can be configured via a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> file:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;option1=a:option2=b&#39;</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;option1=a:option2=b&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>For example, put the above snippet with your options into <code class="docutils literal notranslate"><span class="pre">asan_options.js</span></code>,
@@ -1420,7 +1420,7 @@ work.</p>
 all invocations to <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> can be very expensive. As a result, if
 you find your program to be very slow when using ASan, you can try using the
 option <code class="docutils literal notranslate"><span class="pre">malloc_context_size=0</span></code>, like this:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;malloc_context_size=0&#39;</span><span class="p">;</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;malloc_context_size=0&#39;</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>This prevents ASan from reporting the location of memory leaks or offering
@@ -1588,7 +1588,7 @@ optimizer is run after it adds those checks, which can remove some of them.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.38-git (dev)',
+            VERSION:'3.1.39-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
