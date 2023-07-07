@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 3.1.42-git (dev) documentation</title>
+  <title>Debugging &mdash; Emscripten 3.1.43-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.42-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="Audio" href="Audio.html"/> 
@@ -409,6 +409,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -1138,13 +1139,17 @@
 <p>This article describes the main tools and settings provided by Emscripten for debugging, along with a section explaining how to debug a number of <a class="reference internal" href="#debugging-emscripten-specific-issues"><span class="std std-ref">Emscripten-specific issues</span></a>.</p>
 <section id="debug-information">
 <span id="debugging-debug-information-g"></span><h2>Debug information<a class="headerlink" href="#debug-information" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">Emcc</span></a> strips out most of the debug information from <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span class="std std-ref">optimized builds</span></a> by default. Optimisation levels <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a> and above remove LLVM debug information, and also disable runtime <a class="reference internal" href="#debugging-assertions"><span class="std std-ref">ASSERTIONS</span></a> checks. From optimization level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a> the code is minified by the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> and becomes virtually unreadable.</p>
+<p><a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">Emcc</span></a> strips out most of the debug information from <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span class="std std-ref">optimized builds</span></a> by default. The higher the optimization level, the more degraded the quality of DWARF debug information is, so we recommend using <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><span class="std std-ref">-O0</span></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a> for debugging purposes. <a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a> and above also disable runtime <a class="reference internal" href="#debugging-assertions"><span class="std std-ref">ASSERTIONS</span></a> checks. From optimization level <a class="reference internal" href="../tools_reference/emcc.html#emcc-o2"><span class="std std-ref">-O2</span></a> the JavaScript code is minified by the <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> and becomes virtually unreadable.</p>
 <p>The <em>emcc</em> <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g flag</span></a> can be used to preserve debug information in the compiled output. By default, this option includes Clang / LLVM debug information in a DWARF format in the generated WebAssembly code and preserves white-space, function names and variable names in the generated JavaScript code.</p>
 <p>The flag can also be specified with an integer level: <a class="reference internal" href="../tools_reference/emcc.html#emcc-g0"><span class="std std-ref">-g0</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g1"><span class="std std-ref">-g1</span></a>, <a class="reference internal" href="../tools_reference/emcc.html#emcc-g2"><span class="std std-ref">-g2</span></a>, and <a class="reference internal" href="../tools_reference/emcc.html#emcc-g3"><span class="std std-ref">-g3</span></a> (default level when setting <code class="docutils literal notranslate"><span class="pre">-g</span></code>). Each level builds on the last to provide progressively more debug information in the compiled output. See <a class="reference internal" href="../tools_reference/emcc.html#emcc-gn"><span class="std std-ref">Compiler debug information flags</span></a> for more details.</p>
 <p>The <a class="reference internal" href="../tools_reference/emcc.html#emcc-gsource-map"><span class="std std-ref">-gsource-map</span></a> option is similar to <code class="docutils literal notranslate"><span class="pre">-g2</span></code> but also generates source maps that allow you to view and debug the <em>C/C++ source code</em> in your browser’s debugger. Source maps are not as powerful as DWARF which was mentioned earlier (they contain only source location info), but they are currently more widely supported.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Some optimizations may be disabled when used in conjunction with the debug flags. For example, if you compile with <code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">-g</span></code> some of the normal <code class="docutils literal notranslate"><span class="pre">-O3</span></code> optimizations will be disabled in order to provide the requested debugging information, such as name minification.</p>
+<p>Because Binaryen optimization degrades the quality of DWARF info further, <code class="docutils literal notranslate"><span class="pre">-O1</span> <span class="pre">-g</span></code> will skip running the Binaryen optimizer (<code class="docutils literal notranslate"><span class="pre">wasm-opt</span></code>) entirely unless required by other options. You can also throw in <code class="docutils literal notranslate"><span class="pre">-sERROR_ON_WASM_CHANGES_AFTER_LINK</span></code> option if you want to ensure the debug info is preserved. See <a class="reference external" href="https://developer.chrome.com/blog/faster-wasm-debugging/#skipping-binaryen">Skipping Binaryen</a> for more details.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some optimizations may be disabled when used in conjunction with the debug flags both in the Binaryen optimizer (even if it runs) and JavaScript optimizer. For example, if you compile with <code class="docutils literal notranslate"><span class="pre">-O3</span> <span class="pre">-g</span></code>, the Binaryen optimizer will skip some of the optimization passes that do not produce valid DWARF information, and also some of the normal JavaScript optimization will be disabled in order to better provide the requested debugging information.</p>
 </div>
 </section>
 <section id="debug-mode-emcc-debug">
@@ -1226,6 +1231,12 @@ the sub-command that it runs as well as passes <code class="docutils literal not
 }
 </pre></div>
 </div>
+</section>
+<section id="debugging-with-chrome-devtools">
+<h2>Debugging with Chrome Devtools<a class="headerlink" href="#debugging-with-chrome-devtools" title="Permalink to this headline">¶</a></h2>
+<p>Chrome devtools support source-level debugging on WebAssembly files with DWARF information. To use that, you need the Wasm debugging extension plugin here:
+<a class="reference external" href="https://goo.gle/wasm-debugging-extension">https://goo.gle/wasm-debugging-extension</a></p>
+<p>See <a class="reference external" href="https://developer.chrome.com/blog/wasm-debugging-2020/">Debugging WebAssembly with modern tools</a> for the details.</p>
 </section>
 <section id="handling-c-exceptions-from-javascript">
 <span id="id2"></span><h2>Handling C++ exceptions from JavaScript<a class="headerlink" href="#handling-c-exceptions-from-javascript" title="Permalink to this headline">¶</a></h2>
@@ -1407,6 +1418,7 @@ and other issues don’t cause false positives.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="http://mozakai.blogspot.com/2014/06/looking-through-emscripten-output.html">Blogpost about reading compiler output</a>.</p></li>
 <li><p><a class="reference external" href="https://web.archive.org/web/20140325222509/http://people.mozilla.org/~lwagner/gdc-pres/gdc-2014.html#/20">GDC 2014: Getting started with asm.js and Emscripten</a> (Debugging slides).</p></li>
+<li><p><a class="reference external" href="https://web.dev/webassembly/#webassembly-debugging">Links to Wasm debugging-related documents</a></p></li>
 </ul>
 </section>
 <section id="need-help">
@@ -1527,7 +1539,7 @@ and other issues don’t cause false positives.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.42-git (dev)',
+            VERSION:'3.1.43-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

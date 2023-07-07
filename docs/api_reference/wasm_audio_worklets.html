@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Wasm Audio Worklets API &mdash; Emscripten 3.1.42-git (dev) documentation</title>
+  <title>Wasm Audio Worklets API &mdash; Emscripten 3.1.43-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.42-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Advanced APIs" href="advanced-apis.html"/>
         <link rel="prev" title="Wasm Workers API" href="wasm_workers.html"/> 
@@ -409,6 +409,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -1270,14 +1271,13 @@ which resumes the audio context when the user clicks on the DOM Canvas element t
 <section id="synchronizing-audio-thread-with-the-main-thread">
 <h2>Synchronizing audio thread with the main thread<a class="headerlink" href="#synchronizing-audio-thread-with-the-main-thread" title="Permalink to this headline">¶</a></h2>
 <p>Wasm Audio Worklets API builds on top of the Emscripten Wasm Workers feature. This means that the Wasm Audio Worklet thread is modeled as if it was a Wasm Worker thread.</p>
-<p>To synchronize information between an Audio Worklet Node and other threads in the application, there are two options:</p>
-<ol class="arabic simple">
-<li><p>Leverage the Web Audio “AudioParams” model. Each Audio Worklet Processor type is instantiated with a custom defined set of audio parameters that can affect the audio computation at sample precise accuracy. These parameters are passed in the <code class="docutils literal notranslate"><span class="pre">params</span></code> array into the audio processing function.</p></li>
-</ol>
-<p>The main browser thread that created the Web Audio context can adjust the values of these parameters whenever desired. See <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setValueAtTime">MDN function: setValueAtTime</a> .</p>
-<ol class="arabic simple" start="2">
+<p>To synchronize information between an Audio Worklet Node and other threads in the application, there are three options:</p>
+<ol class="arabic">
+<li><p>Leverage the Web Audio “AudioParams” model. Each Audio Worklet Processor type is instantiated with a custom defined set of audio parameters that can affect the audio computation at sample precise accuracy. These parameters are passed in the <code class="docutils literal notranslate"><span class="pre">params</span></code> array into the audio processing function.</p>
+<p>The main browser thread that created the Web Audio context can adjust the values of these parameters whenever desired. See <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setValueAtTime">MDN function: setValueAtTime</a>.</p>
+</li>
 <li><p>Data can be shared with the Audio Worklet thread using GCC/Clang lock-free atomics operations, Emscripten atomics operations and the Wasm Worker API thread synchronization primitives. See <a class="reference internal" href="wasm_workers.html#wasm-workers"><span class="std std-ref">Wasm Workers API</span></a> for more information.</p></li>
-<li><p>Utilize the <code class="docutils literal notranslate"><span class="pre">emscripten_audio_worklet_post_function_*()</span></code> family of event passing functions. These functions operate similar to how the function family emscripten_wasm_worker_post_function_*()`` does. Posting functions enables a <code class="docutils literal notranslate"><span class="pre">postMessage()</span></code> style of communication, where the audio worklet thread and the main browser thread can send messages (function call dispatches) to each others.</p></li>
+<li><p>Utilize the <code class="docutils literal notranslate"><span class="pre">emscripten_audio_worklet_post_function_*()</span></code> family of event passing functions. These functions operate similar to the <code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_post_function_*()</span></code> functions. They enable a <code class="docutils literal notranslate"><span class="pre">postMessage()</span></code> style of communication, where the audio worklet thread and the main browser thread can send messages (function call dispatches) to each other.</p></li>
 </ol>
 </section>
 <section id="more-examples">
@@ -1397,7 +1397,7 @@ which resumes the audio context when the user clicks on the DOM Canvas element t
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.42-git (dev)',
+            VERSION:'3.1.43-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

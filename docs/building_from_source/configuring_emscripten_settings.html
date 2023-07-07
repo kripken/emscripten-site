@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.42-git (dev) documentation</title>
+  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.43-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.42-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Verifying the Emscripten Development Environment" href="verify_emscripten_environment.html"/>
         <link rel="prev" title="Emscripten Toolchain Requirements" href="toolchain_what_is_needed.html"/> 
@@ -409,6 +409,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../porting/Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -1126,17 +1127,19 @@
             
   <section id="configuring-emscripten-settings-when-manually-building-from-source">
 <span id="configuring-emscripten-settings"></span><h1>Configuring Emscripten Settings when Manually Building from Source<a class="headerlink" href="#configuring-emscripten-settings-when-manually-building-from-source" title="Permalink to this headline">¶</a></h1>
-<p>The compiler settings used by Emscripten are defined in the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">compiler
+<p>Emscripten can be configured via a <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">compiler
 configuration file (.emscripten)</span></a>. These settings
-include paths to the tools (LLVM, Clang, Java, etc.) and the compiler’s
+include paths to the tools (LLVM, Clang, Binaryen, etc.) and the compiler’s
 temporary directory for intermediate build files.</p>
-<p>This article explains how to create and update the file when you are building Emscripten <a class="reference internal" href="index.html#installing-from-source"><span class="std std-ref">manually</span></a> from source.</p>
+<p>This confuration file is optional.  By default, emscripten will search
+for the tools it needs in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<p>This article explains how to create and update the file when you are building
+Emscripten <a class="reference internal" href="index.html#installing-from-source"><span class="std std-ref">manually</span></a> from source.</p>
 <section id="creating-the-compiler-configuration-file">
 <h2>Creating the compiler configuration file<a class="headerlink" href="#creating-the-compiler-configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>A settings file is required to run <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a> (or any of the other
-Emscripten tools).  When you first run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> it will direct you to the
-<code class="docutils literal notranslate"><span class="pre">--generate-config</span></code> command line option which can be used to generate config
-file in the default location.</p>
+<p>A settings file may be used when running <a class="reference internal" href="../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a> (or any of the
+other Emscripten tools).  You can run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> with <code class="docutils literal notranslate"><span class="pre">--generate-config</span></code>
+in order to generate one in the default location.</p>
 <ol class="arabic simple">
 <li><p>Navigate to the directory where you cloned the Emscripten repository.</p></li>
 <li><p>Enter the command:</p></li>
@@ -1148,18 +1151,17 @@ file in the default location.</p>
 <p>You should get a <code class="docutils literal notranslate"><span class="pre">An</span> <span class="pre">Emscripten</span> <span class="pre">settings</span> <span class="pre">file</span> <span class="pre">has</span> <span class="pre">been</span> <span class="pre">generated</span> <span class="pre">at:</span></code>
 message, along with the contents of the config file.</p>
 </div></blockquote>
-<p>Emscripten makes a “best guess” at the correct locations for tools and updates
-the file appropriately. Where possible it will look for “system” apps (like
-Python and Java).</p>
-<p>In most cases it is necessary to edit the generated file and modify at least the
-<code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> and <code class="docutils literal notranslate"><span class="pre">BINARYEN_ROOT</span></code> settings to point to the correct location of
-your local LLVM and Binaryen installations respectively.</p>
+<p>When generating this file Emscripten will make its “best guess” at the correct
+locations for tools based on the current <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<p>In most cases it will be necessary to edit the generated file and modify
+least the <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> and <code class="docutils literal notranslate"><span class="pre">BINARYEN_ROOT</span></code> settings to point to the correct
+locations for your local LLVM and Binaryen installations.</p>
 </section>
 <section id="locating-the-compiler-configuration-file-emscripten">
 <h2>Locating the compiler configuration file (.emscripten)<a class="headerlink" href="#locating-the-compiler-configuration-file-emscripten" title="Permalink to this headline">¶</a></h2>
 <p>The settings file (<code class="docutils literal notranslate"><span class="pre">.emscripten</span></code>) is created by default within the emscripten
 directory (alongsize <code class="docutils literal notranslate"><span class="pre">emcc</span></code> itself).  In cases where the emscripten directory
-is read-only the users home directory will be used:</p>
+is read-only the user’s home directory will be used:</p>
 <blockquote>
 <div><ul>
 <li><p>On Linux and macOS this file is named <strong>~/.emscripten</strong>, where ~ is the
@@ -1179,23 +1181,25 @@ user’s home directory.</p>
 <p class="admonition-title">Note</p>
 <p>While the syntax is identical, the appearance of the default <strong>.emscripten</strong> file created by <em>emcc</em> is quite different than that created by <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">emsdk</span></a>. This is because <em>emsdk</em> manages multiple target environments, and where possible hard codes the locations of those tools when a new environment is activated. The default file, by contrast, is managed by the user — and is designed to make that task as easy as possible.</p>
 </div>
-<p>The file simply assigns paths to a number of <em>variables</em> representing the main tools used by Emscripten. For example, if the user installed python to the <strong>C:\Python38\</strong> directory, then the file might have the line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYTHON</span> <span class="o">=</span> <span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">Python38</span><span class="se">\\</span><span class="s1">python.exe&#39;</span>
+<p>The file simply assigns values to a number of <em>variables</em> representing the main
+tools used by Emscripten. For example, if your binaryen installation is in
+<strong>C:\tools\binaryen\</strong>, then the file might contain the line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BINARYEN_ROOT</span> <span class="o">=</span> <span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">tools</span><span class="se">\\</span><span class="s1">binaryen</span><span class="se">\\</span><span class="s1">&#39;</span>
 </pre></div>
 </div>
-<p>The default <em>emcc</em> configuration file often gets the paths from environment variables if defined. If no variable is defined the system will also attempt to find “system executables”. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYTHON</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;PYTHON&#39;</span><span class="p">,</span> <span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">Python38</span><span class="se">\\</span><span class="s1">python.exe&#39;</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>You can find out the other variable names from the default <em>.emscripten</em> file or the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">example here</span></a>.</p>
+<p>You can find out the other variable names from the default <em>.emscripten</em> file or
+the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">example here</span></a>.</p>
 </section>
 <section id="editing-the-compiler-configuration-file">
 <h2>Editing the compiler configuration file<a class="headerlink" href="#editing-the-compiler-configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>The compiler configuration file can be edited with the text editor of your choice. As stated above, most default settings are likely to be correct. If you’re building manually from source, you are most likely to have to update the variable <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code></p>
+<p>The compiler configuration file can be edited with the text editor of your
+choice. If you’re building manually from source, you are most likely to have to
+update the variable <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code></p>
 <ol class="arabic">
-<li><p>Edit the variable <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> to point to the directory where you built the LLVM binaries, such as:</p>
+<li><p>Edit the variable <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> to point to the directory where you built the
+LLVM binaries, such as:</p>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLVM_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;LLVM&#39;</span><span class="p">,</span> <span class="s1">&#39;/home/ubuntu/a-path/llvm/build/bin&#39;</span><span class="p">))</span>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLVM_ROOT</span> <span class="o">=</span> <span class="s1">&#39;/home/ubuntu/a-path/llvm/build/bin&#39;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1320,7 +1324,7 @@ user’s home directory.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.42-git (dev)',
+            VERSION:'3.1.43-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

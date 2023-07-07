@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.42-git (dev) documentation</title>
+  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.43-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.42-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Files and File Systems" href="index.html"/>
         <link rel="next" title="Multimedia and Graphics" href="../multimedia_and_graphics/index.html"/>
         <link rel="prev" title="Packaging Files" href="packaging_files.html"/> 
@@ -409,6 +409,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#sanitizers">Sanitizers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#manual-print-debugging">Manual print debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Debugging.html#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
@@ -1152,10 +1153,9 @@
 <li><p>You will need to add JavaScript to the generated code to map the file accessed by your compiled native code and the server.</p>
 <p>The test code simply creates a file in the virtual file system using <a class="reference internal" href="../../api_reference/Filesystem-API.html#FS.createLazyFile" title="FS.createLazyFile"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.createLazyFile()</span></code></a> and sets the compiled code to use the same file (<strong>/bigfile</strong>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">      if (typeof(Module) === &quot;undefined&quot;) Module = </span><span class="si">{}</span><span class="s2">;</span>
-<span class="s2">      Module[&quot;arguments&quot;] = [&quot;/bigfile&quot;];</span>
-<span class="s2">      Module[&quot;preInit&quot;] = function() {</span>
-<span class="s2">          FS.createLazyFile(&#39;/&#39;, &quot;bigfile&quot;, &quot;http://localhost:11111/bogus_file_path&quot;, true, false);</span>
+<span class="s2">      Module.arguments = [&quot;/bigfile&quot;];</span>
+<span class="s2">      Module.preInit = () =&gt; {</span>
+<span class="s2">        FS.createLazyFile(&#39;/&#39;, &quot;bigfile&quot;, &quot;http://localhost:11111/bogus_file_path&quot;, true, false);</span>
 <span class="s2">      };</span>
 <span class="s2">      </span>
 </pre></div>
@@ -1172,8 +1172,8 @@
 <li><p>The added JavaScript should also include code to allow the web worker to communicate with the original thread.</p>
 <p>The test code adds the following JavaScript to the web worker for this purpose. It uses <code class="docutils literal notranslate"><span class="pre">postMessage()</span></code> to send its <code class="docutils literal notranslate"><span class="pre">stdout</span></code> back to the main thread.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-      Module[&quot;print&quot;] = function(s) { self.postMessage({channel: &quot;stdout&quot;, line: s}); };
-      Module[&quot;printErr&quot;] = function(s) { self.postMessage({channel: &quot;stderr&quot;, char: s, trace: ((doTrace &amp;&amp; s === 10) ? new Error().stack : null)}); doTrace = false; };
+      Module.print = (s) =&gt; self.postMessage({channel: &quot;stdout&quot;, line: s});
+      Module.printErr = (s) =&gt; { self.postMessage({channel: &quot;stderr&quot;, char: s, trace: ((doTrace &amp;&amp; s === 10) ? new Error().stack : null)}); doTrace = false; };
     
 </pre></div>
 </div>
@@ -1190,7 +1190,7 @@
 <span class="sd">        Worker Test</span>
 <span class="sd">        &lt;script&gt;</span>
 <span class="sd">          var worker = new Worker(&#39;worker.js&#39;);</span>
-<span class="sd">          worker.onmessage = function(event) {</span>
+<span class="sd">          worker.onmessage = (event) =&gt; {</span>
 <span class="sd">            var xhr = new XMLHttpRequest();</span>
 <span class="sd">            xhr.open(&#39;GET&#39;, &#39;http://localhost:%s/report_result?&#39; + event.data);</span>
 <span class="sd">            xhr.send();</span>
@@ -1236,7 +1236,7 @@
 <span class="s2">        &lt;script&gt;</span>
 <span class="s2">          var worker = new Worker(&quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">worker_filename</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;);</span>
 <span class="s2">          var buffer = [];</span>
-<span class="s2">          worker.onmessage = function(event) {</span>
+<span class="s2">          worker.onmessage = (event) =&gt; {</span>
 <span class="s2">            if (event.data.channel === &quot;stdout&quot;) {</span>
 <span class="s2">              var xhr = new XMLHttpRequest();</span>
 <span class="s2">              xhr.open(&#39;GET&#39;, &#39;http://localhost:</span><span class="si">%s</span><span class="s2">/report_result?&#39; + event.data.line);</span>
@@ -1381,7 +1381,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.42-git (dev)',
+            VERSION:'3.1.43-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
