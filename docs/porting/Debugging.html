@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Debugging &mdash; Emscripten 3.1.43-git (dev) documentation</title>
+  <title>Debugging &mdash; Emscripten 3.1.44-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.44-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Pthreads support" href="pthreads.html"/>
         <link rel="prev" title="Audio" href="Audio.html"/> 
@@ -328,6 +328,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#typescript-definitions">TypeScript Definitions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
 </ul>
 </li>
@@ -410,7 +411,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#manual-print-debugging">Manual print debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-c-exceptions-from-javascript">Handling C++ Exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#function-pointer-issues">Function Pointer Issues</a></li>
@@ -453,11 +454,11 @@
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">C++ Exceptions Support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html#debugging-exceptions">Debugging Exceptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="exceptions.html#stack-traces">Stack Traces</a></li>
-<li class="toctree-l4"><a class="reference internal" href="exceptions.html#exception-messages">Exception Messages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="exceptions.html#handling-c-exceptions-from-javascript">Handling C++ Exceptions from JavaScript</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
@@ -1239,51 +1240,8 @@ the sub-command that it runs as well as passes <code class="docutils literal not
 <p>See <a class="reference external" href="https://developer.chrome.com/blog/wasm-debugging-2020/">Debugging WebAssembly with modern tools</a> for the details.</p>
 </section>
 <section id="handling-c-exceptions-from-javascript">
-<span id="id2"></span><h2>Handling C++ exceptions from JavaScript<a class="headerlink" href="#handling-c-exceptions-from-javascript" title="Permalink to this headline">¶</a></h2>
-<p>C++ exceptions are thrown from WebAssembly using exception pointers, which means
-that try/catch/finally blocks in JavaScript will only receive a number, which
-represents a pointer into linear memory. In order to get the exception message,
-the user will need to create some WASM code which will extract the meaning from
-the exception. In the example code below we created a function that receives the
-address of a <code class="docutils literal notranslate"><span class="pre">std::exception</span></code>, and by casting the pointer
-returns the <code class="docutils literal notranslate"><span class="pre">what</span></code> function call result.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span>
-
-<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">getExceptionMessage</span><span class="p">(</span><span class="kt">intptr_t</span><span class="w"> </span><span class="n">exceptionPtr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">exceptionPtr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">what</span><span class="p">());</span>
-<span class="p">}</span>
-
-<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">Bindings</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;getExceptionMessage&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">getExceptionMessage</span><span class="p">);</span>
-<span class="p">};</span>
-</pre></div>
-</div>
-<p>This requires using the linker flags <code class="docutils literal notranslate"><span class="pre">-lembind</span> <span class="pre">-sEXPORT_EXCEPTION_HANDLING_HELPERS</span></code>.
-Once such a function has been created, exception handling code in javascript
-can call it when receiving an exception from WASM. Here the function is used
-in order to log the thrown exception.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// some code that calls WebAssembly</span>
-<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">));</span>
-<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="p">...</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>It’s important to notice that this example code will work only for thrown
-statically allocated exceptions. If your code throws other objects, such as
-strings or dynamically allocated exceptions, the handling code will need to
-take that into account. For example, if your code needs to handle both native
-C++ exceptions and JavaScript exceptions you could use the following code to
-distinguish between them:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">exception</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;number&#39;</span>
-<span class="w">    </span><span class="o">?</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">exception</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="nx">exception</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<h2>Handling C++ Exceptions from JavaScript<a class="headerlink" href="#handling-c-exceptions-from-javascript" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="exceptions.html#handling-c-exceptions-from-javascript"><span class="std std-ref">Handling C++ Exceptions from JavaScript</span></a>.</p>
 </section>
 <section id="emscripten-specific-issues">
 <span id="debugging-emscripten-specific-issues"></span><h2>Emscripten-specific issues<a class="headerlink" href="#emscripten-specific-issues" title="Permalink to this headline">¶</a></h2>
@@ -1539,7 +1497,7 @@ and other issues don’t cause false positives.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.43-git (dev)',
+            VERSION:'3.1.44-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

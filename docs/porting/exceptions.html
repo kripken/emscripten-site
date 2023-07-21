@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C++ Exceptions Support &mdash; Emscripten 3.1.43-git (dev) documentation</title>
+  <title>C++ Exceptions Support &mdash; Emscripten 3.1.44-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.44-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C setjmp-longjmp Support" href="setjmp-longjmp.html"/>
         <link rel="prev" title="Porting SIMD code targeting WebAssembly" href="simd.html"/> 
@@ -328,6 +328,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#typescript-definitions">TypeScript Definitions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#performance">Performance</a></li>
 </ul>
 </li>
@@ -410,7 +411,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#manual-print-debugging">Manual print debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript">Handling C++ Exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
@@ -453,11 +454,11 @@
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">C++ Exceptions Support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#debugging-exceptions">Debugging Exceptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#stack-traces">Stack Traces</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#exception-messages">Exception Messages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#handling-c-exceptions-from-javascript">Handling C++ Exceptions from JavaScript</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
@@ -1150,8 +1151,8 @@ Aborted(Assertion failed: Exception thrown, but exception catching is not enable
 </pre></div>
 </div>
 <p>If you want to opt-in, you have two following options.</p>
-<section id="javascript-based-exception-support">
-<span id="id1"></span><h2>JavaScript-based Exception Support<a class="headerlink" href="#javascript-based-exception-support" title="Permalink to this headline">¶</a></h2>
+<section id="emscripten-javascript-based-exception-support">
+<span id="javascript-based-exception-support"></span><h2>Emscripten (JavaScript-based) Exception Support<a class="headerlink" href="#emscripten-javascript-based-exception-support" title="Permalink to this headline">¶</a></h2>
 <p>First, you can enable exceptions via Emscripten’s JavaScript-based support. To
 enable it, pass <code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code> at both compile time and link time.</p>
 <p>When you rebuild the example above with this flag, the output will change to:</p>
@@ -1165,7 +1166,7 @@ specifying a list of allowed functions in which exceptions are enabled, see the
 <code class="docutils literal notranslate"><span class="pre">EXCEPTION_CATCHING_ALLOWED</span></code> setting.</p>
 </section>
 <section id="webassembly-exception-handling-based-support">
-<span id="id2"></span><h2>WebAssembly Exception Handling-based Support<a class="headerlink" href="#webassembly-exception-handling-based-support" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>WebAssembly Exception Handling-based Support<a class="headerlink" href="#webassembly-exception-handling-based-support" title="Permalink to this headline">¶</a></h2>
 <p>Alternatively, you can opt-in to the <a class="reference external" href="https://github.com/WebAssembly/exception-handling/blob/master/proposals/exception-handling/Exceptions.md">native WebAssembly exception handling</a>
 proposal. To enable it, pass <code class="docutils literal notranslate"><span class="pre">-fwasm-exceptions</span></code> at both compile time and link
 time.</p>
@@ -1206,10 +1207,41 @@ property. For example:</p>
 <p>Stack traces within Wasm code are not supported in <a class="reference internal" href="#javascript-based-exception-support"><span class="std std-ref">JavaScipt-based
 exceptions</span></a>.</p>
 </section>
-<section id="exception-messages">
-<h3>Exception Messages<a class="headerlink" href="#exception-messages" title="Permalink to this headline">¶</a></h3>
+<section id="handling-c-exceptions-from-javascript">
+<span id="id2"></span><h3>Handling C++ Exceptions from JavaScript<a class="headerlink" href="#handling-c-exceptions-from-javascript" title="Permalink to this headline">¶</a></h3>
 <p>You can also catch and examine the type and the message of C++ exceptions from
-JavaScript. See <a class="reference internal" href="Debugging.html#handling-c-exceptions-from-javascript"><span class="std std-ref">Handling C++ exceptions from JavaScript</span></a>.</p>
+JavaScript, in case they inherit from <code class="docutils literal notranslate"><span class="pre">std::exception</span></code> and thus have <code class="docutils literal notranslate"><span class="pre">what</span></code>
+method.</p>
+<p><code class="docutils literal notranslate"><span class="pre">getExceptionMessage</span></code> returns a list of two strings: <code class="docutils literal notranslate"><span class="pre">[type,</span> <span class="pre">message]</span></code>. the
+<code class="docutils literal notranslate"><span class="pre">message</span></code> is the result of calling <code class="docutils literal notranslate"><span class="pre">what</span></code> method in case the exception is a
+subclass of <code class="docutils literal notranslate"><span class="pre">std::exception</span></code>. Otherwise it will be just an empty string.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span><span class="w"> </span><span class="c1">// some code that calls WebAssembly</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">getExceptionMessage</span><span class="p">(</span><span class="nx">e</span><span class="p">).</span><span class="nx">toString</span><span class="p">());</span>
+<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In case the thrown value is an integer 3, this will print <code class="docutils literal notranslate"><span class="pre">int,</span></code>, because the
+message part is empty. If the thrown value is an instance of <code class="docutils literal notranslate"><span class="pre">MyException</span></code>
+that is a subclass of <code class="docutils literal notranslate"><span class="pre">std::exception</span></code> and its <code class="docutils literal notranslate"><span class="pre">what</span></code> message is <code class="docutils literal notranslate"><span class="pre">My</span>
+<span class="pre">exception</span> <span class="pre">thrown</span></code>, this code will print <code class="docutils literal notranslate"><span class="pre">MyException,My</span> <span class="pre">exception</span> <span class="pre">thrown</span></code>.</p>
+<p>To use this function, you need to pass <code class="docutils literal notranslate"><span class="pre">-sEXPORT_EXCEPTION_HANDLING_HELPERS</span></code>
+to the options. You need to enable either of Emscripten EH or Wasm EH to use
+this option.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you catch a Wasm exception and do not rethrow it, you need to free
+the storage associated with the exception in JS using
+<code class="docutils literal notranslate"><span class="pre">decrementExceptionRefcount</span></code> method because the exception
+catching code in Wasm does not have a chance to free it. But currently due to
+an implementation issue that Wasm EH and Emscripten (JS-based) EH, you need
+to call incrementExceptionRefcount additionally in case of Emscripten EH. See
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/17115">https://github.com/emscripten-core/emscripten/issues/17115</a> for details and a
+code example.</p>
+</div>
 </section>
 </section>
 <section id="using-exceptions-and-setjmp-longjmp-together">
@@ -1329,7 +1361,7 @@ JavaScript. See <a class="reference internal" href="Debugging.html#handling-c-ex
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.43-git (dev)',
+            VERSION:'3.1.44-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

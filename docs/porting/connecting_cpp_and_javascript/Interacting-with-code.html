@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 3.1.43-git (dev) documentation</title>
+  <title>Interacting with code &mdash; Emscripten 3.1.44-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.43-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.44-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -328,6 +328,7 @@
 <li class="toctree-l4"><a class="reference internal" href="embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="embind.html#built-in-type-conversions">Built-in type conversions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="embind.html#typescript-definitions">TypeScript Definitions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="embind.html#performance">Performance</a></li>
 </ul>
 </li>
@@ -410,7 +411,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#emcc-verbose-output">emcc verbose output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#manual-print-debugging">Manual print debugging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#debugging-with-chrome-devtools">Debugging with Chrome Devtools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../Debugging.html#handling-c-exceptions-from-javascript">Handling C++ exceptions from JavaScript</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../Debugging.html#handling-c-exceptions-from-javascript">Handling C++ Exceptions from JavaScript</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../Debugging.html#emscripten-specific-issues">Emscripten-specific issues</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#memory-alignment-issues">Memory Alignment Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../Debugging.html#function-pointer-issues">Function Pointer Issues</a></li>
@@ -453,11 +454,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exceptions.html">C++ Exceptions Support</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions.html#javascript-based-exception-support">JavaScript-based Exception Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions.html#webassembly-exception-handling-based-support">WebAssembly Exception Handling-based Support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions.html#debugging-exceptions">Debugging Exceptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../exceptions.html#stack-traces">Stack Traces</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../exceptions.html#exception-messages">Exception Messages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../exceptions.html#handling-c-exceptions-from-javascript">Handling C++ Exceptions from JavaScript</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
@@ -1466,6 +1467,11 @@ which are the input values (this is how C macros work).</p></li>
 single quotes(‘). Double quotes(”) will cause a syntax error that
 is not detected by the compiler and is only shown when looking at
 a JavaScript console while running the offending code.</p></li>
+<li><p>clang-format may clobber Javascript constructions, such as <code class="docutils literal notranslate"><span class="pre">=&gt;</span></code>
+turning to <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">&gt;</span></code>. To avoid this, add to your <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code>:
+<code class="docutils literal notranslate"><span class="pre">WhitespaceSensitiveMacros:</span> <span class="pre">['EM_ASM',</span> <span class="pre">'EM_JS',</span> <span class="pre">'EM_ASM_INT',</span> <span class="pre">'EM_ASM_DOUBLE',</span> <span class="pre">'EM_ASM_PTR',</span> <span class="pre">'MAIN_THREAD_EM_ASM',</span> <span class="pre">'MAIN_THREAD_EM_ASM_INT',</span> <span class="pre">'MAIN_THREAD_EM_ASM_DOUBLE',</span> <span class="pre">'MAIN_THREAD_EM_ASM_DOUBLE',</span> <span class="pre">'MAIN_THREAD_ASYNC_EM_ASM']</span></code>.
+Or, turn <a class="reference external" href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html#disabling-formatting-on-a-piece-of-code">clang-format off</a> by writing <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">clang-format</span> <span class="pre">off</span></code>
+before the <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> section and <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">clang-format</span> <span class="pre">on</span></code> after it.</p></li>
 </ul>
 </div>
 </section>
@@ -1983,7 +1989,7 @@ you can give it a try. See <a class="reference external" href="https://emnapi-do
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.43-git (dev)',
+            VERSION:'3.1.44-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
