@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 3.1.44-git (dev) documentation</title>
+  <title>Building Projects &mdash; Emscripten 3.1.45-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.44-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.45-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -1201,7 +1201,7 @@ which files are produced under which conditions:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.html</span></code> builds a <code class="docutils literal notranslate"><span class="pre">output.html</span></code> file as an output, as well as an accompanying <code class="docutils literal notranslate"><span class="pre">output.js</span></code> launcher file, and a <code class="docutils literal notranslate"><span class="pre">output.wasm</span></code> WebAssembly file.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.js</span></code> omits generating a HTML launcher file (expecting you to provide it yourself if you plan to run in browser), and produces two files, <code class="docutils literal notranslate"><span class="pre">output.js</span></code> and <code class="docutils literal notranslate"><span class="pre">output.wasm</span></code>. (that can be run in e.g. node.js shell)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.wasm</span></code> omits generating either JavaScript or HTML launcher file, and produces a single Wasm file built in standalone mode as if the <code class="docutils literal notranslate"><span class="pre">-sSTANDALONE_WASM</span></code> settting had been used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.wasm</span></code> omits generating either JavaScript or HTML launcher file, and produces a single Wasm file built in standalone mode as if the <code class="docutils literal notranslate"><span class="pre">-sSTANDALONE_WASM</span></code> settting had been used. The resulting file expects to be run with the <a class="reference external" href="https://github.com/WebAssembly/WASI/blob/4712d490fd7662f689af6faa5d718e042f014931/legacy/application-abi.md">WASI ABI</a> - in particular, as soon as you initialize the module you must manually invoke either the <code class="docutils literal notranslate"><span class="pre">_start</span></code> export or (in the case of <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code>) the <code class="docutils literal notranslate"><span class="pre">_initialize</span></code> export before doing anything else with it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span></code> causes the compiler to target JavaScript, and therefore a <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file is not produced.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">--emit-symbol-map</span></code> produces a file <code class="docutils literal notranslate"><span class="pre">output.{html,js}.symbols</span></code> if WebAssembly is being targeted (<code class="docutils literal notranslate"><span class="pre">-sWASM=0</span></code> not specified), or if JavaScript is being targeted and <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> or <code class="docutils literal notranslate"><span class="pre">-O2</span></code> or higher is specified, but debug level setting is <code class="docutils literal notranslate"><span class="pre">-g1</span></code> or lower (i.e. if symbols minification did occur).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span> <span class="pre">--memory-init-file</span> <span class="pre">1</span></code> causes the generation of <code class="docutils literal notranslate"><span class="pre">output.{html,js}.mem</span></code> memory initializer file. Pasing <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> also implies <code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">1</span></code>.</p></li>
@@ -1491,6 +1491,7 @@ but a build system might have it hardcoded, or require you to
 </div>
 <p>One solution is to use <a class="reference internal" href="Dynamic-Linking.html#dynamic-linking"><span class="std std-ref">dynamic-linking</span></a>. This ensures that libraries are linked only once, in the final build stage.</p>
 </li>
+<li><p>When generating standalone wasm, make sure to invoke the <code class="docutils literal notranslate"><span class="pre">_start</span></code> or (for <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code>) <code class="docutils literal notranslate"><span class="pre">_initialize</span></code> export before attempting to use the module.</p></li>
 </ul>
 </section>
 </section>
@@ -1606,7 +1607,7 @@ but a build system might have it hardcoded, or require you to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.44-git (dev)',
+            VERSION:'3.1.45-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
