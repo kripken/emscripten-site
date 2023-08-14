@@ -1150,6 +1150,19 @@ group permissions are defined but ignored in <a class="reference internal" href=
 <p>The JavaScript-based file system was originally written before pthreads were supported and when it was more optimal to write code in JS. As a result it has overhead in pthreads builds because we must proxy to the main thread where all filesystem operations are done. WasmFS, instead, is compiled to Wasm and has full multithreading support. It also aims to be more modular and extensible.</p>
 <p><a class="reference external" href="https://docs.google.com/document/d/1-ZxybGvz0nCqygUDuWxCcCBhCebev3EbUSYoSOlc49Q/edit?usp=sharing">Design Doc Link</a></p>
 <p><a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/15041">Github Tracking Issue</a></p>
+<p>Differences you may notice with the original JS filesystem include:</p>
+<ul class="simple">
+<li><p>The original JS FS includes a lot of JS code by default, while WasmFS does
+not. As a result, if you write JS of your own, say <code class="docutils literal notranslate"><span class="pre">FS.mkdir()</span></code>, then the
+JS FS would already have added that API support, and things would just work.
+With WasmFS you must opt-in to including the full JS API, to avoid bloating
+all builds. To do so, use <code class="docutils literal notranslate"><span class="pre">-sFORCE_FILESYSTEM</span></code> which forces the full
+filesystem API to be supported from JS.</p></li>
+<li><p>WasmFS requires malloc internally, so you cannot build with
+<code class="docutils literal notranslate"><span class="pre">-sWASMFS</span> <span class="pre">-sMALLOC=none</span></code>. If you want the smallest possible malloc, use
+<code class="docutils literal notranslate"><span class="pre">-sMALLOC=emmalloc</span></code>. (Note that the optimizer may be able to remove WasmFS
+and malloc, if your code does not actually use files in a non-trivial way.)</p></li>
+</ul>
 </section>
 <section id="including-file-system-support">
 <h2>Including File System Support<a class="headerlink" href="#including-file-system-support" title="Permalink to this headline">¶</a></h2>
