@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Porting SIMD code targeting WebAssembly &mdash; Emscripten 3.1.47-git (dev) documentation</title>
+  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.48-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.47-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ Exceptions Support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#exiting-on-first-failure">Exiting on first failure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
@@ -404,7 +405,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debugging-in-the-browser">Debugging in the browser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#compiler-settings">Compiler settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#sanitizers">Sanitizers</a></li>
@@ -448,10 +449,12 @@
 <li class="toctree-l3"><a class="reference internal" href="networking.html#webrtc-and-udp">WebRTC and UDP</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
@@ -875,7 +878,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -973,7 +976,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1102,7 +1105,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code targeting WebAssembly</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Using SIMD with WebAssembly</div>
   </div>
  
 </div>
@@ -1120,27 +1123,69 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code targeting WebAssembly</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Using SIMD with WebAssembly</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <section id="porting-simd-code-targeting-webassembly">
-<h1>Porting SIMD code targeting WebAssembly<a class="headerlink" href="#porting-simd-code-targeting-webassembly" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten supports the <a class="reference external" href="https://github.com/webassembly/simd/">WebAssembly SIMD proposal</a> when using the WebAssembly LLVM backend. To enable SIMD, pass the -msimd128 flag at compile time. This will also turn on LLVM’s autovectorization passes, so no source modifications are necessary to benefit from SIMD.</p>
-<p>At the source level, the GCC/Clang <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a> can be used and will be lowered to WebAssembly SIMD instructions where possible. In addition, there is a portable intrinsics header file that can be used.</p>
+  <section id="using-simd-with-webassembly">
+<h1>Using SIMD with WebAssembly<a class="headerlink" href="#using-simd-with-webassembly" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten supports the <a class="reference external" href="https://github.com/webassembly/simd/">WebAssembly SIMD</a> feature. There are five different ways to leverage WebAssembly SIMD in your C/C++ programs:</p>
+<ol class="arabic simple">
+<li><p>Enable LLVM/Clang SIMD autovectorizer to automatically target WebAssembly SIMD, without requiring changes to C/C++ source code.</p></li>
+<li><p>Write SIMD code using the GCC/Clang SIMD Vector Extensions (<code class="docutils literal notranslate"><span class="pre">__attribute__((vector_size(16)))</span></code>)</p></li>
+<li><p>Write SIMD code using the WebAssembly SIMD intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;wasm_simd128.h&gt;</span></code>)</p></li>
+<li><p>Compile existing SIMD code that uses the x86 SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2 or 128-bit subset of the AVX intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;*mmintrin.h&gt;</span></code>)</p></li>
+<li><p>Compile existing SIMD code that uses the ARM NEON intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;arm_neon.h&gt;</span></code>)</p></li>
+</ol>
+<p>These techniques can be freely combined in a single program.</p>
+<p>To enable any of the five types of SIMD above, pass the WebAssembly-specific <code class="docutils literal notranslate"><span class="pre">-msimd128</span></code> flag at compile time. This will also turn on LLVM’s autovectorization passes. If that is not desirable, additionally pass flags <code class="docutils literal notranslate"><span class="pre">-fno-vectorize</span> <span class="pre">-fno-slp-vectorize</span></code> to disable the autovectorizer. See <a class="reference external" href="https://llvm.org/docs/Vectorizers.html">Auto-Vectorization in LLVM</a> for more information.</p>
+<p>WebAssembly SIMD is supported by</p>
+<ul class="simple">
+<li><p>Chrome ≥ 91 (May 2021),</p></li>
+<li><p>Firefox ≥ 89 (June 2021),</p></li>
+<li><p>Safari ≥ 16.4 (March 2023) and</p></li>
+<li><p>Node.js ≥ 16.4 (June 2021).</p></li>
+</ul>
+<p>See <a class="reference external" href="https://webassembly.org/roadmap/">WebAssembly Roadmap</a> for details about other VMs.</p>
+<p>An upcoming <a class="reference external" href="https://github.com/WebAssembly/relaxed-simd/tree/main/proposals/relaxed-simd">Relaxed SIMD proposal</a> will add more SIMD instructions to WebAssembly.</p>
+</section>
+<section id="gcc-clang-simd-vector-extensions">
+<h1>GCC/Clang SIMD Vector Extensions<a class="headerlink" href="#gcc-clang-simd-vector-extensions" title="Permalink to this headline">¶</a></h1>
+<p>At the source level, the GCC/Clang <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a> can be used and will be lowered to WebAssembly SIMD instructions where possible.</p>
+<p>This enables developers to create custom wide vector types via typedefs, and use arithmetic operators (+,-,*,/) on the vectorized types, as well as allow individual lane access via the vector[i] notation. However, the <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html">GCC vector built-in functions</a> are not available. Instead, use the WebAssembly SIMD Intrinsics functions below.</p>
+</section>
+<section id="webassembly-simd-intrinsics">
+<h1>WebAssembly SIMD Intrinsics<a class="headerlink" href="#webassembly-simd-intrinsics" title="Permalink to this headline">¶</a></h1>
+<p>LLVM maintains a WebAssembly SIMD Intrinsics header file that is provided with Emscripten, and adds type definitions for the different supported vector types.</p>
 <blockquote>
 <div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wasm_simd128.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#ifdef __wasm_simd128__</span>
+<span class="w">  </span><span class="n">v128</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">1.2f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.4f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.6f</span><span class="p">,</span><span class="w"> </span><span class="mf">7.8f</span><span class="p">);</span>
+<span class="w">  </span><span class="n">v128</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">2.1f</span><span class="p">,</span><span class="w"> </span><span class="mf">4.3f</span><span class="p">,</span><span class="w"> </span><span class="mf">6.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">8.7f</span><span class="p">);</span>
+<span class="w">  </span><span class="n">v128</span><span class="w"> </span><span class="n">v3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v2</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Prints &quot;v3: [3.3, 7.7, 12.1, 16.5]&quot;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v3: [%.1f, %.1f, %.1f, %.1f]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">));</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p>Separate documentation for the intrinsics header is a work in progress, but its usage is straightforward and its source can be found at <a class="reference external" href="https://github.com/llvm/llvm-project/blob/main/clang/lib/Headers/wasm_simd128.h">wasm_simd128.h</a>. These intrinsics are under active development in parallel with the SIMD proposal and should not be considered any more stable than the proposal itself. Note that most engines will also require an extra flag to enable SIMD. For example, Node requires <cite>–experimental-wasm-simd</cite>.</p>
-<p>WebAssembly SIMD is not supported when using the Fastcomp backend.</p>
+<p>The Wasm SIMD header can be browsed online at <a class="reference external" href="https://github.com/llvm/llvm-project/blob/main/clang/lib/Headers/wasm_simd128.h">wasm_simd128.h</a>.</p>
+<p>Pass flag <code class="docutils literal notranslate"><span class="pre">-msimd128</span></code> at compile time to enable targeting WebAssembly SIMD Intrinsics. C/C++ code can use the built-in preprocessor define <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__wasm_simd128__</span></code> to detect when building with WebAssembly SIMD enabled.</p>
+<p>Pass <code class="docutils literal notranslate"><span class="pre">-mrelaxed-simd</span></code> to target WebAssembly Relaxed SIMD Intrinsics. C/C++ code can use the built-in preprocessor define <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__wasm_relaxed_simd__</span></code> to detect when this target is active.</p>
 </section>
 <section id="limitations-and-behavioral-differences">
 <h1>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this headline">¶</a></h1>
-<p>When porting native SIMD code, it should be noted that because of portability concerns, the WebAssembly SIMD specification does not expose the full native instruction sets. In particular the following changes exist:</p>
+<p>When porting native SIMD code, it should be noted that because of portability concerns, the WebAssembly SIMD specification does not expose access to all of the native x86/ARM SIMD instructions. In particular the following changes exist:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Emscripten does not support x86 or any other native inline SIMD assembly or building .s assembly files, so all code should be written to use SIMD intrinsic functions or compiler vector extensions.</p></li>
@@ -1153,7 +1198,7 @@
 </section>
 <section id="optimization-considerations">
 <h1>Optimization considerations<a class="headerlink" href="#optimization-considerations" title="Permalink to this headline">¶</a></h1>
-<p>When porting SIMD code to use WebAssembly SIMD, implementors should be aware of semantic differences between the host hardware and WebAssembly semantics; as acknowledged in the WebAssembly design documentation, “<a class="reference external" href="https://github.com/WebAssembly/design/blob/master/Portability.md#assumptions-for-efficient-execution">this sometimes will lead to poor performance</a>.” The following list outlines some WebAssembly SIMD instructions to look out for when performance tuning:</p>
+<p>When developing SIMD code to use WebAssembly SIMD, implementors should be aware of semantic differences between the host hardware and WebAssembly semantics; as acknowledged in the WebAssembly design documentation, “<a class="reference external" href="https://github.com/WebAssembly/design/blob/master/Portability.md#assumptions-for-efficient-execution">this sometimes will lead to poor performance</a>.” The following list outlines some WebAssembly SIMD instructions to look out for when performance tuning:</p>
 <table class="colwidths-given docutils align-default" id="id5">
 <caption><span class="caption-text">WebAssembly SIMD instructions with performance implications</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
 <colgroup>
@@ -1163,7 +1208,7 @@
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>WebAssembly SIMD instruction</p></th>
-<th class="head"><p>Hardware architecture</p></th>
+<th class="head"><p>Arch</p></th>
 <th class="head"><p>Considerations</p></th>
 </tr>
 </thead>
@@ -1207,11 +1252,20 @@
 </tbody>
 </table>
 </section>
-<section id="compiling-simd-code-targeting-x86-sse-instruction-set">
-<h1>Compiling SIMD code targeting x86 SSE instruction set<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-set" title="Permalink to this headline">¶</a></h1>
-<p>Emscripten supports compiling existing codebases that use x86 SSE by passing the <cite>-msse</cite> directive to the compiler, and including the header <cite>&lt;xmmintrin.h&gt;</cite>.</p>
-<p>Currently only the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, and 128-bit AVX instruction sets are supported.</p>
-<p>The following table highlights the availability and expected performance of different SSE1 intrinsics. Even if you are directly targeting the native Wasm SIMD opcodes via wasm_simd128.h header, this table can be useful for understanding the performance limitations that the Wasm SIMD specification has when running on x86 hardware.</p>
+<section id="compiling-simd-code-targeting-x86-sse-instruction-sets">
+<h1>Compiling SIMD code targeting x86 SSE* instruction sets<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-sets" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten supports compiling existing codebases that use x86 SSE instructions by passing the <code class="docutils literal notranslate"><span class="pre">-msimd128</span></code> flag, and additionally one of the following:</p>
+<ul class="simple">
+<li><p><strong>SSE</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;xmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE__</span></code> to gate code.</p></li>
+<li><p><strong>SSE2</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse2</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;emmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE2__</span></code> to gate code.</p></li>
+<li><p><strong>SSE3</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse3</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;pmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE3__</span></code> to gate code.</p></li>
+<li><p><strong>SSSE3</strong>: pass <code class="docutils literal notranslate"><span class="pre">-mssse3</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;tmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSSE3__</span></code> to gate code.</p></li>
+<li><p><strong>SSE4.1</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse4.1</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;smmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE4_1__</span></code> to gate code.</p></li>
+<li><p><strong>SSE4.2</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse4.2</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;nmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE4_2__</span></code> to gate code.</p></li>
+<li><p><strong>AVX</strong>: pass <code class="docutils literal notranslate"><span class="pre">-mavx</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;immintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__AVX__</span></code> to gate code.</p></li>
+</ul>
+<p>Currently only the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, and 128-bit AVX instruction sets are supported. Each of these instruction sets add on top of the previous ones, so e.g. when targeting SSE3, the instruction sets SSE1 and SSE2 are also available.</p>
+<p>The following tables highlight the availability and expected performance of different SSE* intrinsics. This can be useful for understanding the performance limitations that the Wasm SIMD specification has when running on x86 hardware.</p>
 <p>For detailed information on each SSE intrinsic function, visit the excellent <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE">Intel Intrinsics Guide on SSE1</a>.</p>
 <dl class="simple">
 <dt>The following legend is used to highlight the expected performance of various instructions:</dt><dd><ul class="simple">
@@ -1227,7 +1281,7 @@
 </dd>
 </dl>
 <p>Certain intrinsics in the table below are marked “virtual”. This means that there does not actually exist a native x86 SSE instruction set opcode to implement them, but native compilers offer the function as a convenience. Different compilers might generate a different instruction sequence for these.</p>
-<p>In addition to consulting the tables below, you can turn on diagnostics for slow, emulated functions by defining the macro <cite>WASM_SIMD_COMPAT_SLOW</cite>. This will print out warnings if you attempt to use any of the slow paths (corresponding to ❌ or 💣 in the legend).</p>
+<p>In addition to consulting the tables below, you can turn on diagnostics for slow, emulated functions by defining the macro <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">WASM_SIMD_COMPAT_SLOW</span></code>. This will print out warnings if you attempt to use any of the slow paths (corresponding to ❌ or 💣 in the legend).</p>
 <table class="colwidths-given docutils align-default" id="id6">
 <caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt; and -msse</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
 <colgroup>
@@ -1611,16 +1665,16 @@
 <td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_adds_epi16</p></td>
-<td><p>✅ wasm_i16x8_add_saturate</p></td>
+<td><p>✅ wasm_i16x8_add_sat</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_adds_epi8</p></td>
-<td><p>✅ wasm_i8x16_add_saturate</p></td>
+<td><p>✅ wasm_i8x16_add_sat</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_adds_epu16</p></td>
-<td><p>✅ wasm_u16x8_add_saturate</p></td>
+<td><p>✅ wasm_u16x8_add_sat</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_adds_epu8</p></td>
-<td><p>✅ wasm_u8x16_add_saturate</p></td>
+<td><p>✅ wasm_u8x16_add_sat</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_and_pd</p></td>
 <td><p>🟡 wasm_v128_and. VM must guess type.</p></td>
@@ -2178,16 +2232,16 @@
 <td><p>⚠️ emulated with a shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_subs_epi16</p></td>
-<td><p>✅ wasm_i16x8_sub_saturate</p></td>
+<td><p>✅ wasm_i16x8_sub_sat</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_subs_epi8</p></td>
-<td><p>✅ wasm_i8x16_sub_saturate</p></td>
+<td><p>✅ wasm_i8x16_sub_sat</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_subs_epu16</p></td>
-<td><p>✅ wasm_u16x8_sub_saturate</p></td>
+<td><p>✅ wasm_u16x8_sub_sat</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_subs_epu8</p></td>
-<td><p>✅ wasm_u8x16_sub_saturate</p></td>
+<td><p>✅ wasm_u8x16_sub_sat</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_ucomieq_sd</p></td>
 <td><p>❌ scalarized</p></td>
@@ -2244,10 +2298,10 @@
 <td><p>💡 emulated with a shuffle</p></td>
 </tr>
 <tr class="row-odd"><td><p>_mm_xor_pd</p></td>
-<td><p>🟡 wasm_v128_or. VM must guess type.</p></td>
+<td><p>🟡 wasm_v128_xor. VM must guess type.</p></td>
 </tr>
 <tr class="row-even"><td><p>_mm_xor_si128</p></td>
-<td><p>🟡 wasm_v128_or. VM must guess type.</p></td>
+<td><p>🟡 wasm_v128_xor. VM must guess type.</p></td>
 </tr>
 </tbody>
 </table>
@@ -3177,7 +3231,7 @@ status</a>.</p>
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Porting SIMD code targeting WebAssembly</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Using SIMD with WebAssembly</div>
   </div>
  
 </div> -->
@@ -3200,7 +3254,7 @@ status</a>.</p>
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Porting%20SIMD%20code%20targeting%20WebAssembly%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/simd&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Using%20SIMD%20with%20WebAssembly%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/simd&labels=bug">Page bug</a>
       </li>
   </ul>
   
@@ -3228,7 +3282,7 @@ status</a>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.47-git (dev)',
+            VERSION:'3.1.48-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

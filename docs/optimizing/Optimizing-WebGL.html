@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing WebGL &mdash; Emscripten 3.1.47-git (dev) documentation</title>
+  <title>Optimizing WebGL &mdash; Emscripten 3.1.48-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.47-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
         <link rel="next" title="Debugging with Sanitizers" href="../debugging/Sanitizers.html"/>
         <link rel="prev" title="Optimizing Code" href="Optimizing-Code.html"/> 
 
@@ -122,6 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#exiting-on-first-failure">Exiting on first failure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
@@ -403,7 +404,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debugging-in-the-browser">Debugging in the browser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#compiler-settings">Compiler settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
@@ -447,10 +448,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/networking.html#webrtc-and-udp">WebRTC and UDP</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
@@ -874,7 +877,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -972,7 +975,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1149,11 +1152,11 @@
 </section>
 <section id="avoid-redundant-calls">
 <h2>Avoid Redundant Calls<a class="headerlink" href="#avoid-redundant-calls" title="Permalink to this headline">¶</a></h2>
-<p>In WebGL, every single GL function call has some amount of overhead, even those that are seemingly simple and do nearly nothing. This is because WebGL implementations need to validate each call since the underlying native OpenGL specifications provide no guarantees about security that could be relied upon on the web. Additionally in asm.js/WebAssembly side, each WebGL call generates an FFI transition (a jump between executing code in asm.js context and executing code in browser’s native C++ context), which has a slightly higher overhead than a regular function call inside asm.js/WebAssembly. Therefore on the web, it is generally best for CPU side performance to attempt to minimize the number of calls that is made to WebGL. The following tips can be applied here.</p>
+<p>In WebGL, every single GL function call has some amount of overhead, even those that are seemingly simple and do nearly nothing. This is because WebGL implementations need to validate each call since the underlying native OpenGL specifications provide no guarantees about security that could be relied upon on the web. Additionally in asm.js/WebAssembly side, each WebGL call generates an FFI transition (a jump between executing code in asm.js context and executing code in browser's native C++ context), which has a slightly higher overhead than a regular function call inside asm.js/WebAssembly. Therefore on the web, it is generally best for CPU side performance to attempt to minimize the number of calls that is made to WebGL. The following tips can be applied here.</p>
 <ul>
 <li><p>Optimize the renderer and input assets at high level to avoid redundant calls. Refactor the design if needed so that the renderer is able to better reason what kind of state changes are relevant and which ones are not needed. The best kind of cache is one that is unnecessary, so if the high level renderer is able to keep the GL call stream lean, that will produce the fastest results. However, in cases when that is difficult to achieve, some types of lower level caching can be effective, discussed below.</p></li>
 <li><p>Cache GL state inside the renderer code, and avoid doing redundant calls to set the same state multiple times if it has not changed. For example, some engines might blindly reconfigure depth testing or alpha blending modes before each draw call, or reset the shader program for each call.</p></li>
-<li><p>Avoid all types of renderer patterns which reset the GL to some specific “ground state” after certain operations. Commonly seen occurrences are to <code class="docutils literal notranslate"><span class="pre">glBindBuffer(GL_ARRAY_BUFFER,</span> <span class="pre">0)</span></code>, <code class="docutils literal notranslate"><span class="pre">glUseProgram(0)</span></code>, or <code class="docutils literal notranslate"><span class="pre">for(i</span> <span class="pre">in</span> <span class="pre">0</span> <span class="pre">-&gt;</span> <span class="pre">max_attributes)</span> <span class="pre">glDisableVertexAttribArray(i);</span></code> after issuing each draw call to revert to a known fixed configuration. Instead, lazily change only the GL state that is needed when transitioning from one draw call to another.</p></li>
+<li><p>Avoid all types of renderer patterns which reset the GL to some specific &quot;ground state&quot; after certain operations. Commonly seen occurrences are to <code class="docutils literal notranslate"><span class="pre">glBindBuffer(GL_ARRAY_BUFFER,</span> <span class="pre">0)</span></code>, <code class="docutils literal notranslate"><span class="pre">glUseProgram(0)</span></code>, or <code class="docutils literal notranslate"><span class="pre">for(i</span> <span class="pre">in</span> <span class="pre">0</span> <span class="pre">-&gt;</span> <span class="pre">max_attributes)</span> <span class="pre">glDisableVertexAttribArray(i);</span></code> after issuing each draw call to revert to a known fixed configuration. Instead, lazily change only the GL state that is needed when transitioning from one draw call to another.</p></li>
 <li><p>Consider lazily setting GL state only when it needs to take effect. For example, in the following call stream</p>
 <blockquote>
 <div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// First draw</span>
@@ -1235,7 +1238,7 @@
 <ul class="simple">
 <li><p>On the web one cannot generally expect which compressed texture formats will be available. Author textures to multiple compressed texture bundles, e.g. one per format, and download the appropriate one in at runtime to minimize excessive downloads. Store textures and other assets to IndexedDB to avoid having to redownload on subsequent runs. The Emscripten linker flag <code class="docutils literal notranslate"><span class="pre">-sGL_PREINITIALIZED_CONTEXT</span></code> can help in authoring a html shell page that performs such texture format checks up front.</p></li>
 <li><p>Consider compiling shaders in parallel to when other assets are being downloaded. This can help hide slow shader compilation times.</p></li>
-<li><p>Test for WebGL support on the user’s browser early in the page load process before downloading a large amount of assets. It can be frustrating for the user to have to wait to download multiple megabytes of assets, only then to get an error message of WebGL not being available after the wait.</p></li>
+<li><p>Test for WebGL support on the user's browser early in the page load process before downloading a large amount of assets. It can be frustrating for the user to have to wait to download multiple megabytes of assets, only then to get an error message of WebGL not being available after the wait.</p></li>
 <li><p>Check the WebGL context error reason if WebGL initialization fails, using the <code class="docutils literal notranslate"><span class="pre">&quot;webglcontextcreationerror&quot;</span></code> callback. Browsers can give good diagnostics in the context creation error handler to allow diagnosing what the root cause is.</p></li>
 <li><p>Pay close attention to the visible size of the canvas (the CSS pixels size of the DOM element) versus the physical render target size of the initialized WebGL context on the canvas, and make sure these two match in order to render 1:1 pixel perfect content.</p></li>
 <li><p>Probe context creation with the <code class="docutils literal notranslate"><span class="pre">failIfMajorPerformanceCaveat</span></code> flag to detect when rendering on software, and cut down on graphics fidelity in such cases.</p></li>
@@ -1397,7 +1400,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.47-git (dev)',
+            VERSION:'3.1.48-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

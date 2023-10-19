@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C setjmp-longjmp Support &mdash; Emscripten 3.1.47-git (dev) documentation</title>
+  <title>C setjmp-longjmp Support &mdash; Emscripten 3.1.48-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.47-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Asyncify" href="asyncify.html"/>
         <link rel="prev" title="C++ Exceptions Support" href="exceptions.html"/> 
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#exiting-on-first-failure">Exiting on first failure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
@@ -404,7 +405,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debugging-in-the-browser">Debugging in the browser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#compiler-settings">Compiler settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#sanitizers">Sanitizers</a></li>
@@ -448,10 +449,12 @@
 <li class="toctree-l3"><a class="reference internal" href="networking.html#webrtc-and-udp">WebRTC and UDP</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="simd.html">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
@@ -875,7 +878,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -973,7 +976,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1142,9 +1145,9 @@ exceptions</span></a> are used or no exception
 support is used, it defaults to <code class="docutils literal notranslate"><span class="pre">emscripten</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">setjmp</span></code> saves information about the calling environment into a buffer, and
 <code class="docutils literal notranslate"><span class="pre">longjmp</span></code> transfers the control back to the point where <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> was called
-by using the buffer. <code class="docutils literal notranslate"><span class="pre">longjmp</span></code>’s call stack should contain the function from
+by using the buffer. <code class="docutils literal notranslate"><span class="pre">longjmp</span></code>'s call stack should contain the function from
 which <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> was called.</p>
-<p>Emscripten’s support has a restriction that indirect calls to <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> are not
+<p>Emscripten's support has a restriction that indirect calls to <code class="docutils literal notranslate"><span class="pre">setjmp</span></code> are not
 supported. For example, the below does not work:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">jmp_buf</span><span class="w"> </span><span class="n">env</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)(</span><span class="kt">jmp_buf</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setjmp</span><span class="p">;</span>
@@ -1184,7 +1187,7 @@ setjmp-longjmp together.</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">-sSUPPORT_LONGJMP</span></code>, which defaults to <code class="docutils literal notranslate"><span class="pre">emscripten</span></code> or <code class="docutils literal notranslate"><span class="pre">wasm</span></code> depending on
-the exception mode, is enabled by default, so you don’t need to pass it
+the exception mode, is enabled by default, so you don't need to pass it
 explicitly.</p>
 <p>To use the WebAssembly EH and setjmp-longjmp support together:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++<span class="w"> </span>-fwasm-exceptions<span class="w"> </span>-sSUPPORT_LONGJMP<span class="o">=</span>wasm<span class="w"> </span>test.cpp<span class="w"> </span>-o<span class="w"> </span>test.js
@@ -1330,7 +1333,7 @@ function that calls <code class="docutils literal notranslate"><span class="pre"
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.47-git (dev)',
+            VERSION:'3.1.48-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

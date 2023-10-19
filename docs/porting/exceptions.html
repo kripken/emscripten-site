@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C++ Exceptions Support &mdash; Emscripten 3.1.47-git (dev) documentation</title>
+  <title>C++ Exceptions Support &mdash; Emscripten 3.1.48-git (dev) documentation</title>
   
 
   
@@ -33,10 +33,10 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.47-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C setjmp-longjmp Support" href="setjmp-longjmp.html"/>
-        <link rel="prev" title="Porting SIMD code targeting WebAssembly" href="simd.html"/> 
+        <link rel="prev" title="Using SIMD with WebAssembly" href="simd.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#exiting-on-first-failure">Exiting on first failure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
@@ -404,7 +405,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Debugging.html#debugging-in-the-browser">Debugging in the browser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#compiler-settings">Compiler settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Debugging.html#sanitizers">Sanitizers</a></li>
@@ -448,10 +449,12 @@
 <li class="toctree-l3"><a class="reference internal" href="networking.html#webrtc-and-udp">WebRTC and UDP</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="simd.html">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
@@ -875,7 +878,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -973,7 +976,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1144,7 +1147,7 @@ compile the following program:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>The first <code class="docutils literal notranslate"><span class="pre">throw</span></code> will abort the program and you’ll see something like this in
+<p>The first <code class="docutils literal notranslate"><span class="pre">throw</span></code> will abort the program and you'll see something like this in
 the output:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>throw...
 Aborted(Assertion failed: Exception thrown, but exception catching is not enabled. Compile with -sNO_DISABLE_EXCEPTION_CATCHING or -sEXCEPTION_CATCHING_ALLOWED=[..] to catch.)
@@ -1153,7 +1156,7 @@ Aborted(Assertion failed: Exception thrown, but exception catching is not enable
 <p>If you want to opt-in, you have two following options.</p>
 <section id="emscripten-javascript-based-exception-support">
 <span id="javascript-based-exception-support"></span><h2>Emscripten (JavaScript-based) Exception Support<a class="headerlink" href="#emscripten-javascript-based-exception-support" title="Permalink to this headline">¶</a></h2>
-<p>First, you can enable exceptions via Emscripten’s JavaScript-based support. To
+<p>First, you can enable exceptions via Emscripten's JavaScript-based support. To
 enable it, pass <code class="docutils literal notranslate"><span class="pre">-fexceptions</span></code> at both compile time and link time.</p>
 <p>When you rebuild the example above with this flag, the output will change to:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>throw...
@@ -1191,7 +1194,7 @@ for debugging. <a class="reference internal" href="Debugging.html#debugging-asse
 in <a class="reference internal" href="../tools_reference/emcc.html#emcc-o0"><span class="std std-ref">-O0</span></a> and disabled in optimized builds (<a class="reference internal" href="../tools_reference/emcc.html#emcc-o1"><span class="std std-ref">-O1</span></a>
 and above). You can enable it by passing <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> to the <code class="docutils literal notranslate"><span class="pre">emcc</span></code>
 command line in optimized builds as well. To display Wasm function names in
-stack traces, you also need <a class="reference internal" href="../tools_reference/emcc.html#emcc-profiling-funcs"><span class="std std-ref">–profiling-funcs</span></a>
+stack traces, you also need <a class="reference internal" href="../tools_reference/emcc.html#emcc-profiling-funcs"><span class="std std-ref">--profiling-funcs</span></a>
 (or <a class="reference internal" href="../tools_reference/emcc.html#emcc-g"><span class="std std-ref">-g</span></a> or <a class="reference internal" href="../tools_reference/emcc.html#emcc-gsource-map"><span class="std std-ref">-gsource-map</span></a>).</p>
 <p>In JavaScript, you can also examine the stack traces using
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/WebAssembly/JavaScript_interface/Exception/stack">WebAssembly.Exception.prototype.stack</a>
@@ -1259,7 +1262,7 @@ code example.</p>
         <a href="setjmp-longjmp.html" class="btn btn-neutral float-right" title="C setjmp-longjmp Support"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="simd.html" class="btn btn-neutral" title="Porting SIMD code targeting WebAssembly"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="simd.html" class="btn btn-neutral" title="Using SIMD with WebAssembly"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1361,7 +1364,7 @@ code example.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.47-git (dev)',
+            VERSION:'3.1.48-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

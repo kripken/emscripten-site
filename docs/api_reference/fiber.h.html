@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>fiber.h &mdash; Emscripten 3.1.47-git (dev) documentation</title>
+  <title>fiber.h &mdash; Emscripten 3.1.48-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.47-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="proxying.h" href="proxying.h.html"/>
         <link rel="prev" title="trace.h" href="trace.h.html"/> 
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#exiting-on-first-failure">Exiting on first failure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
@@ -404,7 +405,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debugging-in-the-browser">Debugging in the browser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#compiler-settings">Compiler settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
@@ -448,10 +449,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/networking.html#webrtc-and-udp">WebRTC and UDP</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
@@ -875,7 +878,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -973,7 +976,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1228,13 +1231,13 @@ void <code class="sig-name descname">emscripten_fiber_init</code><span class="si
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) – Pointer to the fiber structure.</p></li>
-<li><p><strong>entry_func</strong> (<a class="reference internal" href="emscripten.h.html#c.em_arg_callback_func" title="em_arg_callback_func"><em>em_arg_callback_func</em></a>) – Entry point function, called when the fiber is entered for the first time.</p></li>
-<li><p><strong>entry_func_arg</strong> (<em>void*</em>) – Opaque pointer passed to <cite>entry_func</cite>.</p></li>
-<li><p><strong>c_stack</strong> (<em>void*</em>) – Pointer to memory region to use for the C stack. Must be at least 16-byte aligned. This points to the lower bound of the stack, regardless of growth direction.</p></li>
-<li><p><strong>c_stack_size</strong> (<em>size_t</em>) – Size of the C stack memory region, in bytes.</p></li>
-<li><p><strong>asyncify_stack</strong> (<em>void*</em>) – Pointer to memory region to use for the Asyncify stack. No special alignment requirements.</p></li>
-<li><p><strong>asyncify_stack_size</strong> (<em>size_t</em>) – Size of the Asyncify stack memory region, in bytes.</p></li>
+<li><p><strong>fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) -- Pointer to the fiber structure.</p></li>
+<li><p><strong>entry_func</strong> (<a class="reference internal" href="emscripten.h.html#c.em_arg_callback_func" title="em_arg_callback_func"><em>em_arg_callback_func</em></a>) -- Entry point function, called when the fiber is entered for the first time.</p></li>
+<li><p><strong>entry_func_arg</strong> (<em>void*</em>) -- Opaque pointer passed to <cite>entry_func</cite>.</p></li>
+<li><p><strong>c_stack</strong> (<em>void*</em>) -- Pointer to memory region to use for the C stack. Must be at least 16-byte aligned. This points to the lower bound of the stack, regardless of growth direction.</p></li>
+<li><p><strong>c_stack_size</strong> (<em>size_t</em>) -- Size of the C stack memory region, in bytes.</p></li>
+<li><p><strong>asyncify_stack</strong> (<em>void*</em>) -- Pointer to memory region to use for the Asyncify stack. No special alignment requirements.</p></li>
+<li><p><strong>asyncify_stack_size</strong> (<em>size_t</em>) -- Size of the Asyncify stack memory region, in bytes.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1247,15 +1250,15 @@ void <code class="sig-name descname">emscripten_fiber_init</code><span class="si
 <dl class="function">
 <dt id="c.emscripten_fiber_init_from_current_context">
 void <code class="sig-name descname">emscripten_fiber_init_from_current_context</code><span class="sig-paren">(</span><a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t">emscripten_fiber_t</a><em> *fiber</em>, void<em> *asyncify_stack</em>, size_t<em> asyncify_stack_size</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_fiber_init_from_current_context" title="Permalink to this definition">¶</a></dt>
-<dd><p>Partially initializes a fiber based on the currently active context. This is needed in order to switch back from a fiber into the thread’s original context.</p>
+<dd><p>Partially initializes a fiber based on the currently active context. This is needed in order to switch back from a fiber into the thread's original context.</p>
 <p>This function sets up <a class="reference internal" href="#c.emscripten_fiber_t.stack_base" title="emscripten_fiber_t.stack_base"><code class="xref c c-member docutils literal notranslate"><span class="pre">emscripten_fiber_t.stack_base</span></code></a> and <a class="reference internal" href="#c.emscripten_fiber_t.stack_limit" title="emscripten_fiber_t.stack_limit"><code class="xref c c-member docutils literal notranslate"><span class="pre">emscripten_fiber_t.stack_limit</span></code></a> to refer to the current stack boundaries, sets <a class="reference internal" href="#c.emscripten_fiber_t.entry" title="emscripten_fiber_t.entry"><code class="xref c c-member docutils literal notranslate"><span class="pre">emscripten_fiber_t.entry</span></code></a> to <cite>NULL</cite>, and makes <a class="reference internal" href="#c.emscripten_fiber_t.asyncify_data" title="emscripten_fiber_t.asyncify_data"><code class="xref c c-member docutils literal notranslate"><span class="pre">emscripten_fiber_t.asyncify_data</span></code></a> refer to the provided Asyncify stack memory. Other fields are not changed.</p>
 <p>Fibers initialized by this function are not complete. They are only suitable to pass as the first argument to <a class="reference internal" href="#c.emscripten_fiber_swap" title="emscripten_fiber_swap"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_fiber_swap()</span></code></a>. Doing that completes the continuation, making it possible to switch back to the original context with another <a class="reference internal" href="#c.emscripten_fiber_swap" title="emscripten_fiber_swap"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_fiber_swap()</span></code></a>, as with a normal fiber.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) – Pointer to the fiber structure.</p></li>
-<li><p><strong>asyncify_stack</strong> (<em>void*</em>) – Pointer to memory region to use for the Asyncify stack. No special alignment requirements.</p></li>
-<li><p><strong>asyncify_stack_size</strong> (<em>size_t</em>) – Size of the Asyncify stack memory region, in bytes.</p></li>
+<li><p><strong>fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) -- Pointer to the fiber structure.</p></li>
+<li><p><strong>asyncify_stack</strong> (<em>void*</em>) -- Pointer to memory region to use for the Asyncify stack. No special alignment requirements.</p></li>
+<li><p><strong>asyncify_stack_size</strong> (<em>size_t</em>) -- Size of the Asyncify stack memory region, in bytes.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1268,8 +1271,8 @@ void <code class="sig-name descname">emscripten_fiber_swap</code><span class="si
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>old_fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) – Fiber representing the current context. It will be partially updated, such as that switching back into it via another call to <a class="reference internal" href="#c.emscripten_fiber_swap" title="emscripten_fiber_swap"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_fiber_swap()</span></code></a> would appear to return from the original call.</p></li>
-<li><p><strong>new_fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) – Fiber representing the target context. If the fiber has an entry point, it will be called in the new context and set to <cite>NULL</cite>. Otherwise, <a class="reference internal" href="#c.emscripten_fiber_t.asyncify_data" title="emscripten_fiber_t.asyncify_data"><code class="xref c c-member docutils literal notranslate"><span class="pre">emscripten_fiber_t.asyncify_data</span></code></a> is used to rewind the call stack. If the fiber is invalid or incomplete, the behavior is undefined.</p></li>
+<li><p><strong>old_fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) -- Fiber representing the current context. It will be partially updated, such as that switching back into it via another call to <a class="reference internal" href="#c.emscripten_fiber_swap" title="emscripten_fiber_swap"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_fiber_swap()</span></code></a> would appear to return from the original call.</p></li>
+<li><p><strong>new_fiber</strong> (<a class="reference internal" href="#c.emscripten_fiber_t" title="emscripten_fiber_t"><em>emscripten_fiber_t*</em></a>) -- Fiber representing the target context. If the fiber has an entry point, it will be called in the new context and set to <cite>NULL</cite>. Otherwise, <a class="reference internal" href="#c.emscripten_fiber_t.asyncify_data" title="emscripten_fiber_t.asyncify_data"><code class="xref c c-member docutils literal notranslate"><span class="pre">emscripten_fiber_t.asyncify_data</span></code></a> is used to rewind the call stack. If the fiber is invalid or incomplete, the behavior is undefined.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1390,7 +1393,7 @@ void <code class="sig-name descname">emscripten_fiber_swap</code><span class="si
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.47-git (dev)',
+            VERSION:'3.1.48-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

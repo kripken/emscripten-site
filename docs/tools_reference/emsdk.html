@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten SDK (emsdk) &mdash; Emscripten 3.1.47-git (dev) documentation</title>
+  <title>Emscripten SDK (emsdk) &mdash; Emscripten 3.1.48-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.47-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Compiler Frontend (emcc)" href="emcc.html"/>
         <link rel="prev" title="Tools Reference" href="index.html"/> 
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#setting-up">Setting up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-tests">Running tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#skipping-tests">Skipping Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#exiting-on-first-failure">Exiting on first failure</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#running-a-bunch-of-random-tests">Running a bunch of random tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#important-tests">Important Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started/test-suite.html#benchmarking">Benchmarking</a></li>
@@ -404,7 +405,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-information">Debug information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debugging-in-the-browser">Debugging in the browser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#debug-mode-emcc-debug">Debug mode (EMCC_DEBUG)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#compiler-settings">Compiler settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/Debugging.html#sanitizers">Sanitizers</a></li>
@@ -448,10 +449,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/networking.html#webrtc-and-udp">WebRTC and UDP</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Porting SIMD code targeting WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-set">Compiling SIMD code targeting x86 SSE instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/exceptions.html#emscripten-javascript-based-exception-support">Emscripten (JavaScript-based) Exception Support</a></li>
@@ -875,7 +878,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-to-guides">“How to” guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-guides">&quot;How to&quot; guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -973,7 +976,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1133,7 +1136,7 @@
 <p>This document provides the command syntax, and a <a class="reference internal" href="#emsdk-howto"><span class="std std-ref">set of guides</span></a> explaining how to perform both common and advanced maintenance operations.</p>
 <section id="command-line-syntax">
 <h2>Command line syntax<a class="headerlink" href="#command-line-syntax" title="Permalink to this headline">¶</a></h2>
-<p><strong>./emsdk</strong> [<strong>help</strong> | <strong>list</strong> [<strong>–old</strong>] | <strong>update</strong> | <strong>install</strong> <em>&lt;tool/sdk&gt;</em> | <strong>uninstall</strong> <em>&lt;tool/sdk&gt;</em> | <strong>activate</strong> <em>&lt;tool/sdk&gt;</em>]</p>
+<p><strong>./emsdk</strong> [<strong>help</strong> | <strong>list</strong> [<strong>--old</strong>] | <strong>update</strong> | <strong>install</strong> <em>&lt;tool/sdk&gt;</em> | <strong>uninstall</strong> <em>&lt;tool/sdk&gt;</em> | <strong>activate</strong> <em>&lt;tool/sdk&gt;</em>]</p>
 <section id="arguments">
 <h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given wrap-table-content docutils align-default">
@@ -1160,7 +1163,7 @@
 <td><p>Removes the <a class="reference internal" href="#emsdk-specified-tool-sdk"><span class="std std-ref">specified tool or SDK</span></a> from the disk.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">activate</span> <span class="pre">&lt;tool/sdk&gt;</span></code></p></td>
-<td><p>Sets the <a class="reference internal" href="#emsdk-specified-tool-sdk"><span class="std std-ref">specified tool or SDK</span></a> as the default tool in the system environment. On Linux you additionally have to enable the environment settings using <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">./emsdk_env.sh</span></code>, as described in “<a class="reference internal" href="#emsdk-set-active-tools"><span class="std std-ref">How do I change the currently active SDK version?</span></a>”.</p></td>
+<td><p>Sets the <a class="reference internal" href="#emsdk-specified-tool-sdk"><span class="std std-ref">specified tool or SDK</span></a> as the default tool in the system environment. On Linux you additionally have to enable the environment settings using <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">./emsdk_env.sh</span></code>, as described in &quot;<a class="reference internal" href="#emsdk-set-active-tools"><span class="std std-ref">How do I change the currently active SDK version?</span></a>&quot;.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">help</span></code></p></td>
 <td><p>Lists all supported commands. The same list is output if no command is specified.</p></td>
@@ -1191,7 +1194,7 @@
 </pre></div>
 </div>
 <p>A particular installed SDK (or tool) can then be set as <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">active</span></a>, meaning that it will be used when Emscripten is run. The active
-“compiler configuration” is stored is a config file (<em>.emscripten</em>) within
+&quot;compiler configuration&quot; is stored is a config file (<em>.emscripten</em>) within
 the emsdk directory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1202,9 +1205,9 @@ the emsdk directory.</p>
 <span id="compiler-configuration-file"></span><h2>Emscripten Compiler Configuration File (.emscripten)<a class="headerlink" href="#emscripten-compiler-configuration-file-emscripten" title="Permalink to this headline">¶</a></h2>
 <p>The <em>Compiler Configuration File</em> stores the <a class="reference internal" href="../site/glossary.html#term-active-tool-sdk"><span class="xref std std-term">active</span></a> configuration on behalf of the <em>emsdk</em>. The active configuration defines the specific set of tools that are used by default if Emscripten in called on the <a class="reference internal" href="emcmdprompt.html#emcmdprompt"><span class="std std-ref">Emscripten Command Prompt</span></a>.</p>
 <p>The configuration file is named <strong>.emscripten</strong>. It is emsdk-specific, so it
-won’t conflict with any config file the user might have elsewhere on their
+won't conflict with any config file the user might have elsewhere on their
 system.</p>
-<p>The file should generally not be updated directly unless you’re <a class="reference internal" href="../building_from_source/index.html#installing-from-source"><span class="std std-ref">building
+<p>The file should generally not be updated directly unless you're <a class="reference internal" href="../building_from_source/index.html#installing-from-source"><span class="std std-ref">building
 Emscripten from source</span></a>. Instead, use the <em>emsdk</em> to
 activate specific SDKs and tools as needed (<code class="docutils literal notranslate"><span class="pre">emsdk</span> <span class="pre">activate</span> <span class="pre">&lt;tool/SDK&gt;</span></code>).</p>
 <p>Below are examples of possible <strong>.emscripten</strong> files created by <em>emsdk</em>. Note
@@ -1225,7 +1228,7 @@ the variable names used to point to the different tools:</p>
 </div>
 </section>
 <section id="how-to-guides">
-<span id="emsdk-howto"></span><h2>“How to” guides<a class="headerlink" href="#how-to-guides" title="Permalink to this headline">¶</a></h2>
+<span id="emsdk-howto"></span><h2>&quot;How to&quot; guides<a class="headerlink" href="#how-to-guides" title="Permalink to this headline">¶</a></h2>
 <p>The following topics explain how to perform both common and advanced maintenance operations, ranging from installing the latest SDK through to installing your own fork from GitHub.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1472,7 +1475,7 @@ particular tool:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.47-git (dev)',
+            VERSION:'3.1.48-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
