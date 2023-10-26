@@ -1135,8 +1135,12 @@
             
   <section id="packaging-files">
 <span id="id1"></span><h1>Packaging Files<a class="headerlink" href="#packaging-files" title="Permalink to this headline">¶</a></h1>
-<p>This topic shows how to package the files that will be used to populate <a class="reference internal" href="file_systems_overview.html#file-system-overview"><span class="std std-ref">Emscripten's virtual file system</span></a> when the page is loaded.</p>
-<p>There are two alternatives for how files are packaged: <em>preloading</em> and <em>embedding</em>. Embedding puts the specified files inside the generated JavaScript, while preloading packages the files separately. Embedding files is much less efficient than preloading and should only be used when packaging small numbers of small files. Preloading also enables the option to separately host the data.</p>
+<p>This topic shows how to package the files that will be used to populate <a class="reference internal" href="file_systems_overview.html#file-system-overview"><span class="std std-ref">Emscripten’s virtual file system</span></a> when the page is loaded.</p>
+<p>There are two alternatives for how files are packaged: <em>preloading</em> and
+<em>embedding</em>. Embedding stores the specified files inside the wasm file, while
+preloading packages them in a bundle on the side. Embedding files is more
+efficient than preloading because there isn’t a separate file to download and
+copy, but preloading enables the option to separately host the data.</p>
 <p><em>Emcc</em> uses the <em>file packager</em> to package the files and generate the <a class="reference internal" href="../../api_reference/Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> calls that create and load the file system at run time. While <em>Emcc</em> is the recommended tool for packaging, there are cases where it can make sense to run the <em>file packager</em> manually.</p>
 <p>With <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code>, files can be automatically decoded based on
 their extension. See <a class="reference internal" href="#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information.</p>
@@ -1225,11 +1229,11 @@ directly.</p>
 <p>The following formats are supported:</p>
 <ul class="simple">
 <li><p><strong>Images</strong> (<code class="docutils literal notranslate"><span class="pre">.jpg</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">.png</span></code>, <code class="docutils literal notranslate"><span class="pre">.bmp</span></code>): The files are decoded
-using the browser's image decoder, and can then be used by <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> (SDL1
+using the browser’s image decoder, and can then be used by <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> (SDL1
 and SDL2 port, which rely on <a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_get_preloaded_image_data" title="emscripten_get_preloaded_image_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_get_preloaded_image_data()</span></code></a>).
 (Set <code class="docutils literal notranslate"><span class="pre">Module.noImageDecoding</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> to disable).</p></li>
 <li><p><strong>Audio</strong> (<code class="docutils literal notranslate"><span class="pre">.ogg</span></code>, <code class="docutils literal notranslate"><span class="pre">.wav</span></code>, <code class="docutils literal notranslate"><span class="pre">.mp3</span></code>): The files are decoded using the
-browser's audio decoder, and can then by used with <code class="docutils literal notranslate"><span class="pre">Mix_LoadWAV</span></code> (SDL1
+browser’s audio decoder, and can then by used with <code class="docutils literal notranslate"><span class="pre">Mix_LoadWAV</span></code> (SDL1
 only).  (Set <code class="docutils literal notranslate"><span class="pre">Module.noAudioDecoding</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> to disable).</p></li>
 <li><p><strong>Dynamic libraries</strong> (<code class="docutils literal notranslate"><span class="pre">.so</span></code>): The files are precompiled and instantiated
 using <code class="docutils literal notranslate"><span class="pre">WebAssembly.instantiate</span></code>. This is useful for browsers, such as
