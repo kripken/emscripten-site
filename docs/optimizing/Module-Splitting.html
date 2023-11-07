@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Module Splitting &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>Module Splitting &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/> 
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -435,6 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -875,7 +876,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -927,6 +928,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -973,7 +975,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1128,7 +1130,7 @@
 development and may change and gain new features frequently. This page will be
 kept up-to-date with the latest changes.</em></p>
 <p>Large codebases often contain a lot of code that is very rarely used in practice
-or is never used early in the application's life cycle. Loading that unused code
+or is never used early in the application’s life cycle. Loading that unused code
 can noticeably delay application startup, so it would be good to defer loading
 that code until after the application has already started. One excellent
 solution for this is to use dynamic linking, but that requires refactoring an
@@ -1170,7 +1172,7 @@ further changes to the JS produced by the initial compilation.</p>
 <section id="basic-example">
 <h2>Basic Example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
 <p>Let’s run through a basic example of using SPLIT_MODULE with Node. Later in the
-&quot;Running on the Web&quot; section we will discuss how to adapt the example to run on
+“Running on the Web” section we will discuss how to adapt the example to run on
 the Web as well.</p>
 <p>Here’s our application code:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">application</span><span class="o">.</span><span class="n">c</span>
@@ -1246,7 +1248,7 @@ included in the profile.</p>
   __write_profile(ptr, len);
 
   // Write the profile file.
-  var profile_data = new Uint8Array(HEAP8.buffer, ptr, len);
+  var profile_data = HEAPU8.subarray(ptr, ptr + len);
   const fs = require(&quot;fs&quot;);
   fs.writeFileSync(&#39;profile.data&#39;, profile_data);
 
@@ -1291,7 +1293,7 @@ modules, so it requires this feature to be enabled.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--export-prefix=%</span></code></dt><dd><p>This is a prefix added to all the new exports wasm-split creates to share
 module elements from the primary module to the secondary module. The prefix
-can be used to differentiate &quot;true&quot; exports from those that only exist to be
+can be used to differentiate “true” exports from those that only exist to be
 consumed by the secondary module. Emscripten’s wasm-split integration expects
 “%” in particular to be used as the prefix.</p>
 </dd>
@@ -1369,7 +1371,7 @@ written to a file from inside the browser. The data must instead be transmitted
 to developer machines some other way, such as posting it to the dev server or
 copying a base64 encoding of it from the console.</p>
 <p>Here’s code implementing the base64 solution:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">profile_data</span> <span class="o">=</span> <span class="n">new</span> <span class="n">Uint8Array</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">ptr</span><span class="p">,</span> <span class="nb">len</span><span class="p">);</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">profile_data</span> <span class="o">=</span> <span class="n">HEAPU8</span><span class="o">.</span><span class="n">subarray</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ptr</span> <span class="o">+</span> <span class="nb">len</span><span class="p">);</span>
 <span class="n">var</span> <span class="n">binary</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
 <span class="k">for</span> <span class="p">(</span><span class="n">var</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">profile_data</span><span class="o">.</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">binary</span> <span class="o">+=</span> <span class="n">String</span><span class="o">.</span><span class="n">fromCharCode</span><span class="p">(</span><span class="n">profile_data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
@@ -1411,7 +1413,7 @@ downside to specifying a table size that is larger than necessary.</p>
 <section id="custom-loading-of-the-secondary-module">
 <h2>Custom Loading of the Secondary Module<a class="headerlink" href="#custom-loading-of-the-secondary-module" title="Permalink to this headline">¶</a></h2>
 <p>The default logic for lazily loading the secondary module can be overridden by
-implementing the &quot;loadSplitModule&quot; custom hook function. The hook is called from
+implementing the “loadSplitModule” custom hook function. The hook is called from
 placeholder functions and is responsible for returning the [instance, module]
 pair for the secondary module. The hook takes as arguments the name of the file
 to load (e.g. “my_program.deferred.wasm”), the imports object to instantiate the
@@ -1450,10 +1452,10 @@ wasm-split will strip the names instead.</p>
 module in stack traces, even if -g is not used.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--symbolmap</span></code></dt><dd><p>Emit separate map files for the primary and secondary modules, mapping
-function indices to function names. When combined with --emit-module-names,
+function indices to function names. When combined with –emit-module-names,
 these maps can be used to re-symbolify stack traces. To ensure that the
 function names are available for wasm-split to emit into the maps,
-pass --profiling-funcs to Emscripten.</p>
+pass –profiling-funcs to Emscripten.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--placeholdermap</span></code></dt><dd><p>Emit a map file mapping placeholder function indices to their corresponding
 secondary functions. This can be useful for figuring out what function caused
@@ -1571,7 +1573,7 @@ thread.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

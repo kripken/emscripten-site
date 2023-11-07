@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>val.h &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>val.h &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="bind.h (under-construction)" href="bind.h.html"/>
         <link rel="prev" title="Module object" href="module.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -878,7 +879,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -930,6 +931,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -976,7 +978,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1162,7 +1164,7 @@
 <p>See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-val-guide"><span class="std std-ref">Using val to transliterate JavaScript to C++</span></a> for other examples.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>JavaScript values can't be shared across threads, so neither can <code class="docutils literal notranslate"><span class="pre">val</span></code> instances that bind them.</p>
+<p>JavaScript values can’t be shared across threads, so neither can <code class="docutils literal notranslate"><span class="pre">val</span></code> instances that bind them.</p>
 <p>For example, if you want to cache some JavaScript global as a <code class="docutils literal notranslate"><span class="pre">val</span></code>, you need to retrieve and bind separate instances of that global by its name in each thread.
 The easiest way to do this is with a <code class="docutils literal notranslate"><span class="pre">thread_local</span></code> declaration:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">thread_local</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="n">Uint8Array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="o">::</span><span class="n">global</span><span class="p">(</span><span class="s">&quot;Uint8Array&quot;</span><span class="p">);</span>
@@ -1309,7 +1311,7 @@ the value behind the provided <code class="docutils literal notranslate"><span c
 <dt id="_CPPv4NK10emscripten10emscripten3val4new_EDpRR4Args">
 <span id="_CPPv3NK10emscripten10emscripten3val4new_EDpRR4Args"></span><span id="_CPPv2NK10emscripten10emscripten3val4new_EDpRR4Args"></span><span id="emscripten::emscripten::val::new___ArgsRRDpC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">new_</code><span class="sig-paren">(</span>Args&amp;&amp;... <em>args</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3val4new_EDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Assumes that current value is a constructor, and creates an instance of it.
-Equivalent to a JavaScript expression <cite>new currentValue(...)</cite>.</p>
+Equivalent to a JavaScript expression <cite>new currentValue(…)</cite>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1355,7 +1357,7 @@ Equivalent to a JavaScript expression <cite>new currentValue(...)</cite>.</p>
 For a more efficient but unsafe version working with numbers, see <code class="docutils literal notranslate"><span class="pre">convertJSArrayToNumberVector</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>val v</strong> -- The JavaScript array to be copied</p>
+<dd class="field-odd"><p><strong>val v</strong> – The JavaScript array to be copied</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> made from the javascript array</p>
@@ -1371,7 +1373,7 @@ This is way more efficient than <code class="docutils literal notranslate"><span
 No type checking is done, so any invalid array entry will silently be replaced by a NaN value (or 0 for integer types).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>val v</strong> -- The JavaScript (typed) array to be copied</p>
+<dd class="field-odd"><p><strong>val v</strong> – The JavaScript (typed) array to be copied</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A std::vector&lt;T&gt; made from the javascript array</p>
@@ -1391,6 +1393,44 @@ No type checking is done, so any invalid array entry will silently be replaced b
 <p>This method requires <a class="reference internal" href="../porting/asyncify.html#asyncify"><span class="std std-ref">Asyncify</span></a> to be enabled.</p>
 </div>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK10emscripten10emscripten3valcv8co_awaitEv">
+<span id="_CPPv3NK10emscripten10emscripten3valcv8co_awaitEv"></span><span id="_CPPv2NK10emscripten10emscripten3valcv8co_awaitEv"></span><span id="emscripten::emscripten::val::castto-co_await-operatorC"></span><a class="reference internal" href="#_CPPv4N10emscripten10emscripten3valE" title="emscripten::emscripten::val">val</a> <code class="sig-name descname">operator co_await</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK10emscripten10emscripten3valcv8co_awaitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">co_await</span></code> operator allows awaiting JavaScript promises represented by <code class="docutils literal notranslate"><span class="pre">val</span></code>.</p>
+<p>It’s compatible with any C++20 coroutines, but should be normally used inside
+a <code class="docutils literal notranslate"><span class="pre">val</span></code>-returning coroutine which will also become a <code class="docutils literal notranslate"><span class="pre">Promise</span></code>.</p>
+<p>For example, it allows you to implement the equivalent of this JavaScript <code class="docutils literal notranslate"><span class="pre">async</span></code>/<code class="docutils literal notranslate"><span class="pre">await</span></code> function:</p>
+<blockquote>
+<div><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s2">&quot;http://url&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">json</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">foo</span><span class="w"> </span><span class="p">};</span>
+</pre></div>
+</div>
+<p>as a C++ coroutine:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">val</span><span class="w"> </span><span class="nf">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">val</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">val</span><span class="o">::</span><span class="n">global</span><span class="p">(</span><span class="s">&quot;fetch&quot;</span><span class="p">)(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;http://url&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="n">val</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">co_await</span><span class="w"> </span><span class="n">response</span><span class="p">.</span><span class="n">call</span><span class="o">&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;json&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">json</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="k">module</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">foo</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Unlike the <code class="docutils literal notranslate"><span class="pre">await()</span></code> method, it doesn’t need Asyncify as it uses native C++ coroutine transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A <code class="docutils literal notranslate"><span class="pre">val</span></code> representing the fulfilled value of this promise.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1510,7 +1550,7 @@ No type checking is done, so any invalid array entry will silently be replaced b
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

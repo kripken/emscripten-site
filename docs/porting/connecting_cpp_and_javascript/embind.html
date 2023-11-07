@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -878,7 +879,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -930,6 +931,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -976,7 +978,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1136,7 +1138,7 @@
   <section id="embind">
 <span id="id1"></span><h1>Embind<a class="headerlink" href="#embind" title="Permalink to this headline">¶</a></h1>
 <p><em>Embind</em> is used to bind C++ functions and classes to JavaScript, so
-that the compiled code can be used in a natural way by &quot;normal&quot;
+that the compiled code can be used in a natural way by “normal”
 JavaScript. <em>Embind</em> also supports <a class="reference internal" href="#embind-val-guide"><span class="std std-ref">calling JavaScript classes
 from C++</span></a>.</p>
 <p>Embind has support for binding most C++ constructs, including those
@@ -1155,7 +1157,7 @@ passed to JavaScript.</p>
 <ul class="simple">
 <li><p>There are many other examples of how to use <em>Embind</em> in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/embind">Test Suite</a>.</p></li>
 <li><p><a class="reference external" href="http://chadaustin.me/2014/09/connecting-c-and-javascript-on-the-web-with-embind/">Connecting C++ and JavaScript on the Web with Embind</a> (slides from
-CppCon 2014) contains more examples and information about <em>Embind</em>'s
+CppCon 2014) contains more examples and information about <em>Embind</em>’s
 design philosophy and implementation.</p></li>
 </ul>
 </div>
@@ -1212,7 +1214,7 @@ or via a <code class="docutils literal notranslate"><span class="pre">&lt;script
 </div>
 <p>The code in an <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block runs when the JavaScript
 file is initially loaded (at the same time as the global constructors). The
-function <code class="docutils literal notranslate"><span class="pre">lerp()</span></code>'s parameter types and return type are automatically
+function <code class="docutils literal notranslate"><span class="pre">lerp()</span></code>’s parameter types and return type are automatically
 inferred by <em>embind</em>.</p>
 <p>All symbols exposed by <em>embind</em> are available on the Emscripten <code class="docutils literal notranslate"><span class="pre">Module</span></code>
 object.</p>
@@ -1476,7 +1478,7 @@ their use to be marked with <a class="reference internal" href="../../api_refere
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently the markup serves only to allow raw pointer use, and
-show that you've thought about the use of the raw pointers. Eventually
+show that you’ve thought about the use of the raw pointers. Eventually
 we hope to implement <a class="reference external" href="https://wiki.python.org/moin/boost.python/CallPolicy">Boost.Python-like raw pointer policies</a> for
 managing object ownership.</p>
 </div>
@@ -1528,7 +1530,7 @@ the object in JavaScript. Continuing the example above:</p>
 <h3>Smart pointers<a class="headerlink" href="#smart-pointers" title="Permalink to this headline">¶</a></h3>
 <p>To manage object lifetime with smart pointers, <em>embind</em> must be told about
 the smart pointer type.</p>
-<p>For example, consider managing a class <code class="docutils literal notranslate"><span class="pre">C</span></code>'s lifetime with
+<p>For example, consider managing a class <code class="docutils literal notranslate"><span class="pre">C</span></code>’s lifetime with
 <code class="docutils literal notranslate"><span class="pre">std::shared_ptr&lt;C&gt;</span></code>. The best way to do this is to use
 <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv4NK6class_21smart_ptr_constructorEv" title="class_::smart_ptr_constructor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">smart_ptr_constructor()</span></code></a> to register the
 smart pointer type:</p>
@@ -1597,13 +1599,13 @@ return <code class="docutils literal notranslate"><span class="pre">undefined</s
 </section>
 <section id="deriving-from-c-classes-in-javascript">
 <h3>Deriving from C++ classes in JavaScript<a class="headerlink" href="#deriving-from-c-classes-in-javascript" title="Permalink to this headline">¶</a></h3>
-<p>If C++ classes have virtual or abstract member functions, it's possible to
+<p>If C++ classes have virtual or abstract member functions, it’s possible to
 override them in JavaScript. Because JavaScript has no knowledge of the C++
 vtable, <em>embind</em> needs a bit of glue code to convert C++ virtual function
 calls into JavaScript calls.</p>
 <section id="abstract-methods">
 <h4>Abstract methods<a class="headerlink" href="#abstract-methods" title="Permalink to this headline">¶</a></h4>
-<p>Let's begin with a simple case: pure virtual functions that must be
+<p>Let’s begin with a simple case: pure virtual functions that must be
 implemented in JavaScript.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">Interface</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">str</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -1735,7 +1737,7 @@ an instance of <code class="docutils literal notranslate"><span class="pre">Base
 </pre></div>
 </div>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">Module.getDerivedInstance</span></code> from JavaScript will return a
-<code class="docutils literal notranslate"><span class="pre">Derived</span></code> instance handle from which all of <code class="docutils literal notranslate"><span class="pre">Derived</span></code>'s methods
+<code class="docutils literal notranslate"><span class="pre">Derived</span></code> instance handle from which all of <code class="docutils literal notranslate"><span class="pre">Derived</span></code>’s methods
 are available.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1769,8 +1771,8 @@ the appropriate signature.</p>
 </section>
 <section id="enums">
 <span id="embind-enums"></span><h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
-<p><em>Embind</em>'s <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv45enum_" title="enum_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">enumeration</span> <span class="pre">support</span></code></a> works with both C++98
-enums and C++11 &quot;enum classes&quot;.</p>
+<p><em>Embind</em>’s <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv45enum_" title="enum_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">enumeration</span> <span class="pre">support</span></code></a> works with both C++98
+enums and C++11 “enum classes”.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="nc">OldStyle</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">OLD_STYLE_ONE</span><span class="p">,</span>
 <span class="w">    </span><span class="n">OLD_STYLE_TWO</span>
@@ -1817,7 +1819,7 @@ JavaScript code as a typed array, allowing it to be used without copying.
 This is useful for instance for uploading large WebGL textures directly
 from the heap.</p>
 <p>Memory views should be treated like raw pointers; lifetime and validity
-are not managed by the runtime and it's easy to corrupt data if the
+are not managed by the runtime and it’s easy to corrupt data if the
 underlying object is modified or deallocated.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/val.h&gt;</span>
@@ -1974,6 +1976,12 @@ and then play the tone.</p>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></td>
 <td><p>Number</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></p></td>
+<td><p>BigInt*</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></p></td>
+<td><p>BigInt*</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::string</span></code></p></td>
 <td><p>ArrayBuffer, Uint8Array, Uint8ClampedArray, Int8Array, or String</p></td>
 </tr>
@@ -1985,6 +1993,7 @@ and then play the tone.</p>
 </tr>
 </tbody>
 </table>
+<p>*Requires BigInt support to be enabled with the <cite>-sWASM_BIGINT</cite> flag.</p>
 <p>For convenience, <em>embind</em> provides factory functions to register
 <code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415register_vectorPKc" title="register_vector"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_vector()</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">std::map&lt;K,</span> <span class="pre">V&gt;</span></code>
 (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412register_mapPKc" title="register_map"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_map()</span></code></a>) types:</p>
@@ -2074,7 +2083,7 @@ blocks. To generate <strong>.d.ts</strong> files invoke <em>emcc</em> with the
 </div>
 <p>Running this command will build the program with an instrumented version of embind
 that is then run in <em>node</em> to generate the definition files.
-Not all of embind's features are currently supported, but many of the commonly used
+Not all of embind’s features are currently supported, but many of the commonly used
 ones are.  Examples of input and output can be seen in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/other/embind_tsgen.cpp">embind_tsgen.cpp</a> and
 <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/other/embind_tsgen.d.ts">embind_tsgen.d.ts</a>.</p>
 </section>
@@ -2202,7 +2211,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

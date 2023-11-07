@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Verifying the Emscripten Development Environment" href="verify_emscripten_environment.html"/>
         <link rel="prev" title="Emscripten Toolchain Requirements" href="toolchain_what_is_needed.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -878,7 +879,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -930,6 +931,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -976,7 +978,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#building-binaryen">Building Binaryen</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1133,7 +1135,7 @@
 <span id="configuring-emscripten-settings"></span><h1>Configuring Emscripten Settings when Manually Building from Source<a class="headerlink" href="#configuring-emscripten-settings-when-manually-building-from-source" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten can be configured via a <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">compiler
 configuration file (.emscripten)</span></a>. These settings
-include paths to the tools (LLVM, Clang, Binaryen, etc.) and the compiler's
+include paths to the tools (LLVM, Clang, Binaryen, etc.) and the compiler’s
 temporary directory for intermediate build files.</p>
 <p>This confuration file is optional.  By default, emscripten will search
 for the tools it needs in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
@@ -1155,7 +1157,7 @@ in order to generate one in the default location.</p>
 <p>You should get a <code class="docutils literal notranslate"><span class="pre">An</span> <span class="pre">Emscripten</span> <span class="pre">settings</span> <span class="pre">file</span> <span class="pre">has</span> <span class="pre">been</span> <span class="pre">generated</span> <span class="pre">at:</span></code>
 message, along with the contents of the config file.</p>
 </div></blockquote>
-<p>When generating this file Emscripten will make its &quot;best guess&quot; at the correct
+<p>When generating this file Emscripten will make its “best guess” at the correct
 locations for tools based on the current <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
 <p>In most cases it will be necessary to edit the generated file and modify
 least the <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> and <code class="docutils literal notranslate"><span class="pre">BINARYEN_ROOT</span></code> settings to point to the correct
@@ -1165,14 +1167,14 @@ locations for your local LLVM and Binaryen installations.</p>
 <h2>Locating the compiler configuration file (.emscripten)<a class="headerlink" href="#locating-the-compiler-configuration-file-emscripten" title="Permalink to this headline">¶</a></h2>
 <p>The settings file (<code class="docutils literal notranslate"><span class="pre">.emscripten</span></code>) is created by default within the emscripten
 directory (alongsize <code class="docutils literal notranslate"><span class="pre">emcc</span></code> itself).  In cases where the emscripten directory
-is read-only the user's home directory will be used:</p>
+is read-only the user’s home directory will be used:</p>
 <blockquote>
 <div><ul>
 <li><p>On Linux and macOS this file is named <strong>~/.emscripten</strong>, where ~ is the
-user's home directory.</p>
+user’s home directory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Files with the &quot;.&quot; prefix are hidden by default. You may need to change your view settings to find the file.</p>
+<p>Files with the “.” prefix are hidden by default. You may need to change your view settings to find the file.</p>
 </div>
 </li>
 <li><p>On Windows the file can be found at a path like: <strong>C:/Users/yourusername_000/.emscripten</strong>.</p></li>
@@ -1197,7 +1199,7 @@ the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-c
 <section id="editing-the-compiler-configuration-file">
 <h2>Editing the compiler configuration file<a class="headerlink" href="#editing-the-compiler-configuration-file" title="Permalink to this headline">¶</a></h2>
 <p>The compiler configuration file can be edited with the text editor of your
-choice. If you're building manually from source, you are most likely to have to
+choice. If you’re building manually from source, you are most likely to have to
 update the variable <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code></p>
 <ol class="arabic">
 <li><p>Edit the variable <code class="docutils literal notranslate"><span class="pre">LLVM_ROOT</span></code> to point to the directory where you built the
@@ -1328,7 +1330,7 @@ LLVM binaries, such as:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

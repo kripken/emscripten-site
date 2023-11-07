@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>bind.h (under-construction) &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>bind.h (under-construction) &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="trace.h" href="trace.h.html"/>
         <link rel="prev" title="val.h" href="val.h.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -878,7 +879,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -930,6 +931,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -976,7 +978,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1162,7 +1164,7 @@ JavaScript. It is used differently depending on the construct being mapped
 — see the <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind"><span class="std std-ref">embind guide</span></a> for examples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> -- This is a label to mark a group of related bindings (for example <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS(physics)</span></code>, <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS(components)</span></code>, etc.)</p>
+<dd class="field-odd"><p><strong>name</strong> – This is a label to mark a group of related bindings (for example <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS(physics)</span></code>, <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS(components)</span></code>, etc.)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1271,7 +1273,7 @@ object ownership.</p>
 <span class="k">auto</span><span class="w"> </span><span class="n">select_const</span><span class="p">(</span><span class="n">ReturnType</span><span class="w"> </span><span class="p">(</span><span class="n">ClassType</span><span class="o">::*</span><span class="n">method</span><span class="p">)(</span><span class="n">Args</span><span class="p">...)</span><span class="w"> </span><span class="k">const</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>:param ReturnType (ClassType::*method)(Args...) const</p>
+<p>:param ReturnType (ClassType::*method)(Args…) const</p>
 </dd></dl>
 
 <dl class="function">
@@ -1316,9 +1318,9 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>const char* name</strong> -- The name of the function to export (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;lerp&quot;</span></code>).</p></li>
-<li><p><strong>ReturnType (*fn)(Args...)</strong> -- Function pointer address for the exported function (e.g. <code class="docutils literal notranslate"><span class="pre">&amp;lerp</span></code>).</p></li>
-<li><p><strong>Policies...</strong> -- <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</p></li>
+<li><p><strong>const char* name</strong> – The name of the function to export (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;lerp&quot;</span></code>).</p></li>
+<li><p><strong>ReturnType (*fn)(Args...)</strong> – Function pointer address for the exported function (e.g. <code class="docutils literal notranslate"><span class="pre">&amp;lerp</span></code>).</p></li>
+<li><p><strong>Policies...</strong> – <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1354,7 +1356,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <span id="_CPPv3N11value_array7elementEM12InstanceType11ElementType"></span><span id="_CPPv2N11value_array7elementEM12InstanceType11ElementType"></span><a class="reference internal" href="#_CPPv411value_array" title="value_array">value_array</a> &amp;<code class="sig-name descname">element</code><span class="sig-paren">(</span>ElementType <em>InstanceType</em>::*<em>field</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N11value_array7elementEM12InstanceType11ElementType" title="Permalink to this definition">¶</a><br /></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ElementType InstanceType::*field</strong> -- Note that <code class="docutils literal notranslate"><span class="pre">ElementType</span></code> and <code class="docutils literal notranslate"><span class="pre">InstanceType</span></code> are typenames (templated types).</p>
+<dd class="field-odd"><p><strong>ElementType InstanceType::*field</strong> – Note that <code class="docutils literal notranslate"><span class="pre">ElementType</span></code> and <code class="docutils literal notranslate"><span class="pre">InstanceType</span></code> are typenames (templated types).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1480,7 +1482,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <span id="_CPPv3N15smart_ptr_trait3getERK11PointerType"></span><span id="_CPPv2N15smart_ptr_trait3getERK11PointerType"></span><span id="smart_ptr_trait::get__PointerTypeCR"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N15smart_ptr_trait12element_typeE" title="smart_ptr_trait::element_type">element_type</a> *<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="property">const</em> PointerType &amp;<em>ptr</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N15smart_ptr_trait3getERK11PointerType" title="Permalink to this definition">¶</a><br /></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>const PointerType&amp; ptr</strong> -- Note that <code class="docutils literal notranslate"><span class="pre">PointerType</span></code> is a typename (templated type)</p>
+<dd class="field-odd"><p><strong>const PointerType&amp; ptr</strong> – Note that <code class="docutils literal notranslate"><span class="pre">PointerType</span></code> is a typename (templated type)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1524,8 +1526,8 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>PointeeType* p</strong> -- Note that <code class="docutils literal notranslate"><span class="pre">PointeeType</span></code> is a typename (templated type).</p></li>
-<li><p><strong>EM_VAL v</strong> -- </p></li>
+<li><p><strong>PointeeType* p</strong> – Note that <code class="docutils literal notranslate"><span class="pre">PointeeType</span></code> is a typename (templated type).</p></li>
+<li><p><strong>EM_VAL v</strong> – </p></li>
 </ul>
 </dd>
 </dl>
@@ -1567,7 +1569,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 </div>
 <p>Constructor.</p>
 <p>:param val&amp;&amp; wrapped
-:param Args&amp;&amp;... args: Note that <code class="docutils literal notranslate"><span class="pre">Args</span></code> is a typename (templated type).</p>
+:param Args&amp;&amp;… args: Note that <code class="docutils literal notranslate"><span class="pre">Args</span></code> is a typename (templated type).</p>
 </dd></dl>
 
 <dl class="function">
@@ -1581,7 +1583,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <span id="_CPPv3NK7wrapper4callEPKcDpRR4Args"></span><span id="_CPPv2NK7wrapper4callEPKcDpRR4Args"></span><span id="wrapper::call__cCP.ArgsRRDpC"></span>ReturnType <code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="property">const</em> char *<em>name</em>, Args&amp;&amp;... <em>args</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK7wrapper4callEPKcDpRR4Args" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Constructor.</p>
 <p>:param const char* name
-:param Args&amp;&amp;... args: Note that <code class="docutils literal notranslate"><span class="pre">Args</span></code> is a typename (templated type).
+:param Args&amp;&amp;… args: Note that <code class="docutils literal notranslate"><span class="pre">Args</span></code> is a typename (templated type).
 :returns: Note that <code class="docutils literal notranslate"><span class="pre">ReturnType</span></code> is a typename (templated type).</p>
 </dd></dl>
 
@@ -1734,7 +1736,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <p>Zero-argument form of the class constructor. This invokes the natural constructor with the arguments specified in the template. See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-external-constructors"><span class="std std-ref">External constructors</span></a> for more information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>Policies... policies</strong> -- <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</p>
+<dd class="field-odd"><p><strong>Policies... policies</strong> – <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
@@ -1763,7 +1765,7 @@ the method signature will be deduced.</p>
 </div>
 <p>See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-external-constructors"><span class="std std-ref">External constructors</span></a> for more information.</p>
 <p>:param Callable callable Note that <code class="docutils literal notranslate"><span class="pre">Callable</span></code> may be either a member function pointer, function pointer, <code class="docutils literal notranslate"><span class="pre">std::function</span></code> or function object.
-:param Policies... policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
+:param Policies… policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
 
@@ -1776,8 +1778,8 @@ the method signature will be deduced.</p>
 </pre></div>
 </div>
 <p>:param const char* smartPtrName
-:param SmartPtr (*factory)(Args...)
-:param Policies... policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
+:param SmartPtr (*factory)(Args…)
+:param Policies… policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
 
@@ -1795,7 +1797,7 @@ the method signature will be deduced.</p>
 </div>
 <p>:param const char* wrapperClassName
 :param const char* pointerName
-:param emscripten::constructor&lt;ConstructorArgs...&gt; constructor)
+:param emscripten::constructor&lt;ConstructorArgs…&gt; constructor)
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
 
@@ -1811,7 +1813,7 @@ the method signature will be deduced.</p>
 </pre></div>
 </div>
 <p>:param const char* wrapperClassName
-:param ::emscripten::constructor&lt;ConstructorArgs...&gt; constructor)</p>
+:param ::emscripten::constructor&lt;ConstructorArgs…&gt; constructor)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
@@ -1845,7 +1847,7 @@ is bound using the named <code class="docutils literal notranslate"><span class=
 </div>
 <p>:param const char* methodName
 :param Callable callable Note that <code class="docutils literal notranslate"><span class="pre">Callable</span></code> may be either a member function pointer, function pointer, <code class="docutils literal notranslate"><span class="pre">std::function</span></code> or function object.
-:param typename... Policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
+:param typename… Policies: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
 
@@ -1937,8 +1939,8 @@ of the constructor. For example <code class="docutils literal notranslate"><span
 <p>A method name specified in the human-readable well-known symbol format (e.g., <code class="docutils literal notranslate"><span class="pre">&#64;&#64;species</span></code>)
 is bound using the named <code class="docutils literal notranslate"><span class="pre">Symbol</span></code> for JavaScript (e.g., <code class="docutils literal notranslate"><span class="pre">Symbol.species</span></code>).</p>
 <p>:param const char* methodName
-:param ReturnType (*classMethod)(Args...)
-:param Policies...: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
+:param ReturnType (*classMethod)(Args…)
+:param Policies…: <a class="reference internal" href="#bind-h-policies"><span class="std std-ref">Policy</span></a> for managing raw pointer object ownership. Currently must be <a class="reference internal" href="#_CPPv418allow_raw_pointers" title="allow_raw_pointers"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">allow_raw_pointers</span></code></a>.
 :returns: A <code class="docutils literal notranslate"><span class="pre">const</span></code> reference to the current object. This allows chaining of the <a class="reference internal" href="#_CPPv46class_" title="class_"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">class_</span></code></a> functions that define the binding in the <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block.</p>
 </dd></dl>
 
@@ -2004,7 +2006,7 @@ is bound using the named <code class="docutils literal notranslate"><span class=
 </div>
 <p>Registers an enum to export to JavaScript. This is called from within an
 <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a> block and works with both C++98 enums
-and C++11 &quot;enum classes&quot;. See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-enums"><span class="std std-ref">Enums</span></a> for more information.</p>
+and C++11 “enum classes”. See <a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#embind-enums"><span class="std std-ref">Enums</span></a> for more information.</p>
 <dl class="type">
 <dt id="_CPPv4N5enum_9enum_typeE">
 <span id="_CPPv3N5enum_9enum_typeE"></span><span id="_CPPv2N5enum_9enum_typeE"></span><span id="enum_::enum_type"></span><em class="property">type </em><code class="sig-name descname">enum_type</code><a class="headerlink" href="#_CPPv4N5enum_9enum_typeE" title="Permalink to this definition">¶</a><br /></dt>
@@ -2025,8 +2027,8 @@ and C++11 &quot;enum classes&quot;. See <a class="reference internal" href="../p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>const char* name</strong> -- The name of the enumerated value.</p></li>
-<li><p><strong>EnumType value</strong> -- The type of the enumerated value.</p></li>
+<li><p><strong>const char* name</strong> – The name of the enumerated value.</p></li>
+<li><p><strong>EnumType value</strong> – The type of the enumerated value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -2058,8 +2060,8 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>const char* name</strong> -- The name of the constant.</p></li>
-<li><p><strong>const ConstantType&amp; v</strong> -- The constant type. This can be any type known to <em>embind</em>.</p></li>
+<li><p><strong>const char* name</strong> – The name of the constant.</p></li>
+<li><p><strong>const ConstantType&amp; v</strong> – The constant type. This can be any type known to <em>embind</em>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2179,7 +2181,7 @@ an <a class="reference internal" href="#_CPPv419EMSCRIPTEN_BINDINGS4name" title=
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Audio &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>Audio &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Debugging" href="Debugging.html"/>
         <link rel="prev" title="OpenGL support in Emscripten" href="multimedia_and_graphics/OpenGL-support.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -878,7 +879,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -930,6 +931,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -976,7 +978,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1132,7 +1134,7 @@
   <section id="audio">
 <span id="id1"></span><h1>Audio<a class="headerlink" href="#audio" title="Permalink to this headline">¶</a></h1>
 <p>Emscripten ships with its own implementation of the OpenAL 1.1 API, using the Web Audio API as a backend.</p>
-<p>You can reasonably expect ported OpenAL applications to &quot;just work&quot; with no additional effort. Just link with the <code class="docutils literal notranslate"><span class="pre">-lopenal</span></code> linker flag.</p>
+<p>You can reasonably expect ported OpenAL applications to “just work” with no additional effort. Just link with the <code class="docutils literal notranslate"><span class="pre">-lopenal</span></code> linker flag.</p>
 <p>There are some implementation-specific aspects which are worth considering and are documented here.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -1140,7 +1142,7 @@
 </div>
 <section id="supported-openal-extensions">
 <span id="audio-openal-extensions-g"></span><h2>Supported OpenAL extensions<a class="headerlink" href="#supported-openal-extensions" title="Permalink to this headline">¶</a></h2>
-<p>The following extensions are supported by Emscripten's OpenAL implementation.</p>
+<p>The following extensions are supported by Emscripten’s OpenAL implementation.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ALC_SOFT_pause_device</span></code>;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ALC_SOFT_HRTF</span></code>;</p></li>
@@ -1152,7 +1154,7 @@
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This doesn't mean you should just assume their presence ! For correctness, you should <strong>always</strong> check if an extension is supported before using it, like a good application would do.</p>
+<p>This doesn’t mean you should just assume their presence ! For correctness, you should <strong>always</strong> check if an extension is supported before using it, like a good application would do.</p>
 </div>
 </section>
 <section id="guidelines-for-audio-on-emscripten">
@@ -1168,11 +1170,11 @@ simply, this kind of code will block indefinitely:</p>
 <p>The above snippet usually works in native applications because most OpenAL
 implementations own and manage one or more separate threads. This is <strong>not</strong> the
 case in Emscripten. What you must do instead is perform each such query only
-once per &quot;main loop iteration&quot; (i.e the callback you provide via
+once per “main loop iteration” (i.e the callback you provide via
 <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> or <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a>).</p>
 <p>Another issue you may experience is that browsers will not allow audio to play
 before user input. This prevents pages from auto-playing media, which can be
-annoying if you didn't want that. Emscripten's OpenAL implementation (and also
+annoying if you didn’t want that. Emscripten’s OpenAL implementation (and also
 SDL1) will automatically listen for a user click or keypress on the document
 and the canvas, and resume audio for you. That means that audio should start
 to play once the user does something on the page. (See
@@ -1180,31 +1182,31 @@ to play once the user does something on the page. (See
 </section>
 <section id="emscripten-specific-capture-behavior">
 <span id="audio-openal-capture-behavior-g"></span><h2>Emscripten-specific capture behavior<a class="headerlink" href="#emscripten-specific-capture-behavior" title="Permalink to this headline">¶</a></h2>
-<p>Attempting to open an input stream to the user's audio capture device
+<p>Attempting to open an input stream to the user’s audio capture device
 results in the asynchronous appearance of a small browser-specific dialog
-asking for the user's permission, and on some browsers, the capture device to choose.</p>
+asking for the user’s permission, and on some browsers, the capture device to choose.</p>
 <p>With this in mind, when <code class="docutils literal notranslate"><span class="pre">alcCaptureOpenDevice()</span></code> is called with valid and
-supported parameters, a &quot;proxy&quot; device is returned, which successfully
-captures no sample until the user clicks &quot;Allow&quot; on said dialog.</p>
-<p>That means, when calling <code class="docutils literal notranslate"><span class="pre">alcGetIntegerv(device,</span> <span class="pre">ALC_CAPTURE_SAMPLES,</span> <span class="pre">1,</span> <span class="pre">&amp;nframes)</span></code>, <code class="docutils literal notranslate"><span class="pre">nframes</span></code> remains set to zero until the user clicks &quot;Allow&quot;. You might want to make your app handle this specific behavior.</p>
-<p>If the user clicks &quot;Deny&quot;, the device is invalidated (because this is somewhat
+supported parameters, a “proxy” device is returned, which successfully
+captures no sample until the user clicks “Allow” on said dialog.</p>
+<p>That means, when calling <code class="docutils literal notranslate"><span class="pre">alcGetIntegerv(device,</span> <span class="pre">ALC_CAPTURE_SAMPLES,</span> <span class="pre">1,</span> <span class="pre">&amp;nframes)</span></code>, <code class="docutils literal notranslate"><span class="pre">nframes</span></code> remains set to zero until the user clicks “Allow”. You might want to make your app handle this specific behavior.</p>
+<p>If the user clicks “Deny”, the device is invalidated (because this is somewhat
 similar to unplugging the physical device) and calls to <code class="docutils literal notranslate"><span class="pre">alcCapture*</span></code> functions on that
 device then consistently fail with <code class="docutils literal notranslate"><span class="pre">ALC_INVALID_DEVICE</span></code>.
 Your application should be prepared to handle this properly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Some browsers &quot;remember&quot; this choice and apply it automatically every time it would be asked again instead.
-There's no way for the implementation to detect this behavior.</p>
+<p>Some browsers “remember” this choice and apply it automatically every time it would be asked again instead.
+There’s no way for the implementation to detect this behavior.</p>
 </div>
 </section>
 <section id="useful-implementation-details-of-openal-capture">
 <span id="audio-openal-capture-details-g"></span><h2>Useful implementation details of OpenAL capture<a class="headerlink" href="#useful-implementation-details-of-openal-capture" title="Permalink to this headline">¶</a></h2>
-<p>Internally, Web Audio's capture data is always backed by a Javascript <code class="docutils literal notranslate"><span class="pre">Float32Array</span></code>.
+<p>Internally, Web Audio’s capture data is always backed by a Javascript <code class="docutils literal notranslate"><span class="pre">Float32Array</span></code>.
 Thus, <code class="docutils literal notranslate"><span class="pre">AL_FORMAT_MONO_FLOAT32</span></code> and <code class="docutils literal notranslate"><span class="pre">AL_FORMAT_STEREO_FLOAT32</span></code> are the only formats which do not require converting acquired samples from their initial type to another.</p>
 <p>Also, the actual sample rate at which samples are acquired from the device is currently dictated by the browser and hardware, instead of user code. If this sample rate does not match the one your app requests, the implementation is required to perform resampling on your behalf.</p>
 <p>That sample rate is given by <code class="docutils literal notranslate"><span class="pre">audioCtx.sampleRate</span></code>, where <code class="docutils literal notranslate"><span class="pre">audioCtx</span></code> is the <code class="docutils literal notranslate"><span class="pre">AudioContext</span></code> object used internally by the relevant capture <code class="docutils literal notranslate"><span class="pre">ALCdevice</span></code>.
 Currently, Emscripten provides no direct way for applications to access this value, but this might be provided through an Emscripten-specific OpenAL extension (which is not here yet because it requires registration).</p>
-<p>Right now though there's a quick and <em>de facto</em> reliable way to do this (C example):</p>
+<p>Right now though there’s a quick and <em>de facto</em> reliable way to do this (C example):</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifdef __EMSCRIPTEN__</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
@@ -1222,13 +1224,13 @@ Currently, Emscripten provides no direct way for applications to access this val
 <span class="cp">#endif</span>
 </pre></div>
 </div>
-<p>It is reasonable to expect this sample rate to be either 44100Hz or 48000Hz. You can test it right now by copying the javascript part into your browser's console if you're curious.</p>
+<p>It is reasonable to expect this sample rate to be either 44100Hz or 48000Hz. You can test it right now by copying the javascript part into your browser’s console if you’re curious.</p>
 </section>
 <section id="improving-and-extending-the-implementation">
 <span id="audio-improving-g"></span><h2>Improving and extending the implementation<a class="headerlink" href="#improving-and-extending-the-implementation" title="Permalink to this headline">¶</a></h2>
 <p>Currently, the OpenAL capture implementation performs naïve linear resampling because it is simple and the small loss of quality was deemed acceptable.</p>
-<p>However, you're welcome to improve this by contributing if you so wish! See <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/5349">this issue</a> , for instance.</p>
-<p>Likewise, if you'd like to see a particular extension implemented (whether it is registered or not), then your best bet is to either file an issue (provided no related prior issue existed for this), or contribute! See <a class="reference internal" href="../contributing/contributing.html#contributing"><span class="std std-ref">Contributing</span></a> for guidelines.</p>
+<p>However, you’re welcome to improve this by contributing if you so wish! See <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/5349">this issue</a> , for instance.</p>
+<p>Likewise, if you’d like to see a particular extension implemented (whether it is registered or not), then your best bet is to either file an issue (provided no related prior issue existed for this), or contribute! See <a class="reference internal" href="../contributing/contributing.html#contributing"><span class="std std-ref">Contributing</span></a> for guidelines.</p>
 </section>
 </section>
 
@@ -1343,7 +1345,7 @@ Currently, Emscripten provides no direct way for applications to access this val
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

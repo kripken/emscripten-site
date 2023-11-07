@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>File System Overview &mdash; Emscripten 3.1.48-git (dev) documentation</title>
+  <title>File System Overview &mdash; Emscripten 3.1.49-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.48-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Files and File Systems" href="index.html"/>
         <link rel="next" title="Packaging Files" href="packaging_files.html"/>
         <link rel="prev" title="Files and File Systems" href="index.html"/> 
@@ -438,6 +438,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -878,7 +879,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#sdk-concepts">SDK concepts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#emscripten-compiler-configuration-file-emscripten">Emscripten Compiler Configuration File (.emscripten)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#how-to-guides">&quot;How to&quot; guides</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/emsdk.html#how-to-guides">“How to” guides</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../tools_reference/emsdk.html#how-do-i-just-get-the-latest-sdk">How do I just get the latest SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../tools_reference/emsdk.html#how-do-i-use-emsdk">How do I use emsdk?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../tools_reference/emsdk.html#how-do-i-check-which-versions-of-the-sdk-and-tools-are-installed">How do I check which versions of the SDK and tools are installed?</a></li>
@@ -930,6 +931,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -976,7 +978,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../building_from_source/index.html#building-llvm">Building LLVM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building_from_source/index.html#building-binaryen">Building Binaryen</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you'll need</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#what-you-ll-need">What you’ll need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html#test-which-tools-are-installed">Test which tools are installed</a></li>
 </ul>
 </li>
@@ -1135,10 +1137,10 @@
             
   <section id="file-system-overview">
 <span id="id1"></span><h1>File System Overview<a class="headerlink" href="#file-system-overview" title="Permalink to this headline">¶</a></h1>
-<p>The following sections provide a brief overview of the <a class="reference internal" href="#file-system-runtime-environment"><span class="std std-ref">Emscripten file system environment</span></a> and <a class="reference internal" href="#file-system-architectural-overview"><span class="std std-ref">architecture</span></a>. In addition to discussing support for standard C/C++ synchronous file APIs, it briefly discusses the <a class="reference internal" href="../../api_reference/Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> and Emscripten's <a class="reference internal" href="../../api_reference/emscripten.h.html#emscripten-h-asynchronous-file-system-api"><span class="std std-ref">Asynchronous File System API</span></a>.</p>
+<p>The following sections provide a brief overview of the <a class="reference internal" href="#file-system-runtime-environment"><span class="std std-ref">Emscripten file system environment</span></a> and <a class="reference internal" href="#file-system-architectural-overview"><span class="std std-ref">architecture</span></a>. In addition to discussing support for standard C/C++ synchronous file APIs, it briefly discusses the <a class="reference internal" href="../../api_reference/Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> and Emscripten’s <a class="reference internal" href="../../api_reference/emscripten.h.html#emscripten-h-asynchronous-file-system-api"><span class="std std-ref">Asynchronous File System API</span></a>.</p>
 <section id="emscripten-file-system-runtime-environment">
 <span id="file-system-runtime-environment"></span><h2>Emscripten file system runtime environment<a class="headerlink" href="#emscripten-file-system-runtime-environment" title="Permalink to this headline">¶</a></h2>
-<p>Native code and &quot;normal&quot; JavaScript use quite different file-access paradigms. Portable native code usually calls <em>synchronous</em> file APIs in <strong>libc</strong> and <strong>libcxx</strong>, while JavaScript allows only <em>asynchronous</em> file access (except in web workers). In addition, JavaScript does not have direct access to the host file system when run inside the sandbox environment provided by a web browser.</p>
+<p>Native code and “normal” JavaScript use quite different file-access paradigms. Portable native code usually calls <em>synchronous</em> file APIs in <strong>libc</strong> and <strong>libcxx</strong>, while JavaScript allows only <em>asynchronous</em> file access (except in web workers). In addition, JavaScript does not have direct access to the host file system when run inside the sandbox environment provided by a web browser.</p>
 <p>Emscripten provides a virtual file system that simulates the local file system, so that native code using synchronous file APIs can be compiled and run with little or no change.</p>
 <p><a class="reference internal" href="packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a> explains how you can use <em>emcc</em> to specify which files you need to include in the file system. For many developers, that may be all you need to do.</p>
 </section>
@@ -1267,7 +1269,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.48-git (dev)',
+            VERSION:'3.1.49-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
