@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 3.1.49-git (dev) documentation</title>
+  <title>Pthreads support &mdash; Emscripten 3.1.51-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.51-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Networking" href="networking.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -435,6 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -927,6 +928,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -1259,6 +1261,20 @@ main browser thread, where it can return to the main event loop as needed.</p></
 </ul>
 <p>Also note that when compiling code that uses pthreads, an additional JavaScript file <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> is generated alongside the output .js file (where <code class="docutils literal notranslate"><span class="pre">NAME</span></code> is the basename of the main file being emitted). That file must be deployed with the rest of the generated code files. By default, <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <code class="docutils literal notranslate"><span class="pre">Module.locateFile(filename)</span></code> function in the main HTML <code class="docutils literal notranslate"><span class="pre">Module</span></code> object to return the URL of the target location of the <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> entry point. If this function is not defined in <code class="docutils literal notranslate"><span class="pre">Module</span></code>, then the default location relative to the main HTML file is used.</p>
 </section>
+<section id="allocator-performance">
+<span id="id2"></span><h2>Allocator performance<a class="headerlink" href="#allocator-performance" title="Permalink to this headline">¶</a></h2>
+<p>The default system allocator in Emscripten, <code class="docutils literal notranslate"><span class="pre">dlmalloc</span></code>, is very efficient in a
+single-threaded program, but it has a single global lock which means if there is
+contention on <code class="docutils literal notranslate"><span class="pre">malloc</span></code> then you can see overhead. You can use
+<a class="reference external" href="https://github.com/microsoft/mimalloc">mimalloc</a>
+instead by using <code class="docutils literal notranslate"><span class="pre">-sMALLOC=mimalloc</span></code>, which is a more sophisticated allocator
+tuned for multithreaded performance. <code class="docutils literal notranslate"><span class="pre">mimalloc</span></code> has separate allocation
+contexts on each thread, allowing performance to scale a lot better under
+<code class="docutils literal notranslate"><span class="pre">malloc/free</span></code> contention.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">mimalloc</span></code> is larger in code size than <code class="docutils literal notranslate"><span class="pre">dlmalloc</span></code>, and also uses
+more memory at runtime (so you may need to adjust <code class="docutils literal notranslate"><span class="pre">INITIAL_MEMORY</span></code> to a higher
+value), so there are tradeoffs here.</p>
+</section>
 <section id="running-code-and-tests">
 <h2>Running code and tests<a class="headerlink" href="#running-code-and-tests" title="Permalink to this headline">¶</a></h2>
 <p>Any code that is compiled with pthreads support enabled will currently only work in the Firefox Nightly channel, since the SharedArrayBuffer specification is still in an experimental research stage before standardization. There exists two test suites that can be used to verify the behavior of the pthreads API implementation in Emscripten:</p>
@@ -1381,7 +1397,7 @@ main browser thread, where it can return to the main event loop as needed.</p></
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.49-git (dev)',
+            VERSION:'3.1.51-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

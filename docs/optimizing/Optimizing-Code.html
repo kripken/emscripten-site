@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Optimizing Code &mdash; Emscripten 3.1.49-git (dev) documentation</title>
+  <title>Optimizing Code &mdash; Emscripten 3.1.51-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.51-git (dev) documentation" href="../../index.html"/>
         <link rel="next" title="Optimizing WebGL" href="Optimizing-WebGL.html"/>
         <link rel="prev" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="../tools_reference/emcmdprompt.html"/> 
 
@@ -434,6 +434,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -926,6 +927,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -1304,9 +1306,17 @@ a call to print something.</p>
 <h3>Viewing code optimization passes<a class="headerlink" href="#viewing-code-optimization-passes" title="Permalink to this headline">¶</a></h3>
 <p>Enable <a class="reference internal" href="../porting/Debugging.html#debugging-emcc-debug"><span class="std std-ref">Debug mode (EMCC_DEBUG)</span></a> to output files for each compilation phase, including the main optimization operations.</p>
 </section>
+<section id="allocation">
+<span id="optimizing-code-unsafe-optimisations"></span><h3>Allocation<a class="headerlink" href="#allocation" title="Permalink to this headline">¶</a></h3>
+<p>The default <code class="docutils literal notranslate"><span class="pre">malloc/free</span></code> implementation used is <code class="docutils literal notranslate"><span class="pre">dlmalloc</span></code>. You can also
+pick <code class="docutils literal notranslate"><span class="pre">emmalloc</span></code> (<code class="docutils literal notranslate"><span class="pre">-sMALLOC=emmalloc</span></code>) which is smaller but less fast, or
+<code class="docutils literal notranslate"><span class="pre">mimalloc</span></code> (<code class="docutils literal notranslate"><span class="pre">-sMALLOC=mimalloc</span></code>) which is larger but scales better in a
+multithreaded application with contention on <code class="docutils literal notranslate"><span class="pre">malloc/free</span></code> (see
+<a class="reference internal" href="../porting/pthreads.html#allocator-performance"><span class="std std-ref">Allocator performance</span></a>).</p>
+</section>
 </section>
 <section id="unsafe-optimizations">
-<span id="optimizing-code-unsafe-optimisations"></span><h2>Unsafe optimizations<a class="headerlink" href="#unsafe-optimizations" title="Permalink to this headline">¶</a></h2>
+<h2>Unsafe optimizations<a class="headerlink" href="#unsafe-optimizations" title="Permalink to this headline">¶</a></h2>
 <p>A few <strong>UNSAFE</strong> optimizations you might want to try are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">1</span></code>: This can help with reducing the size of the non-generated (support/glue) JS code, and with startup. However it can break if you do not do proper <a class="reference internal" href="../site/glossary.html#term-closure-compiler"><span class="xref std std-term">Closure Compiler</span></a> annotations and exports. But it’s worth it!</p></li>
@@ -1439,7 +1449,7 @@ a call to print something.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.49-git (dev)',
+            VERSION:'3.1.51-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

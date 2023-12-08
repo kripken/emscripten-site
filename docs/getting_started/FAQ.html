@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 3.1.49-git (dev) documentation</title>
+  <title>FAQ &mdash; Emscripten 3.1.51-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.51-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -435,6 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -927,6 +928,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -1662,10 +1664,10 @@ you can use <code class="docutils literal notranslate"><span class="pre">PYTHON_
 <section id="why-do-i-get-a-stack-size-error-when-optimizing-rangeerror-maximum-call-stack-size-exceeded-or-similar">
 <h2>Why do I get a stack size error when optimizing: <code class="docutils literal notranslate"><span class="pre">RangeError:</span> <span class="pre">Maximum</span> <span class="pre">call</span> <span class="pre">stack</span> <span class="pre">size</span> <span class="pre">exceeded</span></code> or similar?<a class="headerlink" href="#why-do-i-get-a-stack-size-error-when-optimizing-rangeerror-maximum-call-stack-size-exceeded-or-similar" title="Permalink to this headline">¶</a></h2>
 <p>You may need to increase the stack size for <a class="reference internal" href="../site/glossary.html#term-node-js"><span class="xref std std-term">node.js</span></a>.</p>
-<p>On Linux and Mac macOS, you can just do <code class="docutils literal notranslate"><span class="pre">NODE_JS</span> <span class="pre">=</span> <span class="pre">['node',</span>
-<span class="pre">'--stack_size=8192']</span></code> in the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">Emscripten Compiler Configuration File (.emscripten)</span></a>. On Windows,
-you will also need <code class="docutils literal notranslate"><span class="pre">--max-stack-size=8192</span></code>, and also run <code class="docutils literal notranslate"><span class="pre">editbin</span>
-<span class="pre">/stack:33554432</span> <span class="pre">node.exe</span></code>.</p>
+<p>On Linux and Mac macOS, you can just do <code class="docutils literal notranslate"><span class="pre">NODE_JS</span> <span class="pre">=</span> <span class="pre">['/path/to/node',</span>
+<span class="pre">'--stack_size=8192']</span></code> in the <a class="reference internal" href="../tools_reference/emsdk.html#compiler-configuration-file"><span class="std std-ref">Emscripten Compiler Configuration File (.emscripten)</span></a>. On Windows
+(for node versions older than v19), you will also need
+<code class="docutils literal notranslate"><span class="pre">--max-stack-size=8192</span></code>, and also run <code class="docutils literal notranslate"><span class="pre">editbin</span> <span class="pre">/stack:33554432</span> <span class="pre">node.exe</span></code>.</p>
 </section>
 <section id="how-do-i-pass-int64-t-and-uint64-t-values-from-js-into-wasm-functions">
 <h2>How do I pass int64_t and uint64_t values from js into Wasm functions?<a class="headerlink" href="#how-do-i-pass-int64-t-and-uint64-t-values-from-js-into-wasm-functions" title="Permalink to this headline">¶</a></h2>
@@ -1824,7 +1826,7 @@ unnecessary code for.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.49-git (dev)',
+            VERSION:'3.1.51-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Tutorial &mdash; Emscripten 3.1.49-git (dev) documentation</title>
+  <title>Emscripten Tutorial &mdash; Emscripten 3.1.51-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.51-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Emscripten Test Suite" href="test-suite.html"/>
         <link rel="prev" title="Download and install" href="downloads.html"/> 
@@ -435,6 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -927,6 +928,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -1300,7 +1302,7 @@ test code and then refresh the browser:</p>
     <span class="p">}</span>
   <span class="p">}</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">SDL_MUSTLOCK</span><span class="p">(</span><span class="n">screen</span><span class="p">))</span> <span class="n">SDL_UnlockSurface</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
-  <span class="n">SDL_Flip</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span> 
+  <span class="n">SDL_Flip</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
 
   <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;you should see a smoothly-colored square - no sharp lines but the square borders!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
   <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;and here is some text that should be HTML-friendly: amp: |&amp;| double-quote: |</span><span class="se">\&quot;</span><span class="s2">| quote: |&#39;| less-than, greater-than, html-like tags: |&lt;cheez&gt;&lt;/cheez&gt;|</span><span class="se">\n</span><span class="s2">another line.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
@@ -1309,7 +1311,6 @@ test code and then refresh the browser:</p>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-
 </pre></div>
 </div>
 </section>
@@ -1352,7 +1353,6 @@ int main() {
   fclose (file);
   return 0;
 }
-
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">==</span>
@@ -1551,7 +1551,7 @@ C/C++ programs can use when compiled with Emscripten.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.49-git (dev)',
+            VERSION:'3.1.51-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

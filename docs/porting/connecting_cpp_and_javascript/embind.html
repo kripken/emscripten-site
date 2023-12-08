@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.49-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.51-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.49-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.51-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -435,6 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#proxying">Proxying</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#blocking-on-the-main-browser-thread">Blocking on the main browser thread</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#special-considerations">Special considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pthreads.html#allocator-performance">Allocator performance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pthreads.html#running-code-and-tests">Running code and tests</a></li>
 </ul>
 </li>
@@ -927,6 +928,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#c-rtti">C++ RTTI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#memory-growth">Memory Growth</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#viewing-code-optimization-passes">Viewing code optimization passes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#allocation">Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../optimizing/Optimizing-Code.html#unsafe-optimizations">Unsafe optimizations</a></li>
@@ -1960,10 +1962,10 @@ and then play the tone.</p>
 <td><p>Number</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">long</span></code></p></td>
-<td><p>Number</p></td>
+<td><p>Number, or BigInt*</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">long</span></code></p></td>
-<td><p>Number</p></td>
+<td><p>Number, or BigInt*</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
 <td><p>Number</p></td>
@@ -1972,10 +1974,10 @@ and then play the tone.</p>
 <td><p>Number</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></p></td>
-<td><p>BigInt*</p></td>
+<td><p>BigInt**</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></p></td>
-<td><p>BigInt*</p></td>
+<td><p>BigInt**</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::string</span></code></p></td>
 <td><p>ArrayBuffer, Uint8Array, Uint8ClampedArray, Int8Array, or String</p></td>
@@ -1988,7 +1990,8 @@ and then play the tone.</p>
 </tr>
 </tbody>
 </table>
-<p>*Requires BigInt support to be enabled with the <cite>-sWASM_BIGINT</cite> flag.</p>
+<p>*BigInt when MEMORY64 is used, Number otherwise.</p>
+<p>**Requires BigInt support to be enabled with the <cite>-sWASM_BIGINT</cite> flag.</p>
 <p>For convenience, <em>embind</em> provides factory functions to register
 <code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415register_vectorPKc" title="register_vector"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_vector()</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">std::map&lt;K,</span> <span class="pre">V&gt;</span></code>
 (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412register_mapPKc" title="register_map"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_map()</span></code></a>) types:</p>
@@ -2070,6 +2073,8 @@ and then play the tone.</p>
 </section>
 <section id="typescript-definitions">
 <h2>TypeScript Definitions<a class="headerlink" href="#typescript-definitions" title="Permalink to this headline">¶</a></h2>
+<section id="generating">
+<h3>Generating<a class="headerlink" href="#generating" title="Permalink to this headline">¶</a></h3>
 <p>Embind supports generating TypeScript definition files from <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a>
 blocks. To generate <strong>.d.ts</strong> files invoke <em>emcc</em> with the
 <a class="reference internal" href="../../tools_reference/emcc.html#emcc-embind-emit-tsd"><span class="std std-ref">embind-emit-tsd</span></a> option:</p>
@@ -2081,6 +2086,28 @@ that is then run in <em>node</em> to generate the definition files.
 Not all of embind’s features are currently supported, but many of the commonly used
 ones are.  Examples of input and output can be seen in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/other/embind_tsgen.cpp">embind_tsgen.cpp</a> and
 <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/other/embind_tsgen.d.ts">embind_tsgen.d.ts</a>.</p>
+</section>
+<section id="custom-val-definitions">
+<h3>Custom <code class="docutils literal notranslate"><span class="pre">val</span></code> Definitions<a class="headerlink" href="#custom-val-definitions" title="Permalink to this headline">¶</a></h3>
+<p><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">emscripten::val</span></code> types are mapped to TypeScript’s <cite>any</cite> type by default,
+which does not provide much useful information for API’s that consume or
+produce <cite>val</cite> types. To give better type information, custom <cite>val</cite> types can be
+registered using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_DECLARE_VAL_TYPE()</span></code> in combination with
+<code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">emscripten::register_type</span></code>. An example below:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_DECLARE_VAL_TYPE</span><span class="p">(</span><span class="n">CallbackType</span><span class="p">);</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">function_with_callback_param</span><span class="p">(</span><span class="n">CallbackType</span><span class="w"> </span><span class="n">ct</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ct</span><span class="p">(</span><span class="n">val</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">custom_val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;function_with_callback_param&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">function_with_callback_param</span><span class="p">);</span>
+<span class="w">    </span><span class="n">register_type</span><span class="o">&lt;</span><span class="n">CallbackType</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;(message: string) =&gt; void&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="performance">
 <h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
@@ -2206,7 +2233,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.49-git (dev)',
+            VERSION:'3.1.51-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
