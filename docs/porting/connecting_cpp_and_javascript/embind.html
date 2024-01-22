@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.52-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.53-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.52-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.53-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -1023,7 +1023,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#linkable">LINKABLE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#strict">STRICT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#ignore-missing-main">IGNORE_MISSING_MAIN</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#auto-archive-indexes">AUTO_ARCHIVE_INDEXES</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#strict-js">STRICT_JS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#warn-on-undefined-symbols">WARN_ON_UNDEFINED_SYMBOLS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#error-on-undefined-symbols">ERROR_ON_UNDEFINED_SYMBOLS</a></li>
@@ -2221,11 +2220,12 @@ and then play the tone.</p>
 <p>*BigInt when MEMORY64 is used, Number otherwise.</p>
 <p>**Requires BigInt support to be enabled with the <cite>-sWASM_BIGINT</cite> flag.</p>
 <p>For convenience, <em>embind</em> provides factory functions to register
-<code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415register_vectorPKc" title="register_vector"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_vector()</span></code></a>) and <code class="docutils literal notranslate"><span class="pre">std::map&lt;K,</span> <span class="pre">V&gt;</span></code>
-(<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412register_mapPKc" title="register_map"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_map()</span></code></a>) types:</p>
+<code class="docutils literal notranslate"><span class="pre">std::vector&lt;T&gt;</span></code> (<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv415register_vectorPKc" title="register_vector"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_vector()</span></code></a>), <code class="docutils literal notranslate"><span class="pre">std::map&lt;K,</span> <span class="pre">V&gt;</span></code>
+(<a class="reference internal" href="../../api_reference/bind.h.html#_CPPv412register_mapPKc" title="register_map"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_map()</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">std::optional&lt;T&gt;</span></code> (<code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">register_optional()</span></code>) types:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">stl_wrappers</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">register_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;VectorInt&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="n">register_map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;MapIntInt&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">register_optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;Optional);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -2233,6 +2233,7 @@ and then play the tone.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 
 <span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">emscripten</span><span class="p">;</span>
 
@@ -2247,13 +2248,20 @@ and then play the tone.</p>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">returnOptionalData</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
 <span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="k">module</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;returnVectorData&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">returnVectorData</span><span class="p">);</span>
 <span class="w">  </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;returnMapData&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">returnMapData</span><span class="p">);</span>
+<span class="w">  </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;returnOptionalData&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">returnOptionalData</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">// register bindings for std::vector&lt;int&gt; and std::map&lt;int, std::string&gt;.</span>
+<span class="w">  </span><span class="c1">// register bindings for std::vector&lt;int&gt;, std::map&lt;int, std::string&gt;, and</span>
+<span class="w">  </span><span class="c1">// std::optional&lt;std::string&gt;.</span>
 <span class="w">  </span><span class="n">register_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;vector&lt;int&gt;&quot;</span><span class="p">);</span>
 <span class="w">  </span><span class="n">register_map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;map&lt;int, string&gt;&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">register_optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -2296,6 +2304,12 @@ and then play the tone.</p>
 
 <span class="c1">// reset the value at the given index position</span>
 <span class="nx">retMap</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;OtherValue&quot;</span><span class="p">);</span>
+
+<span class="c1">// Optional values will return undefined if there is no value.</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">optional</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;returnOptionalData&#39;</span><span class="p">]();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">optional</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="kc">undefined</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">optional</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
@@ -2461,7 +2475,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.52-git (dev)',
+            VERSION:'3.1.53-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
