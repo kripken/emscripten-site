@@ -182,7 +182,9 @@
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#using-libraries">Using libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#emscripten-ports">Emscripten Ports</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#contrib-ports">Contrib ports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#adding-more-ports">Adding more ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#external-ports">External ports</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#build-system-issues">Build system issues</a><ul>
@@ -254,6 +256,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="GitLab.html">Building and Deploying on GitLab</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="GitLab.html#a-sample-gitlab-ci-yml">A sample .gitlab-ci.yml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Contrib-Ports.html">Emscripten Contrib Ports</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Contrib-Ports.html#contrib-glfw3">contrib.glfw3</a></li>
 </ul>
 </li>
 </ul>
@@ -492,7 +498,9 @@
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#building-projects-with-debug-information">Building projects with debug information</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#using-libraries">Using libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#emscripten-ports">Emscripten Ports</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#contrib-ports">Contrib ports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#adding-more-ports">Adding more ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Building-Projects.html#external-ports">External ports</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="Building-Projects.html#build-system-issues">Build system issues</a><ul>
@@ -1378,7 +1386,7 @@
 <ul class="simple">
 <li><p>If targeting asm.js and running on Firefox or Edge, the web page console displays a log message after the asm.js module has been compiled. This log message includes timing information about how long the compilation took. Asm.js compilation begins the moment the asm.js script source file is added to the DOM, and once it finishes, the <code class="docutils literal notranslate"><span class="pre">onload</span></code> event of the script tag is called. This can be used to time how long asm.js compilation takes on Safari, Opera and Chrome.</p></li>
 <li><p>It is recommended to migrate to WebAssembly to speed up compiled code startup times in browsers. WebAssembly modules are much faster to parse and compile compared to asm.js. Additionally, compiled <code class="docutils literal notranslate"><span class="pre">WebAssembly.Module</span></code> objects can be manually persisted to IndexedDB, which avoids the compilation step altogether on the second run. (see next section)</p></li>
-<li><p>Occassionally it can be easy to misattribute slow startup to asm.js/WebAssembly compilation, when the actual cause of slowness can in fact be in executing the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function entry point of the application itself. This is because these two actions are run closely back to back to each other. It is worthwhile to be precise to profile these two actions separately, check out the <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">callMain()</span></code> in <code class="docutils literal notranslate"><span class="pre">src/preamble.js</span></code> which kicks off the execution of application <code class="docutils literal notranslate"><span class="pre">main()</span></code> code. If executing <code class="docutils literal notranslate"><span class="pre">main()</span></code> takes too long time, consider splitting it out to separate operations that are driven by multiple <code class="docutils literal notranslate"><span class="pre">setTimeout()</span></code> calls or by the <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code> event loop.</p></li>
+<li><p>Occasionally it can be easy to misattribute slow startup to asm.js/WebAssembly compilation, when the actual cause of slowness can in fact be in executing the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function entry point of the application itself. This is because these two actions are run closely back to back to each other. It is worthwhile to be precise to profile these two actions separately, check out the <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">callMain()</span></code> in <code class="docutils literal notranslate"><span class="pre">src/preamble.js</span></code> which kicks off the execution of application <code class="docutils literal notranslate"><span class="pre">main()</span></code> code. If executing <code class="docutils literal notranslate"><span class="pre">main()</span></code> takes too long time, consider splitting it out to separate operations that are driven by multiple <code class="docutils literal notranslate"><span class="pre">setTimeout()</span></code> calls or by the <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code> event loop.</p></li>
 <li><p>To speed up network transfers, experience shows that the under regular network conditions, the fastest approach is to aggressively start all network downloads simultaneously in parallel (assuming there are only a handful of them), as opposed to e.g. downloading a single input file at a time before starting the next one. Therefore to maximize network transfer speed, try to write the main HTML page of the application to start all needed network downloads in parallel instead of queueing them up for sequential transfer.</p></li>
 <li><p>In the case when the first time load of the page is dominated by network transfers, it is useful to take advantage of the fact that the CPU is otherwise mostly idle while waiting for downloads to finish. This CPU time can be utilized to perform other heavy tasks. An ideal candidate for this is to download and compile the asm.js/WebAssembly module already while downloading other page assets.</p></li>
 <li><p>A currently known issue on Windows based systems is that compiling WebGL shaders can be slow. This is also a primary candidate for an action to be performed in parallel while downloading other assets for the page.</p></li>
@@ -1438,7 +1446,7 @@
 </ol>
 </div></blockquote>
 </li>
-<li><p>Implement a final “catch all” error handler on the page by implementing a <code class="docutils literal notranslate"><span class="pre">window.onerror</span></code> script. This will be called as a last resort if no other source handled an exception that was raised on the page. See <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror#window.onerror">window.onerror</a> documentaton on MDN.</p></li>
+<li><p>Implement a final “catch all” error handler on the page by implementing a <code class="docutils literal notranslate"><span class="pre">window.onerror</span></code> script. This will be called as a last resort if no other source handled an exception that was raised on the page. See <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror#window.onerror">window.onerror</a> documentation on MDN.</p></li>
 <li><p>Do not let the html page “freeze” and bury the error message in the web page console, because most users will not know how to find it there. Strive to provide meaningful error reports to the user on the main html page, preferably with hints on how to act. If updating a browser version or GPU drivers, or freeing up some space on disk might have a chance to help the page to run, let the user know what they could try out. If the error in question is completely unexpected, consider providing a link or an email address where to report the issue to.</p></li>
 <li><p>Provide meaningful and interactive loading progress indicators to show the user whether the loading progress is still proceeding and what is going to happen next. Try to prevent leading the user to a <cite>“I wonder if it is still loading or if it hung?”</cite> state of mind.</p></li>
 </ul>

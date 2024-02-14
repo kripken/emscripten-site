@@ -184,6 +184,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-ports">Emscripten Ports</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#contrib-ports">Contrib ports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#adding-more-ports">Adding more ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#external-ports">External ports</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#build-system-issues">Build system issues</a><ul>
@@ -499,6 +500,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#emscripten-ports">Emscripten Ports</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#contrib-ports">Contrib ports</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#adding-more-ports">Adding more ports</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#external-ports">External ports</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#build-system-issues">Build system issues</a><ul>
@@ -1432,10 +1434,10 @@ which files are produced under which conditions:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.html</span></code> builds a <code class="docutils literal notranslate"><span class="pre">output.html</span></code> file as an output, as well as an accompanying <code class="docutils literal notranslate"><span class="pre">output.js</span></code> launcher file, and a <code class="docutils literal notranslate"><span class="pre">output.wasm</span></code> WebAssembly file.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.js</span></code> omits generating a HTML launcher file (expecting you to provide it yourself if you plan to run in browser), and produces two files, <code class="docutils literal notranslate"><span class="pre">output.js</span></code> and <code class="docutils literal notranslate"><span class="pre">output.wasm</span></code>. (that can be run in e.g. node.js shell)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.wasm</span></code> omits generating either JavaScript or HTML launcher file, and produces a single Wasm file built in standalone mode as if the <code class="docutils literal notranslate"><span class="pre">-sSTANDALONE_WASM</span></code> settting had been used. The resulting file expects to be run with the <a class="reference external" href="https://github.com/WebAssembly/WASI/blob/4712d490fd7662f689af6faa5d718e042f014931/legacy/application-abi.md">WASI ABI</a> - in particular, as soon as you initialize the module you must manually invoke either the <code class="docutils literal notranslate"><span class="pre">_start</span></code> export or (in the case of <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code>) the <code class="docutils literal notranslate"><span class="pre">_initialize</span></code> export before doing anything else with it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.wasm</span></code> omits generating either JavaScript or HTML launcher file, and produces a single Wasm file built in standalone mode as if the <code class="docutils literal notranslate"><span class="pre">-sSTANDALONE_WASM</span></code> setting had been used. The resulting file expects to be run with the <a class="reference external" href="https://github.com/WebAssembly/WASI/blob/4712d490fd7662f689af6faa5d718e042f014931/legacy/application-abi.md">WASI ABI</a> - in particular, as soon as you initialize the module you must manually invoke either the <code class="docutils literal notranslate"><span class="pre">_start</span></code> export or (in the case of <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code>) the <code class="docutils literal notranslate"><span class="pre">_initialize</span></code> export before doing anything else with it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span></code> causes the compiler to target JavaScript, and therefore a <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file is not produced.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">--emit-symbol-map</span></code> produces a file <code class="docutils literal notranslate"><span class="pre">output.{html,js}.symbols</span></code> if WebAssembly is being targeted (<code class="docutils literal notranslate"><span class="pre">-sWASM=0</span></code> not specified), or if JavaScript is being targeted and <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> or <code class="docutils literal notranslate"><span class="pre">-O2</span></code> or higher is specified, but debug level setting is <code class="docutils literal notranslate"><span class="pre">-g1</span></code> or lower (i.e. if symbols minification did occur).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span> <span class="pre">--memory-init-file</span> <span class="pre">1</span></code> causes the generation of <code class="docutils literal notranslate"><span class="pre">output.{html,js}.mem</span></code> memory initializer file. Pasing <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> also implies <code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span> <span class="pre">--memory-init-file</span> <span class="pre">1</span></code> causes the generation of <code class="docutils literal notranslate"><span class="pre">output.{html,js}.mem</span></code> memory initializer file. Passing <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> also implies <code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">1</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-gsource-map</span></code> generates a source map file <code class="docutils literal notranslate"><span class="pre">output.wasm.map</span></code>. If targeting JavaScript with <code class="docutils literal notranslate"><span class="pre">-sWASM=0</span></code>, the filename is <code class="docutils literal notranslate"><span class="pre">output.{html,js}.map</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">--preload-file</span> <span class="pre">xxx</span></code> directive generates a preloaded MEMFS filesystem file <code class="docutils literal notranslate"><span class="pre">output.data</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM={0,1}</span> <span class="pre">-sSINGLE_FILE</span></code> merges JavaScript and WebAssembly code in the single output file <code class="docutils literal notranslate"><span class="pre">output.{html,js}</span></code> (in base64) to produce only one file for deployment. (If paired with <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code>, the preloaded <code class="docutils literal notranslate"><span class="pre">.data</span></code> file still exists as a separate file)</p></li>
@@ -1548,7 +1550,19 @@ emcc<span class="w"> </span>project.o<span class="w"> </span>libstuff.a<span cla
 <p>To see a list of all available ports, run <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">--show-ports</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><em>SDL_image</em> has also been added to ports, use it with <code class="docutils literal notranslate"><span class="pre">--use-port=sdl2_image</span></code>. For <code class="docutils literal notranslate"><span class="pre">sdl2_image</span></code> to be useful, you generally need to specify the image formats you are planning on using with e.g. <code class="docutils literal notranslate"><span class="pre">-sSDL2_IMAGE_FORMATS='[&quot;bmp&quot;,&quot;png&quot;,&quot;xpm&quot;,&quot;jpg&quot;]'</span></code>. This will also ensure that <code class="docutils literal notranslate"><span class="pre">IMG_Init</span></code> works properly when you specify those formats. Alternatively, you can use <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">--use-preload-plugins</span></code> and <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> your images, so the browser codecs decode them (see <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a>). A code path in the <code class="docutils literal notranslate"><span class="pre">sdl2_image</span></code> port will load through <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_get_preloaded_image_data" title="emscripten_get_preloaded_image_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_get_preloaded_image_data()</span></code></a>, but then your calls to <code class="docutils literal notranslate"><span class="pre">IMG_Init</span></code> with those image formats will fail (as while the images will work through preloading, IMG_Init reports no support for those formats, as it doesn’t have support compiled in - in other words, IMG_Init does not report support for formats that only work through preloading).```</p>
+<p><em>SDL_image</em> has also been added to ports, use it with
+<code class="docutils literal notranslate"><span class="pre">--use-port=sdl2_image</span></code>. For <code class="docutils literal notranslate"><span class="pre">sdl2_image</span></code> to be useful, you generally
+need to specify the image formats you are planning on using with e.g.
+<code class="docutils literal notranslate"><span class="pre">--use-port=sdl2_image:formats=bmp,png,xpm,jpg</span></code>. This will also ensure that
+<code class="docutils literal notranslate"><span class="pre">IMG_Init</span></code> works properly when you specify those formats. Alternatively,
+you can use <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">--use-preload-plugins</span></code> and <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> your
+images, so the browser codecs decode them (see <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a>).
+A code path in the <code class="docutils literal notranslate"><span class="pre">sdl2_image</span></code> port will load through
+<a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_get_preloaded_image_data" title="emscripten_get_preloaded_image_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_get_preloaded_image_data()</span></code></a>, but then your calls to
+<code class="docutils literal notranslate"><span class="pre">IMG_Init</span></code> with those image formats will fail (as while the images will
+work through preloading, IMG_Init reports no support for those formats, as
+it doesn’t have support compiled in - in other words, <code class="docutils literal notranslate"><span class="pre">IMG_Init</span></code> does not
+report support for formats that only work through preloading).</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1556,7 +1570,14 @@ emcc<span class="w"> </span>project.o<span class="w"> </span>libstuff.a<span cla
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Emscripten also has support for older SDL1, which is built-in. If you do not specify SDL2 as in the command above, then SDL1 is linked in and the SDL1 include paths are used. SDL1 has support for <em>sdl-config</em>, which is present in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/system/bin/sdl-config">system/bin</a>. Using the native <em>sdl-config</em> may result in compilation or missing-symbol errors. You will need to modify the build system to look for files in <strong>emscripten/system</strong> or <strong>emscripten/system/bin</strong> in order to use the Emscripten <em>sdl-config</em>.</p>
+<p>Emscripten also has support for older SDL1, which is built-in.
+If you do not specify SDL2 as in the command above, then SDL1 is linked in
+and the SDL1 include paths are used. SDL1 has support for <em>sdl-config</em>,
+which is present in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/system/bin/sdl-config">system/bin</a>.
+Using the native <em>sdl-config</em> may result in compilation or missing-symbol errors.
+You will need to modify the build system to look for files in
+<strong>emscripten/system</strong> or <strong>emscripten/system/bin</strong> in order to use the
+Emscripten <em>sdl-config</em>.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1569,7 +1590,9 @@ work.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Since emscripten 3.1.54, <code class="docutils literal notranslate"><span class="pre">--use-port</span></code> is the preferred syntax to use a port in your project. The legacy syntax (for example <code class="docutils literal notranslate"><span class="pre">-sUSE_SDL2</span></code>, <code class="docutils literal notranslate"><span class="pre">-sUSE_SDL_IMAGE=2</span></code>) remains available.</p>
+<p>Since emscripten 3.1.54, <code class="docutils literal notranslate"><span class="pre">--use-port</span></code> is the preferred syntax to
+use a port in your project. The legacy syntax (for example <code class="docutils literal notranslate"><span class="pre">-sUSE_SDL2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">-sUSE_SDL_IMAGE=2</span></code>) remains available.</p>
 </div>
 <section id="contrib-ports">
 <h3>Contrib ports<a class="headerlink" href="#contrib-ports" title="Permalink to this headline">¶</a></h3>
@@ -1587,6 +1610,17 @@ See <a class="reference internal" href="Contrib-Ports.html#contrib-ports"><span 
 <li><p>Read the <code class="docutils literal notranslate"><span class="pre">README.md</span></code> file under <code class="docutils literal notranslate"><span class="pre">tools/ports/contrib</span></code> which contains more information.</p></li>
 </ul>
 </div></blockquote>
+</section>
+<section id="external-ports">
+<h3>External ports<a class="headerlink" href="#external-ports" title="Permalink to this headline">¶</a></h3>
+<p>Emscripten also supports external ports (ports that are not part of the
+distribution). In order to use such a port, you simply provide its path:
+<code class="docutils literal notranslate"><span class="pre">--use-port=/path/to/my_port.py</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware that if you are working on the code of a port, the port API
+used by emscripten is not 100% stable and could change between versions.</p>
+</div>
 </section>
 </section>
 <section id="build-system-issues">
