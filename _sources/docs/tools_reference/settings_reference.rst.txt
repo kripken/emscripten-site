@@ -151,6 +151,19 @@ Note that this setting does not affect the behavior of operator new in C++.
 This function will always abort on allocation failure if exceptions are disabled.
 If you want new to return 0 on failure, use it with std::nothrow.
 
+.. _initial_heap:
+
+INITIAL_HEAP
+============
+
+The initial amount of heap memory available to the program.  This is the
+memory region available for dynamic allocations via `sbrk`, `malloc` and `new`.
+
+Unlike INITIAL_MEMORY, this setting allows the static and dynamic regions of
+your programs memory to independently grow. In most cases we recommend using
+this setting rather than `INITIAL_MEMORY`. However, this setting does not work
+for imported memories (e.g. when dynamic linking is used).
+
 .. _initial_memory:
 
 INITIAL_MEMORY
@@ -161,6 +174,9 @@ cause us to expand the heap, which can be costly with typed arrays:
 we need to copy the old heap into a new one in that case.
 If ALLOW_MEMORY_GROWTH is set, this initial amount of memory can increase
 later; if not, then it is the final and total amount of memory.
+
+By default, this value is calculated based on INITIAL_HEAP, STACK_SIZE,
+as well the size of static data in input modules.
 
 (This option was formerly called TOTAL_MEMORY.)
 
@@ -1014,16 +1030,11 @@ ASYNCIFY
 Whether to support async operations in the compiled code. This makes it
 possible to call JS functions from synchronous-looking code in C/C++.
 
-- Run binaryen's Asyncify pass to transform the code using asyncify. This
-  emits a normal wasm file in the end, so it works everywhere, but it has a
-  significant cost in terms of code size and speed.
+- 1 (default): Run binaryen's Asyncify pass to transform the code using
+  asyncify. This emits a normal wasm file in the end, so it works everywhere,
+  but it has a significant cost in terms of code size and speed.
   See https://emscripten.org/docs/porting/asyncify.html
-- Depend on VM support for the wasm stack switching proposal. This allows
-  async operations to happen without the overhead of modifying the wasm.
-  This is experimental atm while spec discussion is ongoing, see
-  https://github.com/WebAssembly/js-promise-integration/
-  TODO: document which of the following flags are still relevant in this
-  mode (e.g. IGNORE_INDIRECT etc. are not needed)
+- 2 (deprecated): Use ``-sJSPI`` instead.
 
 .. _asyncify_imports:
 
@@ -1115,6 +1126,15 @@ instrumented.
 See notes on ASYNCIFY_REMOVE about the names, including wildcard matching and
 character substitutions.
 
+.. _asyncify_propagate_add:
+
+ASYNCIFY_PROPAGATE_ADD
+======================
+
+If enabled, instrumentation status will be propagated from the add-list, ie.
+their callers, and their callers' callers, and so on. If disabled then all
+callers must be manually added to the add-list (like the only-list).
+
 .. _asyncify_only:
 
 ASYNCIFY_ONLY
@@ -1160,6 +1180,18 @@ ASYNCIFY_EXPORTS
 Specify which of the exports will have JSPI applied to them and return a
 promise.
 Only supported for ASYNCIFY==2 mode.
+
+.. _jspi:
+
+JSPI
+====
+
+Use VM support for the JavaScript Promise Integration proposal. This allows
+async operations to happen without the overhead of modifying the wasm. This
+is experimental atm while spec discussion is ongoing, see
+https://github.com/WebAssembly/js-promise-integration/ TODO: document which
+of the following flags are still relevant in this mode (e.g. IGNORE_INDIRECT
+etc. are not needed)
 
 .. _exported_runtime_methods:
 
@@ -1389,6 +1421,8 @@ RUNTIME_LINKED_LIBS
 ===================
 
 Deprecated, list shared libraries directly on the command line instead.
+
+.. note:: This setting is deprecated
 
 .. _build_as_worker:
 
@@ -1842,6 +1876,8 @@ Whether to legalize the JS FFI interfaces (imports/exports) by wrapping them
 to automatically demote i64 to i32 and promote f32 to f64. This is necessary
 in order to interface with JavaScript.  For non-web/non-JS embeddings, setting
 this to 0 may be desirable.
+
+.. note:: This setting is deprecated
 
 .. _use_sdl:
 

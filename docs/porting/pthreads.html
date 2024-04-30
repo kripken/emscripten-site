@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pthreads support &mdash; Emscripten 3.1.55-git (dev) documentation</title>
+  <title>Pthreads support &mdash; Emscripten 3.1.60-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.55-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="Networking" href="networking.html"/>
         <link rel="prev" title="Debugging" href="Debugging.html"/> 
@@ -917,6 +917,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#stack-size">STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#malloc">MALLOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#aborting-malloc">ABORTING_MALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#initial-heap">INITIAL_HEAP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#initial-memory">INITIAL_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#maximum-memory">MAXIMUM_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#allow-memory-growth">ALLOW_MEMORY_GROWTH</a></li>
@@ -997,11 +998,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-stack-size">ASYNCIFY_STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-remove">ASYNCIFY_REMOVE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-add">ASYNCIFY_ADD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-propagate-add">ASYNCIFY_PROPAGATE_ADD</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-only">ASYNCIFY_ONLY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-advise">ASYNCIFY_ADVISE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-lazy-load-code">ASYNCIFY_LAZY_LOAD_CODE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi">JSPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1490,7 +1493,6 @@ main browser thread, where it can return to the main event loop as needed.</p></
 <li><p>Note that the function emscripten_num_logical_cores() will always return the value of navigator.hardwareConcurrency, i.e. the number of logical cores on the system, even when shared memory is not supported. This means that it is possible for emscripten_num_logical_cores() to return a value greater than 1, while at the same time emscripten_has_threading_support() can return false. The return value of emscripten_has_threading_support() denotes whether the browser has shared memory support available.</p></li>
 <li><p>Pthreads + memory growth (<code class="docutils literal notranslate"><span class="pre">ALLOW_MEMORY_GROWTH</span></code>) is especially tricky, see <a class="reference external" href="https://github.com/WebAssembly/design/issues/1271">Wasm design issue #1271</a>. This currently causes JS accessing the Wasm memory to be slow - but this will likely only be noticeable if the JS does large amounts of memory reads and writes (Wasm runs at full speed, so moving work over can fix this). This also requires that your JS be aware that the HEAP* views may need to be updated - JS code embedded with <code class="docutils literal notranslate"><span class="pre">--js-library</span></code> etc will automatically be transformed to use the <code class="docutils literal notranslate"><span class="pre">GROWABLE_HEAP_*</span></code> helper functions where <code class="docutils literal notranslate"><span class="pre">HEAP*</span></code> are used, but external code that uses <code class="docutils literal notranslate"><span class="pre">Module.HEAP*</span></code> directly may encounter problems with views being smaller than memory.</p></li>
 </ul>
-<p>Also note that when compiling code that uses pthreads, an additional JavaScript file <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> is generated alongside the output .js file (where <code class="docutils literal notranslate"><span class="pre">NAME</span></code> is the basename of the main file being emitted). That file must be deployed with the rest of the generated code files. By default, <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> will be loaded relative to the main HTML page URL. If it is desirable to load the file from a different location e.g. in a CDN environment, then one can define the <code class="docutils literal notranslate"><span class="pre">Module.locateFile(filename)</span></code> function in the main HTML <code class="docutils literal notranslate"><span class="pre">Module</span></code> object to return the URL of the target location of the <code class="docutils literal notranslate"><span class="pre">NAME.worker.js</span></code> entry point. If this function is not defined in <code class="docutils literal notranslate"><span class="pre">Module</span></code>, then the default location relative to the main HTML file is used.</p>
 </section>
 <section id="allocator-performance">
 <span id="id2"></span><h2>Allocator performance<a class="headerlink" href="#allocator-performance" title="Permalink to this headline">¶</a></h2>
@@ -1628,7 +1630,7 @@ value), so there are tradeoffs here.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.55-git (dev)',
+            VERSION:'3.1.60-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

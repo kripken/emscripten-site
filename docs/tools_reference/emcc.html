@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.55-git (dev) documentation</title>
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.60-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.55-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/>
         <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html"/> 
@@ -917,6 +917,7 @@
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#stack-size">STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#malloc">MALLOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#aborting-malloc">ABORTING_MALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings_reference.html#initial-heap">INITIAL_HEAP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#initial-memory">INITIAL_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#maximum-memory">MAXIMUM_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#allow-memory-growth">ALLOW_MEMORY_GROWTH</a></li>
@@ -997,11 +998,13 @@
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-stack-size">ASYNCIFY_STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-remove">ASYNCIFY_REMOVE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-add">ASYNCIFY_ADD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-propagate-add">ASYNCIFY_PROPAGATE_ADD</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-only">ASYNCIFY_ONLY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-advise">ASYNCIFY_ADVISE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-lazy-load-code">ASYNCIFY_LAZY_LOAD_CODE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings_reference.html#jspi">JSPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1709,10 +1712,17 @@ Specifies a <code class="docutils literal notranslate"><span class="pre">&lt;cmd
 Links against embind library.  Deprecated: Use <code class="docutils literal notranslate"><span class="pre">-lembind</span></code> instead.</p>
 </dd>
 </dl>
-<dl id="emcc-embind-emit-tsd">
+<dl class="simple" id="emcc-embind-emit-tsd">
 <dt><code class="docutils literal notranslate"><span class="pre">--embind-emit-tsd</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[link]
-Generate a TypeScript definition file from the exported embind bindings. The
-program will be instrumented and run in node in order to to generate the file.</p>
+Generates TypeScript definition file.  Deprecated: Use <code class="docutils literal notranslate"><span class="pre">--emit-tsd</span></code> instead.</p>
+</dd>
+</dl>
+<dl id="emcc-emit-tsd">
+<dt><code class="docutils literal notranslate"><span class="pre">--emit-tsd</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[link]
+Generate a TypeScript definition file for the emscripten module. The definition
+file will include exported Wasm functions, runtime exports, and exported
+embind bindings (if used). In order to generate bindings from embind, the
+program will be instrumented and run in node.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--ignore-dynamic-linking</span></code></dt><dd><p>[link]
 Tells the compiler to ignore dynamic linking (the user will need to manually link to the shared libraries later on).</p>
@@ -1789,33 +1799,6 @@ complete, this process will exit.</p>
 <dt><code class="docutils literal notranslate"><span class="pre">--show-ports</span></code></dt><dd><p>[general]
 Shows the list of available projects in the Emscripten Ports repos. After this operation is complete, this process will exit.</p>
 </dd>
-</dl>
-<dl id="emcc-memory-init-file">
-<dt><code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">0|1</span></code></dt><dd><p>[link]
-Specifies whether to emit a separate memory initialization file.</p>
-<blockquote>
-<div><div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Note that this is only relevant when <em>not</em> emitting Wasm, as Wasm embeds the memory init data in the Wasm binary.</p>
-</div>
-</div></blockquote>
-<p>Possible values are:</p>
-<blockquote>
-<div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: Do not emit a separate memory initialization file. Instead keep the static initialization inside the generated JavaScript as text. This is the default setting if compiling with -O0 or -O1 link-time optimization flags.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>: Emit a separate memory initialization file in binary format. This is more efficient than storing it as text inside JavaScript, but does mean you have another file to publish. The binary file will also be loaded asynchronously, which means <code class="docutils literal notranslate"><span class="pre">main()</span></code> will not be called until the file is downloaded and applied; you cannot call any C functions until it arrives. This is the default setting when compiling with -O2 or higher.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <a class="reference internal" href="../getting_started/FAQ.html#faq-when-safe-to-call-compiled-functions"><span class="std std-ref">safest way</span></a> to ensure that it is safe to call C functions (the initialisation file has loaded) is to call a notifier function from <code class="docutils literal notranslate"><span class="pre">main()</span></code>.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you assign a network request to <code class="docutils literal notranslate"><span class="pre">Module.memoryInitializerRequest</span></code> (before the script runs), then it will use that request instead of automatically starting a download for you. This is beneficial in that you can, in your HTML, fire off a request for the memory init file before the script actually arrives. For this to work, the network request should be an XMLHttpRequest with responseType set to <code class="docutils literal notranslate"><span class="pre">'arraybuffer'</span></code>. (You can also put any other object here, all it must provide is a <code class="docutils literal notranslate"><span class="pre">.response</span></code> property containing an ArrayBuffer.)</p>
-</div>
-</li>
-</ul>
-</div></blockquote>
-</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">-Wwarn-absolute-paths</span></code></dt><dd><p>[compile+link]
 Enables warnings about the use of absolute paths in <code class="docutils literal notranslate"><span class="pre">-I</span></code> and <code class="docutils literal notranslate"><span class="pre">-L</span></code> command line directives. This is used to warn against unintentional use of absolute paths, which is sometimes dangerous when referring to nonportable local system headers.</p>
 </dd>
@@ -1865,10 +1848,6 @@ When linking an executable, the <code class="docutils literal notranslate"><span
 </div></blockquote>
 <p>These rules only apply when linking.  When compiling to object code (See <cite>-c</cite>
 below) the name of the output file is irrelevant.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">--memory-init-file</span></code> is used, a <strong>.mem</strong> file will be created in addition to the generated <strong>.js</strong> and/or <strong>.html</strong> file.</p>
-</div>
 </dd>
 </dl>
 <dl class="simple" id="emcc-c">
@@ -2023,7 +2002,7 @@ Prints out the flags <code class="docutils literal notranslate"><span class="pre
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.55-git (dev)',
+            VERSION:'3.1.60-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

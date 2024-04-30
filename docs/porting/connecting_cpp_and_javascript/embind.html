@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.55-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.60-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.55-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -917,6 +917,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#stack-size">STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#malloc">MALLOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#aborting-malloc">ABORTING_MALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#initial-heap">INITIAL_HEAP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#initial-memory">INITIAL_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#maximum-memory">MAXIMUM_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#allow-memory-growth">ALLOW_MEMORY_GROWTH</a></li>
@@ -997,11 +998,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-stack-size">ASYNCIFY_STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-remove">ASYNCIFY_REMOVE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-add">ASYNCIFY_ADD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-propagate-add">ASYNCIFY_PROPAGATE_ADD</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-only">ASYNCIFY_ONLY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-advise">ASYNCIFY_ADVISE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-lazy-load-code">ASYNCIFY_LAZY_LOAD_CODE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#jspi">JSPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../tools_reference/settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1972,6 +1975,10 @@ are available.</p>
 <p><em>Embind</em> must understand the fully-derived type for automatic
 downcasting to work.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><em>Embind</em> does not support this unless RTTI is enabled.</p>
+</div>
 </section>
 </section>
 </section>
@@ -2323,8 +2330,8 @@ and then play the tone.</p>
 <h3>Generating<a class="headerlink" href="#generating" title="Permalink to this headline">¶</a></h3>
 <p>Embind supports generating TypeScript definition files from <a class="reference internal" href="../../api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name" title="EMSCRIPTEN_BINDINGS"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_BINDINGS()</span></code></a>
 blocks. To generate <strong>.d.ts</strong> files invoke <em>emcc</em> with the
-<a class="reference internal" href="../../tools_reference/emcc.html#emcc-embind-emit-tsd"><span class="std std-ref">embind-emit-tsd</span></a> option:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">lembind</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span><span class="n">embind</span><span class="o">-</span><span class="n">emit</span><span class="o">-</span><span class="n">tsd</span> <span class="n">interface</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">ts</span>
+<a class="reference internal" href="../../tools_reference/emcc.html#emcc-emit-tsd"><span class="std std-ref">embind-emit-tsd</span></a> option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">lembind</span> <span class="n">quick_example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">--</span><span class="n">emit</span><span class="o">-</span><span class="n">tsd</span> <span class="n">interface</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">ts</span>
 </pre></div>
 </div>
 <p>Running this command will build the program with an instrumented version of embind
@@ -2479,7 +2486,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.55-git (dev)',
+            VERSION:'3.1.60-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

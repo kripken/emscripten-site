@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FAQ &mdash; Emscripten 3.1.55-git (dev) documentation</title>
+  <title>FAQ &mdash; Emscripten 3.1.60-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.55-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Compiling and Running Projects" href="../compiling/index.html"/>
         <link rel="prev" title="Bug Reporting" href="bug_reports.html"/> 
@@ -917,6 +917,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#stack-size">STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#malloc">MALLOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#aborting-malloc">ABORTING_MALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#initial-heap">INITIAL_HEAP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#initial-memory">INITIAL_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#maximum-memory">MAXIMUM_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#allow-memory-growth">ALLOW_MEMORY_GROWTH</a></li>
@@ -997,11 +998,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-stack-size">ASYNCIFY_STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-remove">ASYNCIFY_REMOVE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-add">ASYNCIFY_ADD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-propagate-add">ASYNCIFY_PROPAGATE_ADD</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-only">ASYNCIFY_ONLY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-advise">ASYNCIFY_ADVISE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-lazy-load-code">ASYNCIFY_LAZY_LOAD_CODE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi">JSPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1598,11 +1601,11 @@ IO. See <a class="reference internal" href="../porting/files/file_systems_overvi
 <span class="pre">function</span> <span class="pre">`x`</span> <span class="pre">called</span> <span class="pre">before</span> <span class="pre">runtime</span> <span class="pre">initialization</span></code>, which is a check enabled in
 <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> builds.)</p>
 <p>Calling a compiled function before a page has fully loaded can result in an
-error, if the function relies on files that may not be present (for example the
-<a class="reference internal" href="../tools_reference/emcc.html#emcc-memory-init-file"><span class="std std-ref">.mem</span></a> file and <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preloaded</span></a> files are loaded asynchronously, and therefore if you just
-place some JS that calls compiled code in a <code class="docutils literal notranslate"><span class="pre">--post-js</span></code>, that code will be
-called synchronously at the end of the combined JS file, potentially before the
-asynchronous event happens, which is bad).</p>
+error, if the function relies on files that may not be present (for example
+<a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preloaded</span></a> files are loaded asynchronously, and
+therefore if you just place some JS that calls compiled code in a <code class="docutils literal notranslate"><span class="pre">--post-js</span></code>,
+that code will be called synchronously at the end of the combined JS file,
+potentially before the asynchronous event happens, which is bad).</p>
 <p>The easiest way to find out when loading is complete is to add a <code class="docutils literal notranslate"><span class="pre">main()</span></code>
 function, and within it call a JavaScript function to notify your code that
 loading is complete.</p>
@@ -2057,7 +2060,7 @@ unnecessary code for.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.55-git (dev)',
+            VERSION:'3.1.60-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

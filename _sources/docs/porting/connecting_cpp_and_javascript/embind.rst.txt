@@ -672,6 +672,8 @@ are available.
 .. note:: *Embind* must understand the fully-derived type for automatic
    downcasting to work.
 
+.. note:: *Embind* does not support this unless RTTI is enabled.
+
 
 Overloaded functions
 ====================
@@ -1041,9 +1043,9 @@ Generating
 
 Embind supports generating TypeScript definition files from :cpp:func:`EMSCRIPTEN_BINDINGS`
 blocks. To generate **.d.ts** files invoke *emcc* with the
-:ref:`embind-emit-tsd <emcc-embind-emit-tsd>` option::
+:ref:`embind-emit-tsd <emcc-emit-tsd>` option::
 
-   emcc -lembind quick_example.cpp --embind-emit-tsd interface.d.ts
+   emcc -lembind quick_example.cpp --emit-tsd interface.d.ts
 
 Running this command will build the program with an instrumented version of embind
 that is then run in *node* to generate the definition files.

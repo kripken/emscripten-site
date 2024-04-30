@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Compiler Settings &mdash; Emscripten 3.1.55-git (dev) documentation</title>
+  <title>Emscripten Compiler Settings &mdash; Emscripten 3.1.60-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.55-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Tools Reference" href="index.html"/>
         <link rel="next" title="Optimizing Code" href="../optimizing/Optimizing-Code.html"/>
         <link rel="prev" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html"/> 
@@ -917,6 +917,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#stack-size">STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#malloc">MALLOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#aborting-malloc">ABORTING_MALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-heap">INITIAL_HEAP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#initial-memory">INITIAL_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#maximum-memory">MAXIMUM_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#allow-memory-growth">ALLOW_MEMORY_GROWTH</a></li>
@@ -997,11 +998,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-stack-size">ASYNCIFY_STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-remove">ASYNCIFY_REMOVE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-add">ASYNCIFY_ADD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asyncify-propagate-add">ASYNCIFY_PROPAGATE_ADD</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-only">ASYNCIFY_ONLY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-advise">ASYNCIFY_ADVISE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-lazy-load-code">ASYNCIFY_LAZY_LOAD_CODE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jspi">JSPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1479,17 +1482,28 @@ previously. If you don’t want that, just stop passing it in at link time.</p>
 This function will always abort on allocation failure if exceptions are disabled.
 If you want new to return 0 on failure, use it with std::nothrow.</p>
 </section>
+<section id="initial-heap">
+<span id="id10"></span><h2>INITIAL_HEAP<a class="headerlink" href="#initial-heap" title="Permalink to this headline">¶</a></h2>
+<p>The initial amount of heap memory available to the program.  This is the
+memory region available for dynamic allocations via <cite>sbrk</cite>, <cite>malloc</cite> and <cite>new</cite>.</p>
+<p>Unlike INITIAL_MEMORY, this setting allows the static and dynamic regions of
+your programs memory to independently grow. In most cases we recommend using
+this setting rather than <cite>INITIAL_MEMORY</cite>. However, this setting does not work
+for imported memories (e.g. when dynamic linking is used).</p>
+</section>
 <section id="initial-memory">
-<span id="id10"></span><h2>INITIAL_MEMORY<a class="headerlink" href="#initial-memory" title="Permalink to this headline">¶</a></h2>
+<span id="id11"></span><h2>INITIAL_MEMORY<a class="headerlink" href="#initial-memory" title="Permalink to this headline">¶</a></h2>
 <p>The initial amount of memory to use. Using more memory than this will
 cause us to expand the heap, which can be costly with typed arrays:
 we need to copy the old heap into a new one in that case.
 If ALLOW_MEMORY_GROWTH is set, this initial amount of memory can increase
 later; if not, then it is the final and total amount of memory.</p>
+<p>By default, this value is calculated based on INITIAL_HEAP, STACK_SIZE,
+as well the size of static data in input modules.</p>
 <p>(This option was formerly called TOTAL_MEMORY.)</p>
 </section>
 <section id="maximum-memory">
-<span id="id11"></span><h2>MAXIMUM_MEMORY<a class="headerlink" href="#maximum-memory" title="Permalink to this headline">¶</a></h2>
+<span id="id12"></span><h2>MAXIMUM_MEMORY<a class="headerlink" href="#maximum-memory" title="Permalink to this headline">¶</a></h2>
 <p>Set the maximum size of memory in the wasm module (in bytes). This is only
 relevant when ALLOW_MEMORY_GROWTH is set, as without growth, the size of
 INITIAL_MEMORY is the final size of memory anyhow.</p>
@@ -1511,7 +1525,7 @@ work on all VMs.</p></li>
 <p>(This option was formerly called WASM_MEM_MAX and BINARYEN_MEM_MAX.)</p>
 </section>
 <section id="allow-memory-growth">
-<span id="id12"></span><h2>ALLOW_MEMORY_GROWTH<a class="headerlink" href="#allow-memory-growth" title="Permalink to this headline">¶</a></h2>
+<span id="id13"></span><h2>ALLOW_MEMORY_GROWTH<a class="headerlink" href="#allow-memory-growth" title="Permalink to this headline">¶</a></h2>
 <p>If false, we abort with an error if we try to allocate more memory than
 we can (INITIAL_MEMORY). If true, we will grow the memory arrays at
 runtime, seamlessly and dynamically.
@@ -1526,7 +1540,7 @@ returning 0 when it fails, and also of being able to allocate more
 memory from the system as necessary.</p>
 </section>
 <section id="memory-growth-geometric-step">
-<span id="id13"></span><h2>MEMORY_GROWTH_GEOMETRIC_STEP<a class="headerlink" href="#memory-growth-geometric-step" title="Permalink to this headline">¶</a></h2>
+<span id="id14"></span><h2>MEMORY_GROWTH_GEOMETRIC_STEP<a class="headerlink" href="#memory-growth-geometric-step" title="Permalink to this headline">¶</a></h2>
 <p>If ALLOW_MEMORY_GROWTH is true, this variable specifies the geometric
 overgrowth rate of the heap at resize. Specify MEMORY_GROWTH_GEOMETRIC_STEP=0
 to disable overgrowing the heap at all, or e.g.
@@ -1537,14 +1551,14 @@ this value is, the more memory is conserved, at the performance of more
 stuttering when the heap grows. (profiled to be on the order of ~20 msecs)</p>
 </section>
 <section id="memory-growth-geometric-cap">
-<span id="id14"></span><h2>MEMORY_GROWTH_GEOMETRIC_CAP<a class="headerlink" href="#memory-growth-geometric-cap" title="Permalink to this headline">¶</a></h2>
+<span id="id15"></span><h2>MEMORY_GROWTH_GEOMETRIC_CAP<a class="headerlink" href="#memory-growth-geometric-cap" title="Permalink to this headline">¶</a></h2>
 <p>Specifies a cap for the maximum geometric overgrowth size, in bytes. Use
 this value to constrain the geometric grow to not exceed a specific rate.
 Pass MEMORY_GROWTH_GEOMETRIC_CAP=0 to disable the cap and allow unbounded
 size increases.</p>
 </section>
 <section id="memory-growth-linear-step">
-<span id="id15"></span><h2>MEMORY_GROWTH_LINEAR_STEP<a class="headerlink" href="#memory-growth-linear-step" title="Permalink to this headline">¶</a></h2>
+<span id="id16"></span><h2>MEMORY_GROWTH_LINEAR_STEP<a class="headerlink" href="#memory-growth-linear-step" title="Permalink to this headline">¶</a></h2>
 <p>If ALLOW_MEMORY_GROWTH is true and MEMORY_GROWTH_LINEAR_STEP == -1, then
 geometric memory overgrowth is utilized (above variable). Set
 MEMORY_GROWTH_LINEAR_STEP to a multiple of WASM page size (64KB), eg. 16MB to
@@ -1553,7 +1567,7 @@ MEMORY_GROWTH_LINEAR_STEP is used, the variables MEMORY_GROWTH_GEOMETRIC_STEP
 and MEMORY_GROWTH_GEOMETRIC_CAP are ignored.</p>
 </section>
 <section id="memory64">
-<span id="id16"></span><h2>MEMORY64<a class="headerlink" href="#memory64" title="Permalink to this headline">¶</a></h2>
+<span id="id17"></span><h2>MEMORY64<a class="headerlink" href="#memory64" title="Permalink to this headline">¶</a></h2>
 <p>The “architecture” to compile for. 0 means the default wasm32, 1 is
 the full end-to-end wasm64 mode, and 2 is wasm64 for clang/lld but lowered to
 wasm32 in Binaryen (such that it can run on wasm32 engines, while internally
@@ -1569,7 +1583,7 @@ Assumes WASM_BIGINT.</p>
 </div>
 </section>
 <section id="initial-table">
-<span id="id17"></span><h2>INITIAL_TABLE<a class="headerlink" href="#initial-table" title="Permalink to this headline">¶</a></h2>
+<span id="id18"></span><h2>INITIAL_TABLE<a class="headerlink" href="#initial-table" title="Permalink to this headline">¶</a></h2>
 <p>Sets the initial size of the table when MAIN_MODULE or SIDE_MODULE is use
 (and not otherwise). Normally Emscripten can determine the size of the table
 at link time, but in SPLIT_MODULE mode, wasm-split often needs to grow the
@@ -1580,27 +1594,27 @@ setting may be removed at any time and should not be used except in
 conjunction with SPLIT_MODULE and dynamic linking.</p>
 </section>
 <section id="allow-table-growth">
-<span id="id18"></span><h2>ALLOW_TABLE_GROWTH<a class="headerlink" href="#allow-table-growth" title="Permalink to this headline">¶</a></h2>
+<span id="id19"></span><h2>ALLOW_TABLE_GROWTH<a class="headerlink" href="#allow-table-growth" title="Permalink to this headline">¶</a></h2>
 <p>If true, allows more functions to be added to the table at runtime. This is
 necessary for dynamic linking, and set automatically in that mode.</p>
 </section>
 <section id="global-base">
-<span id="id19"></span><h2>GLOBAL_BASE<a class="headerlink" href="#global-base" title="Permalink to this headline">¶</a></h2>
+<span id="id20"></span><h2>GLOBAL_BASE<a class="headerlink" href="#global-base" title="Permalink to this headline">¶</a></h2>
 <p>Where global data begins; the start of static memory.
 A GLOBAL_BASE of 1024 or above is useful for optimizing load/store offsets, as it
 enables the –low-memory-unused pass</p>
 </section>
 <section id="table-base">
-<span id="id20"></span><h2>TABLE_BASE<a class="headerlink" href="#table-base" title="Permalink to this headline">¶</a></h2>
+<span id="id21"></span><h2>TABLE_BASE<a class="headerlink" href="#table-base" title="Permalink to this headline">¶</a></h2>
 <p>Where where table slots (function addresses) are allocated.
 This must be at least 1 to reserve the zero slot for the null pointer.</p>
 </section>
 <section id="use-closure-compiler">
-<span id="id21"></span><h2>USE_CLOSURE_COMPILER<a class="headerlink" href="#use-closure-compiler" title="Permalink to this headline">¶</a></h2>
+<span id="id22"></span><h2>USE_CLOSURE_COMPILER<a class="headerlink" href="#use-closure-compiler" title="Permalink to this headline">¶</a></h2>
 <p>Whether closure compiling is being run on this output</p>
 </section>
 <section id="closure-warnings">
-<span id="id22"></span><h2>CLOSURE_WARNINGS<a class="headerlink" href="#closure-warnings" title="Permalink to this headline">¶</a></h2>
+<span id="id23"></span><h2>CLOSURE_WARNINGS<a class="headerlink" href="#closure-warnings" title="Permalink to this headline">¶</a></h2>
 <p>Deprecated: Use the standard warnings flags instead. e.g. <code class="docutils literal notranslate"><span class="pre">-Wclosure</span></code>,
 <code class="docutils literal notranslate"><span class="pre">-Wno-closure</span></code>, <code class="docutils literal notranslate"><span class="pre">-Werror=closure</span></code>.
 options: ‘quiet’, ‘warn’, ‘error’. If set to ‘warn’, Closure warnings are
@@ -1612,11 +1626,11 @@ errors, similar to -Werror compiler flag.</p>
 </div>
 </section>
 <section id="ignore-closure-compiler-errors">
-<span id="id23"></span><h2>IGNORE_CLOSURE_COMPILER_ERRORS<a class="headerlink" href="#ignore-closure-compiler-errors" title="Permalink to this headline">¶</a></h2>
+<span id="id24"></span><h2>IGNORE_CLOSURE_COMPILER_ERRORS<a class="headerlink" href="#ignore-closure-compiler-errors" title="Permalink to this headline">¶</a></h2>
 <p>Ignore closure warnings and errors (like on duplicate definitions)</p>
 </section>
 <section id="declare-asm-module-exports">
-<span id="id24"></span><h2>DECLARE_ASM_MODULE_EXPORTS<a class="headerlink" href="#declare-asm-module-exports" title="Permalink to this headline">¶</a></h2>
+<span id="id25"></span><h2>DECLARE_ASM_MODULE_EXPORTS<a class="headerlink" href="#declare-asm-module-exports" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, each wasm module export is individually declared with a
 JavaScript “var” definition. This is the simple and recommended approach.
 However, this does increase code size (especially if you have many such
@@ -1629,7 +1643,7 @@ also things can break if the scope the code is in is not the global scope
 (e.g. if you manually enclose them in a function scope).</p>
 </section>
 <section id="inlining-limit">
-<span id="id25"></span><h2>INLINING_LIMIT<a class="headerlink" href="#inlining-limit" title="Permalink to this headline">¶</a></h2>
+<span id="id26"></span><h2>INLINING_LIMIT<a class="headerlink" href="#inlining-limit" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, prevents inlining. If 0, we will inline normally in LLVM.
 This does not affect the inlining policy in Binaryen.</p>
 <div class="admonition note">
@@ -1638,14 +1652,14 @@ This does not affect the inlining policy in Binaryen.</p>
 </div>
 </section>
 <section id="support-big-endian">
-<span id="id26"></span><h2>SUPPORT_BIG_ENDIAN<a class="headerlink" href="#support-big-endian" title="Permalink to this headline">¶</a></h2>
+<span id="id27"></span><h2>SUPPORT_BIG_ENDIAN<a class="headerlink" href="#support-big-endian" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, perform acorn pass that converts each HEAP access into a
 function call that uses DataView to enforce LE byte order for HEAP buffer;
 This makes generated JavaScript run on BE as well as LE machines. (If 0, only
 LE systems are supported). Does not affect generated wasm.</p>
 </section>
 <section id="safe-heap">
-<span id="id27"></span><h2>SAFE_HEAP<a class="headerlink" href="#safe-heap" title="Permalink to this headline">¶</a></h2>
+<span id="id28"></span><h2>SAFE_HEAP<a class="headerlink" href="#safe-heap" title="Permalink to this headline">¶</a></h2>
 <p>Check each write to the heap, for example, this will give a clear
 error on what would be segfaults in a native build (like dereferencing
 0). See runtime_safe_heap.js for the actual checks performed.
@@ -1656,11 +1670,11 @@ on some architectures unaligned accesses can be very slow, so it is still
 a good idea to verify your code with the more strict mode 1)</p>
 </section>
 <section id="safe-heap-log">
-<span id="id28"></span><h2>SAFE_HEAP_LOG<a class="headerlink" href="#safe-heap-log" title="Permalink to this headline">¶</a></h2>
+<span id="id29"></span><h2>SAFE_HEAP_LOG<a class="headerlink" href="#safe-heap-log" title="Permalink to this headline">¶</a></h2>
 <p>Log out all SAFE_HEAP operations</p>
 </section>
 <section id="emulate-function-pointer-casts">
-<span id="id29"></span><h2>EMULATE_FUNCTION_POINTER_CASTS<a class="headerlink" href="#emulate-function-pointer-casts" title="Permalink to this headline">¶</a></h2>
+<span id="id30"></span><h2>EMULATE_FUNCTION_POINTER_CASTS<a class="headerlink" href="#emulate-function-pointer-casts" title="Permalink to this headline">¶</a></h2>
 <p>Allows function pointers to be cast, wraps each call of an incorrect type
 with a runtime correction.  This adds overhead and should not be used
 normally.  It also forces ALIASING_FUNCTION_POINTERS to 0.  Aside from making
@@ -1673,11 +1687,11 @@ this is all undefined behavior). This approaches appears good enough to
 support Python, which is the main use case motivating this feature.</p>
 </section>
 <section id="exception-debug">
-<span id="id30"></span><h2>EXCEPTION_DEBUG<a class="headerlink" href="#exception-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id31"></span><h2>EXCEPTION_DEBUG<a class="headerlink" href="#exception-debug" title="Permalink to this headline">¶</a></h2>
 <p>Print out exceptions in emscriptened code.</p>
 </section>
 <section id="demangle-support">
-<span id="id31"></span><h2>DEMANGLE_SUPPORT<a class="headerlink" href="#demangle-support" title="Permalink to this headline">¶</a></h2>
+<span id="id32"></span><h2>DEMANGLE_SUPPORT<a class="headerlink" href="#demangle-support" title="Permalink to this headline">¶</a></h2>
 <p>If 1, export <cite>demangle</cite> and <cite>stackTrace</cite> JS library functions.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1685,7 +1699,7 @@ support Python, which is the main use case motivating this feature.</p>
 </div>
 </section>
 <section id="library-debug">
-<span id="id32"></span><h2>LIBRARY_DEBUG<a class="headerlink" href="#library-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id33"></span><h2>LIBRARY_DEBUG<a class="headerlink" href="#library-debug" title="Permalink to this headline">¶</a></h2>
 <p>Print out when we enter a library call (library*.js). You can also unset
 runtimeDebug at runtime for logging to cease, and can set it when you want
 it back. A simple way to set it in C++ is:</p>
@@ -1694,26 +1708,26 @@ it back. A simple way to set it in C++ is:</p>
 </div>
 </section>
 <section id="syscall-debug">
-<span id="id33"></span><h2>SYSCALL_DEBUG<a class="headerlink" href="#syscall-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id34"></span><h2>SYSCALL_DEBUG<a class="headerlink" href="#syscall-debug" title="Permalink to this headline">¶</a></h2>
 <p>Print out all musl syscalls, including translating their numeric index
 to the string name, which can be convenient for debugging. (Other system
 calls are not numbered and already have clear names; use LIBRARY_DEBUG
 to get logging for all of them.)</p>
 </section>
 <section id="socket-debug">
-<span id="id34"></span><h2>SOCKET_DEBUG<a class="headerlink" href="#socket-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id35"></span><h2>SOCKET_DEBUG<a class="headerlink" href="#socket-debug" title="Permalink to this headline">¶</a></h2>
 <p>Log out socket/network data transfer.</p>
 </section>
 <section id="dylink-debug">
-<span id="id35"></span><h2>DYLINK_DEBUG<a class="headerlink" href="#dylink-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id36"></span><h2>DYLINK_DEBUG<a class="headerlink" href="#dylink-debug" title="Permalink to this headline">¶</a></h2>
 <p>Log dynamic linker information</p>
 </section>
 <section id="fs-debug">
-<span id="id36"></span><h2>FS_DEBUG<a class="headerlink" href="#fs-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id37"></span><h2>FS_DEBUG<a class="headerlink" href="#fs-debug" title="Permalink to this headline">¶</a></h2>
 <p>Register file system callbacks using trackingDelegate in library_fs.js</p>
 </section>
 <section id="socket-webrtc">
-<span id="id37"></span><h2>SOCKET_WEBRTC<a class="headerlink" href="#socket-webrtc" title="Permalink to this headline">¶</a></h2>
+<span id="id38"></span><h2>SOCKET_WEBRTC<a class="headerlink" href="#socket-webrtc" title="Permalink to this headline">¶</a></h2>
 <p>As well as being configurable at compile time via the “-s” option the
 WEBSOCKET_URL and WEBSOCKET_SUBPROTOCOL
 settings may configured at run time via the Module object e.g.
@@ -1724,7 +1738,7 @@ Run time configuration may be useful as it lets an application select
 multiple different services.</p>
 </section>
 <section id="websocket-url">
-<span id="id38"></span><h2>WEBSOCKET_URL<a class="headerlink" href="#websocket-url" title="Permalink to this headline">¶</a></h2>
+<span id="id39"></span><h2>WEBSOCKET_URL<a class="headerlink" href="#websocket-url" title="Permalink to this headline">¶</a></h2>
 <p>A string containing either a WebSocket URL prefix (ws:// or wss://) or a complete
 RFC 6455 URL - “ws[s]:” “//” host [ “:” port ] path [ “?” query ].
 In the (default) case of only a prefix being specified the URL will be constructed from
@@ -1732,59 +1746,59 @@ prefix + addr + ‘:’ + port
 where addr and port are derived from the socket connect/bind/accept calls.</p>
 </section>
 <section id="proxy-posix-sockets">
-<span id="id39"></span><h2>PROXY_POSIX_SOCKETS<a class="headerlink" href="#proxy-posix-sockets" title="Permalink to this headline">¶</a></h2>
+<span id="id40"></span><h2>PROXY_POSIX_SOCKETS<a class="headerlink" href="#proxy-posix-sockets" title="Permalink to this headline">¶</a></h2>
 <p>If 1, the POSIX sockets API uses a native bridge process server to proxy sockets calls
 from browser to native world.</p>
 </section>
 <section id="websocket-subprotocol">
-<span id="id40"></span><h2>WEBSOCKET_SUBPROTOCOL<a class="headerlink" href="#websocket-subprotocol" title="Permalink to this headline">¶</a></h2>
+<span id="id41"></span><h2>WEBSOCKET_SUBPROTOCOL<a class="headerlink" href="#websocket-subprotocol" title="Permalink to this headline">¶</a></h2>
 <p>A string containing a comma separated list of WebSocket subprotocols
 as would be present in the Sec-WebSocket-Protocol header.
 You can set ‘null’, if you don’t want to specify it.</p>
 </section>
 <section id="openal-debug">
-<span id="id41"></span><h2>OPENAL_DEBUG<a class="headerlink" href="#openal-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id42"></span><h2>OPENAL_DEBUG<a class="headerlink" href="#openal-debug" title="Permalink to this headline">¶</a></h2>
 <p>Print out debugging information from our OpenAL implementation.</p>
 </section>
 <section id="websocket-debug">
-<span id="id42"></span><h2>WEBSOCKET_DEBUG<a class="headerlink" href="#websocket-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id43"></span><h2>WEBSOCKET_DEBUG<a class="headerlink" href="#websocket-debug" title="Permalink to this headline">¶</a></h2>
 <p>If 1, prints out debugging related to calls from <code class="docutils literal notranslate"><span class="pre">emscripten_web_socket_*</span></code>
 functions in <code class="docutils literal notranslate"><span class="pre">emscripten/websocket.h</span></code>.
 If 2, additionally traces bytes communicated via the sockets.</p>
 </section>
 <section id="gl-assertions">
-<span id="id43"></span><h2>GL_ASSERTIONS<a class="headerlink" href="#gl-assertions" title="Permalink to this headline">¶</a></h2>
+<span id="id44"></span><h2>GL_ASSERTIONS<a class="headerlink" href="#gl-assertions" title="Permalink to this headline">¶</a></h2>
 <p>Adds extra checks for error situations in the GL library. Can impact
 performance.</p>
 </section>
 <section id="trace-webgl-calls">
-<span id="id44"></span><h2>TRACE_WEBGL_CALLS<a class="headerlink" href="#trace-webgl-calls" title="Permalink to this headline">¶</a></h2>
+<span id="id45"></span><h2>TRACE_WEBGL_CALLS<a class="headerlink" href="#trace-webgl-calls" title="Permalink to this headline">¶</a></h2>
 <p>If enabled, prints out all API calls to WebGL contexts. (<em>very</em> verbose)</p>
 </section>
 <section id="gl-debug">
-<span id="id45"></span><h2>GL_DEBUG<a class="headerlink" href="#gl-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id46"></span><h2>GL_DEBUG<a class="headerlink" href="#gl-debug" title="Permalink to this headline">¶</a></h2>
 <p>Enables more verbose debug printing of WebGL related operations. As with
 LIBRARY_DEBUG, this is toggleable at runtime with option GL.debug.</p>
 </section>
 <section id="gl-testing">
-<span id="id46"></span><h2>GL_TESTING<a class="headerlink" href="#gl-testing" title="Permalink to this headline">¶</a></h2>
+<span id="id47"></span><h2>GL_TESTING<a class="headerlink" href="#gl-testing" title="Permalink to this headline">¶</a></h2>
 <p>When enabled, sets preserveDrawingBuffer in the context, to allow tests to
 work (but adds overhead)</p>
 </section>
 <section id="gl-max-temp-buffer-size">
-<span id="id47"></span><h2>GL_MAX_TEMP_BUFFER_SIZE<a class="headerlink" href="#gl-max-temp-buffer-size" title="Permalink to this headline">¶</a></h2>
+<span id="id48"></span><h2>GL_MAX_TEMP_BUFFER_SIZE<a class="headerlink" href="#gl-max-temp-buffer-size" title="Permalink to this headline">¶</a></h2>
 <p>How large GL emulation temp buffers are</p>
 </section>
 <section id="gl-unsafe-opts">
-<span id="id48"></span><h2>GL_UNSAFE_OPTS<a class="headerlink" href="#gl-unsafe-opts" title="Permalink to this headline">¶</a></h2>
+<span id="id49"></span><h2>GL_UNSAFE_OPTS<a class="headerlink" href="#gl-unsafe-opts" title="Permalink to this headline">¶</a></h2>
 <p>Enables some potentially-unsafe optimizations in GL emulation code</p>
 </section>
 <section id="full-es2">
-<span id="id49"></span><h2>FULL_ES2<a class="headerlink" href="#full-es2" title="Permalink to this headline">¶</a></h2>
+<span id="id50"></span><h2>FULL_ES2<a class="headerlink" href="#full-es2" title="Permalink to this headline">¶</a></h2>
 <p>Forces support for all GLES2 features, not just the WebGL-friendly subset.</p>
 </section>
 <section id="gl-emulate-gles-version-string-format">
-<span id="id50"></span><h2>GL_EMULATE_GLES_VERSION_STRING_FORMAT<a class="headerlink" href="#gl-emulate-gles-version-string-format" title="Permalink to this headline">¶</a></h2>
+<span id="id51"></span><h2>GL_EMULATE_GLES_VERSION_STRING_FORMAT<a class="headerlink" href="#gl-emulate-gles-version-string-format" title="Permalink to this headline">¶</a></h2>
 <p>If true, glGetString() for GL_VERSION and GL_SHADING_LANGUAGE_VERSION will
 return strings OpenGL ES format “Open GL ES … (WebGL …)” rather than the
 WebGL format. If false, the direct WebGL format strings are returned. Set
@@ -1794,19 +1808,19 @@ false to make GL contexts appear like WebGL contexts and to save some bytes
 from the output.</p>
 </section>
 <section id="gl-extensions-in-prefixed-format">
-<span id="id51"></span><h2>GL_EXTENSIONS_IN_PREFIXED_FORMAT<a class="headerlink" href="#gl-extensions-in-prefixed-format" title="Permalink to this headline">¶</a></h2>
+<span id="id52"></span><h2>GL_EXTENSIONS_IN_PREFIXED_FORMAT<a class="headerlink" href="#gl-extensions-in-prefixed-format" title="Permalink to this headline">¶</a></h2>
 <p>If true, all GL extensions are advertised in both unprefixed WebGL extension
 format, but also in desktop/mobile GLES/GL extension format with <code class="docutils literal notranslate"><span class="pre">GL_</span></code>
 prefix.</p>
 </section>
 <section id="gl-support-automatic-enable-extensions">
-<span id="id52"></span><h2>GL_SUPPORT_AUTOMATIC_ENABLE_EXTENSIONS<a class="headerlink" href="#gl-support-automatic-enable-extensions" title="Permalink to this headline">¶</a></h2>
+<span id="id53"></span><h2>GL_SUPPORT_AUTOMATIC_ENABLE_EXTENSIONS<a class="headerlink" href="#gl-support-automatic-enable-extensions" title="Permalink to this headline">¶</a></h2>
 <p>If true, adds support for automatically enabling all GL extensions for
 GLES/GL emulation purposes. This takes up code size. If you set this to 0,
 you will need to manually enable the extensions you need.</p>
 </section>
 <section id="gl-support-simple-enable-extensions">
-<span id="id53"></span><h2>GL_SUPPORT_SIMPLE_ENABLE_EXTENSIONS<a class="headerlink" href="#gl-support-simple-enable-extensions" title="Permalink to this headline">¶</a></h2>
+<span id="id54"></span><h2>GL_SUPPORT_SIMPLE_ENABLE_EXTENSIONS<a class="headerlink" href="#gl-support-simple-enable-extensions" title="Permalink to this headline">¶</a></h2>
 <p>If true, the function <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_enable_extension()</span></code> can be called to
 enable any WebGL extension. If false, to save code size,
 <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_enable_extension()</span></code> cannot be called to enable any of extensions
@@ -1820,18 +1834,18 @@ N.B. if setting this to 0, GL_SUPPORT_AUTOMATIC_ENABLE_EXTENSIONS must be set
 to zero as well.</p>
 </section>
 <section id="gl-track-errors">
-<span id="id54"></span><h2>GL_TRACK_ERRORS<a class="headerlink" href="#gl-track-errors" title="Permalink to this headline">¶</a></h2>
+<span id="id55"></span><h2>GL_TRACK_ERRORS<a class="headerlink" href="#gl-track-errors" title="Permalink to this headline">¶</a></h2>
 <p>If set to 0, Emscripten GLES2-&gt;WebGL translation layer does not track the kind
 of GL errors that exist in GLES2 but do not exist in WebGL. Settings this to 0
 saves code size. (Good to keep at 1 for development)</p>
 </section>
 <section id="gl-support-explicit-swap-control">
-<span id="id55"></span><h2>GL_SUPPORT_EXPLICIT_SWAP_CONTROL<a class="headerlink" href="#gl-support-explicit-swap-control" title="Permalink to this headline">¶</a></h2>
+<span id="id56"></span><h2>GL_SUPPORT_EXPLICIT_SWAP_CONTROL<a class="headerlink" href="#gl-support-explicit-swap-control" title="Permalink to this headline">¶</a></h2>
 <p>If true, GL contexts support the explicitSwapControl context creation flag.
 Set to 0 to save a little bit of space on projects that do not need it.</p>
 </section>
 <section id="gl-pool-temp-buffers">
-<span id="id56"></span><h2>GL_POOL_TEMP_BUFFERS<a class="headerlink" href="#gl-pool-temp-buffers" title="Permalink to this headline">¶</a></h2>
+<span id="id57"></span><h2>GL_POOL_TEMP_BUFFERS<a class="headerlink" href="#gl-pool-temp-buffers" title="Permalink to this headline">¶</a></h2>
 <p>If true, calls to glUniform*fv and glUniformMatrix*fv utilize a pool of
 preallocated temporary buffers for common small sizes to avoid generating
 temporary garbage for WebGL 1. Disable this to optimize generated size of the
@@ -1840,27 +1854,27 @@ you are only using WebGL 2 and do not support WebGL 1, this is not needed and
 you can turn it off.</p>
 </section>
 <section id="gl-explicit-uniform-location">
-<span id="id57"></span><h2>GL_EXPLICIT_UNIFORM_LOCATION<a class="headerlink" href="#gl-explicit-uniform-location" title="Permalink to this headline">¶</a></h2>
+<span id="id58"></span><h2>GL_EXPLICIT_UNIFORM_LOCATION<a class="headerlink" href="#gl-explicit-uniform-location" title="Permalink to this headline">¶</a></h2>
 <p>If true, enables support for the EMSCRIPTEN_explicit_uniform_location WebGL
 extension. See docs/EMSCRIPTEN_explicit_uniform_location.txt</p>
 </section>
 <section id="gl-explicit-uniform-binding">
-<span id="id58"></span><h2>GL_EXPLICIT_UNIFORM_BINDING<a class="headerlink" href="#gl-explicit-uniform-binding" title="Permalink to this headline">¶</a></h2>
+<span id="id59"></span><h2>GL_EXPLICIT_UNIFORM_BINDING<a class="headerlink" href="#gl-explicit-uniform-binding" title="Permalink to this headline">¶</a></h2>
 <p>If true, enables support for the EMSCRIPTEN_uniform_layout_binding WebGL
 extension. See docs/EMSCRIPTEN_explicit_uniform_binding.txt</p>
 </section>
 <section id="use-webgl2">
-<span id="id59"></span><h2>USE_WEBGL2<a class="headerlink" href="#use-webgl2" title="Permalink to this headline">¶</a></h2>
+<span id="id60"></span><h2>USE_WEBGL2<a class="headerlink" href="#use-webgl2" title="Permalink to this headline">¶</a></h2>
 <p>Deprecated. Pass -sMAX_WEBGL_VERSION=2 to target WebGL 2.0.</p>
 </section>
 <section id="min-webgl-version">
-<span id="id60"></span><h2>MIN_WEBGL_VERSION<a class="headerlink" href="#min-webgl-version" title="Permalink to this headline">¶</a></h2>
+<span id="id61"></span><h2>MIN_WEBGL_VERSION<a class="headerlink" href="#min-webgl-version" title="Permalink to this headline">¶</a></h2>
 <p>Specifies the lowest WebGL version to target. Pass -sMIN_WEBGL_VERSION=1
 to enable targeting WebGL 1, and -sMIN_WEBGL_VERSION=2 to drop support
 for WebGL 1.0</p>
 </section>
 <section id="max-webgl-version">
-<span id="id61"></span><h2>MAX_WEBGL_VERSION<a class="headerlink" href="#max-webgl-version" title="Permalink to this headline">¶</a></h2>
+<span id="id62"></span><h2>MAX_WEBGL_VERSION<a class="headerlink" href="#max-webgl-version" title="Permalink to this headline">¶</a></h2>
 <p>Specifies the highest WebGL version to target. Pass -sMAX_WEBGL_VERSION=2
 to enable targeting WebGL 2. If WebGL 2 is enabled, some APIs (EGL, GLUT, SDL)
 will default to creating a WebGL 2 context if no version is specified.
@@ -1871,7 +1885,7 @@ such a fallback, you can try to create a context with WebGL2, and if that
 fails try to create one with WebGL1.</p>
 </section>
 <section id="webgl2-backwards-compatibility-emulation">
-<span id="id62"></span><h2>WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION<a class="headerlink" href="#webgl2-backwards-compatibility-emulation" title="Permalink to this headline">¶</a></h2>
+<span id="id63"></span><h2>WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION<a class="headerlink" href="#webgl2-backwards-compatibility-emulation" title="Permalink to this headline">¶</a></h2>
 <p>If true, emulates some WebGL 1 features on WebGL 2 contexts, meaning that
 applications that use WebGL 1/GLES 2 can initialize a WebGL 2/GLES3 context,
 but still keep using WebGL1/GLES 2 functionality that no longer is supported
@@ -1880,18 +1894,18 @@ in GLSLES 1.00 shaders, support for unsized internal texture formats, and the
 GL_HALF_FLOAT_OES != GL_HALF_FLOAT mixup.</p>
 </section>
 <section id="full-es3">
-<span id="id63"></span><h2>FULL_ES3<a class="headerlink" href="#full-es3" title="Permalink to this headline">¶</a></h2>
+<span id="id64"></span><h2>FULL_ES3<a class="headerlink" href="#full-es3" title="Permalink to this headline">¶</a></h2>
 <p>Forces support for all GLES3 features, not just the WebGL2-friendly subset.
 This automatically turns on FULL_ES2 and WebGL2 support.</p>
 </section>
 <section id="legacy-gl-emulation">
-<span id="id64"></span><h2>LEGACY_GL_EMULATION<a class="headerlink" href="#legacy-gl-emulation" title="Permalink to this headline">¶</a></h2>
+<span id="id65"></span><h2>LEGACY_GL_EMULATION<a class="headerlink" href="#legacy-gl-emulation" title="Permalink to this headline">¶</a></h2>
 <p>Includes code to emulate various desktop GL features. Incomplete but useful
 in some cases, see
 <a class="reference external" href="http://kripken.github.io/emscripten-site/docs/porting/multimedia_and_graphics/OpenGL-support.html">http://kripken.github.io/emscripten-site/docs/porting/multimedia_and_graphics/OpenGL-support.html</a></p>
 </section>
 <section id="gl-ffp-only">
-<span id="id65"></span><h2>GL_FFP_ONLY<a class="headerlink" href="#gl-ffp-only" title="Permalink to this headline">¶</a></h2>
+<span id="id66"></span><h2>GL_FFP_ONLY<a class="headerlink" href="#gl-ffp-only" title="Permalink to this headline">¶</a></h2>
 <p>If you specified LEGACY_GL_EMULATION = 1 and only use fixed function pipeline
 in your code, you can also set this to 1 to signal the GL emulation layer
 that it can perform extra optimizations by knowing that the user code does
@@ -1899,17 +1913,17 @@ not use shaders at all. If LEGACY_GL_EMULATION = 0, this setting has no
 effect.</p>
 </section>
 <section id="gl-preinitialized-context">
-<span id="id66"></span><h2>GL_PREINITIALIZED_CONTEXT<a class="headerlink" href="#gl-preinitialized-context" title="Permalink to this headline">¶</a></h2>
+<span id="id67"></span><h2>GL_PREINITIALIZED_CONTEXT<a class="headerlink" href="#gl-preinitialized-context" title="Permalink to this headline">¶</a></h2>
 <p>If you want to create the WebGL context up front in JS code, set this to 1
 and set Module[‘preinitializedWebGLContext’] to a precreated WebGL context.
 WebGL initialization afterwards will use this GL context to render.</p>
 </section>
 <section id="use-webgpu">
-<span id="id67"></span><h2>USE_WEBGPU<a class="headerlink" href="#use-webgpu" title="Permalink to this headline">¶</a></h2>
+<span id="id68"></span><h2>USE_WEBGPU<a class="headerlink" href="#use-webgpu" title="Permalink to this headline">¶</a></h2>
 <p>Enables support for WebGPU (via “webgpu/webgpu.h”).</p>
 </section>
 <section id="stb-image">
-<span id="id68"></span><h2>STB_IMAGE<a class="headerlink" href="#stb-image" title="Permalink to this headline">¶</a></h2>
+<span id="id69"></span><h2>STB_IMAGE<a class="headerlink" href="#stb-image" title="Permalink to this headline">¶</a></h2>
 <p>Enables building of stb-image, a tiny public-domain library for decoding
 images, allowing decoding of images without using the browser’s built-in
 decoders. The benefit is that this can be done synchronously, however, it
@@ -1918,14 +1932,14 @@ used automatically from IMG_Load and IMG_Load_RW. You can also call the
 <code class="docutils literal notranslate"><span class="pre">stbi_*</span></code> functions directly yourself.</p>
 </section>
 <section id="gl-disable-half-float-extension-if-broken">
-<span id="id69"></span><h2>GL_DISABLE_HALF_FLOAT_EXTENSION_IF_BROKEN<a class="headerlink" href="#gl-disable-half-float-extension-if-broken" title="Permalink to this headline">¶</a></h2>
+<span id="id70"></span><h2>GL_DISABLE_HALF_FLOAT_EXTENSION_IF_BROKEN<a class="headerlink" href="#gl-disable-half-float-extension-if-broken" title="Permalink to this headline">¶</a></h2>
 <p>From Safari 8 (where WebGL was introduced to Safari) onwards, OES_texture_half_float and OES_texture_half_float_linear extensions
 are broken and do not function correctly, when used as source textures.
 See <a class="reference external" href="https://bugs.webkit.org/show_bug.cgi?id=183321">https://bugs.webkit.org/show_bug.cgi?id=183321</a>, <a class="reference external" href="https://bugs.webkit.org/show_bug.cgi?id=169999">https://bugs.webkit.org/show_bug.cgi?id=169999</a>,
 <a class="reference external" href="https://stackoverflow.com/questions/54248633/cannot-create-half-float-oes-texture-from-uint16array-on-ipad">https://stackoverflow.com/questions/54248633/cannot-create-half-float-oes-texture-from-uint16array-on-ipad</a></p>
 </section>
 <section id="gl-workaround-safari-getcontext-bug">
-<span id="id70"></span><h2>GL_WORKAROUND_SAFARI_GETCONTEXT_BUG<a class="headerlink" href="#gl-workaround-safari-getcontext-bug" title="Permalink to this headline">¶</a></h2>
+<span id="id71"></span><h2>GL_WORKAROUND_SAFARI_GETCONTEXT_BUG<a class="headerlink" href="#gl-workaround-safari-getcontext-bug" title="Permalink to this headline">¶</a></h2>
 <p>Workaround Safari WebGL issue: After successfully acquiring WebGL context on a canvas,
 calling .getContext() will always return that context independent of which ‘webgl’ or ‘webgl2’
 context version was passed. See <a class="reference external" href="https://bugs.webkit.org/show_bug.cgi?id=222758">https://bugs.webkit.org/show_bug.cgi?id=222758</a> and
@@ -1933,7 +1947,7 @@ context version was passed. See <a class="reference external" href="https://bugs
 Set this to 0 to force-disable the workaround if you know the issue will not affect you.</p>
 </section>
 <section id="gl-enable-get-proc-address">
-<span id="id71"></span><h2>GL_ENABLE_GET_PROC_ADDRESS<a class="headerlink" href="#gl-enable-get-proc-address" title="Permalink to this headline">¶</a></h2>
+<span id="id72"></span><h2>GL_ENABLE_GET_PROC_ADDRESS<a class="headerlink" href="#gl-enable-get-proc-address" title="Permalink to this headline">¶</a></h2>
 <p>If 1, link with support to glGetProcAddress() functionality.
 In WebGL, glGetProcAddress() causes a substantial code size and performance impact, since WebGL
 does not natively provide such functionality, and it must be emulated. Using glGetProcAddress()
@@ -1941,18 +1955,18 @@ is not recommended. If you still need to use this, e.g. when porting an existing
 you can link with -sGL_ENABLE_GET_PROC_ADDRESS=1 to get support for this functionality.</p>
 </section>
 <section id="js-math">
-<span id="id72"></span><h2>JS_MATH<a class="headerlink" href="#js-math" title="Permalink to this headline">¶</a></h2>
+<span id="id73"></span><h2>JS_MATH<a class="headerlink" href="#js-math" title="Permalink to this headline">¶</a></h2>
 <p>Use JavaScript math functions like Math.tan. This saves code size as we can avoid shipping
 compiled musl code. However, it can be significantly slower as it calls out to JS. It
 also may give different results as JS math is specced somewhat differently than libc, and
 can also vary between browsers.</p>
 </section>
 <section id="polyfill-old-math-functions">
-<span id="id73"></span><h2>POLYFILL_OLD_MATH_FUNCTIONS<a class="headerlink" href="#polyfill-old-math-functions" title="Permalink to this headline">¶</a></h2>
+<span id="id74"></span><h2>POLYFILL_OLD_MATH_FUNCTIONS<a class="headerlink" href="#polyfill-old-math-functions" title="Permalink to this headline">¶</a></h2>
 <p>If set, enables polyfilling for Math.clz32, Math.trunc, Math.imul, Math.fround.</p>
 </section>
 <section id="legacy-vm-support">
-<span id="id74"></span><h2>LEGACY_VM_SUPPORT<a class="headerlink" href="#legacy-vm-support" title="Permalink to this headline">¶</a></h2>
+<span id="id75"></span><h2>LEGACY_VM_SUPPORT<a class="headerlink" href="#legacy-vm-support" title="Permalink to this headline">¶</a></h2>
 <p>Set this to enable compatibility emulations for old JavaScript engines. This gives you
 the highest possible probability of the code working everywhere, even in rare old
 browsers and shell environments. Specifically:</p>
@@ -1965,7 +1979,7 @@ browsers and shell environments. Specifically:</p>
 <p>You can also configure the above options individually.</p>
 </section>
 <section id="environment">
-<span id="id75"></span><h2>ENVIRONMENT<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
+<span id="id76"></span><h2>ENVIRONMENT<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
 <p>Specify which runtime environments the JS output will be capable of running
 in.  For maximum portability this can configured to support all environments
 or it can be limited to reduce overall code size.  The supported environments
@@ -1994,7 +2008,7 @@ at compile time, there is no runtime behavior change.</p></li>
 usage of d8, js, jsc is extremely rare.</p>
 </section>
 <section id="lz4">
-<span id="id76"></span><h2>LZ4<a class="headerlink" href="#lz4" title="Permalink to this headline">¶</a></h2>
+<span id="id77"></span><h2>LZ4<a class="headerlink" href="#lz4" title="Permalink to this headline">¶</a></h2>
 <p>Enable this to support lz4-compressed file packages. They are stored compressed in memory, and
 decompressed on the fly, avoiding storing the entire decompressed data in memory at once.
 If you run the file packager separately, you still need to build the main program with this flag,
@@ -2010,7 +2024,7 @@ preloadPlugin stuff, etc.</p></li>
 </ul>
 </section>
 <section id="disable-exception-catching">
-<span id="id77"></span><h2>DISABLE_EXCEPTION_CATCHING<a class="headerlink" href="#disable-exception-catching" title="Permalink to this headline">¶</a></h2>
+<span id="id78"></span><h2>DISABLE_EXCEPTION_CATCHING<a class="headerlink" href="#disable-exception-catching" title="Permalink to this headline">¶</a></h2>
 <p>Disables generating code to actually catch exceptions. This disabling is on
 by default as the overhead of exceptions is quite high in size and speed
 currently (in the future, wasm should improve that). When exceptions are
@@ -2030,7 +2044,7 @@ and does not control the native Wasm exception handling.</p>
 <p>[compile+link] - affects user code at compile and system libraries at link</p>
 </section>
 <section id="exception-catching-allowed">
-<span id="id78"></span><h2>EXCEPTION_CATCHING_ALLOWED<a class="headerlink" href="#exception-catching-allowed" title="Permalink to this headline">¶</a></h2>
+<span id="id79"></span><h2>EXCEPTION_CATCHING_ALLOWED<a class="headerlink" href="#exception-catching-allowed" title="Permalink to this headline">¶</a></h2>
 <p>Enables catching exception but only in the listed functions.  This
 option acts like a more precise version of <code class="docutils literal notranslate"><span class="pre">DISABLE_EXCEPTION_CATCHING=0</span></code>.</p>
 <p>This option is mutually exclusive with DISABLE_EXCEPTION_CATCHING.</p>
@@ -2039,7 +2053,7 @@ and does not control the native Wasm exception handling.</p>
 <p>[compile+link] - affects user code at compile and system libraries at link</p>
 </section>
 <section id="disable-exception-throwing">
-<span id="id79"></span><h2>DISABLE_EXCEPTION_THROWING<a class="headerlink" href="#disable-exception-throwing" title="Permalink to this headline">¶</a></h2>
+<span id="id80"></span><h2>DISABLE_EXCEPTION_THROWING<a class="headerlink" href="#disable-exception-throwing" title="Permalink to this headline">¶</a></h2>
 <p>Internal: Tracks whether Emscripten should link in exception throwing (C++
 ‘throw’) support library. This does not need to be set directly, but pass
 -fno-exceptions to the build disable exceptions support. (This is basically
@@ -2056,7 +2070,7 @@ code).</p>
 and does not control the native Wasm exception handling.</p>
 </section>
 <section id="export-exception-handling-helpers">
-<span id="id80"></span><h2>EXPORT_EXCEPTION_HANDLING_HELPERS<a class="headerlink" href="#export-exception-handling-helpers" title="Permalink to this headline">¶</a></h2>
+<span id="id81"></span><h2>EXPORT_EXCEPTION_HANDLING_HELPERS<a class="headerlink" href="#export-exception-handling-helpers" title="Permalink to this headline">¶</a></h2>
 <p>Make the exception message printing function, ‘getExceptionMessage’ available
 in the JS library for use, by adding necessary symbols to EXPORTED_FUNCTIONS
 and DEFAULT_LIBRARY_FUNCS_TO_INCLUDE.</p>
@@ -2084,7 +2098,7 @@ depending on the kind of EH you use
 example usage.</p>
 </section>
 <section id="exception-stack-traces">
-<span id="id81"></span><h2>EXCEPTION_STACK_TRACES<a class="headerlink" href="#exception-stack-traces" title="Permalink to this headline">¶</a></h2>
+<span id="id82"></span><h2>EXCEPTION_STACK_TRACES<a class="headerlink" href="#exception-stack-traces" title="Permalink to this headline">¶</a></h2>
 <p>When this is enabled, exceptions will contain stack traces and uncaught
 exceptions will display stack traces upon exiting. This defaults to true when
 ASSERTIONS is enabled. This option is for users who want exceptions’ stack
@@ -2092,7 +2106,7 @@ traces but do not want other overheads ASSERTIONS can incur.
 This option implies EXPORT_EXCEPTION_HANDLING_HELPERS.</p>
 </section>
 <section id="nodejs-catch-exit">
-<span id="id82"></span><h2>NODEJS_CATCH_EXIT<a class="headerlink" href="#nodejs-catch-exit" title="Permalink to this headline">¶</a></h2>
+<span id="id83"></span><h2>NODEJS_CATCH_EXIT<a class="headerlink" href="#nodejs-catch-exit" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten throws an ExitStatus exception to unwind when exit() is called.
 Without this setting enabled this can show up as a top level unhandled
 exception.</p>
@@ -2102,7 +2116,7 @@ uncaught exceptions are also caught and re-thrown, which is not always
 desirable.</p>
 </section>
 <section id="nodejs-catch-rejection">
-<span id="id83"></span><h2>NODEJS_CATCH_REJECTION<a class="headerlink" href="#nodejs-catch-rejection" title="Permalink to this headline">¶</a></h2>
+<span id="id84"></span><h2>NODEJS_CATCH_REJECTION<a class="headerlink" href="#nodejs-catch-rejection" title="Permalink to this headline">¶</a></h2>
 <p>Catch unhandled rejections in node. This only effect versions of node older
 than 15.  Without this, old version node will print a warning, but exit
 with a zero return code.  With this setting enabled, we handle any unhandled
@@ -2112,24 +2126,19 @@ This not needed in Node 15+ so this setting will default to false if
 MIN_NODE_VERSION is 150000 or above.</p>
 </section>
 <section id="asyncify">
-<span id="id84"></span><h2>ASYNCIFY<a class="headerlink" href="#asyncify" title="Permalink to this headline">¶</a></h2>
+<span id="id85"></span><h2>ASYNCIFY<a class="headerlink" href="#asyncify" title="Permalink to this headline">¶</a></h2>
 <p>Whether to support async operations in the compiled code. This makes it
 possible to call JS functions from synchronous-looking code in C/C++.</p>
 <ul class="simple">
-<li><p>Run binaryen’s Asyncify pass to transform the code using asyncify. This
-emits a normal wasm file in the end, so it works everywhere, but it has a
-significant cost in terms of code size and speed.
+<li><p>1 (default): Run binaryen’s Asyncify pass to transform the code using
+asyncify. This emits a normal wasm file in the end, so it works everywhere,
+but it has a significant cost in terms of code size and speed.
 See <a class="reference external" href="https://emscripten.org/docs/porting/asyncify.html">https://emscripten.org/docs/porting/asyncify.html</a></p></li>
-<li><p>Depend on VM support for the wasm stack switching proposal. This allows
-async operations to happen without the overhead of modifying the wasm.
-This is experimental atm while spec discussion is ongoing, see
-<a class="reference external" href="https://github.com/WebAssembly/js-promise-integration/">https://github.com/WebAssembly/js-promise-integration/</a>
-TODO: document which of the following flags are still relevant in this
-mode (e.g. IGNORE_INDIRECT etc. are not needed)</p></li>
+<li><p>2 (deprecated): Use <code class="docutils literal notranslate"><span class="pre">-sJSPI</span></code> instead.</p></li>
 </ul>
 </section>
 <section id="asyncify-imports">
-<span id="id85"></span><h2>ASYNCIFY_IMPORTS<a class="headerlink" href="#asyncify-imports" title="Permalink to this headline">¶</a></h2>
+<span id="id86"></span><h2>ASYNCIFY_IMPORTS<a class="headerlink" href="#asyncify-imports" title="Permalink to this headline">¶</a></h2>
 <p>Imports which can do an sync operation, in addition to the default ones that
 emscripten defines like emscripten_sleep. If you add more you will need to
 mention them to here, or else they will not work (in ASSERTIONS builds an
@@ -2139,20 +2148,20 @@ had to list them when adding your own; the default ones are now added
 automatically.</p>
 </section>
 <section id="asyncify-ignore-indirect">
-<span id="id86"></span><h2>ASYNCIFY_IGNORE_INDIRECT<a class="headerlink" href="#asyncify-ignore-indirect" title="Permalink to this headline">¶</a></h2>
+<span id="id87"></span><h2>ASYNCIFY_IGNORE_INDIRECT<a class="headerlink" href="#asyncify-ignore-indirect" title="Permalink to this headline">¶</a></h2>
 <p>Whether indirect calls can be on the stack during an unwind/rewind.
 If you know they cannot, then setting this can be extremely helpful, as otherwise asyncify
 must assume an indirect call can reach almost everywhere.</p>
 </section>
 <section id="asyncify-stack-size">
-<span id="id87"></span><h2>ASYNCIFY_STACK_SIZE<a class="headerlink" href="#asyncify-stack-size" title="Permalink to this headline">¶</a></h2>
+<span id="id88"></span><h2>ASYNCIFY_STACK_SIZE<a class="headerlink" href="#asyncify-stack-size" title="Permalink to this headline">¶</a></h2>
 <p>The size of the asyncify stack - the region used to store unwind/rewind
 info. This must be large enough to store the call stack and locals. If it is too
 small, you will see a wasm trap due to executing an “unreachable” instruction.
 In that case, you should increase this size.</p>
 </section>
 <section id="asyncify-remove">
-<span id="id88"></span><h2>ASYNCIFY_REMOVE<a class="headerlink" href="#asyncify-remove" title="Permalink to this headline">¶</a></h2>
+<span id="id89"></span><h2>ASYNCIFY_REMOVE<a class="headerlink" href="#asyncify-remove" title="Permalink to this headline">¶</a></h2>
 <p>If the Asyncify remove-list is provided, then the functions in it will not
 be instrumented even if it looks like they need to. This can be useful
 if you know things the whole-program analysis doesn’t, like if you
@@ -2188,7 +2197,7 @@ escaping, the following substitutions can be made:</p>
 neither would “foo(const char*, int &amp;)”.</p>
 </section>
 <section id="asyncify-add">
-<span id="id89"></span><h2>ASYNCIFY_ADD<a class="headerlink" href="#asyncify-add" title="Permalink to this headline">¶</a></h2>
+<span id="id90"></span><h2>ASYNCIFY_ADD<a class="headerlink" href="#asyncify-add" title="Permalink to this headline">¶</a></h2>
 <p>Functions in the Asyncify add-list are added to the list of instrumented
 functions, that is, they will be instrumented even if otherwise asyncify
 thinks they don’t need to be. As by default everything will be instrumented
@@ -2198,8 +2207,14 @@ instrumented.</p>
 <p>See notes on ASYNCIFY_REMOVE about the names, including wildcard matching and
 character substitutions.</p>
 </section>
+<section id="asyncify-propagate-add">
+<span id="id91"></span><h2>ASYNCIFY_PROPAGATE_ADD<a class="headerlink" href="#asyncify-propagate-add" title="Permalink to this headline">¶</a></h2>
+<p>If enabled, instrumentation status will be propagated from the add-list, ie.
+their callers, and their callers’ callers, and so on. If disabled then all
+callers must be manually added to the add-list (like the only-list).</p>
+</section>
 <section id="asyncify-only">
-<span id="id90"></span><h2>ASYNCIFY_ONLY<a class="headerlink" href="#asyncify-only" title="Permalink to this headline">¶</a></h2>
+<span id="id92"></span><h2>ASYNCIFY_ONLY<a class="headerlink" href="#asyncify-only" title="Permalink to this headline">¶</a></h2>
 <p>If the Asyncify only-list is provided, then <em>only</em> the functions in the list
 will be instrumented. Like the remove-list, getting this wrong will break
 your application.</p>
@@ -2207,16 +2222,16 @@ your application.</p>
 character substitutions.</p>
 </section>
 <section id="asyncify-advise">
-<span id="id91"></span><h2>ASYNCIFY_ADVISE<a class="headerlink" href="#asyncify-advise" title="Permalink to this headline">¶</a></h2>
+<span id="id93"></span><h2>ASYNCIFY_ADVISE<a class="headerlink" href="#asyncify-advise" title="Permalink to this headline">¶</a></h2>
 <p>If enabled will output which functions have been instrumented and why.</p>
 </section>
 <section id="asyncify-lazy-load-code">
-<span id="id92"></span><h2>ASYNCIFY_LAZY_LOAD_CODE<a class="headerlink" href="#asyncify-lazy-load-code" title="Permalink to this headline">¶</a></h2>
+<span id="id94"></span><h2>ASYNCIFY_LAZY_LOAD_CODE<a class="headerlink" href="#asyncify-lazy-load-code" title="Permalink to this headline">¶</a></h2>
 <p>Allows lazy code loading: where emscripten_lazy_load_code() is written, we
 will pause execution, load the rest of the code, and then resume.</p>
 </section>
 <section id="asyncify-debug">
-<span id="id93"></span><h2>ASYNCIFY_DEBUG<a class="headerlink" href="#asyncify-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id95"></span><h2>ASYNCIFY_DEBUG<a class="headerlink" href="#asyncify-debug" title="Permalink to this headline">¶</a></h2>
 <p>Runtime debug logging from asyncify internals.</p>
 <ul class="simple">
 <li><p>1: Minimal logging.</p></li>
@@ -2224,13 +2239,22 @@ will pause execution, load the rest of the code, and then resume.</p>
 </ul>
 </section>
 <section id="asyncify-exports">
-<span id="id94"></span><h2>ASYNCIFY_EXPORTS<a class="headerlink" href="#asyncify-exports" title="Permalink to this headline">¶</a></h2>
+<span id="id96"></span><h2>ASYNCIFY_EXPORTS<a class="headerlink" href="#asyncify-exports" title="Permalink to this headline">¶</a></h2>
 <p>Specify which of the exports will have JSPI applied to them and return a
 promise.
 Only supported for ASYNCIFY==2 mode.</p>
 </section>
+<section id="jspi">
+<span id="id97"></span><h2>JSPI<a class="headerlink" href="#jspi" title="Permalink to this headline">¶</a></h2>
+<p>Use VM support for the JavaScript Promise Integration proposal. This allows
+async operations to happen without the overhead of modifying the wasm. This
+is experimental atm while spec discussion is ongoing, see
+<a class="reference external" href="https://github.com/WebAssembly/js-promise-integration/">https://github.com/WebAssembly/js-promise-integration/</a> TODO: document which
+of the following flags are still relevant in this mode (e.g. IGNORE_INDIRECT
+etc. are not needed)</p>
+</section>
 <section id="exported-runtime-methods">
-<span id="id95"></span><h2>EXPORTED_RUNTIME_METHODS<a class="headerlink" href="#exported-runtime-methods" title="Permalink to this headline">¶</a></h2>
+<span id="id98"></span><h2>EXPORTED_RUNTIME_METHODS<a class="headerlink" href="#exported-runtime-methods" title="Permalink to this headline">¶</a></h2>
 <p>Runtime elements that are exported on Module by default. We used to export
 quite a lot here, but have removed them all. You should use
 EXPORTED_RUNTIME_METHODS for things you want to export from the runtime.
@@ -2239,7 +2263,7 @@ element, and not just methods. For example, we can export the FS object by
 having “FS” in this list.</p>
 </section>
 <section id="extra-exported-runtime-methods">
-<span id="id96"></span><h2>EXTRA_EXPORTED_RUNTIME_METHODS<a class="headerlink" href="#extra-exported-runtime-methods" title="Permalink to this headline">¶</a></h2>
+<span id="id99"></span><h2>EXTRA_EXPORTED_RUNTIME_METHODS<a class="headerlink" href="#extra-exported-runtime-methods" title="Permalink to this headline">¶</a></h2>
 <p>Deprecated, use EXPORTED_RUNTIME_METHODS instead.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2247,7 +2271,7 @@ having “FS” in this list.</p>
 </div>
 </section>
 <section id="incoming-module-js-api">
-<span id="id97"></span><h2>INCOMING_MODULE_JS_API<a class="headerlink" href="#incoming-module-js-api" title="Permalink to this headline">¶</a></h2>
+<span id="id100"></span><h2>INCOMING_MODULE_JS_API<a class="headerlink" href="#incoming-module-js-api" title="Permalink to this headline">¶</a></h2>
 <p>A list of incoming values on the Module object in JS that we care about. If
 a value is not in this list, then we don’t emit code to check if you provide
 it on the Module object. For example, if
@@ -2269,13 +2293,13 @@ list contains a set of commonly used symbols.</p>
 <p>FIXME: should this just be  0  if we want everything?</p>
 </section>
 <section id="case-insensitive-fs">
-<span id="id98"></span><h2>CASE_INSENSITIVE_FS<a class="headerlink" href="#case-insensitive-fs" title="Permalink to this headline">¶</a></h2>
+<span id="id101"></span><h2>CASE_INSENSITIVE_FS<a class="headerlink" href="#case-insensitive-fs" title="Permalink to this headline">¶</a></h2>
 <p>If set to nonzero, the provided virtual filesystem if treated
 case-insensitive, like Windows and macOS do. If set to 0, the VFS is
 case-sensitive, like on Linux.</p>
 </section>
 <section id="filesystem">
-<span id="id99"></span><h2>FILESYSTEM<a class="headerlink" href="#filesystem" title="Permalink to this headline">¶</a></h2>
+<span id="id102"></span><h2>FILESYSTEM<a class="headerlink" href="#filesystem" title="Permalink to this headline">¶</a></h2>
 <p>If set to 0, does not build in any filesystem support. Useful if you are just
 doing pure computation, but not reading files or using any streams (including
 fprintf, and other stdio.h things) or anything related. The one exception is
@@ -2285,13 +2309,13 @@ does not require a full filesystem. If you still want filesystem support, use
 FORCE_FILESYSTEM</p>
 </section>
 <section id="force-filesystem">
-<span id="id100"></span><h2>FORCE_FILESYSTEM<a class="headerlink" href="#force-filesystem" title="Permalink to this headline">¶</a></h2>
+<span id="id103"></span><h2>FORCE_FILESYSTEM<a class="headerlink" href="#force-filesystem" title="Permalink to this headline">¶</a></h2>
 <p>Makes full filesystem support be included, even if statically it looks like
 it is not used. For example, if your C code uses no files, but you include
 some JS that does, you might need this.</p>
 </section>
 <section id="noderawfs">
-<span id="id101"></span><h2>NODERAWFS<a class="headerlink" href="#noderawfs" title="Permalink to this headline">¶</a></h2>
+<span id="id104"></span><h2>NODERAWFS<a class="headerlink" href="#noderawfs" title="Permalink to this headline">¶</a></h2>
 <p>Enables support for the NODERAWFS filesystem backend. This is a special
 backend as it replaces all normal filesystem access with direct Node.js
 operations, without the need to do <code class="docutils literal notranslate"><span class="pre">FS.mount()</span></code>, and this backend only
@@ -2303,7 +2327,7 @@ program would be, which means that differences in how the underlying OS
 handles permissions and errors and so forth may be noticeable.</p>
 </section>
 <section id="node-code-caching">
-<span id="id102"></span><h2>NODE_CODE_CACHING<a class="headerlink" href="#node-code-caching" title="Permalink to this headline">¶</a></h2>
+<span id="id105"></span><h2>NODE_CODE_CACHING<a class="headerlink" href="#node-code-caching" title="Permalink to this headline">¶</a></h2>
 <p>This saves the compiled wasm module in a file with name
 <code class="docutils literal notranslate"><span class="pre">$WASM_BINARY_NAME.$V8_VERSION.cached</span></code>
 and loads it on subsequent runs. This caches the compiled wasm code from
@@ -2322,7 +2346,7 @@ to place them elsewhere. You can use the locateFile() hook to do so.</p></li>
 </ul>
 </section>
 <section id="exported-functions">
-<span id="id103"></span><h2>EXPORTED_FUNCTIONS<a class="headerlink" href="#exported-functions" title="Permalink to this headline">¶</a></h2>
+<span id="id106"></span><h2>EXPORTED_FUNCTIONS<a class="headerlink" href="#exported-functions" title="Permalink to this headline">¶</a></h2>
 <p>Functions that are explicitly exported. These functions are kept alive
 through LLVM dead code elimination, and also made accessible outside of the
 generated code even after running closure compiler (on “Module”).  The
@@ -2332,7 +2356,7 @@ symbols listed here require an <code class="docutils literal notranslate"><span 
 default export is <code class="docutils literal notranslate"><span class="pre">__start</span></code> (or <code class="docutils literal notranslate"><span class="pre">__initialize</span></code> if –no-entry is specified).</p>
 </section>
 <section id="export-all">
-<span id="id104"></span><h2>EXPORT_ALL<a class="headerlink" href="#export-all" title="Permalink to this headline">¶</a></h2>
+<span id="id107"></span><h2>EXPORT_ALL<a class="headerlink" href="#export-all" title="Permalink to this headline">¶</a></h2>
 <p>If true, we export all the symbols that are present in JS onto the Module
 object. This does not affect which symbols will be present - it does not
 prevent DCE or cause anything to be included in linking. It only does
@@ -2341,19 +2365,19 @@ for all X that end up in the JS file. This is useful to export the JS
 library functions on Module, for things like dynamic linking.</p>
 </section>
 <section id="export-keepalive">
-<span id="id105"></span><h2>EXPORT_KEEPALIVE<a class="headerlink" href="#export-keepalive" title="Permalink to this headline">¶</a></h2>
+<span id="id108"></span><h2>EXPORT_KEEPALIVE<a class="headerlink" href="#export-keepalive" title="Permalink to this headline">¶</a></h2>
 <p>If true, we export the symbols that are present in JS onto the Module
 object.
 It only does <code class="docutils literal notranslate"><span class="pre">Module['X']</span> <span class="pre">=</span> <span class="pre">X;</span></code></p>
 </section>
 <section id="retain-compiler-settings">
-<span id="id106"></span><h2>RETAIN_COMPILER_SETTINGS<a class="headerlink" href="#retain-compiler-settings" title="Permalink to this headline">¶</a></h2>
+<span id="id109"></span><h2>RETAIN_COMPILER_SETTINGS<a class="headerlink" href="#retain-compiler-settings" title="Permalink to this headline">¶</a></h2>
 <p>Remembers the values of these settings, and makes them accessible
 through getCompilerSetting and emscripten_get_compiler_setting.
 To see what is retained, look for compilerSettings in the generated code.</p>
 </section>
 <section id="default-library-funcs-to-include">
-<span id="id107"></span><h2>DEFAULT_LIBRARY_FUNCS_TO_INCLUDE<a class="headerlink" href="#default-library-funcs-to-include" title="Permalink to this headline">¶</a></h2>
+<span id="id110"></span><h2>DEFAULT_LIBRARY_FUNCS_TO_INCLUDE<a class="headerlink" href="#default-library-funcs-to-include" title="Permalink to this headline">¶</a></h2>
 <p>JS library elements (C functions implemented in JS) that we include by
 default. If you want to make sure something is included by the JS compiler,
 add it here.  For example, if you do not use some <code class="docutils literal notranslate"><span class="pre">emscripten_*</span></code> C API call
@@ -2364,7 +2388,7 @@ just functions. For example, you can include the Browser object by adding
 “$Browser” to this list.</p>
 </section>
 <section id="include-full-library">
-<span id="id108"></span><h2>INCLUDE_FULL_LIBRARY<a class="headerlink" href="#include-full-library" title="Permalink to this headline">¶</a></h2>
+<span id="id111"></span><h2>INCLUDE_FULL_LIBRARY<a class="headerlink" href="#include-full-library" title="Permalink to this headline">¶</a></h2>
 <p>Include all JS library functions instead of the sum of
 DEFAULT_LIBRARY_FUNCS_TO_INCLUDE + any functions used by the generated code.
 This is needed when dynamically loading (i.e. dlopen) modules that make use
@@ -2375,7 +2399,7 @@ you will need to use those in the main file too to pull in malloc for use by
 the module.</p>
 </section>
 <section id="relocatable">
-<span id="id109"></span><h2>RELOCATABLE<a class="headerlink" href="#relocatable" title="Permalink to this headline">¶</a></h2>
+<span id="id112"></span><h2>RELOCATABLE<a class="headerlink" href="#relocatable" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, we emit relocatable code from the LLVM backend; both
 globals and function pointers are all offset (by gb and fp, respectively)
 Automatically set for SIDE_MODULE or MAIN_MODULE.</p>
@@ -2385,7 +2409,7 @@ Automatically set for SIDE_MODULE or MAIN_MODULE.</p>
 </div>
 </section>
 <section id="main-module">
-<span id="id110"></span><h2>MAIN_MODULE<a class="headerlink" href="#main-module" title="Permalink to this headline">¶</a></h2>
+<span id="id113"></span><h2>MAIN_MODULE<a class="headerlink" href="#main-module" title="Permalink to this headline">¶</a></h2>
 <p>A main module is a file compiled in a way that allows us to link it to
 a side module at runtime.</p>
 <ul class="simple">
@@ -2400,7 +2424,7 @@ it is kept alive.</p></li>
 </div>
 </section>
 <section id="side-module">
-<span id="id111"></span><h2>SIDE_MODULE<a class="headerlink" href="#side-module" title="Permalink to this headline">¶</a></h2>
+<span id="id114"></span><h2>SIDE_MODULE<a class="headerlink" href="#side-module" title="Permalink to this headline">¶</a></h2>
 <p>Corresponds to MAIN_MODULE (also supports modes 1 and 2)</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2408,27 +2432,31 @@ it is kept alive.</p></li>
 </div>
 </section>
 <section id="runtime-linked-libs">
-<span id="id112"></span><h2>RUNTIME_LINKED_LIBS<a class="headerlink" href="#runtime-linked-libs" title="Permalink to this headline">¶</a></h2>
+<span id="id115"></span><h2>RUNTIME_LINKED_LIBS<a class="headerlink" href="#runtime-linked-libs" title="Permalink to this headline">¶</a></h2>
 <p>Deprecated, list shared libraries directly on the command line instead.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This setting is deprecated</p>
+</div>
 </section>
 <section id="build-as-worker">
-<span id="id113"></span><h2>BUILD_AS_WORKER<a class="headerlink" href="#build-as-worker" title="Permalink to this headline">¶</a></h2>
+<span id="id116"></span><h2>BUILD_AS_WORKER<a class="headerlink" href="#build-as-worker" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, this is a worker library, a special kind of library that is run
 in a worker. See emscripten.h</p>
 </section>
 <section id="proxy-to-worker">
-<span id="id114"></span><h2>PROXY_TO_WORKER<a class="headerlink" href="#proxy-to-worker" title="Permalink to this headline">¶</a></h2>
+<span id="id117"></span><h2>PROXY_TO_WORKER<a class="headerlink" href="#proxy-to-worker" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, we build the project into a js file that will run in a worker,
 and generate an html file that proxies input and output to/from it.</p>
 </section>
 <section id="proxy-to-worker-filename">
-<span id="id115"></span><h2>PROXY_TO_WORKER_FILENAME<a class="headerlink" href="#proxy-to-worker-filename" title="Permalink to this headline">¶</a></h2>
+<span id="id118"></span><h2>PROXY_TO_WORKER_FILENAME<a class="headerlink" href="#proxy-to-worker-filename" title="Permalink to this headline">¶</a></h2>
 <p>If set, the script file name the main thread loads.  Useful if your project
 doesn’t run the main emscripten- generated script immediately but does some
 setup before</p>
 </section>
 <section id="proxy-to-pthread">
-<span id="id116"></span><h2>PROXY_TO_PTHREAD<a class="headerlink" href="#proxy-to-pthread" title="Permalink to this headline">¶</a></h2>
+<span id="id119"></span><h2>PROXY_TO_PTHREAD<a class="headerlink" href="#proxy-to-pthread" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, compiles in a small stub main() in between the real main() which
 calls pthread_create() to run the application main() in a pthread.  This is
 something that applications can do manually as well if they wish, this option
@@ -2444,7 +2472,7 @@ main thread does the only pthread_create call that happens on
 that thread, so it’s the only chance to transfer the canvas from there.</p>
 </section>
 <section id="linkable">
-<span id="id117"></span><h2>LINKABLE<a class="headerlink" href="#linkable" title="Permalink to this headline">¶</a></h2>
+<span id="id120"></span><h2>LINKABLE<a class="headerlink" href="#linkable" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, this file can be linked with others, either as a shared library
 or as the main file that calls a shared library. To enable that, we will not
 internalize all symbols and cull the unused ones, in other words, we will not
@@ -2456,7 +2484,7 @@ to set this explicitly. Note that MAIN_MODULE and SIDE_MODULE mode 2 do
 you must keep relevant things alive yourself using exporting.</p>
 </section>
 <section id="strict">
-<span id="id118"></span><h2>STRICT<a class="headerlink" href="#strict" title="Permalink to this headline">¶</a></h2>
+<span id="id121"></span><h2>STRICT<a class="headerlink" href="#strict" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten ‘strict’ build mode: Drop supporting any deprecated build options.
 Set the environment variable EMCC_STRICT=1 or pass -sSTRICT to test that a
 codebase builds nicely in forward compatible manner.
@@ -2481,18 +2509,18 @@ is the correct thing to use).</p></li>
 </div>
 </section>
 <section id="ignore-missing-main">
-<span id="id119"></span><h2>IGNORE_MISSING_MAIN<a class="headerlink" href="#ignore-missing-main" title="Permalink to this headline">¶</a></h2>
+<span id="id122"></span><h2>IGNORE_MISSING_MAIN<a class="headerlink" href="#ignore-missing-main" title="Permalink to this headline">¶</a></h2>
 <p>Allow program to link with or without <code class="docutils literal notranslate"><span class="pre">main</span></code> symbol.
 If this is disabled then one must provide a <code class="docutils literal notranslate"><span class="pre">main</span></code> symbol or explicitly
 opt out by passing <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code> or an EXPORTED_FUNCTIONS list that doesn’t
 include <code class="docutils literal notranslate"><span class="pre">_main</span></code>.</p>
 </section>
 <section id="strict-js">
-<span id="id120"></span><h2>STRICT_JS<a class="headerlink" href="#strict-js" title="Permalink to this headline">¶</a></h2>
+<span id="id123"></span><h2>STRICT_JS<a class="headerlink" href="#strict-js" title="Permalink to this headline">¶</a></h2>
 <p>Add <code class="docutils literal notranslate"><span class="pre">&quot;use</span> <span class="pre">strict;&quot;</span></code> to generated JS</p>
 </section>
 <section id="warn-on-undefined-symbols">
-<span id="id121"></span><h2>WARN_ON_UNDEFINED_SYMBOLS<a class="headerlink" href="#warn-on-undefined-symbols" title="Permalink to this headline">¶</a></h2>
+<span id="id124"></span><h2>WARN_ON_UNDEFINED_SYMBOLS<a class="headerlink" href="#warn-on-undefined-symbols" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, we will warn on any undefined symbols that are not resolved by
 the <code class="docutils literal notranslate"><span class="pre">library_*.js</span></code> files. Note that it is common in large projects to not
 implement everything, when you know what is not going to actually be called
@@ -2503,7 +2531,7 @@ also ERROR_ON_UNDEFINED_SYMBOLS.  Any undefined symbols that are listed in-
 EXPORTED_FUNCTIONS will also be reported.</p>
 </section>
 <section id="error-on-undefined-symbols">
-<span id="id122"></span><h2>ERROR_ON_UNDEFINED_SYMBOLS<a class="headerlink" href="#error-on-undefined-symbols" title="Permalink to this headline">¶</a></h2>
+<span id="id125"></span><h2>ERROR_ON_UNDEFINED_SYMBOLS<a class="headerlink" href="#error-on-undefined-symbols" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, we will give a link-time error on any undefined symbols (see
 WARN_ON_UNDEFINED_SYMBOLS). To allow undefined symbols at link time set this
 to 0, in which case if an undefined function is called a runtime error will
@@ -2511,12 +2539,12 @@ occur.  Any undefined symbols that are listed in EXPORTED_FUNCTIONS will also
 be reported.</p>
 </section>
 <section id="small-xhr-chunks">
-<span id="id123"></span><h2>SMALL_XHR_CHUNKS<a class="headerlink" href="#small-xhr-chunks" title="Permalink to this headline">¶</a></h2>
+<span id="id126"></span><h2>SMALL_XHR_CHUNKS<a class="headerlink" href="#small-xhr-chunks" title="Permalink to this headline">¶</a></h2>
 <p>Use small chunk size for binary synchronous XHR’s in Web Workers.  Used for
 testing.  See test_chunked_synchronous_xhr in runner.py and library.js.</p>
 </section>
 <section id="headless">
-<span id="id124"></span><h2>HEADLESS<a class="headerlink" href="#headless" title="Permalink to this headline">¶</a></h2>
+<span id="id127"></span><h2>HEADLESS<a class="headerlink" href="#headless" title="Permalink to this headline">¶</a></h2>
 <p>If 1, will include shim code that tries to ‘fake’ a browser environment, in
 order to let you run a browser program (say, using SDL) in the shell.
 Obviously nothing is rendered, but this can be useful for benchmarking and
@@ -2525,7 +2553,7 @@ very partial - it is hard to fake a whole browser! - so keep your
 expectations low for this to work.</p>
 </section>
 <section id="deterministic">
-<span id="id125"></span><h2>DETERMINISTIC<a class="headerlink" href="#deterministic" title="Permalink to this headline">¶</a></h2>
+<span id="id128"></span><h2>DETERMINISTIC<a class="headerlink" href="#deterministic" title="Permalink to this headline">¶</a></h2>
 <p>If 1, we force Date.now(), Math.random, etc. to return deterministic results.
 This also tries to make execution deterministic across machines and
 environments, for example, not doing anything different based on the
@@ -2534,7 +2562,7 @@ in different browsers, or in the browser and in node).
 Good for comparing builds for debugging purposes (and nothing else).</p>
 </section>
 <section id="modularize">
-<span id="id126"></span><h2>MODULARIZE<a class="headerlink" href="#modularize" title="Permalink to this headline">¶</a></h2>
+<span id="id129"></span><h2>MODULARIZE<a class="headerlink" href="#modularize" title="Permalink to this headline">¶</a></h2>
 <p>By default we emit all code in a straightforward way into the output
 .js file. That means that if you load that in a script tag in a web
 page, it will use the global scope. With <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> set, we instead emit
@@ -2589,25 +2617,25 @@ intended usage is to add code that is optimized with the rest of the emitted
 code, allowing better dead code elimination and minification.</p>
 </section>
 <section id="export-es6">
-<span id="id127"></span><h2>EXPORT_ES6<a class="headerlink" href="#export-es6" title="Permalink to this headline">¶</a></h2>
+<span id="id130"></span><h2>EXPORT_ES6<a class="headerlink" href="#export-es6" title="Permalink to this headline">¶</a></h2>
 <p>Export using an ES6 Module export rather than a UMD export.  MODULARIZE must
 be enabled for ES6 exports and is implicitly enabled if not already set.</p>
 <p>This is implicitly enabled if the output suffix is set to ‘mjs’.</p>
 </section>
 <section id="use-es6-import-meta">
-<span id="id128"></span><h2>USE_ES6_IMPORT_META<a class="headerlink" href="#use-es6-import-meta" title="Permalink to this headline">¶</a></h2>
+<span id="id131"></span><h2>USE_ES6_IMPORT_META<a class="headerlink" href="#use-es6-import-meta" title="Permalink to this headline">¶</a></h2>
 <p>Use the ES6 Module relative import feature ‘import.meta.url’
 to auto-detect WASM Module path.
 It might not be supported on old browsers / toolchains. This setting
 may not be disabled when Node.js is targeted (-sENVIRONMENT=*node*).</p>
 </section>
 <section id="export-name">
-<span id="id129"></span><h2>EXPORT_NAME<a class="headerlink" href="#export-name" title="Permalink to this headline">¶</a></h2>
+<span id="id132"></span><h2>EXPORT_NAME<a class="headerlink" href="#export-name" title="Permalink to this headline">¶</a></h2>
 <p>Global variable to export the module as for environments without a
 standardized module loading system (e.g. the browser and SM shell).</p>
 </section>
 <section id="dynamic-execution">
-<span id="id130"></span><h2>DYNAMIC_EXECUTION<a class="headerlink" href="#dynamic-execution" title="Permalink to this headline">¶</a></h2>
+<span id="id133"></span><h2>DYNAMIC_EXECUTION<a class="headerlink" href="#dynamic-execution" title="Permalink to this headline">¶</a></h2>
 <p>When set to 0, we do not emit eval() and new Function(), which disables some
 functionality (causing runtime errors if attempted to be used), but allows
 the emitted code to be acceptable in places that disallow dynamic code
@@ -2640,11 +2668,11 @@ the Module object in advance.</p></li>
 warnings instead of throwing an exception.</p>
 </section>
 <section id="bootstrapping-struct-info">
-<span id="id131"></span><h2>BOOTSTRAPPING_STRUCT_INFO<a class="headerlink" href="#bootstrapping-struct-info" title="Permalink to this headline">¶</a></h2>
+<span id="id134"></span><h2>BOOTSTRAPPING_STRUCT_INFO<a class="headerlink" href="#bootstrapping-struct-info" title="Permalink to this headline">¶</a></h2>
 <p>whether we are in the generate struct_info bootstrap phase</p>
 </section>
 <section id="emscripten-tracing">
-<span id="id132"></span><h2>EMSCRIPTEN_TRACING<a class="headerlink" href="#emscripten-tracing" title="Permalink to this headline">¶</a></h2>
+<span id="id135"></span><h2>EMSCRIPTEN_TRACING<a class="headerlink" href="#emscripten-tracing" title="Permalink to this headline">¶</a></h2>
 <p>Add some calls to emscripten tracing APIs</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2652,13 +2680,13 @@ warnings instead of throwing an exception.</p>
 </div>
 </section>
 <section id="use-glfw">
-<span id="id133"></span><h2>USE_GLFW<a class="headerlink" href="#use-glfw" title="Permalink to this headline">¶</a></h2>
+<span id="id136"></span><h2>USE_GLFW<a class="headerlink" href="#use-glfw" title="Permalink to this headline">¶</a></h2>
 <p>Specify the GLFW version that is being linked against.  Only relevant, if you
 are linking against the GLFW library.  Valid options are 2 for GLFW2 and 3
 for GLFW3.</p>
 </section>
 <section id="wasm">
-<span id="id134"></span><h2>WASM<a class="headerlink" href="#wasm" title="Permalink to this headline">¶</a></h2>
+<span id="id137"></span><h2>WASM<a class="headerlink" href="#wasm" title="Permalink to this headline">¶</a></h2>
 <p>Whether to use compile code to WebAssembly. Set this to 0 to compile to JS
 instead of wasm.</p>
 <p>Specify -sWASM=2 to target both WebAssembly and JavaScript at the same time.
@@ -2669,7 +2697,7 @@ the WebAssembly file is loaded if browser/shell supports it. Otherwise the
 the page will be reloaded in Wasm2JS mode.</p>
 </section>
 <section id="standalone-wasm">
-<span id="id135"></span><h2>STANDALONE_WASM<a class="headerlink" href="#standalone-wasm" title="Permalink to this headline">¶</a></h2>
+<span id="id138"></span><h2>STANDALONE_WASM<a class="headerlink" href="#standalone-wasm" title="Permalink to this headline">¶</a></h2>
 <p>STANDALONE_WASM indicates that we want to emit a wasm file that can run
 without JavaScript. The file will use standard APIs such as wasi as much as
 possible to achieve that.</p>
@@ -2701,7 +2729,7 @@ VM).</p>
 build a library (also known as a reactor) instead you can pass <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code>.</p>
 </section>
 <section id="binaryen-ignore-implicit-traps">
-<span id="id136"></span><h2>BINARYEN_IGNORE_IMPLICIT_TRAPS<a class="headerlink" href="#binaryen-ignore-implicit-traps" title="Permalink to this headline">¶</a></h2>
+<span id="id139"></span><h2>BINARYEN_IGNORE_IMPLICIT_TRAPS<a class="headerlink" href="#binaryen-ignore-implicit-traps" title="Permalink to this headline">¶</a></h2>
 <p>Whether to ignore implicit traps when optimizing in binaryen.  Implicit
 traps are the traps that happen in a load that is out of bounds, or
 div/rem of 0, etc. With this option set, the optimizer assumes that loads
@@ -2713,32 +2741,32 @@ not useful on large and complex projects, but in a small and simple enough
 codebase it may help reduce code size a little bit.</p>
 </section>
 <section id="binaryen-extra-passes">
-<span id="id137"></span><h2>BINARYEN_EXTRA_PASSES<a class="headerlink" href="#binaryen-extra-passes" title="Permalink to this headline">¶</a></h2>
+<span id="id140"></span><h2>BINARYEN_EXTRA_PASSES<a class="headerlink" href="#binaryen-extra-passes" title="Permalink to this headline">¶</a></h2>
 <p>A comma-separated list of extra passes to run in the binaryen optimizer,
 Setting this does not override/replace the default passes. It is appended at
 the end of the list of passes.</p>
 </section>
 <section id="wasm-async-compilation">
-<span id="id138"></span><h2>WASM_ASYNC_COMPILATION<a class="headerlink" href="#wasm-async-compilation" title="Permalink to this headline">¶</a></h2>
+<span id="id141"></span><h2>WASM_ASYNC_COMPILATION<a class="headerlink" href="#wasm-async-compilation" title="Permalink to this headline">¶</a></h2>
 <p>Whether to compile the wasm asynchronously, which is more efficient and does
 not block the main thread. This is currently required for all but the
 smallest modules to run in chrome.</p>
 <p>(This option was formerly called BINARYEN_ASYNC_COMPILATION)</p>
 </section>
 <section id="dyncalls">
-<span id="id139"></span><h2>DYNCALLS<a class="headerlink" href="#dyncalls" title="Permalink to this headline">¶</a></h2>
+<span id="id142"></span><h2>DYNCALLS<a class="headerlink" href="#dyncalls" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, the dynCall() and dynCall_sig() API is made available
 to caller.</p>
 </section>
 <section id="wasm-bigint">
-<span id="id140"></span><h2>WASM_BIGINT<a class="headerlink" href="#wasm-bigint" title="Permalink to this headline">¶</a></h2>
+<span id="id143"></span><h2>WASM_BIGINT<a class="headerlink" href="#wasm-bigint" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly integration with JavaScript BigInt. When enabled we don’t need to
 legalize i64s into pairs of i32s, as the wasm VM will use a BigInt where an
 i64 is used. If WASM_BIGINT is present, the default minimum supported browser
 versions will be increased to the min version that supports BigInt.</p>
 </section>
 <section id="emit-producers-section">
-<span id="id141"></span><h2>EMIT_PRODUCERS_SECTION<a class="headerlink" href="#emit-producers-section" title="Permalink to this headline">¶</a></h2>
+<span id="id144"></span><h2>EMIT_PRODUCERS_SECTION<a class="headerlink" href="#emit-producers-section" title="Permalink to this headline">¶</a></h2>
 <p>WebAssembly defines a “producers section” which compilers and tools can
 annotate themselves in, and LLVM emits this by default.
 Emscripten will strip that out so that it is <em>not</em> emitted because it
@@ -2748,18 +2776,22 @@ reasons, see
 <a class="reference external" href="https://github.com/WebAssembly/tool-conventions/issues/93">https://github.com/WebAssembly/tool-conventions/issues/93</a>.</p>
 </section>
 <section id="emit-emscripten-license">
-<span id="id142"></span><h2>EMIT_EMSCRIPTEN_LICENSE<a class="headerlink" href="#emit-emscripten-license" title="Permalink to this headline">¶</a></h2>
+<span id="id145"></span><h2>EMIT_EMSCRIPTEN_LICENSE<a class="headerlink" href="#emit-emscripten-license" title="Permalink to this headline">¶</a></h2>
 <p>Emits emscripten license info in the JS output.</p>
 </section>
 <section id="legalize-js-ffi">
-<span id="id143"></span><h2>LEGALIZE_JS_FFI<a class="headerlink" href="#legalize-js-ffi" title="Permalink to this headline">¶</a></h2>
+<span id="id146"></span><h2>LEGALIZE_JS_FFI<a class="headerlink" href="#legalize-js-ffi" title="Permalink to this headline">¶</a></h2>
 <p>Whether to legalize the JS FFI interfaces (imports/exports) by wrapping them
 to automatically demote i64 to i32 and promote f32 to f64. This is necessary
 in order to interface with JavaScript.  For non-web/non-JS embeddings, setting
 this to 0 may be desirable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This setting is deprecated</p>
+</div>
 </section>
 <section id="use-sdl">
-<span id="id144"></span><h2>USE_SDL<a class="headerlink" href="#use-sdl" title="Permalink to this headline">¶</a></h2>
+<span id="id147"></span><h2>USE_SDL<a class="headerlink" href="#use-sdl" title="Permalink to this headline">¶</a></h2>
 <p>Specify the SDL version that is being linked against.
 1, the default, is 1.3, which is implemented in JS
 2 is a port of the SDL C code on emscripten-ports
@@ -2772,7 +2804,7 @@ Alternate syntax for using the port: –use-port=sdl2</p>
 </div>
 </section>
 <section id="use-sdl-gfx">
-<span id="id145"></span><h2>USE_SDL_GFX<a class="headerlink" href="#use-sdl-gfx" title="Permalink to this headline">¶</a></h2>
+<span id="id148"></span><h2>USE_SDL_GFX<a class="headerlink" href="#use-sdl-gfx" title="Permalink to this headline">¶</a></h2>
 <p>Specify the SDL_gfx version that is being linked against. Must match USE_SDL</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2780,7 +2812,7 @@ Alternate syntax for using the port: –use-port=sdl2</p>
 </div>
 </section>
 <section id="use-sdl-image">
-<span id="id146"></span><h2>USE_SDL_IMAGE<a class="headerlink" href="#use-sdl-image" title="Permalink to this headline">¶</a></h2>
+<span id="id149"></span><h2>USE_SDL_IMAGE<a class="headerlink" href="#use-sdl-image" title="Permalink to this headline">¶</a></h2>
 <p>Specify the SDL_image version that is being linked against. Must match USE_SDL</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2788,7 +2820,7 @@ Alternate syntax for using the port: –use-port=sdl2</p>
 </div>
 </section>
 <section id="use-sdl-ttf">
-<span id="id147"></span><h2>USE_SDL_TTF<a class="headerlink" href="#use-sdl-ttf" title="Permalink to this headline">¶</a></h2>
+<span id="id150"></span><h2>USE_SDL_TTF<a class="headerlink" href="#use-sdl-ttf" title="Permalink to this headline">¶</a></h2>
 <p>Specify the SDL_ttf version that is being linked against. Must match USE_SDL</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2796,7 +2828,7 @@ Alternate syntax for using the port: –use-port=sdl2</p>
 </div>
 </section>
 <section id="use-sdl-net">
-<span id="id148"></span><h2>USE_SDL_NET<a class="headerlink" href="#use-sdl-net" title="Permalink to this headline">¶</a></h2>
+<span id="id151"></span><h2>USE_SDL_NET<a class="headerlink" href="#use-sdl-net" title="Permalink to this headline">¶</a></h2>
 <p>Specify the SDL_net version that is being linked against. Must match USE_SDL</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2804,7 +2836,7 @@ Alternate syntax for using the port: –use-port=sdl2</p>
 </div>
 </section>
 <section id="use-icu">
-<span id="id149"></span><h2>USE_ICU<a class="headerlink" href="#use-icu" title="Permalink to this headline">¶</a></h2>
+<span id="id152"></span><h2>USE_ICU<a class="headerlink" href="#use-icu" title="Permalink to this headline">¶</a></h2>
 <p>1 = use icu from emscripten-ports
 Alternate syntax: –use-port=icu</p>
 <div class="admonition note">
@@ -2813,7 +2845,7 @@ Alternate syntax: –use-port=icu</p>
 </div>
 </section>
 <section id="use-zlib">
-<span id="id150"></span><h2>USE_ZLIB<a class="headerlink" href="#use-zlib" title="Permalink to this headline">¶</a></h2>
+<span id="id153"></span><h2>USE_ZLIB<a class="headerlink" href="#use-zlib" title="Permalink to this headline">¶</a></h2>
 <p>1 = use zlib from emscripten-ports
 Alternate syntax: –use-port=zlib</p>
 <div class="admonition note">
@@ -2822,7 +2854,7 @@ Alternate syntax: –use-port=zlib</p>
 </div>
 </section>
 <section id="use-bzip2">
-<span id="id151"></span><h2>USE_BZIP2<a class="headerlink" href="#use-bzip2" title="Permalink to this headline">¶</a></h2>
+<span id="id154"></span><h2>USE_BZIP2<a class="headerlink" href="#use-bzip2" title="Permalink to this headline">¶</a></h2>
 <p>1 = use bzip2 from emscripten-ports
 Alternate syntax: –use-port=bzip2</p>
 <div class="admonition note">
@@ -2831,7 +2863,7 @@ Alternate syntax: –use-port=bzip2</p>
 </div>
 </section>
 <section id="use-giflib">
-<span id="id152"></span><h2>USE_GIFLIB<a class="headerlink" href="#use-giflib" title="Permalink to this headline">¶</a></h2>
+<span id="id155"></span><h2>USE_GIFLIB<a class="headerlink" href="#use-giflib" title="Permalink to this headline">¶</a></h2>
 <p>1 = use giflib from emscripten-ports
 Alternate syntax: –use-port=giflib</p>
 <div class="admonition note">
@@ -2840,7 +2872,7 @@ Alternate syntax: –use-port=giflib</p>
 </div>
 </section>
 <section id="use-libjpeg">
-<span id="id153"></span><h2>USE_LIBJPEG<a class="headerlink" href="#use-libjpeg" title="Permalink to this headline">¶</a></h2>
+<span id="id156"></span><h2>USE_LIBJPEG<a class="headerlink" href="#use-libjpeg" title="Permalink to this headline">¶</a></h2>
 <p>1 = use libjpeg from emscripten-ports
 Alternate syntax: –use-port=libjpeg</p>
 <div class="admonition note">
@@ -2849,7 +2881,7 @@ Alternate syntax: –use-port=libjpeg</p>
 </div>
 </section>
 <section id="use-libpng">
-<span id="id154"></span><h2>USE_LIBPNG<a class="headerlink" href="#use-libpng" title="Permalink to this headline">¶</a></h2>
+<span id="id157"></span><h2>USE_LIBPNG<a class="headerlink" href="#use-libpng" title="Permalink to this headline">¶</a></h2>
 <p>1 = use libpng from emscripten-ports
 Alternate syntax: –use-port=libpng</p>
 <div class="admonition note">
@@ -2858,7 +2890,7 @@ Alternate syntax: –use-port=libpng</p>
 </div>
 </section>
 <section id="use-regal">
-<span id="id155"></span><h2>USE_REGAL<a class="headerlink" href="#use-regal" title="Permalink to this headline">¶</a></h2>
+<span id="id158"></span><h2>USE_REGAL<a class="headerlink" href="#use-regal" title="Permalink to this headline">¶</a></h2>
 <p>1 = use Regal from emscripten-ports
 Alternate syntax: –use-port=regal</p>
 <div class="admonition note">
@@ -2867,7 +2899,7 @@ Alternate syntax: –use-port=regal</p>
 </div>
 </section>
 <section id="use-boost-headers">
-<span id="id156"></span><h2>USE_BOOST_HEADERS<a class="headerlink" href="#use-boost-headers" title="Permalink to this headline">¶</a></h2>
+<span id="id159"></span><h2>USE_BOOST_HEADERS<a class="headerlink" href="#use-boost-headers" title="Permalink to this headline">¶</a></h2>
 <p>1 = use Boost headers from emscripten-ports
 Alternate syntax: –use-port=boost_headers</p>
 <div class="admonition note">
@@ -2876,7 +2908,7 @@ Alternate syntax: –use-port=boost_headers</p>
 </div>
 </section>
 <section id="use-bullet">
-<span id="id157"></span><h2>USE_BULLET<a class="headerlink" href="#use-bullet" title="Permalink to this headline">¶</a></h2>
+<span id="id160"></span><h2>USE_BULLET<a class="headerlink" href="#use-bullet" title="Permalink to this headline">¶</a></h2>
 <p>1 = use bullet from emscripten-ports
 Alternate syntax: –use-port=bullet</p>
 <div class="admonition note">
@@ -2885,7 +2917,7 @@ Alternate syntax: –use-port=bullet</p>
 </div>
 </section>
 <section id="use-vorbis">
-<span id="id158"></span><h2>USE_VORBIS<a class="headerlink" href="#use-vorbis" title="Permalink to this headline">¶</a></h2>
+<span id="id161"></span><h2>USE_VORBIS<a class="headerlink" href="#use-vorbis" title="Permalink to this headline">¶</a></h2>
 <p>1 = use vorbis from emscripten-ports
 Alternate syntax: –use-port=vorbis</p>
 <div class="admonition note">
@@ -2894,7 +2926,7 @@ Alternate syntax: –use-port=vorbis</p>
 </div>
 </section>
 <section id="use-ogg">
-<span id="id159"></span><h2>USE_OGG<a class="headerlink" href="#use-ogg" title="Permalink to this headline">¶</a></h2>
+<span id="id162"></span><h2>USE_OGG<a class="headerlink" href="#use-ogg" title="Permalink to this headline">¶</a></h2>
 <p>1 = use ogg from emscripten-ports
 Alternate syntax: –use-port=ogg</p>
 <div class="admonition note">
@@ -2903,7 +2935,7 @@ Alternate syntax: –use-port=ogg</p>
 </div>
 </section>
 <section id="use-mpg123">
-<span id="id160"></span><h2>USE_MPG123<a class="headerlink" href="#use-mpg123" title="Permalink to this headline">¶</a></h2>
+<span id="id163"></span><h2>USE_MPG123<a class="headerlink" href="#use-mpg123" title="Permalink to this headline">¶</a></h2>
 <p>1 = use mpg123 from emscripten-ports
 Alternate syntax: –use-port=mpg123</p>
 <div class="admonition note">
@@ -2912,7 +2944,7 @@ Alternate syntax: –use-port=mpg123</p>
 </div>
 </section>
 <section id="use-freetype">
-<span id="id161"></span><h2>USE_FREETYPE<a class="headerlink" href="#use-freetype" title="Permalink to this headline">¶</a></h2>
+<span id="id164"></span><h2>USE_FREETYPE<a class="headerlink" href="#use-freetype" title="Permalink to this headline">¶</a></h2>
 <p>1 = use freetype from emscripten-ports
 Alternate syntax: –use-port=freetype</p>
 <div class="admonition note">
@@ -2921,7 +2953,7 @@ Alternate syntax: –use-port=freetype</p>
 </div>
 </section>
 <section id="use-sdl-mixer">
-<span id="id162"></span><h2>USE_SDL_MIXER<a class="headerlink" href="#use-sdl-mixer" title="Permalink to this headline">¶</a></h2>
+<span id="id165"></span><h2>USE_SDL_MIXER<a class="headerlink" href="#use-sdl-mixer" title="Permalink to this headline">¶</a></h2>
 <p>Specify the SDL_mixer version that is being linked against.
 Doesn’t <em>have</em> to match USE_SDL, but a good idea.</p>
 <div class="admonition note">
@@ -2930,7 +2962,7 @@ Doesn’t <em>have</em> to match USE_SDL, but a good idea.</p>
 </div>
 </section>
 <section id="use-harfbuzz">
-<span id="id163"></span><h2>USE_HARFBUZZ<a class="headerlink" href="#use-harfbuzz" title="Permalink to this headline">¶</a></h2>
+<span id="id166"></span><h2>USE_HARFBUZZ<a class="headerlink" href="#use-harfbuzz" title="Permalink to this headline">¶</a></h2>
 <p>1 = use harfbuzz from harfbuzz upstream
 Alternate syntax: –use-port=harfbuzz</p>
 <div class="admonition note">
@@ -2939,7 +2971,7 @@ Alternate syntax: –use-port=harfbuzz</p>
 </div>
 </section>
 <section id="use-cocos2d">
-<span id="id164"></span><h2>USE_COCOS2D<a class="headerlink" href="#use-cocos2d" title="Permalink to this headline">¶</a></h2>
+<span id="id167"></span><h2>USE_COCOS2D<a class="headerlink" href="#use-cocos2d" title="Permalink to this headline">¶</a></h2>
 <p>3 = use cocos2d v3 from emscripten-ports
 Alternate syntax: –use-port=cocos2d</p>
 <div class="admonition note">
@@ -2948,7 +2980,7 @@ Alternate syntax: –use-port=cocos2d</p>
 </div>
 </section>
 <section id="use-modplug">
-<span id="id165"></span><h2>USE_MODPLUG<a class="headerlink" href="#use-modplug" title="Permalink to this headline">¶</a></h2>
+<span id="id168"></span><h2>USE_MODPLUG<a class="headerlink" href="#use-modplug" title="Permalink to this headline">¶</a></h2>
 <p>1 = use libmodplug from emscripten-ports
 Alternate syntax: –use-port=libmodplug</p>
 <div class="admonition note">
@@ -2957,16 +2989,16 @@ Alternate syntax: –use-port=libmodplug</p>
 </div>
 </section>
 <section id="sdl2-image-formats">
-<span id="id166"></span><h2>SDL2_IMAGE_FORMATS<a class="headerlink" href="#sdl2-image-formats" title="Permalink to this headline">¶</a></h2>
+<span id="id169"></span><h2>SDL2_IMAGE_FORMATS<a class="headerlink" href="#sdl2-image-formats" title="Permalink to this headline">¶</a></h2>
 <p>Formats to support in SDL2_image. Valid values: bmp, gif, lbm, pcx, png, pnm,
 tga, xcf, xpm, xv</p>
 </section>
 <section id="sdl2-mixer-formats">
-<span id="id167"></span><h2>SDL2_MIXER_FORMATS<a class="headerlink" href="#sdl2-mixer-formats" title="Permalink to this headline">¶</a></h2>
+<span id="id170"></span><h2>SDL2_MIXER_FORMATS<a class="headerlink" href="#sdl2-mixer-formats" title="Permalink to this headline">¶</a></h2>
 <p>Formats to support in SDL2_mixer. Valid values: ogg, mp3, mod, mid</p>
 </section>
 <section id="use-sqlite3">
-<span id="id168"></span><h2>USE_SQLITE3<a class="headerlink" href="#use-sqlite3" title="Permalink to this headline">¶</a></h2>
+<span id="id171"></span><h2>USE_SQLITE3<a class="headerlink" href="#use-sqlite3" title="Permalink to this headline">¶</a></h2>
 <p>1 = use sqlite3 from emscripten-ports
 Alternate syntax: –use-port=sqlite3</p>
 <div class="admonition note">
@@ -2975,28 +3007,28 @@ Alternate syntax: –use-port=sqlite3</p>
 </div>
 </section>
 <section id="shared-memory">
-<span id="id169"></span><h2>SHARED_MEMORY<a class="headerlink" href="#shared-memory" title="Permalink to this headline">¶</a></h2>
+<span id="id172"></span><h2>SHARED_MEMORY<a class="headerlink" href="#shared-memory" title="Permalink to this headline">¶</a></h2>
 <p>If 1, target compiling a shared Wasm Memory.
 [compile+link] - affects user code at compile and system libraries at link.</p>
 </section>
 <section id="wasm-workers">
-<span id="id170"></span><h2>WASM_WORKERS<a class="headerlink" href="#wasm-workers" title="Permalink to this headline">¶</a></h2>
+<span id="id173"></span><h2>WASM_WORKERS<a class="headerlink" href="#wasm-workers" title="Permalink to this headline">¶</a></h2>
 <p>If true, enables support for Wasm Workers. Wasm Workers enable applications
 to create threads using a lightweight web-specific API that builds on top
 of Wasm SharedArrayBuffer + Atomics API.
 [compile+link] - affects user code at compile and system libraries at link.</p>
 </section>
 <section id="audio-worklet">
-<span id="id171"></span><h2>AUDIO_WORKLET<a class="headerlink" href="#audio-worklet" title="Permalink to this headline">¶</a></h2>
+<span id="id174"></span><h2>AUDIO_WORKLET<a class="headerlink" href="#audio-worklet" title="Permalink to this headline">¶</a></h2>
 <p>If true, enables targeting Wasm Web Audio AudioWorklets. Check out the
 full documentation in site/source/docs/api_reference/wasm_audio_worklets.rst</p>
 </section>
 <section id="webaudio-debug">
-<span id="id172"></span><h2>WEBAUDIO_DEBUG<a class="headerlink" href="#webaudio-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id175"></span><h2>WEBAUDIO_DEBUG<a class="headerlink" href="#webaudio-debug" title="Permalink to this headline">¶</a></h2>
 <p>If true, enables deep debugging of Web Audio backend.</p>
 </section>
 <section id="pthread-pool-size">
-<span id="id173"></span><h2>PTHREAD_POOL_SIZE<a class="headerlink" href="#pthread-pool-size" title="Permalink to this headline">¶</a></h2>
+<span id="id176"></span><h2>PTHREAD_POOL_SIZE<a class="headerlink" href="#pthread-pool-size" title="Permalink to this headline">¶</a></h2>
 <p>In web browsers, Workers cannot be created while the main browser thread
 is executing JS/Wasm code, but the main thread must regularly yield back
 to the browser event loop for Worker initialization to occur.
@@ -3019,7 +3051,7 @@ threadpool equal to the number of cores).
 [link] - affects generated JS runtime code at link time</p>
 </section>
 <section id="pthread-pool-size-strict">
-<span id="id174"></span><h2>PTHREAD_POOL_SIZE_STRICT<a class="headerlink" href="#pthread-pool-size-strict" title="Permalink to this headline">¶</a></h2>
+<span id="id177"></span><h2>PTHREAD_POOL_SIZE_STRICT<a class="headerlink" href="#pthread-pool-size-strict" title="Permalink to this headline">¶</a></h2>
 <p>Normally, applications can create new threads even when the pool is empty.
 When application breaks out to the JS event loop before trying to block on
 the thread via <code class="docutils literal notranslate"><span class="pre">pthread_join</span></code> or any other blocking primitive,
@@ -3038,7 +3070,7 @@ Values:</p>
 </ul>
 </section>
 <section id="pthread-pool-delay-load">
-<span id="id175"></span><h2>PTHREAD_POOL_DELAY_LOAD<a class="headerlink" href="#pthread-pool-delay-load" title="Permalink to this headline">¶</a></h2>
+<span id="id178"></span><h2>PTHREAD_POOL_DELAY_LOAD<a class="headerlink" href="#pthread-pool-delay-load" title="Permalink to this headline">¶</a></h2>
 <p>If your application does not need the ability to synchronously create
 threads, but it would still like to opportunistically speed up initial thread
 startup time by prewarming a pool of Workers, you can specify the size of
@@ -3056,7 +3088,7 @@ promise before doing so or you’re very likely to run into deadlocks.
 [link] - affects generated JS runtime code at link time</p>
 </section>
 <section id="default-pthread-stack-size">
-<span id="id176"></span><h2>DEFAULT_PTHREAD_STACK_SIZE<a class="headerlink" href="#default-pthread-stack-size" title="Permalink to this headline">¶</a></h2>
+<span id="id179"></span><h2>DEFAULT_PTHREAD_STACK_SIZE<a class="headerlink" href="#default-pthread-stack-size" title="Permalink to this headline">¶</a></h2>
 <p>Default stack size to use for newly created pthreads.  When not set, this
 defaults to STACK_SIZE (which in turn defaults to 64k).  Can also be set at
 runtime using pthread_attr_setstacksize().  Note that the wasm control flow
@@ -3065,11 +3097,11 @@ local variables, such as those that have their addresses taken, or ones that
 are too large to fit as local vars in wasm code.</p>
 </section>
 <section id="pthreads-profiling">
-<span id="id177"></span><h2>PTHREADS_PROFILING<a class="headerlink" href="#pthreads-profiling" title="Permalink to this headline">¶</a></h2>
+<span id="id180"></span><h2>PTHREADS_PROFILING<a class="headerlink" href="#pthreads-profiling" title="Permalink to this headline">¶</a></h2>
 <p>True when building with –threadprofiler</p>
 </section>
 <section id="allow-blocking-on-main-thread">
-<span id="id178"></span><h2>ALLOW_BLOCKING_ON_MAIN_THREAD<a class="headerlink" href="#allow-blocking-on-main-thread" title="Permalink to this headline">¶</a></h2>
+<span id="id181"></span><h2>ALLOW_BLOCKING_ON_MAIN_THREAD<a class="headerlink" href="#allow-blocking-on-main-thread" title="Permalink to this headline">¶</a></h2>
 <p>It is dangerous to call pthread_join or pthread_cond_wait
 on the main thread, as doing so can cause deadlocks on the Web (and also
 it works using a busy-wait which is expensive). See
@@ -3078,11 +3110,11 @@ This may become set to 0 by default in the future; for now, this just
 warns in the console.</p>
 </section>
 <section id="pthreads-debug">
-<span id="id179"></span><h2>PTHREADS_DEBUG<a class="headerlink" href="#pthreads-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id182"></span><h2>PTHREADS_DEBUG<a class="headerlink" href="#pthreads-debug" title="Permalink to this headline">¶</a></h2>
 <p>If true, add in debug traces for diagnosing pthreads related issues.</p>
 </section>
 <section id="eval-ctors">
-<span id="id180"></span><h2>EVAL_CTORS<a class="headerlink" href="#eval-ctors" title="Permalink to this headline">¶</a></h2>
+<span id="id183"></span><h2>EVAL_CTORS<a class="headerlink" href="#eval-ctors" title="Permalink to this headline">¶</a></h2>
 <p>This tries to evaluate code at compile time. The main use case is to eval
 global ctor functions, which are those that run before main(), but main()
 itself or parts of it can also be evalled. Evaluating code this way can avoid
@@ -3114,7 +3146,7 @@ program does not depend on those features - even just checking the value of
 argc can lead to problems.</p>
 </section>
 <section id="textdecoder">
-<span id="id181"></span><h2>TEXTDECODER<a class="headerlink" href="#textdecoder" title="Permalink to this headline">¶</a></h2>
+<span id="id184"></span><h2>TEXTDECODER<a class="headerlink" href="#textdecoder" title="Permalink to this headline">¶</a></h2>
 <p>Is enabled, use the JavaScript TextDecoder API for string marshalling.
 Enabled by default, set this to 0 to disable.
 If set to 2, we assume TextDecoder is present and usable, and do not emit
@@ -3122,12 +3154,12 @@ any JS code to fall back if it is missing. In single threaded -Oz build modes,
 TEXTDECODER defaults to value == 2 to save code size.</p>
 </section>
 <section id="embind-std-string-is-utf8">
-<span id="id182"></span><h2>EMBIND_STD_STRING_IS_UTF8<a class="headerlink" href="#embind-std-string-is-utf8" title="Permalink to this headline">¶</a></h2>
+<span id="id185"></span><h2>EMBIND_STD_STRING_IS_UTF8<a class="headerlink" href="#embind-std-string-is-utf8" title="Permalink to this headline">¶</a></h2>
 <p>Embind specific: If enabled, assume UTF-8 encoded data in std::string binding.
 Disable this to support binary data transfer.</p>
 </section>
 <section id="embind-aot">
-<span id="id183"></span><h2>EMBIND_AOT<a class="headerlink" href="#embind-aot" title="Permalink to this headline">¶</a></h2>
+<span id="id186"></span><h2>EMBIND_AOT<a class="headerlink" href="#embind-aot" title="Permalink to this headline">¶</a></h2>
 <p>Embind specific: If enabled, generate Embind’s JavaScript invoker functions
 at compile time and include them in the JS output file. When used with
 DYNAMIC_EXECUTION=0 this allows exported bindings to be just as fast as
@@ -3135,19 +3167,19 @@ DYNAMIC_EXECUTION=1 mode, but without the need for eval(). If there are many
 bindings the JS output size may be larger though.</p>
 </section>
 <section id="offscreencanvas-support">
-<span id="id184"></span><h2>OFFSCREENCANVAS_SUPPORT<a class="headerlink" href="#offscreencanvas-support" title="Permalink to this headline">¶</a></h2>
+<span id="id187"></span><h2>OFFSCREENCANVAS_SUPPORT<a class="headerlink" href="#offscreencanvas-support" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, enables support for transferring canvases to pthreads and
 creating WebGL contexts in them, as well as explicit swap control for GL
 contexts. This needs browser support for the OffscreenCanvas specification.</p>
 </section>
 <section id="offscreencanvases-to-pthread">
-<span id="id185"></span><h2>OFFSCREENCANVASES_TO_PTHREAD<a class="headerlink" href="#offscreencanvases-to-pthread" title="Permalink to this headline">¶</a></h2>
+<span id="id188"></span><h2>OFFSCREENCANVASES_TO_PTHREAD<a class="headerlink" href="#offscreencanvases-to-pthread" title="Permalink to this headline">¶</a></h2>
 <p>If you are using PROXY_TO_PTHREAD with OFFSCREENCANVAS_SUPPORT, then specify
 here a comma separated list of CSS ID selectors to canvases to proxy over
 to the pthread at program startup, e.g. ‘#canvas1, #canvas2’.</p>
 </section>
 <section id="offscreen-framebuffer">
-<span id="id186"></span><h2>OFFSCREEN_FRAMEBUFFER<a class="headerlink" href="#offscreen-framebuffer" title="Permalink to this headline">¶</a></h2>
+<span id="id189"></span><h2>OFFSCREEN_FRAMEBUFFER<a class="headerlink" href="#offscreen-framebuffer" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, enables support for WebGL contexts to render to an offscreen
 render target, to avoid the implicit swap behavior of WebGL where exiting any
 event callback would automatically perform a “flip” to present rendered
@@ -3164,21 +3196,21 @@ time, and allows one to utilize OffscreenCanvas where available, and to fall
 back to Offscreen Framebuffer otherwise.</p>
 </section>
 <section id="fetch-support-indexeddb">
-<span id="id187"></span><h2>FETCH_SUPPORT_INDEXEDDB<a class="headerlink" href="#fetch-support-indexeddb" title="Permalink to this headline">¶</a></h2>
+<span id="id190"></span><h2>FETCH_SUPPORT_INDEXEDDB<a class="headerlink" href="#fetch-support-indexeddb" title="Permalink to this headline">¶</a></h2>
 <p>If nonzero, Fetch API supports backing to IndexedDB. If 0, IndexedDB is not
 utilized. Set to 0 if IndexedDB support is not interesting for target
 application, to save a few kBytes.</p>
 </section>
 <section id="fetch-debug">
-<span id="id188"></span><h2>FETCH_DEBUG<a class="headerlink" href="#fetch-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id191"></span><h2>FETCH_DEBUG<a class="headerlink" href="#fetch-debug" title="Permalink to this headline">¶</a></h2>
 <p>If nonzero, prints out debugging information in library_fetch.js</p>
 </section>
 <section id="fetch">
-<span id="id189"></span><h2>FETCH<a class="headerlink" href="#fetch" title="Permalink to this headline">¶</a></h2>
+<span id="id192"></span><h2>FETCH<a class="headerlink" href="#fetch" title="Permalink to this headline">¶</a></h2>
 <p>If nonzero, enables emscripten_fetch API.</p>
 </section>
 <section id="wasmfs">
-<span id="id190"></span><h2>WASMFS<a class="headerlink" href="#wasmfs" title="Permalink to this headline">¶</a></h2>
+<span id="id193"></span><h2>WASMFS<a class="headerlink" href="#wasmfs" title="Permalink to this headline">¶</a></h2>
 <p>ATTENTION [WIP]: Experimental feature. Please use at your own risk.
 This will eventually replace the current JS file system implementation.
 If set to 1, uses new filesystem implementation.</p>
@@ -3188,7 +3220,7 @@ If set to 1, uses new filesystem implementation.</p>
 </div>
 </section>
 <section id="single-file">
-<span id="id191"></span><h2>SINGLE_FILE<a class="headerlink" href="#single-file" title="Permalink to this headline">¶</a></h2>
+<span id="id194"></span><h2>SINGLE_FILE<a class="headerlink" href="#single-file" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, embeds all subresources in the emitted file as base64 string
 literals. Embedded subresources may include (but aren’t limited to) wasm,
 asm.js, and static memory initialization code.</p>
@@ -3200,20 +3232,20 @@ Policy, or your CSP header doesn’t include either script-src or child-src,
 then you can safely ignore this warning.</p>
 </section>
 <section id="auto-js-libraries">
-<span id="id192"></span><h2>AUTO_JS_LIBRARIES<a class="headerlink" href="#auto-js-libraries" title="Permalink to this headline">¶</a></h2>
+<span id="id195"></span><h2>AUTO_JS_LIBRARIES<a class="headerlink" href="#auto-js-libraries" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, all JS libraries will be automatically available at link time.
 This gets set to 0 in STRICT mode (or with MINIMAL_RUNTIME) which mean you
 need to explicitly specify -lfoo.js in at link time in order to access
 library function in library_foo.js.</p>
 </section>
 <section id="auto-native-libraries">
-<span id="id193"></span><h2>AUTO_NATIVE_LIBRARIES<a class="headerlink" href="#auto-native-libraries" title="Permalink to this headline">¶</a></h2>
+<span id="id196"></span><h2>AUTO_NATIVE_LIBRARIES<a class="headerlink" href="#auto-native-libraries" title="Permalink to this headline">¶</a></h2>
 <p>Like AUTO_JS_LIBRARIES but for the native libraries such as libgl, libal
 and libhtml5.   If this is disabled it is necessary to explicitly add
 e.g. -lhtml5 and also to first build the library using <code class="docutils literal notranslate"><span class="pre">embuilder</span></code>.</p>
 </section>
 <section id="min-firefox-version">
-<span id="id194"></span><h2>MIN_FIREFOX_VERSION<a class="headerlink" href="#min-firefox-version" title="Permalink to this headline">¶</a></h2>
+<span id="id197"></span><h2>MIN_FIREFOX_VERSION<a class="headerlink" href="#min-firefox-version" title="Permalink to this headline">¶</a></h2>
 <p>Specifies the oldest major version of Firefox to target. I.e. all Firefox
 versions &gt;= MIN_FIREFOX_VERSION
 are desired to work. Pass -sMIN_FIREFOX_VERSION=majorVersion to drop support
@@ -3223,7 +3255,7 @@ MAX_INT (0x7FFFFFFF, or -1) specifies that target is not supported.
 Minimum supported value is 34 which was released on 2014-12-01.</p>
 </section>
 <section id="min-safari-version">
-<span id="id195"></span><h2>MIN_SAFARI_VERSION<a class="headerlink" href="#min-safari-version" title="Permalink to this headline">¶</a></h2>
+<span id="id198"></span><h2>MIN_SAFARI_VERSION<a class="headerlink" href="#min-safari-version" title="Permalink to this headline">¶</a></h2>
 <p>Specifies the oldest version of desktop Safari to target. Version is encoded
 in MMmmVV, e.g. 70101 denotes Safari 7.1.1.
 Safari 14.1.0 was released on April 26, 2021, bundled with macOS 11.0 Big
@@ -3237,7 +3269,7 @@ MAX_INT (0x7FFFFFFF, or -1) specifies that target is not supported.
 Minimum supported value is 90000 which was released in 2015.</p>
 </section>
 <section id="min-chrome-version">
-<span id="id196"></span><h2>MIN_CHROME_VERSION<a class="headerlink" href="#min-chrome-version" title="Permalink to this headline">¶</a></h2>
+<span id="id199"></span><h2>MIN_CHROME_VERSION<a class="headerlink" href="#min-chrome-version" title="Permalink to this headline">¶</a></h2>
 <p>Specifies the oldest version of Chrome. E.g. pass -sMIN_CHROME_VERSION=58 to
 drop support for Chrome 57 and older.
 This setting also applies to modern Chromium-based Edge, which shares version
@@ -3247,7 +3279,7 @@ MAX_INT (0x7FFFFFFF, or -1) specifies that target is not supported.
 Minimum supported value is 32, which was released on 2014-01-04.</p>
 </section>
 <section id="min-node-version">
-<span id="id197"></span><h2>MIN_NODE_VERSION<a class="headerlink" href="#min-node-version" title="Permalink to this headline">¶</a></h2>
+<span id="id200"></span><h2>MIN_NODE_VERSION<a class="headerlink" href="#min-node-version" title="Permalink to this headline">¶</a></h2>
 <p>Specifies minimum node version to target for the generated code.  This is
 distinct from the minimum version required run the emscripten compiler.
 This version aligns with the current Ubuuntu TLS 20.04 (Focal).
@@ -3255,7 +3287,7 @@ Version is encoded in MMmmVV, e.g. 181401 denotes Node 18.14.01.
 Minimum supported value is 101900, which was released 2020-02-05.</p>
 </section>
 <section id="support-errno">
-<span id="id198"></span><h2>SUPPORT_ERRNO<a class="headerlink" href="#support-errno" title="Permalink to this headline">¶</a></h2>
+<span id="id201"></span><h2>SUPPORT_ERRNO<a class="headerlink" href="#support-errno" title="Permalink to this headline">¶</a></h2>
 <p>Whether we support setting errno from JS library code.
 In MINIMAL_RUNTIME builds, this option defaults to 0.</p>
 <div class="admonition note">
@@ -3264,7 +3296,7 @@ In MINIMAL_RUNTIME builds, this option defaults to 0.</p>
 </div>
 </section>
 <section id="minimal-runtime">
-<span id="id199"></span><h2>MINIMAL_RUNTIME<a class="headerlink" href="#minimal-runtime" title="Permalink to this headline">¶</a></h2>
+<span id="id202"></span><h2>MINIMAL_RUNTIME<a class="headerlink" href="#minimal-runtime" title="Permalink to this headline">¶</a></h2>
 <p>If true, uses minimal sized runtime without POSIX features, Module,
 preRun/preInit/etc., Emscripten built-in XHR loading or library_browser.js.
 Enable this setting to target the smallest code size possible.  Set
@@ -3276,7 +3308,7 @@ be useful for really small programs).</p>
 to export kept alive symbols, please use <code class="docutils literal notranslate"><span class="pre">-sEXPORT_KEEPALIVE=1</span></code>.</p>
 </section>
 <section id="minimal-runtime-streaming-wasm-compilation">
-<span id="id200"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-compilation" title="Permalink to this headline">¶</a></h2>
+<span id="id203"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-compilation" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, MINIMAL_RUNTIME will utilize streaming WebAssembly compilation,
 where WebAssembly module is compiled already while it is being downloaded.
 In order for this to work, the web server MUST properly serve the .wasm file
@@ -3295,7 +3327,7 @@ since it requires server side configuration and for really small pages there
 is no observable difference (also has a ~100 byte impact to code size)</p>
 </section>
 <section id="minimal-runtime-streaming-wasm-instantiation">
-<span id="id201"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-instantiation" title="Permalink to this headline">¶</a></h2>
+<span id="id204"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-instantiation" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, MINIMAL_RUNTIME will utilize streaming WebAssembly instantiation,
 where WebAssembly module is compiled+instantiated already while it is being
 downloaded. Same restrictions/requirements apply as with
@@ -3307,7 +3339,7 @@ the size of the JS runtime file, and the size of the preloaded data file
 to download, and the browser in question.</p>
 </section>
 <section id="support-longjmp">
-<span id="id202"></span><h2>SUPPORT_LONGJMP<a class="headerlink" href="#support-longjmp" title="Permalink to this headline">¶</a></h2>
+<span id="id205"></span><h2>SUPPORT_LONGJMP<a class="headerlink" href="#support-longjmp" title="Permalink to this headline">¶</a></h2>
 <p>If set to ‘emscripten’ or ‘wasm’, compiler supports setjmp() and longjmp().
 If set to 0, these APIs are not available.  If you are using C++ exceptions,
 but do not need setjmp()+longjmp() API, then you can set this to 0 to save a
@@ -3324,14 +3356,14 @@ longjmp support at codegen time, while at link it allows linking in the
 library support.</p>
 </section>
 <section id="disable-deprecated-find-event-target-behavior">
-<span id="id203"></span><h2>DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR<a class="headerlink" href="#disable-deprecated-find-event-target-behavior" title="Permalink to this headline">¶</a></h2>
+<span id="id206"></span><h2>DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR<a class="headerlink" href="#disable-deprecated-find-event-target-behavior" title="Permalink to this headline">¶</a></h2>
 <p>If set to 1, disables old deprecated HTML5 API event target lookup behavior.
 When enabled, there is no “Module.canvas” object, no magic “null” default
 handling, and DOM element ‘target’ parameters are taken to refer to CSS
 selectors, instead of referring to DOM IDs.</p>
 </section>
 <section id="html5-support-deferring-user-sensitive-requests">
-<span id="id204"></span><h2>HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS<a class="headerlink" href="#html5-support-deferring-user-sensitive-requests" title="Permalink to this headline">¶</a></h2>
+<span id="id207"></span><h2>HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS<a class="headerlink" href="#html5-support-deferring-user-sensitive-requests" title="Permalink to this headline">¶</a></h2>
 <p>Certain browser DOM API operations, such as requesting fullscreen mode
 transition or pointer lock require that the request originates from within
 an user initiated event, such as mouse click or keyboard press. Refactoring
@@ -3343,7 +3375,7 @@ to disable support for deferring to save code space if your application does
 not need support for deferred calls.</p>
 </section>
 <section id="minify-html">
-<span id="id205"></span><h2>MINIFY_HTML<a class="headerlink" href="#minify-html" title="Permalink to this headline">¶</a></h2>
+<span id="id208"></span><h2>MINIFY_HTML<a class="headerlink" href="#minify-html" title="Permalink to this headline">¶</a></h2>
 <p>Specifies whether the generated .html file is run through html-minifier. The
 set of optimization passes run by html-minifier depends on debug and
 optimization levels. In -g2 and higher, no minification is performed. In -g1,
@@ -3352,7 +3384,7 @@ least -O1 or -Os to be used. Pass -sMINIFY_HTML=0 to explicitly choose to
 disable HTML minification altogether.</p>
 </section>
 <section id="maybe-wasm2js">
-<span id="id206"></span><h2>MAYBE_WASM2JS<a class="headerlink" href="#maybe-wasm2js" title="Permalink to this headline">¶</a></h2>
+<span id="id209"></span><h2>MAYBE_WASM2JS<a class="headerlink" href="#maybe-wasm2js" title="Permalink to this headline">¶</a></h2>
 <p>Whether we <em>may</em> be using wasm2js. This compiles to wasm normally, but lets
 you run wasm2js <em>later</em> on the wasm, and you can pick between running the
 normal wasm or that wasm2js code. For details of how to do that, see the
@@ -3360,44 +3392,44 @@ test_maybe_wasm2js test.  This option can be useful for debugging and
 bisecting.</p>
 </section>
 <section id="asan-shadow-size">
-<span id="id207"></span><h2>ASAN_SHADOW_SIZE<a class="headerlink" href="#asan-shadow-size" title="Permalink to this headline">¶</a></h2>
+<span id="id210"></span><h2>ASAN_SHADOW_SIZE<a class="headerlink" href="#asan-shadow-size" title="Permalink to this headline">¶</a></h2>
 <p>This option is no longer used. The appropriate shadow memory size is now
 calculated from INITIAL_MEMORY and MAXIMUM_MEMORY. Will be removed in a
 future release.</p>
 </section>
 <section id="use-offset-converter">
-<span id="id208"></span><h2>USE_OFFSET_CONVERTER<a class="headerlink" href="#use-offset-converter" title="Permalink to this headline">¶</a></h2>
+<span id="id211"></span><h2>USE_OFFSET_CONVERTER<a class="headerlink" href="#use-offset-converter" title="Permalink to this headline">¶</a></h2>
 <p>Whether we should use the offset converter.  This is needed for older
 versions of v8 (&lt;7.7) that does not give the hex module offset into wasm
 binary in stack traces, as well as for avoiding using source map entries
 across function boundaries.</p>
 </section>
 <section id="load-source-map">
-<span id="id209"></span><h2>LOAD_SOURCE_MAP<a class="headerlink" href="#load-source-map" title="Permalink to this headline">¶</a></h2>
+<span id="id212"></span><h2>LOAD_SOURCE_MAP<a class="headerlink" href="#load-source-map" title="Permalink to this headline">¶</a></h2>
 <p>Whether we should load the WASM source map at runtime.
 This is enabled automatically when using -gsource-map with sanitizers.</p>
 </section>
 <section id="default-to-cxx">
-<span id="id210"></span><h2>DEFAULT_TO_CXX<a class="headerlink" href="#default-to-cxx" title="Permalink to this headline">¶</a></h2>
+<span id="id213"></span><h2>DEFAULT_TO_CXX<a class="headerlink" href="#default-to-cxx" title="Permalink to this headline">¶</a></h2>
 <p>Default to c++ mode even when run as <code class="docutils literal notranslate"><span class="pre">emcc</span></code> rather then <code class="docutils literal notranslate"><span class="pre">emc++</span></code>.
 When this is disabled <code class="docutils literal notranslate"><span class="pre">em++</span></code> is required linking C++ programs. Disabling
 this will match the behaviour of gcc/g++ and clang/clang++.</p>
 </section>
 <section id="printf-long-double">
-<span id="id211"></span><h2>PRINTF_LONG_DOUBLE<a class="headerlink" href="#printf-long-double" title="Permalink to this headline">¶</a></h2>
+<span id="id214"></span><h2>PRINTF_LONG_DOUBLE<a class="headerlink" href="#printf-long-double" title="Permalink to this headline">¶</a></h2>
 <p>While LLVM’s wasm32 has long double = float128, we don’t support printing
 that at full precision by default. Instead we print as 64-bit doubles, which
 saves libc code size. You can flip this option on to get a libc with full
 long double printing precision.</p>
 </section>
 <section id="separate-dwarf-url">
-<span id="id212"></span><h2>SEPARATE_DWARF_URL<a class="headerlink" href="#separate-dwarf-url" title="Permalink to this headline">¶</a></h2>
+<span id="id215"></span><h2>SEPARATE_DWARF_URL<a class="headerlink" href="#separate-dwarf-url" title="Permalink to this headline">¶</a></h2>
 <p>Setting this affects the path emitted in the wasm that refers to the DWARF
 file, in -gseparate-dwarf mode. This allows the debugging file to be hosted
 in a custom location.</p>
 </section>
 <section id="error-on-wasm-changes-after-link">
-<span id="id213"></span><h2>ERROR_ON_WASM_CHANGES_AFTER_LINK<a class="headerlink" href="#error-on-wasm-changes-after-link" title="Permalink to this headline">¶</a></h2>
+<span id="id216"></span><h2>ERROR_ON_WASM_CHANGES_AFTER_LINK<a class="headerlink" href="#error-on-wasm-changes-after-link" title="Permalink to this headline">¶</a></h2>
 <p>Emscripten runs wasm-ld to link, and in some cases will do further changes to
 the wasm afterwards, like running wasm-opt to optimize the binary in
 optimized builds. However, in some builds no wasm changes are necessary after
@@ -3412,7 +3444,7 @@ Some example of features that require post-link wasm changes are:
 - Lowering sign-extension operation when targeting older browsers.</p>
 </section>
 <section id="abort-on-wasm-exceptions">
-<span id="id214"></span><h2>ABORT_ON_WASM_EXCEPTIONS<a class="headerlink" href="#abort-on-wasm-exceptions" title="Permalink to this headline">¶</a></h2>
+<span id="id217"></span><h2>ABORT_ON_WASM_EXCEPTIONS<a class="headerlink" href="#abort-on-wasm-exceptions" title="Permalink to this headline">¶</a></h2>
 <p>Abort on unhandled excptions that occur when calling exported WebAssembly
 functions. This makes the program behave more like a native program where the
 OS would terminate the process and no further code can be executed when an
@@ -3429,7 +3461,7 @@ Exceptions that occur within the <code class="docutils literal notranslate"><spa
 alternative mechanimsm.</p>
 </section>
 <section id="pure-wasi">
-<span id="id215"></span><h2>PURE_WASI<a class="headerlink" href="#pure-wasi" title="Permalink to this headline">¶</a></h2>
+<span id="id218"></span><h2>PURE_WASI<a class="headerlink" href="#pure-wasi" title="Permalink to this headline">¶</a></h2>
 <p>Build binaries that use as many WASI APIs as possible, and include additional
 JS support libraries for those APIs.  This allows emscripten to produce binaries
 are more WASI compliant and also allows it to process and execute WASI
@@ -3442,7 +3474,7 @@ Implies STANDALONE_WASM.</p>
 </div>
 </section>
 <section id="imported-memory">
-<span id="id216"></span><h2>IMPORTED_MEMORY<a class="headerlink" href="#imported-memory" title="Permalink to this headline">¶</a></h2>
+<span id="id219"></span><h2>IMPORTED_MEMORY<a class="headerlink" href="#imported-memory" title="Permalink to this headline">¶</a></h2>
 <p>Set to 1 to define the WebAssembly.Memory object outside of the wasm
 module.  By default the wasm module defines the memory and exports
 it to JavaScript.
@@ -3454,7 +3486,7 @@ depend on being able to define the memory in JavaScript:
 - WASM2JS (WASM=0)</p>
 </section>
 <section id="split-module">
-<span id="id217"></span><h2>SPLIT_MODULE<a class="headerlink" href="#split-module" title="Permalink to this headline">¶</a></h2>
+<span id="id220"></span><h2>SPLIT_MODULE<a class="headerlink" href="#split-module" title="Permalink to this headline">¶</a></h2>
 <p>Generate code to loading split wasm modules.
 This option will automatically generate two wasm files as output, one
 with the <code class="docutils literal notranslate"><span class="pre">.orig</span></code> suffix and one without.  The default file (without
@@ -3464,24 +3496,24 @@ As well as this the generated JS code will contains help functions
 to loading split modules.</p>
 </section>
 <section id="autoload-dylibs">
-<span id="id218"></span><h2>AUTOLOAD_DYLIBS<a class="headerlink" href="#autoload-dylibs" title="Permalink to this headline">¶</a></h2>
+<span id="id221"></span><h2>AUTOLOAD_DYLIBS<a class="headerlink" href="#autoload-dylibs" title="Permalink to this headline">¶</a></h2>
 <p>For MAIN_MODULE builds, automatically load any dynamic library dependencies
 on startup, before loading the main module.</p>
 </section>
 <section id="allow-unimplemented-syscalls">
-<span id="id219"></span><h2>ALLOW_UNIMPLEMENTED_SYSCALLS<a class="headerlink" href="#allow-unimplemented-syscalls" title="Permalink to this headline">¶</a></h2>
+<span id="id222"></span><h2>ALLOW_UNIMPLEMENTED_SYSCALLS<a class="headerlink" href="#allow-unimplemented-syscalls" title="Permalink to this headline">¶</a></h2>
 <p>Include unimplemented JS syscalls to be included in the final output.  This
 allows programs that depend on these syscalls at runtime to be compiled, even
 though these syscalls will fail (or do nothing) at runtime.</p>
 </section>
 <section id="trusted-types">
-<span id="id220"></span><h2>TRUSTED_TYPES<a class="headerlink" href="#trusted-types" title="Permalink to this headline">¶</a></h2>
+<span id="id223"></span><h2>TRUSTED_TYPES<a class="headerlink" href="#trusted-types" title="Permalink to this headline">¶</a></h2>
 <p>Allow calls to Worker(…) and importScripts(…) to be Trusted Types compatible.
 Trusted Types is a Web Platform feature designed to mitigate DOM XSS by restricting
 the usage of DOM sink APIs. See <a class="reference external" href="https://w3c.github.io/webappsec-trusted-types/">https://w3c.github.io/webappsec-trusted-types/</a>.</p>
 </section>
 <section id="polyfill">
-<span id="id221"></span><h2>POLYFILL<a class="headerlink" href="#polyfill" title="Permalink to this headline">¶</a></h2>
+<span id="id224"></span><h2>POLYFILL<a class="headerlink" href="#polyfill" title="Permalink to this headline">¶</a></h2>
 <p>When targeting older browsers emscripten will sometimes require that
 polyfills be included in the output.  If you would prefer to take care of
 polyfilling yourself via some other mechanism you can prevent emscripten
@@ -3490,7 +3522,7 @@ With default browser targets emscripten does not need any polyfills so this
 settings is <em>only</em> needed when also explicitly targeting older browsers.</p>
 </section>
 <section id="runtime-debug">
-<span id="id222"></span><h2>RUNTIME_DEBUG<a class="headerlink" href="#runtime-debug" title="Permalink to this headline">¶</a></h2>
+<span id="id225"></span><h2>RUNTIME_DEBUG<a class="headerlink" href="#runtime-debug" title="Permalink to this headline">¶</a></h2>
 <p>If true, add tracing to core runtime functions.
 This setting is enabled by default if any of the following debugging settings
 are enabled:
@@ -3506,14 +3538,14 @@ are enabled:
 - FETCH_DEBUG</p>
 </section>
 <section id="legacy-runtime">
-<span id="id223"></span><h2>LEGACY_RUNTIME<a class="headerlink" href="#legacy-runtime" title="Permalink to this headline">¶</a></h2>
+<span id="id226"></span><h2>LEGACY_RUNTIME<a class="headerlink" href="#legacy-runtime" title="Permalink to this headline">¶</a></h2>
 <p>Include JS library symbols that were previously part of the default runtime.
 Without this, such symbols can be made available by adding them to
 DEFAULT_LIBRARY_FUNCS_TO_INCLUDE, or via the dependencies of another JS
 library symbol.</p>
 </section>
 <section id="signature-conversions">
-<span id="id224"></span><h2>SIGNATURE_CONVERSIONS<a class="headerlink" href="#signature-conversions" title="Permalink to this headline">¶</a></h2>
+<span id="id227"></span><h2>SIGNATURE_CONVERSIONS<a class="headerlink" href="#signature-conversions" title="Permalink to this headline">¶</a></h2>
 <p>User-defined functions to wrap with signature conversion, which take or return
 pointer argument. Only affects MEMORY64=1 builds, see create_pointer_conversion_wrappers
 in emscripten.py for details.
@@ -3633,7 +3665,7 @@ Example use -sSIGNATURE_CONVERSIONS=someFunction:_p,anotherFunction:p</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.55-git (dev)',
+            VERSION:'3.1.60-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

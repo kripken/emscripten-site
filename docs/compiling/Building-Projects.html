@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Building Projects &mdash; Emscripten 3.1.55-git (dev) documentation</title>
+  <title>Building Projects &mdash; Emscripten 3.1.60-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.55-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Compiling and Running Projects" href="index.html"/>
         <link rel="next" title="Building to WebAssembly" href="WebAssembly.html"/>
         <link rel="prev" title="Compiling and Running Projects" href="index.html"/> 
@@ -917,6 +917,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#stack-size">STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#malloc">MALLOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#aborting-malloc">ABORTING_MALLOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#initial-heap">INITIAL_HEAP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#initial-memory">INITIAL_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#maximum-memory">MAXIMUM_MEMORY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#allow-memory-growth">ALLOW_MEMORY_GROWTH</a></li>
@@ -997,11 +998,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-stack-size">ASYNCIFY_STACK_SIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-remove">ASYNCIFY_REMOVE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-add">ASYNCIFY_ADD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-propagate-add">ASYNCIFY_PROPAGATE_ADD</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-only">ASYNCIFY_ONLY</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-advise">ASYNCIFY_ADVISE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-lazy-load-code">ASYNCIFY_LAZY_LOAD_CODE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi">JSPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1437,7 +1440,6 @@ which files are produced under which conditions:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.wasm</span></code> omits generating either JavaScript or HTML launcher file, and produces a single Wasm file built in standalone mode as if the <code class="docutils literal notranslate"><span class="pre">-sSTANDALONE_WASM</span></code> setting had been used. The resulting file expects to be run with the <a class="reference external" href="https://github.com/WebAssembly/WASI/blob/4712d490fd7662f689af6faa5d718e042f014931/legacy/application-abi.md">WASI ABI</a> - in particular, as soon as you initialize the module you must manually invoke either the <code class="docutils literal notranslate"><span class="pre">_start</span></code> export or (in the case of <code class="docutils literal notranslate"><span class="pre">--no-entry</span></code>) the <code class="docutils literal notranslate"><span class="pre">_initialize</span></code> export before doing anything else with it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span></code> causes the compiler to target JavaScript, and therefore a <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file is not produced.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">--emit-symbol-map</span></code> produces a file <code class="docutils literal notranslate"><span class="pre">output.{html,js}.symbols</span></code> if WebAssembly is being targeted (<code class="docutils literal notranslate"><span class="pre">-sWASM=0</span></code> not specified), or if JavaScript is being targeted and <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> or <code class="docutils literal notranslate"><span class="pre">-O2</span></code> or higher is specified, but debug level setting is <code class="docutils literal notranslate"><span class="pre">-g1</span></code> or lower (i.e. if symbols minification did occur).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM=0</span> <span class="pre">--memory-init-file</span> <span class="pre">1</span></code> causes the generation of <code class="docutils literal notranslate"><span class="pre">output.{html,js}.mem</span></code> memory initializer file. Passing <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> also implies <code class="docutils literal notranslate"><span class="pre">--memory-init-file</span> <span class="pre">1</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-gsource-map</span></code> generates a source map file <code class="docutils literal notranslate"><span class="pre">output.wasm.map</span></code>. If targeting JavaScript with <code class="docutils literal notranslate"><span class="pre">-sWASM=0</span></code>, the filename is <code class="docutils literal notranslate"><span class="pre">output.{html,js}.map</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">--preload-file</span> <span class="pre">xxx</span></code> directive generates a preloaded MEMFS filesystem file <code class="docutils literal notranslate"><span class="pre">output.data</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">...</span> <span class="pre">-o</span> <span class="pre">output.{html,js}</span> <span class="pre">-sWASM={0,1}</span> <span class="pre">-sSINGLE_FILE</span></code> merges JavaScript and WebAssembly code in the single output file <code class="docutils literal notranslate"><span class="pre">output.{html,js}</span></code> (in base64) to produce only one file for deployment. (If paired with <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code>, the preloaded <code class="docutils literal notranslate"><span class="pre">.data</span></code> file still exists as a separate file)</p></li>
@@ -1882,7 +1884,7 @@ but a build system might have it hardcoded, or require you to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.55-git (dev)',
+            VERSION:'3.1.60-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
