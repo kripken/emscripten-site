@@ -889,8 +889,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#how-do-i-check-for-updates-to-the-emscripten-sdk">How do I check for updates to the Emscripten SDK?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#how-do-i-change-the-currently-active-sdk-version">How do I change the currently active SDK version?</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#how-do-i-install-and-activate-old-emscripten-sdks-and-tools">How do I install and activate old Emscripten SDKs and tools?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#how-do-i-track-the-latest-emscripten-development-with-the-sdk">How do I track the latest Emscripten development with the SDK?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#how-do-i-use-my-own-emscripten-github-fork-with-the-sdk">How do I use my own Emscripten GitHub fork with the SDK?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-track-the-latest-changes-with-the-sdk">How do I track the latest changes with the SDK?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-use-my-own-emscripten-fork-with-the-sdk">How do I use my own Emscripten fork with the SDK?</a></li>
 </ul>
 </li>
 </ul>
@@ -990,6 +990,7 @@
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#disable-exception-throwing">DISABLE_EXCEPTION_THROWING</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#export-exception-handling-helpers">EXPORT_EXCEPTION_HANDLING_HELPERS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#exception-stack-traces">EXCEPTION_STACK_TRACES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="settings_reference.html#wasm-exnref">WASM_EXNREF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#nodejs-catch-exit">NODEJS_CATCH_EXIT</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#nodejs-catch-rejection">NODEJS_CATCH_REJECTION</a></li>
 <li class="toctree-l3"><a class="reference internal" href="settings_reference.html#asyncify">ASYNCIFY</a></li>
@@ -1561,38 +1562,46 @@ particular tool:</p>
 </pre></div>
 </div>
 </section>
-<section id="how-do-i-track-the-latest-emscripten-development-with-the-sdk">
-<span id="emsdk-dev-sdk"></span><h3>How do I track the latest Emscripten development with the SDK?<a class="headerlink" href="#how-do-i-track-the-latest-emscripten-development-with-the-sdk" title="Permalink to this headline">¶</a></h3>
-<p>It is also possible to use the latest and greatest versions of the tools on the GitHub repositories! This allows you to obtain new features and latest fixes immediately as they are pushed to GitHub, without having to wait for release to be tagged. <strong>No GitHub account or fork of Emscripten is required.</strong></p>
-<p>To switch to using the latest upstream git development branch (<code class="docutils literal notranslate"><span class="pre">main</span></code>), run the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install git. Skip if the system already has it.</span>
+<section id="how-do-i-track-the-latest-changes-with-the-sdk">
+<span id="emsdk-dev-sdk"></span><h3>How do I track the latest changes with the SDK?<a class="headerlink" href="#how-do-i-track-the-latest-changes-with-the-sdk" title="Permalink to this headline">¶</a></h3>
+<p>To try the latest changes with emsdk you can install and activate a special
+version called <code class="docutils literal notranslate"><span class="pre">tot</span></code> (Tip-Of-Tree) which is continuously built and usually
+contains Emscripten and LLVM changes just a few hours after they are committed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">tot</span>
+<span class="o">./</span><span class="n">emsdk</span> <span class="n">activate</span> <span class="n">tot</span>
+</pre></div>
+</div>
+<p>If you want to build everything yourself from the very latest sources you can
+use <code class="docutils literal notranslate"><span class="pre">sdk-main-64bit</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install git (Skip if the system already has it).</span>
 <span class="o">./</span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">git</span><span class="o">-</span><span class="mf">1.8.3</span>
 
 <span class="c1"># Clone+pull the latest emscripten-core/emscripten/main.</span>
-<span class="o">./</span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">sdk</span><span class="o">-</span><span class="n">upstream</span><span class="o">-</span><span class="n">main</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span>
+<span class="o">./</span><span class="n">emsdk</span> <span class="n">install</span> <span class="n">sdk</span><span class="o">-</span><span class="n">main</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span>
 
-<span class="c1"># Set the &quot;upstream-main SDK&quot; as the active version.</span>
-<span class="o">./</span><span class="n">emsdk</span> <span class="n">activate</span> <span class="n">sdk</span><span class="o">-</span><span class="n">upstream</span><span class="o">-</span><span class="n">main</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span>
+<span class="c1"># Set this as the active version.</span>
+<span class="o">./</span><span class="n">emsdk</span> <span class="n">activate</span> <span class="n">sdk</span><span class="o">-</span><span class="n">main</span><span class="o">-</span><span class="mi">64</span><span class="n">bit</span>
 </pre></div>
 </div>
 </section>
-<section id="how-do-i-use-my-own-emscripten-github-fork-with-the-sdk">
-<span id="emsdk-howto-use-own-fork"></span><h3>How do I use my own Emscripten GitHub fork with the SDK?<a class="headerlink" href="#how-do-i-use-my-own-emscripten-github-fork-with-the-sdk" title="Permalink to this headline">¶</a></h3>
-<p>It is also possible to use your own fork of the Emscripten repository via the SDK. This is useful in the case when you want to make your own modifications to the Emscripten toolchain, but still keep using the SDK environment and tools.</p>
-<p>The way this works is that you first install the <code class="docutils literal notranslate"><span class="pre">sdk-upstream-main</span></code> SDK as in the <a class="reference internal" href="#emsdk-dev-sdk"><span class="std std-ref">previous section</span></a>. Then you use familiar git commands to replace this branch with the information from your own fork:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">emscripten</span><span class="o">/</span><span class="n">main</span>
+<section id="how-do-i-use-my-own-emscripten-fork-with-the-sdk">
+<span id="emsdk-howto-use-own-fork"></span><h3>How do I use my own Emscripten fork with the SDK?<a class="headerlink" href="#how-do-i-use-my-own-emscripten-fork-with-the-sdk" title="Permalink to this headline">¶</a></h3>
+<p>It is also possible to use your own fork of the Emscripten repository via the
+SDK. This is useful in the case when you want to make your own modifications to
+the Emscripten toolchain, but still keep using the SDK environment and tools.</p>
+<p>To to this all you need to do is set the <code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code> environment variable to
+point to the emsdk emscripten config and then put your own checkout of
+emscripten first in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">my_emscripten</span><span class="o">/</span>
 
-<span class="c1"># Add a git remote link to your own repository.</span>
-<span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">myremote</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">mygituseraccount</span><span class="o">/</span><span class="n">emscripten</span><span class="o">.</span><span class="n">git</span>
+<span class="c1"># Tell emscripten to use the emsdk config file</span>
+<span class="n">export</span> <span class="n">EM_CONFIG</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">emsdk</span><span class="o">/.</span><span class="n">emscripten</span>
 
-<span class="c1"># Obtain the changes in your link.</span>
-<span class="n">git</span> <span class="n">fetch</span> <span class="n">myremote</span>
-
-<span class="c1"># Switch the emscripten-main tool to use your fork.</span>
-<span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">mymain</span> <span class="o">--</span><span class="n">track</span> <span class="n">myremote</span><span class="o">/</span><span class="n">main</span>
+<span class="c1"># Now your version of emscripten will use LLVM and binaryen</span>
+<span class="c1"># binaries from the currently active version of emsdk.</span>
+<span class="o">./</span><span class="n">emcc</span>
 </pre></div>
 </div>
-<p>You can switch back and forth between remotes via the <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span></code> command as usual.</p>
 </section>
 </section>
 </section>
