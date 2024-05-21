@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.60-git (dev) documentation</title>
+  <title>Configuring Emscripten Settings when Manually Building from Source &mdash; Emscripten 3.1.61-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Building Emscripten from Source" href="index.html"/>
         <link rel="next" title="Verifying the Emscripten Development Environment" href="verify_emscripten_environment.html"/>
         <link rel="prev" title="Emscripten Toolchain Requirements" href="toolchain_what_is_needed.html"/> 
@@ -473,22 +473,23 @@
 <li class="toctree-l3"><a class="reference internal" href="../porting/setjmp-longjmp.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asyncify</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asynchronous Code</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#ways-to-use-asyncify-apis-in-older-engines">Ways to use Asyncify APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing">Optimizing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#differences-between-asyncify-and-jspi">Differences Between Asyncify and JSPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#optimizing-asyncify">Optimizing Asyncify</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#potential-problems">Potential problems</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows">Stack overflows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#stack-overflows-asyncify">Stack overflows (Asyncify)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#reentrancy">Reentrancy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#starting-to-rewind-with-compiled-code-on-the-stack">Starting to rewind with compiled code on the stack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/asyncify.html#starting-to-rewind-with-compiled-code-on-the-stack-asyncify">Starting to rewind with compiled code on the stack (Asyncify)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-apis">Migrating from older APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/asyncify.html#migrating-from-older-asyncify-apis">Migrating from older Asyncify APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1006,6 +1007,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi">JSPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi-exports">JSPI_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi-imports">JSPI_IMPORTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1562,7 +1565,7 @@ LLVM binaries, such as:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.60-git (dev)',
+            VERSION:'3.1.61-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

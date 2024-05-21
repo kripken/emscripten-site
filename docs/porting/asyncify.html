@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asyncify &mdash; Emscripten 3.1.60-git (dev) documentation</title>
+  <title>Asynchronous Code &mdash; Emscripten 3.1.61-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.60-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="API Reference" href="../api_reference/index.html"/>
         <link rel="prev" title="C setjmp-longjmp Support" href="setjmp-longjmp.html"/> 
@@ -473,22 +473,23 @@
 <li class="toctree-l3"><a class="reference internal" href="setjmp-longjmp.html#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Asyncify</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Asynchronous Code</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ways-to-use-async-apis-in-older-engines">Ways to use async APIs in older engines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ways-to-use-asyncify-apis-in-older-engines">Ways to use Asyncify APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage-with-embind">Usage with Embind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage-with-ccall">Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#optimizing">Optimizing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#differences-between-asyncify-and-jspi">Differences Between Asyncify and JSPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimizing-asyncify">Optimizing Asyncify</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#potential-problems">Potential problems</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#stack-overflows">Stack overflows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stack-overflows-asyncify">Stack overflows (Asyncify)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reentrancy">Reentrancy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#starting-to-rewind-with-compiled-code-on-the-stack">Starting to rewind with compiled code on the stack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#starting-to-rewind-with-compiled-code-on-the-stack-asyncify">Starting to rewind with compiled code on the stack (Asyncify)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#migrating-from-older-apis">Migrating from older APIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#migrating-from-older-asyncify-apis">Migrating from older Asyncify APIs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a><ul>
@@ -1006,6 +1007,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-debug">ASYNCIFY_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-exports">ASYNCIFY_EXPORTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi">JSPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi-exports">JSPI_EXPORTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#jspi-imports">JSPI_IMPORTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#exported-runtime-methods">EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#extra-exported-runtime-methods">EXTRA_EXPORTED_RUNTIME_METHODS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tools_reference/settings_reference.html#incoming-module-js-api">INCOMING_MODULE_JS_API</a></li>
@@ -1339,7 +1342,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Asyncify</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Asynchronous Code</div>
   </div>
  
 </div>
@@ -1357,16 +1360,16 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Asyncify</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Asynchronous Code</div>
   </div>
  
 </div> -->
           <div role="main">
             
-  <section id="asyncify">
-<span id="asyncify-section"></span><h1>Asyncify<a class="headerlink" href="#asyncify" title="Permalink to this headline">¶</a></h1>
-<p>Asyncify lets <strong>synchronous</strong> C or C++ code interact with <strong>asynchronous</strong>
-JavaScript. This allows things like:</p>
+  <section id="asynchronous-code">
+<span id="asyncify-section"></span><h1>Asynchronous Code<a class="headerlink" href="#asynchronous-code" title="Permalink to this headline">¶</a></h1>
+<p>Emscripten supports two ways (Asyncify and JSPI) that let <strong>synchronous</strong> C or
+C++ code interact with <strong>asynchronous</strong> JavaScript. This allows things like:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>A synchronous call in C that yields to the event loop, which
@@ -1375,11 +1378,21 @@ allows browser events to be handled.</p></li>
 complete.</p></li>
 </ul>
 </div></blockquote>
-<p>Asyncify automatically transforms your compiled code into a form that can be
-paused and resumed, and handles pausing and resuming for you, so that it is
-asynchronous (hence the name “Asyncify”) even though you wrote it in a normal
-synchronous way.</p>
-<p>See the
+<p>In general the two options are very similar, but rely on different underlying
+mechanisms to work.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>Asyncify</cite> - Asyncify automatically transforms your compiled code into a
+form that can be paused and resumed, and handles pausing and resuming for
+you, so that it is asynchronous (hence the name “Asyncify”) even though you
+wrote it in a normal synchronous way. This works in most environments, but
+can cause the Wasm output to be much larger.</p></li>
+<li><p><cite>JSPI</cite> (experimental) - Uses the VM’s support for JavaScript Promise
+Integration (JSPI) for interacting with async JavaScript. The code size will
+remain the same, but support for this feature is still experimental.</p></li>
+</ul>
+</div></blockquote>
+<p>For more on Asyncify see the
 <a class="reference external" href="https://kripken.github.io/blog/wasm/2019/07/16/asyncify.html">Asyncify introduction blogpost</a>
 for general background and details of how it works internally (you can also view
 <a class="reference external" href="https://www.youtube.com/watch?v=qQOP6jqZqf8">this talk about Asyncify</a>).
@@ -1418,8 +1431,8 @@ The following expands on the Emscripten examples from that post.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>You can compile that with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">sASYNCIFY</span>
+<p>You can compile that using either <cite>-sASYNCIFY</cite> or <cite>-sJSPI</cite></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">s</span><span class="o">&lt;</span><span class="n">ASYNCIFY</span> <span class="ow">or</span> <span class="n">JSPI</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1429,6 +1442,10 @@ unoptimized builds are very large.</p>
 </div>
 <p>And you can run it with</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodejs</span> <span class="n">a</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">js</span>
+</pre></div>
+</div>
+<p>Or with JSPI</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nodejs</span> <span class="o">--</span><span class="n">experimental</span><span class="o">-</span><span class="n">wasm</span><span class="o">-</span><span class="n">stack</span><span class="o">-</span><span class="n">switching</span> <span class="n">a</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">js</span>
 </pre></div>
 </div>
 <p>You should then see something like this:</p>
@@ -1442,7 +1459,7 @@ timer happened!
 </div>
 <p>The code is written with a straightforward loop, which does not exit while
 it is running, which normally would not allow async events to be handled by the
-browser. With Asyncify, those sleeps actually yield to the browser’s main event
+browser. With Asyncify/JSPI, those sleeps actually yield to the browser’s main event
 loop, and the timer can happen!</p>
 </section>
 <section id="making-async-web-apis-behave-as-if-they-were-synchronous">
@@ -1476,7 +1493,7 @@ resuming the Wasm from the JS runtime).</p>
 for a Promise. While that operation is async, note how the C code in <code class="docutils literal notranslate"><span class="pre">main()</span></code>
 is completely synchronous!</p>
 <p>To run this example, first compile it with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sASYNCIFY</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">s</span><span class="o">&lt;</span><span class="n">ASYNCIFY</span> <span class="ow">or</span> <span class="n">JSPI</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>To run this, you must run a <a class="reference internal" href="../getting_started/FAQ.html#faq-local-webserver"><span class="std std-ref">local webserver</span></a>
@@ -1491,8 +1508,8 @@ You will see something like this:</p>
 <p>That shows that the C code only continued to execute after the async JS
 completed.</p>
 </section>
-<section id="ways-to-use-async-apis-in-older-engines">
-<h2>Ways to use async APIs in older engines<a class="headerlink" href="#ways-to-use-async-apis-in-older-engines" title="Permalink to this headline">¶</a></h2>
+<section id="ways-to-use-asyncify-apis-in-older-engines">
+<h2>Ways to use Asyncify APIs in older engines<a class="headerlink" href="#ways-to-use-asyncify-apis-in-older-engines" title="Permalink to this headline">¶</a></h2>
 <p>If your target JS engine doesn’t support the modern <code class="docutils literal notranslate"><span class="pre">async/await</span></code> JS
 syntax, you can desugar the above implementation of <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> to use Promises
 directly with <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code> and <code class="docutils literal notranslate"><span class="pre">Asyncify.handleAsync</span></code> instead:</p>
@@ -1594,12 +1611,16 @@ and want to <code class="docutils literal notranslate"><span class="pre">await</
 <span class="n">val</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_object</span><span class="p">.</span><span class="n">call</span><span class="o">&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;someAsyncMethod&quot;</span><span class="p">).</span><span class="n">await</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>In this case you don’t need to worry about <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, since it’s an
-internal implementation detail of <code class="docutils literal notranslate"><span class="pre">val::await</span></code> and Emscripten takes care of it
-automatically.</p>
-<p>Note that when Asyncify is used with Embind and the code is invoked from
-JavaScript, then it will be implicitly treated as an <code class="docutils literal notranslate"><span class="pre">async</span></code> function,
-returning a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> to the return value, as demonstrated below.</p>
+<p>In this case you don’t need to worry about <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code> or
+<code class="docutils literal notranslate"><span class="pre">JSPI_IMPORTS</span></code>, since it’s an internal implementation detail of <code class="docutils literal notranslate"><span class="pre">val::await</span></code>
+and Emscripten takes care of it automatically.</p>
+<p>Note that when using Embind exports, Asyncify and JSPI behave differently. When
+Asyncify is used with Embind and the code is invoked from JavaScript, then the
+function will return a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> if the export calls any suspending functions,
+otherwise the result will be returned synchronously. However, with JSPI, the
+parameter <code class="docutils literal notranslate"><span class="pre">emscripten::async()</span></code> must be used to mark the function as
+asynchronous and the export will always return a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> regardless if the
+export suspended.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten/bind.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
 
@@ -1611,15 +1632,18 @@ returning a <code class="docutils literal notranslate"><span class="pre">Promise
 <span class="p">}</span>
 
 <span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">example</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Asyncify</span>
 <span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;delayAndReturn&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">delayAndReturn</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// JSPI</span>
+<span class="w">  </span><span class="n">emscripten</span><span class="o">::</span><span class="n">function</span><span class="p">(</span><span class="s">&quot;delayAndReturn&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">delayAndReturn</span><span class="p">,</span><span class="w"> </span><span class="n">emscripten</span><span class="o">::</span><span class="n">async</span><span class="p">());</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Build with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">lembind</span> <span class="o">-</span><span class="n">sASYNCIFY</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="o">-</span><span class="n">O3</span> <span class="n">example</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">lembind</span> <span class="o">-</span><span class="n">s</span><span class="o">&lt;</span><span class="n">ASYNCIFY</span> <span class="ow">or</span> <span class="n">JSPI</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>Then invoke from JavaScript</p>
+<p>Then invoke from JavaScript (using Asyncify)</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">syncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// also 42 because `await` is no-op</span>
@@ -1635,6 +1659,16 @@ if Asyncify calls are encountered (such as <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">val::await()</span></code>, etc).</p>
 <p>If the code path is undetermined, the caller may either check if the returned
 value is an <code class="docutils literal notranslate"><span class="pre">instanceof</span> <span class="pre">Promise</span></code> or simply <code class="docutils literal notranslate"><span class="pre">await</span></code> on the returned value.</p>
+<p>When using JSPI the return values will always be a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> as seen below</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="nx">syncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// Promise { &lt;pending&gt; }</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">syncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="nx">asyncResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">delayAndReturn</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">asyncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// Promise { &lt;pending&gt; }</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">asyncResult</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
+</pre></div>
+</div>
 </section>
 <section id="usage-with-ccall">
 <h2>Usage with <code class="docutils literal notranslate"><span class="pre">ccall</span></code><a class="headerlink" href="#usage-with-ccall" title="Permalink to this headline">¶</a></h2>
@@ -1649,8 +1683,27 @@ function once the computation completes.</p>
 </pre></div>
 </div>
 </section>
-<section id="optimizing">
-<h2>Optimizing<a class="headerlink" href="#optimizing" title="Permalink to this headline">¶</a></h2>
+<section id="differences-between-asyncify-and-jspi">
+<h2>Differences Between Asyncify and JSPI<a class="headerlink" href="#differences-between-asyncify-and-jspi" title="Permalink to this headline">¶</a></h2>
+<p>Besides using different underlying mechanisms, Asyncify and JSPI also handle
+async imports and exports differently. Asyncify will automatically determine
+what exports will become async based on what could potentially call an
+an async import (<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>). However, with JSPI, the async imports
+and exports must be explicitly set using <code class="docutils literal notranslate"><span class="pre">JSPI_IMPORTS</span></code> and <code class="docutils literal notranslate"><span class="pre">JSPI_EXPORTS</span></code>
+settings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;JSPI/ASYNCIFY&gt;_IMPORTS</span></code> and <code class="docutils literal notranslate"><span class="pre">JSPI_EXPORTS</span></code> aren’t needed when
+using various helpers mentioned above such as: <code class="docutils literal notranslate"><span class="pre">EM_ASYNC_JS</span></code>,
+Embind’s Async support, <code class="docutils literal notranslate"><span class="pre">ccall</span></code>, etc…</p>
+</div>
+</section>
+<section id="optimizing-asyncify">
+<h2>Optimizing Asyncify<a class="headerlink" href="#optimizing-asyncify" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section does not apply to JSPI.</p>
+</div>
 <p>As mentioned earlier, unoptimized builds with Asyncify can be large and slow.
 Build with optimizations (say, <code class="docutils literal notranslate"><span class="pre">-O3</span></code>) to get good results.</p>
 <p>Asyncify adds overhead, both code size and slowness, because it instruments
@@ -1694,8 +1747,8 @@ it’s usually ok to use the defaults.</p>
 </section>
 <section id="potential-problems">
 <h2>Potential problems<a class="headerlink" href="#potential-problems" title="Permalink to this headline">¶</a></h2>
-<section id="stack-overflows">
-<h3>Stack overflows<a class="headerlink" href="#stack-overflows" title="Permalink to this headline">¶</a></h3>
+<section id="stack-overflows-asyncify">
+<h3>Stack overflows (Asyncify)<a class="headerlink" href="#stack-overflows-asyncify" title="Permalink to this headline">¶</a></h3>
 <p>If you see an exception thrown from an <code class="docutils literal notranslate"><span class="pre">asyncify_*</span></code> API, then it may be
 a stack overflow. You can increase the stack size with the
 <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_STACK_SIZE</span></code> option.</p>
@@ -1716,8 +1769,8 @@ if a function uses a global and assumes nothing else can modify it until it
 returns, but if that function sleeps and an event causes other code to
 change that global, then bad things can happen.</p>
 </section>
-<section id="starting-to-rewind-with-compiled-code-on-the-stack">
-<h3>Starting to rewind with compiled code on the stack<a class="headerlink" href="#starting-to-rewind-with-compiled-code-on-the-stack" title="Permalink to this headline">¶</a></h3>
+<section id="starting-to-rewind-with-compiled-code-on-the-stack-asyncify">
+<h3>Starting to rewind with compiled code on the stack (Asyncify)<a class="headerlink" href="#starting-to-rewind-with-compiled-code-on-the-stack-asyncify" title="Permalink to this headline">¶</a></h3>
 <p>The examples above show <cite>wakeUp()</cite> being called from JS (after a callback,
 typically), and without any compiled code on the stack. If there <em>were</em> compiled
 code on the stack, then that could interfere with properly rewinding and
@@ -1731,8 +1784,8 @@ compiled code that was on the stack - causing a later rewind to behave badly.)</
 later callback, when nothing else is on the stack.</p>
 </section>
 </section>
-<section id="migrating-from-older-apis">
-<h2>Migrating from older APIs<a class="headerlink" href="#migrating-from-older-apis" title="Permalink to this headline">¶</a></h2>
+<section id="migrating-from-older-asyncify-apis">
+<h2>Migrating from older Asyncify APIs<a class="headerlink" href="#migrating-from-older-asyncify-apis" title="Permalink to this headline">¶</a></h2>
 <p>If you have code uses the old Emterpreter-Async API, or the old Asyncify, then
 almost everything should just work when you replace <code class="docutils literal notranslate"><span class="pre">-sEMTERPRETIFY</span></code> usage
 with <code class="docutils literal notranslate"><span class="pre">-sASYNCIFY</span></code>. In particular all the things like <code class="docutils literal notranslate"><span class="pre">emscripten_wget</span></code>
@@ -1810,7 +1863,7 @@ examples.</p></li>
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Asyncify</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Asynchronous Code</div>
   </div>
  
 </div> -->
@@ -1833,7 +1886,7 @@ examples.</p></li>
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Asyncify%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/asyncify&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Asynchronous%20Code%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/asyncify&labels=bug">Page bug</a>
       </li>
   </ul>
   
@@ -1861,7 +1914,7 @@ examples.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.60-git (dev)',
+            VERSION:'3.1.61-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
