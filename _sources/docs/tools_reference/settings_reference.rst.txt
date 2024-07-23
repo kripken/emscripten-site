@@ -53,7 +53,7 @@ CHECK_NULL_WRITES
 When STACK_OVERFLOW_CHECK is enabled we also check writes to address zero.
 This can help detect NULL pointer usage.  If you want to skip this extra
 check (for example, if you want reads from the address zero to always return
-zero) you can disabled this here.  This setting has no effect when
+zero) you can disable this here.  This setting has no effect when
 STACK_OVERFLOW_CHECK is disabled.
 
 Default value: true
@@ -350,7 +350,7 @@ Default value: 1024
 TABLE_BASE
 ==========
 
-Where where table slots (function addresses) are allocated.
+Where table slots (function addresses) are allocated.
 This must be at least 1 to reserve the zero slot for the null pointer.
 
 Default value: 1
@@ -3054,11 +3054,10 @@ Certain browser DOM API operations, such as requesting fullscreen mode
 transition or pointer lock require that the request originates from within
 an user initiated event, such as mouse click or keyboard press. Refactoring
 an application to follow this kind of program structure can be difficult, so
-HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS=1 flag allows transparent
-emulation of this by deferring synchronous fullscreen mode and pointer lock
-requests until a suitable event callback is generated. Set this to 0
-to disable support for deferring to save code space if your application does
-not need support for deferred calls.
+HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS allows transparent emulation
+of this by deferring such requests until a suitable event callback is
+generated. Set this to 0 to disable support for deferring to on save code
+size if your application does not need support for deferred calls.
 
 Default value: true
 

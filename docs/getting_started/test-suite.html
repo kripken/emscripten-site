@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Emscripten Test Suite &mdash; Emscripten 3.1.61-git (dev) documentation</title>
+  <title>Emscripten Test Suite &mdash; Emscripten 3.1.65-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.65-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Getting Started" href="index.html"/>
         <link rel="next" title="Bug Reporting" href="bug_reports.html"/>
         <link rel="prev" title="Emscripten Tutorial" href="Tutorial.html"/> 
@@ -325,6 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#class-properties">Class Properties</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
@@ -756,7 +757,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#synchronous-fetches">Synchronous Fetches</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#waitable-fetches">Waitable Fetches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#tracking-progress">Tracking Progress</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#managing-large-files">Managing Large Files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#downloading-directly-to-indexeddb">Downloading directly to IndexedDB</a></li>
@@ -1383,8 +1383,8 @@ how best to do that.</p>
 </section>
 <section id="running-tests">
 <h2>Running tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
-<p>Run the test suite runner (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/runner.py">test/runner</a>) with no arguments to see the help message:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>test/runner
+<p>Run the test suite runner (<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/runner.py">test/runner</a>) with <code class="docutils literal notranslate"><span class="pre">--help</span></code> to see the help message:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>test/runner<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>The tests are divided into <em>modes</em>. You can run either an entire mode or an
@@ -1517,11 +1517,17 @@ test/runner<span class="w"> </span>benchmark
 test/runner<span class="w"> </span>benchmark.test_skinning
 </pre></div>
 </div>
-<p>Usually you will want to customize the in <cite>test/test_benchmark.py</cite> to
-run the benchmarks you want (there is currently no external config file). Things
-you may want to modify include:</p>
+<p>You can also specify which benchmarkers are run by using the environment
+variable <cite>EMTEST_BENCHMARKERS</cite>. It accepts a comma separated list of named
+benchmarkers (names can be found in <cite>named_benchmarkers</cite> in
+<cite>test/test_benchmark.py</cite>).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run one specific benchmark and with clang and v8.</span>
+<span class="nv">EMTEST_BENCHMARKERS</span><span class="o">=</span>clang,v8<span class="w"> </span>test/runner<span class="w"> </span>benchmark.test_skinning
+</pre></div>
+</div>
+<p>To further customize how the benchmarks are run, you will want to edit the file
+<cite>test/test_benchmark.py</cite>. Some of the options include:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">benchmarkers</span></code> is the list of VMs to run the benchmarks on.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DEFAULT_ARG</span></code> is how long the benchmark should run (they all try to run for
 a similar amount of time for consistency).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">TEST_REPS</span></code> is how many times to repeat each run (more will take longer, but
@@ -1668,7 +1674,7 @@ Emscripten-generated code.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.61-git (dev)',
+            VERSION:'3.1.65-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

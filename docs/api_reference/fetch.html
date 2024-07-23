@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fetch API &mdash; Emscripten 3.1.61-git (dev) documentation</title>
+  <title>Fetch API &mdash; Emscripten 3.1.65-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.65-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Module object" href="module.html"/>
         <link rel="prev" title="File System API" href="Filesystem-API.html"/> 
@@ -325,6 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#class-properties">Class Properties</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
@@ -756,7 +757,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#synchronous-fetches">Synchronous Fetches</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#waitable-fetches">Waitable Fetches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tracking-progress">Tracking Progress</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#managing-large-files">Managing Large Files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#downloading-directly-to-indexeddb">Downloading directly to IndexedDB</a></li>
@@ -1441,7 +1441,7 @@ attributes:</p>
 </pre></div>
 </div>
 <p>For a full example, see the file
-<code class="docutils literal notranslate"><span class="pre">test/fetch/example_async_xhr_to_memory_via_indexeddb.c</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">test/fetch/test_fetch_persist.c</span></code>.</p>
 <section id="persisting-data-bytes-from-memory">
 <h3>Persisting data bytes from memory<a class="headerlink" href="#persisting-data-bytes-from-memory" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it is useful to persist a range of bytes from application memory to
@@ -1544,51 +1544,6 @@ that only do an XHR but do not interact with IndexedDB.</p></li>
 pthreads, but not on the main thread.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code> + <code class="docutils literal notranslate"><span class="pre">-pthread</span></code>: Synchronous Synchronous Fetch operations
 are available both on the main thread and pthreads.</p></li>
-</ul>
-</div>
-</section>
-<section id="waitable-fetches">
-<h2>Waitable Fetches<a class="headerlink" href="#waitable-fetches" title="Permalink to this headline">¶</a></h2>
-<p>Emscripten Fetch operations can also run in a third mode, called a <em>waitable</em>
-fetch. Waitable fetches start off as asynchronous, but at any point after the
-fetch has started, the calling thread can issue a wait operation to either wait
-for the completion of the fetch, or to just poll whether the fetch operation has
-yet completed. The following code sample illustrates how this works.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_t</span><span class="w"> </span><span class="n">attr</span><span class="p">;</span>
-<span class="w">  </span><span class="n">emscripten_fetch_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>
-<span class="w">  </span><span class="n">strcpy</span><span class="p">(</span><span class="n">attr</span><span class="p">.</span><span class="n">requestMethod</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">);</span>
-<span class="w">  </span><span class="n">attr</span><span class="p">.</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_LOAD_TO_MEMORY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EMSCRIPTEN_FETCH_WAITABLE</span><span class="p">;</span>
-<span class="w">  </span><span class="n">emscripten_fetch_t</span><span class="w"> </span><span class="o">*</span><span class="n">fetch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_fetch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;file.dat&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Starts as asynchronous.</span>
-
-<span class="w">  </span><span class="n">EMSCRIPTEN_RESULT</span><span class="w"> </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EMSCRIPTEN_RESULT_TIMED_OUT</span><span class="p">;</span>
-<span class="w">  </span><span class="k">while</span><span class="p">(</span><span class="n">ret</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EMSCRIPTEN_RESULT_TIMED_OUT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="cm">/* possibly do some other work; */</span>
-<span class="w">    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_fetch_wait</span><span class="p">(</span><span class="n">fetch</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="cm">/*milliseconds to wait, 0 to just poll, INFINITY=wait until completion*/</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="c1">// The operation has finished, safe to examine the fields of the &#39;fetch&#39; pointer now.</span>
-
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Finished downloading %llu bytes from URL %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">numBytes</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">);</span>
-<span class="w">    </span><span class="c1">// The data is now available at fetch-&gt;data[0] through fetch-&gt;data[fetch-&gt;numBytes-1];</span>
-<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Downloading %s failed, HTTP failure status code: %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">fetch</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="n">emscripten_fetch_close</span><span class="p">(</span><span class="n">fetch</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Waitable fetches allow interleaving multiple tasks in one thread so that the
-issuing thread can perform some other work until the fetch completes.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Waitable fetches are available only in certain build modes:</p>
-<ul class="simple">
-<li><p><strong>No flags</strong> or <code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code>: Waitable fetches are not available.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-pthread</span></code>: Waitable fetches are available on pthreads, but not
-on the main thread.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code> + <code class="docutils literal notranslate"><span class="pre">-pthread</span></code>: Waitable fetches are
-available on all threads.</p></li>
 </ul>
 </div>
 </section>
@@ -1863,7 +1818,7 @@ load.</p></li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.61-git (dev)',
+            VERSION:'3.1.65-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Embind &mdash; Emscripten 3.1.61-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 3.1.65-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.65-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="WebIDL Binder" href="WebIDL-Binder.html"/>
         <link rel="prev" title="Interacting with code" href="Interacting-with-code.html"/> 
@@ -325,6 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#class-properties">Class Properties</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#built-in-type-conversions">Built-in type conversions</a></li>
@@ -756,7 +757,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#synchronous-fetches">Synchronous Fetches</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#waitable-fetches">Waitable Fetches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#tracking-progress">Tracking Progress</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#managing-large-files">Managing Large Files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/fetch.html#downloading-directly-to-indexeddb">Downloading directly to IndexedDB</a></li>
@@ -1708,8 +1708,8 @@ unclear which language owns and is responsible for deleting an object when it
 moves between languages. To make object ownership more explicit, <em>embind</em>
 supports smart pointers and return value policies. Return value
 polices dictate what happens to a C++ object when it is returned to JavaScript.</p>
-<p>To use a return value policy, pass the desired policy into function or method
-bindings. For example:</p>
+<p>To use a return value policy, pass the desired policy into function, method, or
+property bindings. For example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="k">module</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;createData&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">createData</span><span class="p">,</span><span class="w"> </span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">take_ownership</span><span class="p">());</span>
 <span class="p">}</span>
@@ -2143,8 +2143,73 @@ type.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">SOME_CONSTANT</span></code> can have any type known to <em>embind</em>.</p>
 </section>
+<section id="class-properties">
+<span id="embind-memory-view"></span><h2>Class Properties<a class="headerlink" href="#class-properties" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>By default <code class="docutils literal notranslate"><span class="pre">property()</span></code> bindings to objects use
+<code class="docutils literal notranslate"><span class="pre">return_value_policy::copy</span></code> which can very easily lead to memory leaks
+since each access to the property will create a new object that must be
+deleted. Alternatively, use <code class="docutils literal notranslate"><span class="pre">return_value_policy::reference</span></code>, so a new
+object is not allocated and changes to the object will be reflected in the
+original object.</p>
+</div>
+<p>Class properties can be defined several ways as seen below.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Point</span><span class="w"> </span><span class="n">location</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Point</span><span class="w"> </span><span class="nf">getLocation</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Note: const is required on getters</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">location</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">setLocation</span><span class="p">(</span><span class="n">Point</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">xxx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">class_</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">constructor</span><span class="o">&lt;&gt;</span><span class="p">()</span>
+<span class="w">        </span><span class="c1">// Bind directly to a class member with automatically generated getters/setters using a</span>
+<span class="w">        </span><span class="c1">// reference return policy so the object does not need to be deleted JS.</span>
+<span class="w">        </span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Person</span><span class="o">::</span><span class="n">location</span><span class="p">,</span><span class="w"> </span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">reference</span><span class="p">())</span>
+<span class="w">        </span><span class="c1">// Same as above, but this will return a copy and the object must be deleted or it will</span>
+<span class="w">        </span><span class="c1">// leak!</span>
+<span class="w">        </span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;locationCopy&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Person</span><span class="o">::</span><span class="n">location</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">// Bind using a only getter method for read only access.</span>
+<span class="w">        </span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;readOnlyLocation&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Person</span><span class="o">::</span><span class="n">getLocation</span><span class="p">,</span><span class="w"> </span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">reference</span><span class="p">())</span>
+<span class="w">        </span><span class="c1">// Bind using a getter and setter method.</span>
+<span class="w">        </span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;getterAndSetterLocation&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Person</span><span class="o">::</span><span class="n">getLocation</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Person</span><span class="o">::</span><span class="n">setLocation</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">reference</span><span class="p">());</span>
+<span class="w">    </span><span class="n">class_</span><span class="o">&lt;</span><span class="n">Point</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;Point&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Point</span><span class="o">::</span><span class="n">x</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">property</span><span class="p">(</span><span class="s">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">Point</span><span class="o">::</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">EM_ASM</span><span class="p">(</span>
+<span class="w">        </span><span class="n">let</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Module</span><span class="p">.</span><span class="n">Person</span><span class="p">();</span>
+<span class="w">        </span><span class="n">person</span><span class="p">.</span><span class="n">location</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="w">        </span><span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">location</span><span class="p">.</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
+<span class="w">        </span><span class="n">let</span><span class="w"> </span><span class="n">locationCopy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">person</span><span class="p">.</span><span class="n">locationCopy</span><span class="p">;</span>
+<span class="w">        </span><span class="c1">// This is a copy so the original person&#39;s location will not be updated.</span>
+<span class="w">        </span><span class="n">locationCopy</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">;</span>
+<span class="w">        </span><span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">locationCopy</span><span class="p">.</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// 99</span>
+<span class="w">        </span><span class="c1">// Important: delete any copies!</span>
+<span class="w">        </span><span class="n">locationCopy</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
+<span class="w">        </span><span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">readOnlyLocation</span><span class="p">.</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
+<span class="w">        </span><span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">getterAndSetterLocation</span><span class="p">.</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// 42</span>
+<span class="w">        </span><span class="n">person</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 <section id="memory-views">
-<span id="embind-memory-view"></span><h2>Memory views<a class="headerlink" href="#memory-views" title="Permalink to this headline">¶</a></h2>
+<h2>Memory views<a class="headerlink" href="#memory-views" title="Permalink to this headline">¶</a></h2>
 <p>In some cases it is valuable to expose raw binary data directly to
 JavaScript code as a typed array, allowing it to be used without copying.
 This is useful for instance for uploading large WebGL textures directly
@@ -2582,7 +2647,7 @@ real-world applications has proved to be more than acceptable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.61-git (dev)',
+            VERSION:'3.1.65-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

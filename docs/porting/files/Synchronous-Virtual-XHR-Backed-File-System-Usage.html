@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.61-git (dev) documentation</title>
+  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.65-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.65-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Files and File Systems" href="index.html"/>
         <link rel="next" title="Multimedia and Graphics" href="../multimedia_and_graphics/index.html"/>
         <link rel="prev" title="Packaging Files" href="packaging_files.html"/> 
@@ -325,6 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#class-properties">Class Properties</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
@@ -756,7 +757,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#synchronous-fetches">Synchronous Fetches</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#waitable-fetches">Waitable Fetches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#tracking-progress">Tracking Progress</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api_reference/fetch.html#managing-large-files">Managing Large Files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api_reference/fetch.html#downloading-directly-to-indexeddb">Downloading directly to IndexedDB</a></li>
@@ -1431,11 +1431,9 @@
 <span class="sd">        Worker Test</span>
 <span class="sd">        &lt;script&gt;</span>
 <span class="sd">          var worker = new Worker(&#39;worker.js&#39;);</span>
-<span class="sd">          worker.onmessage = (event) =&gt; {</span>
-<span class="sd">            var xhr = new XMLHttpRequest();</span>
-<span class="sd">            xhr.open(&#39;GET&#39;, &#39;http://localhost:%s/report_result?&#39; + event.data);</span>
-<span class="sd">            xhr.send();</span>
-<span class="sd">            setTimeout(function() { window.close() }, 1000);</span>
+<span class="sd">          worker.onmessage = async (event) =&gt; {</span>
+<span class="sd">            await fetch(&#39;http://localhost:%s/report_result?&#39; + event.data);</span>
+<span class="sd">            window.close();</span>
 <span class="sd">          };</span>
 <span class="sd">        &lt;/script&gt;</span>
 <span class="sd">      &lt;/body&gt;</span>
@@ -1482,12 +1480,10 @@
 <span class="s2">        &lt;script&gt;</span>
 <span class="s2">          var worker = new Worker(&quot;</span><span class="si">%s</span><span class="s2">&quot;);</span>
 <span class="s2">          var buffer = [];</span>
-<span class="s2">          worker.onmessage = (event) =&gt; {</span>
+<span class="s2">          worker.onmessage = async (event) =&gt; {</span>
 <span class="s2">            if (event.data.channel === &quot;stdout&quot;) {</span>
-<span class="s2">              var xhr = new XMLHttpRequest();</span>
-<span class="s2">              xhr.open(&#39;GET&#39;, &#39;http://localhost:</span><span class="si">%s</span><span class="s2">/report_result?&#39; + event.data.line);</span>
-<span class="s2">              xhr.send();</span>
-<span class="s2">              setTimeout(function() { window.close() }, 1000);</span>
+<span class="s2">              await fetch(&#39;http://localhost:</span><span class="si">%s</span><span class="s2">/report_result?&#39; + event.data.line);</span>
+<span class="s2">              window.close();</span>
 <span class="s2">            } else {</span>
 <span class="s2">              if (event.data.trace) event.data.trace.split(&quot;\n&quot;).map(function(v) { console.error(v); });</span>
 <span class="s2">              if (event.data.line) {</span>
@@ -1627,7 +1623,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.61-git (dev)',
+            VERSION:'3.1.65-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.61-git (dev) documentation</title>
+  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.65-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.61-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.65-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ Exceptions Support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -325,6 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#overloaded-functions">Overloaded functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#constants">Constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#class-properties">Class Properties</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#memory-views">Memory views</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c">Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html#built-in-type-conversions">Built-in type conversions</a></li>
@@ -756,7 +757,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#synchronous-fetches">Synchronous Fetches</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#waitable-fetches">Waitable Fetches</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#tracking-progress">Tracking Progress</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/fetch.html#managing-large-files">Managing Large Files</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/fetch.html#downloading-directly-to-indexeddb">Downloading directly to IndexedDB</a></li>
@@ -1456,11 +1456,11 @@
 </tr>
 <tr class="row-odd"><td><p>i8x16.[shl|shr_s|shr_u]</p></td>
 <td><p>x86</p></td>
-<td><p>Included for orthogonality, these instructions have no equivalent x86 instruction and are emulated with <a class="reference external" href="https://github.com/v8/v8/blob/b6520eda5eafc3b007a5641b37136dfc9d92f63d/src/compiler/backend/x64/code-generator-x64.cc#L3446-L3510">5-11 x86 instructions in v8</a> (i.e. using 16x8 shifts).</p></td>
+<td><p>Included for orthogonality, these instructions have no equivalent x86 instruction and are emulated with <a class="reference external" href="https://github.com/v8/v8/blob/c8672adeebb105c7636334b9931831bf1945f4ec/src/codegen/shared-ia32-x64/macro-assembler-shared-ia32-x64.cc#L427-L552">5-11 x86 instructions in v8</a> (i.e. using 16x8 shifts).</p></td>
 </tr>
 <tr class="row-even"><td><p>i64x2.shr_s</p></td>
 <td><p>x86</p></td>
-<td><p>Included for orthogonality, this instruction has no equivalent x86 instruction and is emulated with <a class="reference external" href="https://github.com/v8/v8/blob/b6520eda5eafc3b007a5641b37136dfc9d92f63d/src/compiler/backend/x64/code-generator-x64.cc#L2807-L2825">6 x86 instructions in v8</a>.</p></td>
+<td><p>Included for orthogonality, this instruction has no equivalent x86 instruction and is emulated with <a class="reference external" href="https://github.com/v8/v8/blob/c8672adeebb105c7636334b9931831bf1945f4ec/src/codegen/shared-ia32-x64/macro-assembler-shared-ia32-x64.cc#L996-L1057">6-12 x86 instructions in v8</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>i8x16.swizzle</p></td>
 <td><p>x86</p></td>
@@ -1468,7 +1468,7 @@
 </tr>
 <tr class="row-even"><td><p>[f32x4|f64x2].[min|max]</p></td>
 <td><p>x86</p></td>
-<td><p>As with the scalar versions, the NaN propagation semantics force runtimes to emulate with 8+ x86 instructions (e.g., see <a class="reference external" href="https://github.com/v8/v8/blob/b6520eda5eafc3b007a5641b37136dfc9d92f63d/src/compiler/backend/x64/code-generator-x64.cc#L2661-L2699">v8’s emulation</a>; if possible, use [f32x4|f64x2].[pmin|pmax] instead (1 x86 instruction).</p></td>
+<td><p>As with the scalar versions, the NaN propagation semantics force runtimes to emulate with 7-10 x86 instructions (e.g., see <a class="reference external" href="https://github.com/v8/v8/blob/c8672adeebb105c7636334b9931831bf1945f4ec/src/codegen/shared-ia32-x64/macro-assembler-shared-ia32-x64.cc#L202-L339">v8’s emulation</a>; if possible, use [f32x4|f64x2].[pmin|pmax] instead (1 x86 instruction).</p></td>
 </tr>
 <tr class="row-odd"><td><p>i32x4.trunc_sat_f32x4_[u|s]</p></td>
 <td><p>x86</p></td>
@@ -3015,43 +3015,67 @@ status</a>.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>vaba</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vabal</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vabd</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vabdl</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vabs</p></td>
-<td><p>✅ native</p></td>
-</tr>
-<tr class="row-odd"><td><p>vadd</p></td>
-<td><p>✅ native</p></td>
-</tr>
-<tr class="row-even"><td><p>vaddl</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vaddlv</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vaddv</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vaddw</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vand</p></td>
-<td><p>✅ native</p></td>
+<tr class="row-odd"><td><p>vabaq</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
-<tr class="row-odd"><td><p>vbic</p></td>
+<tr class="row-even"><td><p>vabal</p></td>
 <td><p>⚫ Not implemented, will trigger compiler error</p></td>
 </tr>
-<tr class="row-even"><td><p>vbsl</p></td>
+<tr class="row-odd"><td><p>vabd</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vabdq</p></td>
 <td><p>✅ native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vabdl</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vabs</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vabq</p></td>
+<td><p>✅ native</p></td>
+</tr>
+<tr class="row-even"><td><p>vadd</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vaddq_s &amp; vaddq_f</p></td>
+<td><p>✅ native</p></td>
+</tr>
+<tr class="row-even"><td><p>vaddhn</p></td>
+<td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vaddl</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vaddlv</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vaddv</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vaddw</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vand</p></td>
+<td><p>✅ native</p></td>
+</tr>
+<tr class="row-even"><td><p>vbcaxq</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vbic</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vbiq</p></td>
+<td><p>✅ native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vbsl</p></td>
+<td><p>✅ native</p></td>
+</tr>
+<tr class="row-even"><td><p>vcage</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vcagt</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
@@ -3081,7 +3105,7 @@ status</a>.</p>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
 <tr class="row-even"><td><p>vcls</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vclt</p></td>
 <td><p>✅ native</p></td>
@@ -3089,11 +3113,17 @@ status</a>.</p>
 <tr class="row-even"><td><p>vcltz</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
+<tr class="row-odd"><td><p>vcmla, vcmla_rot90, cmla_rot180, cmla_rot270</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vcmlq</p></td>
+<td><p>✅ native</p></td>
+</tr>
 <tr class="row-odd"><td><p>vcnt</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vclz</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vcombine</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
@@ -3108,7 +3138,7 @@ status</a>.</p>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vdup</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vdup_n</p></td>
 <td><p>✅ native</p></td>
@@ -3119,38 +3149,44 @@ status</a>.</p>
 <tr class="row-even"><td><p>vext</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vget_lane</p></td>
+<tr class="row-odd"><td><p>vfma, vfma_lane, vfma_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vget_lane</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-even"><td><p>vhadd</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-odd"><td><p>vhadd</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vhsub</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-even"><td><p>vhsub</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vld1</p></td>
+<tr class="row-odd"><td><p>vld1</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vld2</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-even"><td><p>vld2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vld3</p></td>
+<tr class="row-odd"><td><p>vld3</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vld4</p></td>
+<tr class="row-even"><td><p>vld4</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-odd"><td><p>vld4_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vmax</p></td>
 <td><p>✅ native</p></td>
 </tr>
 <tr class="row-odd"><td><p>vmaxv</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vmin</p></td>
 <td><p>✅ native</p></td>
 </tr>
 <tr class="row-odd"><td><p>vminv</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vmla</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
@@ -3158,11 +3194,29 @@ status</a>.</p>
 <tr class="row-odd"><td><p>vmlal</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vmls</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-even"><td><p>vmlal_high_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vmlsl</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-odd"><td><p>vmlal_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vmls</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmls_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vmlsl</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmlsl_high</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vmlsl_high_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmlsl_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vmovl</p></td>
 <td><p>✅ native</p></td>
@@ -3179,161 +3233,209 @@ status</a>.</p>
 <tr class="row-even"><td><p>vmull_n</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
-<tr class="row-odd"><td><p>vmull_high</p></td>
+<tr class="row-odd"><td><p>vmull_lane</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vmvn</p></td>
+<tr class="row-even"><td><p>vmull_high</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vmvn</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vneg</p></td>
+<tr class="row-even"><td><p>vneg</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-even"><td><p>vorn</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-odd"><td><p>vorn</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vorr</p></td>
+<tr class="row-even"><td><p>vorr</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-even"><td><p>vpadal</p></td>
+<tr class="row-odd"><td><p>vpadal</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vpadd</p></td>
+<tr class="row-even"><td><p>vpadd</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vpaddl</p></td>
+<tr class="row-odd"><td><p>vpaddl</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vpmax</p></td>
+<tr class="row-even"><td><p>vpmax</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vpmin</p></td>
+<tr class="row-odd"><td><p>vpmin</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vpminnm</p></td>
+<tr class="row-even"><td><p>vpminnm</p></td>
 <td><p>⚫ Not implemented, will trigger compiler error</p></td>
 </tr>
-<tr class="row-even"><td><p>vqabs</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-odd"><td><p>vqabs</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vqabsb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-even"><td><p>vqabsb</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vqadd</p></td>
+<tr class="row-odd"><td><p>vqadd</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vqaddb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-even"><td><p>vqaddb</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vqdmulh</p></td>
+<tr class="row-odd"><td><p>vqdmulh</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vqdmulh_lane</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vqneg</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vqnegb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vqrdmulh</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vqrshl</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vqrshlb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vqshl</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vqshlb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vqsub</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-odd"><td><p>vqsubb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
-</tr>
-<tr class="row-even"><td><p>vqtbl1</p></td>
-<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
-</tr>
-<tr class="row-odd"><td><p>vqtbl2</p></td>
-<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
-</tr>
-<tr class="row-even"><td><p>vqtbl3</p></td>
-<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
-</tr>
-<tr class="row-odd"><td><p>vqtbl4</p></td>
-<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
-</tr>
-<tr class="row-even"><td><p>vqtbx1</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vqtbx2</p></td>
+<tr class="row-even"><td><p>vqrdmulh_lane</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vqtbx3</p></td>
+<tr class="row-odd"><td><p>vqshl</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vqtbx4</p></td>
+<tr class="row-even"><td><p>vqshlb</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vrbit</p></td>
+<tr class="row-odd"><td><p>vqshrn_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vqshrun_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqsub</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vqsubb</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbl1</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
-<tr class="row-odd"><td><p>vreinterpret</p></td>
+<tr class="row-even"><td><p>vqtbl2</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbl3</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbl4</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbx1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbx2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vqtbx3</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vqtbx4</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrbit</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vrecpe</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrecps</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vreinterpret</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
 </tr>
-<tr class="row-even"><td><p>vrev16</p></td>
+<tr class="row-odd"><td><p>vrev16</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vrev32</p></td>
+<tr class="row-even"><td><p>vrev32</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-even"><td><p>vrev64</p></td>
+<tr class="row-odd"><td><p>vrev64</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vrhadd</p></td>
+<tr class="row-even"><td><p>vrhadd</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
-<tr class="row-even"><td><p>vrshl</p></td>
+<tr class="row-odd"><td><p>vrsh_n</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vrshr_n</p></td>
+<tr class="row-even"><td><p>vrshn_n</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vrsra_n</p></td>
+<tr class="row-odd"><td><p>vrsqrte</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vset_lane</p></td>
+<tr class="row-even"><td><p>vrsqrts</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrshl</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vrshr_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vrsra_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vset_lane</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-even"><td><p>vshl</p></td>
+<tr class="row-odd"><td><p>vshl</p></td>
 <td><p>scalaried</p></td>
 </tr>
-<tr class="row-odd"><td><p>vshl_n</p></td>
+<tr class="row-even"><td><p>vshl_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vshll_n</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vshr_n</p></td>
-<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+<td><p>⚠️ does not have direct implementation, but is emulated using fast neon instructions</p></td>
+</tr>
+<tr class="row-odd"><td><p>vshrn_n</p></td>
+<td><p>⚠️ does not have direct implementation, but is emulated using fast neon instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vsqadd</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vsra_n</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vst1</p></td>
+<tr class="row-even"><td><p>vsri_n</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vst1</p></td>
 <td><p>✅ native</p></td>
 </tr>
-<tr class="row-odd"><td><p>vst1_lane</p></td>
+<tr class="row-even"><td><p>vst1_lane</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
 </tr>
-<tr class="row-even"><td><p>vst2</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<tr class="row-odd"><td><p>vst2</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vst2_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vst3</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
 </tr>
-<tr class="row-even"><td><p>vst4</p></td>
+<tr class="row-even"><td><p>vst3_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>vst4</p></td>
 <td><p>💡 Depends on a smart enough compiler, but should be near native</p></td>
+</tr>
+<tr class="row-even"><td><p>vst4_lane</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vsub</p></td>
 <td><p>✅ native</p></td>
@@ -3341,8 +3443,14 @@ status</a>.</p>
 <tr class="row-even"><td><p>vsubl</p></td>
 <td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
 </tr>
+<tr class="row-odd"><td><p>vsubl_high</p></td>
+<td><p>⚠️ Does not have direct implementation, but is emulated using fast NEON instructions</p></td>
+</tr>
+<tr class="row-even"><td><p>vsubn</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
 <tr class="row-odd"><td><p>vsubw</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vtbl1</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
@@ -3381,10 +3489,10 @@ status</a>.</p>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vuqadd</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-odd"><td><p>vuqaddb</p></td>
-<td><p>⚫ Not implemented, will trigger compiler error</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 <tr class="row-even"><td><p>vuzp</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
@@ -3395,13 +3503,16 @@ status</a>.</p>
 <tr class="row-even"><td><p>vuzp2</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vzip</p></td>
+<tr class="row-odd"><td><p>vxar</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-even"><td><p>vzip1</p></td>
+<tr class="row-even"><td><p>vzip</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
-<tr class="row-odd"><td><p>vzip2</p></td>
+<tr class="row-odd"><td><p>vzip1</p></td>
+<td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
+</tr>
+<tr class="row-even"><td><p>vzip2</p></td>
 <td><p>❌ Will be emulated with slow instructions, or scalarized</p></td>
 </tr>
 </tbody>
@@ -3519,7 +3630,7 @@ status</a>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.61-git (dev)',
+            VERSION:'3.1.65-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
