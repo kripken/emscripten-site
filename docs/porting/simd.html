@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.65-git (dev) documentation</title>
+  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.66-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.65-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.66-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ Exceptions Support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -853,6 +853,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/wasm_workers.html#api-differences">API Differences</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#wasm-workers-stack-size-considerations">Wasm Workers stack size considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#wasm-workers-vs-the-earlier-emscripten-worker-api">Wasm Workers vs the earlier Emscripten Worker API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#limitations">Limitations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/wasm_workers.html#example-code">Example Code</a></li>
 </ul>
@@ -1402,9 +1404,9 @@
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#ifdef __wasm_simd128__</span>
-<span class="w">  </span><span class="n">v128</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">1.2f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.4f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.6f</span><span class="p">,</span><span class="w"> </span><span class="mf">7.8f</span><span class="p">);</span>
-<span class="w">  </span><span class="n">v128</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">2.1f</span><span class="p">,</span><span class="w"> </span><span class="mf">4.3f</span><span class="p">,</span><span class="w"> </span><span class="mf">6.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">8.7f</span><span class="p">);</span>
-<span class="w">  </span><span class="n">v128</span><span class="w"> </span><span class="n">v3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">1.2f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.4f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.6f</span><span class="p">,</span><span class="w"> </span><span class="mf">7.8f</span><span class="p">);</span>
+<span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">2.1f</span><span class="p">,</span><span class="w"> </span><span class="mf">4.3f</span><span class="p">,</span><span class="w"> </span><span class="mf">6.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">8.7f</span><span class="p">);</span>
+<span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_add</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// Prints &quot;v3: [3.3, 7.7, 12.1, 16.5]&quot;</span>
 <span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v3: [%.1f, %.1f, %.1f, %.1f]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
@@ -3630,7 +3632,7 @@ status</a>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.65-git (dev)',
+            VERSION:'3.1.66-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
