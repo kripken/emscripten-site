@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.66-git (dev) documentation</title>
+  <title>Using SIMD with WebAssembly &mdash; Emscripten 3.1.69-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.66-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.69-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="Porting" href="index.html"/>
         <link rel="next" title="C++ Exceptions Support" href="exceptions.html"/>
         <link rel="prev" title="Networking" href="networking.html"/> 
@@ -308,6 +308,7 @@
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#function-signatures">Function Signatures</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#access-memory-from-javascript">Access memory from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#affect-execution-behaviour">Affect execution behaviour</a></li>
 <li class="toctree-l4"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html#environment-variables">Environment variables</a></li>
@@ -1375,7 +1376,7 @@
 <li><p>Enable LLVM/Clang SIMD autovectorizer to automatically target WebAssembly SIMD, without requiring changes to C/C++ source code.</p></li>
 <li><p>Write SIMD code using the GCC/Clang SIMD Vector Extensions (<code class="docutils literal notranslate"><span class="pre">__attribute__((vector_size(16)))</span></code>)</p></li>
 <li><p>Write SIMD code using the WebAssembly SIMD intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;wasm_simd128.h&gt;</span></code>)</p></li>
-<li><p>Compile existing SIMD code that uses the x86 SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2 or 128-bit subset of the AVX intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;*mmintrin.h&gt;</span></code>)</p></li>
+<li><p>Compile existing SIMD code that uses the x86 SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2 or AVX intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;*mmintrin.h&gt;</span></code>)</p></li>
 <li><p>Compile existing SIMD code that uses the ARM NEON intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;arm_neon.h&gt;</span></code>)</p></li>
 </ol>
 <p>These techniques can be freely combined in a single program.</p>
@@ -1503,7 +1504,7 @@
 <li><p><strong>SSE4.2</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse4.2</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;nmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE4_2__</span></code> to gate code.</p></li>
 <li><p><strong>AVX</strong>: pass <code class="docutils literal notranslate"><span class="pre">-mavx</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;immintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__AVX__</span></code> to gate code.</p></li>
 </ul>
-<p>Currently only the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, and 128-bit AVX instruction sets are supported. Each of these instruction sets add on top of the previous ones, so e.g. when targeting SSE3, the instruction sets SSE1 and SSE2 are also available.</p>
+<p>Currently only the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, and AVX instruction sets are supported. Each of these instruction sets add on top of the previous ones, so e.g. when targeting SSE3, the instruction sets SSE1 and SSE2 are also available.</p>
 <p>The following tables highlight the availability and expected performance of different SSE* intrinsics. This can be useful for understanding the performance limitations that the Wasm SIMD specification has when running on x86 hardware.</p>
 <p>For detailed information on each SSE intrinsic function, visit the excellent <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE">Intel Intrinsics Guide on SSE1</a>.</p>
 <dl class="simple">
@@ -2976,7 +2977,7 @@
 </tr>
 </tbody>
 </table>
-<p>Only the 128-bit wide instructions from AVX instruction set are available. 256-bit wide AVX instructions are not provided.</p>
+<p>Only the 128-bit wide instructions from AVX instruction set are listed. The 256-bit wide AVX instructions are emulated by two 128-bit wide instructions.</p>
 </section>
 <section id="compiling-simd-code-targeting-arm-neon-instruction-set">
 <h1>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Permalink to this headline">¶</a></h1>
@@ -3632,7 +3633,7 @@ status</a>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.66-git (dev)',
+            VERSION:'3.1.69-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>html5.h &mdash; Emscripten 3.1.66-git (dev) documentation</title>
+  <title>html5.h &mdash; Emscripten 3.1.69-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.66-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.69-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="console.h" href="console.h.html"/>
         <link rel="prev" title="emscripten.h" href="emscripten.h.html"/> 
@@ -308,6 +308,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#function-signatures">Function Signatures</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#access-memory-from-javascript">Access memory from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#affect-execution-behaviour">Affect execution behaviour</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#environment-variables">Environment variables</a></li>
@@ -1437,7 +1438,7 @@
 <div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_RESULT</span><span class="w"> </span><span class="nf">emscripten_set_some_callback</span><span class="p">(</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">target</span><span class="p">,</span><span class="w">   </span><span class="c1">// ID of the target HTML element.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">,</span><span class="w">   </span><span class="c1">// User-defined data to be passed to the callback.</span>
-<span class="w">  </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="n">useCapture</span><span class="p">,</span><span class="w">   </span><span class="c1">// Whether or not to use capture.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">useCapture</span><span class="p">,</span><span class="w">   </span><span class="c1">// Whether or not to use capture.</span>
 <span class="w">  </span><span class="n">em_someevent_callback_func</span><span class="w"> </span><span class="n">callback</span><span class="w">   </span><span class="c1">// Callback function.</span>
 <span class="p">);</span>
 </pre></div>
@@ -1471,7 +1472,7 @@ call the registration function, for example.)</p>
 <section id="callback-functions">
 <h3>Callback functions<a class="headerlink" href="#callback-functions" title="Permalink to this headline">¶</a></h3>
 <p>When the event occurs the callback is invoked with the relevant event “type” (for example <a class="reference internal" href="#c.EMSCRIPTEN_EVENT_CLICK" title="EMSCRIPTEN_EVENT_CLICK"><code class="xref c c-data docutils literal notranslate"><span class="pre">EMSCRIPTEN_EVENT_CLICK</span></code></a>), a <code class="docutils literal notranslate"><span class="pre">struct</span></code> containing the details of the event that occurred, and the <code class="docutils literal notranslate"><span class="pre">userData</span></code> that was originally passed to the registration function. The general format of the callback function is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">typedef</span> <span class="n">EM_BOOL</span> <span class="p">(</span><span class="o">*</span><span class="n">em_someevent_callback_func</span><span class="p">)</span> <span class="o">//</span> <span class="n">Callback</span> <span class="n">function</span><span class="o">.</span> <span class="n">Return</span> <span class="n">true</span> <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="s2">&quot;consumed&quot;</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">typedef</span> <span class="nb">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">em_someevent_callback_func</span><span class="p">)</span> <span class="o">//</span> <span class="n">Callback</span> <span class="n">function</span><span class="o">.</span> <span class="n">Return</span> <span class="n">true</span> <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="s2">&quot;consumed&quot;</span><span class="o">.</span>
   <span class="p">(</span>
   <span class="nb">int</span> <span class="n">eventType</span><span class="p">,</span> <span class="o">//</span> <span class="n">The</span> <span class="nb">type</span> <span class="n">of</span> <span class="n">event</span><span class="o">.</span>
   <span class="n">const</span> <span class="n">EmscriptenSomeEvent</span> <span class="o">*</span><span class="n">someEvent</span><span class="p">,</span> <span class="o">//</span> <span class="n">Information</span> <span class="n">about</span> <span class="n">the</span> <span class="n">event</span><span class="o">.</span>
@@ -1479,7 +1480,7 @@ call the registration function, for example.)</p>
   <span class="p">);</span>
 </pre></div>
 </div>
-<p id="callback-handler-return-em-bool-html5-api">Callback handlers that return an <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a> may specify <code class="docutils literal notranslate"><span class="pre">true</span></code> to signal that the handler <em>consumed</em> the event (this suppresses the default action for that event by calling its <code class="docutils literal notranslate"><span class="pre">.preventDefault();</span></code> member). Returning <code class="docutils literal notranslate"><span class="pre">false</span></code> indicates that the event was not consumed — the default browser event action is carried out and the event is allowed to pass on/bubble up as normal.</p>
+<p id="callback-handler-return-em-bool-html5-api">Callback handlers that return an <code class="xref c c-data docutils literal notranslate"><span class="pre">bool</span></code> may specify <code class="docutils literal notranslate"><span class="pre">true</span></code> to signal that the handler <em>consumed</em> the event (this suppresses the default action for that event by calling its <code class="docutils literal notranslate"><span class="pre">.preventDefault();</span></code> member). Returning <code class="docutils literal notranslate"><span class="pre">false</span></code> indicates that the event was not consumed — the default browser event action is carried out and the event is allowed to pass on/bubble up as normal.</p>
 <p>Calling a registration function with a <code class="docutils literal notranslate"><span class="pre">null</span></code> pointer for the callback causes a de-registration of that callback from the given <code class="docutils literal notranslate"><span class="pre">target</span></code> element. All event handlers are also automatically unregistered when the C <code class="docutils literal notranslate"><span class="pre">exit()</span></code> function is invoked during the <code class="docutils literal notranslate"><span class="pre">atexit</span></code> handler pass. Either use the function <a class="reference internal" href="emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> or set <code class="docutils literal notranslate"><span class="pre">Module.noExitRuntime</span> <span class="pre">=</span> <span class="pre">true;</span></code> to make sure that leaving <code class="docutils literal notranslate"><span class="pre">main()</span></code> will not immediately cause an <code class="docutils literal notranslate"><span class="pre">exit()</span></code> and clean up the event handlers.</p>
 </section>
 <section id="functions-affected-by-web-security">
@@ -1503,25 +1504,6 @@ call the registration function, for example.)</p>
 </section>
 <section id="general-types">
 <h2><a class="toc-backref" href="#id103">General types</a><a class="headerlink" href="#general-types" title="Permalink to this headline">¶</a></h2>
-<dl class="macro">
-<dt id="c.EM_BOOL">
-<code class="sig-name descname">EM_BOOL</code><a class="headerlink" href="#c.EM_BOOL" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the Emscripten type for a <code class="docutils literal notranslate"><span class="pre">bool</span></code>.
-Possible values:</p>
-<dl class="macro">
-<dt id="c.EM_TRUE">
-<code class="sig-name descname">EM_TRUE</code><a class="headerlink" href="#c.EM_TRUE" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the Emscripten value for <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
-</dd></dl>
-
-<dl class="macro">
-<dt id="c.EM_FALSE">
-<code class="sig-name descname">EM_FALSE</code><a class="headerlink" href="#c.EM_FALSE" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the Emscripten value for <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="macro">
 <dt id="c.EM_UTF8">
 <code class="sig-name descname">EM_UTF8</code><a class="headerlink" href="#c.EM_UTF8" title="Permalink to this definition">¶</a></dt>
@@ -1663,19 +1645,19 @@ unsigned long <code class="sig-name descname">location</code><a class="headerlin
 
 <dl class="member">
 <dt id="c.EmscriptenKeyboardEvent.ctrlKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">ctrlKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.ctrlKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">ctrlKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.ctrlKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenKeyboardEvent.shiftKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">shiftKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.shiftKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">shiftKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.shiftKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenKeyboardEvent.altKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">altKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.altKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">altKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.altKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenKeyboardEvent.metaKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">metaKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.metaKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">metaKey</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.metaKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies which modifiers were active during the key event.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenKeyboardEvent.repeat">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">repeat</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.repeat" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">repeat</code><a class="headerlink" href="#c.EmscriptenKeyboardEvent.repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies if this keyboard event represents a repeated press.</p>
 </dd></dl>
 
@@ -1736,7 +1718,7 @@ unsigned long <code class="sig-name descname">which</code><a class="headerlink" 
 <dt id="c.em_key_callback_func">
 <code class="sig-name descname">em_key_callback_func</code><a class="headerlink" href="#c.em_key_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_keypress_callback" title="emscripten_set_keypress_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">keypress</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_key_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenKeyboardEvent</span><span class="w"> </span><span class="o">*</span><span class="n">keyEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_key_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenKeyboardEvent</span><span class="w"> </span><span class="o">*</span><span class="n">keyEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1751,7 +1733,7 @@ unsigned long <code class="sig-name descname">which</code><a class="headerlink" 
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1761,18 +1743,18 @@ unsigned long <code class="sig-name descname">which</code><a class="headerlink" 
 <h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_keypress_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_keypress_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func">em_key_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_keypress_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_keypress_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func">em_key_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_keypress_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_keydown_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_keydown_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func">em_key_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_keydown_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_keydown_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func">em_key_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_keydown_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_keyup_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_keyup_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func">em_key_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_keyup_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_keyup_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func">em_key_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_keyup_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving browser-generated keyboard input events.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_key_callback_func" title="em_key_callback_func"><em>em_key_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -1852,13 +1834,13 @@ long <code class="sig-name descname">clientY</code><a class="headerlink" href="#
 
 <dl class="member">
 <dt id="c.EmscriptenMouseEvent.ctrlKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">ctrlKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.ctrlKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">ctrlKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.ctrlKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenMouseEvent.shiftKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">shiftKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.shiftKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">shiftKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.shiftKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenMouseEvent.altKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">altKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.altKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">altKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.altKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenMouseEvent.metaKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">metaKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.metaKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">metaKey</code><a class="headerlink" href="#c.EmscriptenMouseEvent.metaKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies which modifiers were active during the mouse event.</p>
 </dd></dl>
 
@@ -1924,7 +1906,7 @@ long <code class="sig-name descname">padding</code><a class="headerlink" href="#
 <dt id="c.em_mouse_callback_func">
 <code class="sig-name descname">em_mouse_callback_func</code><a class="headerlink" href="#c.em_mouse_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_click_callback" title="emscripten_set_click_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">mouse</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_mouse_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenMouseEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mouseEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_mouse_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenMouseEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mouseEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1939,7 +1921,7 @@ long <code class="sig-name descname">padding</code><a class="headerlink" href="#
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1949,26 +1931,26 @@ long <code class="sig-name descname">padding</code><a class="headerlink" href="#
 <h3>Functions<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_click_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_click_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_click_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_click_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_click_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_mousedown_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mousedown_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mousedown_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mousedown_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mousedown_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_mouseup_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mouseup_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mouseup_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mouseup_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mouseup_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_dblclick_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_dblclick_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_dblclick_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_dblclick_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_dblclick_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_mousemove_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mousemove_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mousemove_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mousemove_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mousemove_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_mouseenter_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mouseenter_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mouseenter_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mouseenter_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mouseenter_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_mouseleave_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mouseleave_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mouseleave_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_mouseleave_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func">em_mouse_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_mouseleave_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving browser-generated <a class="reference external" href="https://developer.mozilla.org/en/DOM/MouseEvent">mouse input events</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_mouse_callback_func" title="em_mouse_callback_func"><em>em_mouse_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2071,7 +2053,7 @@ unsigned long <code class="sig-name descname">deltaMode</code><a class="headerli
 <dt id="c.em_wheel_callback_func">
 <code class="sig-name descname">em_wheel_callback_func</code><a class="headerlink" href="#c.em_wheel_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_wheel_callback" title="emscripten_set_wheel_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">wheel</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_wheel_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenWheelEvent</span><span class="w"> </span><span class="o">*</span><span class="n">wheelEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_wheel_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenWheelEvent</span><span class="w"> </span><span class="o">*</span><span class="n">wheelEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2086,7 +2068,7 @@ unsigned long <code class="sig-name descname">deltaMode</code><a class="headerli
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2096,14 +2078,14 @@ unsigned long <code class="sig-name descname">deltaMode</code><a class="headerli
 <h3>Functions<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_wheel_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_wheel_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_wheel_callback_func" title="em_wheel_callback_func">em_wheel_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_wheel_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_wheel_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_wheel_callback_func" title="em_wheel_callback_func">em_wheel_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_wheel_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving browser-generated <a class="reference external" href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-wheel">mousewheel events</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_wheel_callback_func" title="em_wheel_callback_func"><em>em_wheel_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2186,7 +2168,7 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <dt id="c.em_ui_callback_func">
 <code class="sig-name descname">em_ui_callback_func</code><a class="headerlink" href="#c.em_ui_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_resize_callback" title="emscripten_set_resize_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">UI</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_ui_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenUiEvent</span><span class="w"> </span><span class="o">*</span><span class="n">uiEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_ui_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenUiEvent</span><span class="w"> </span><span class="o">*</span><span class="n">uiEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2201,7 +2183,7 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2211,9 +2193,9 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <h3>Functions<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_resize_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_resize_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_ui_callback_func" title="em_ui_callback_func">em_ui_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_resize_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_resize_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_ui_callback_func" title="em_ui_callback_func">em_ui_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_resize_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_scroll_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_scroll_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_ui_callback_func" title="em_ui_callback_func">em_ui_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_scroll_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_scroll_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_ui_callback_func" title="em_ui_callback_func">em_ui_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_scroll_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving DOM element <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-resize">resize</a> and <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-scroll">scroll</a> events.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2227,7 +2209,7 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_ui_callback_func" title="em_ui_callback_func"><em>em_ui_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2290,7 +2272,7 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <dt id="c.em_focus_callback_func">
 <code class="sig-name descname">em_focus_callback_func</code><a class="headerlink" href="#c.em_focus_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_blur_callback" title="emscripten_set_blur_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">focus</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_focus_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenFocusEvent</span><span class="w"> </span><span class="o">*</span><span class="n">focusEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_focus_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenFocusEvent</span><span class="w"> </span><span class="o">*</span><span class="n">focusEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2305,7 +2287,7 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2315,20 +2297,20 @@ int <code class="sig-name descname">scrollLeft</code><a class="headerlink" href=
 <h3>Functions<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_blur_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_blur_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_blur_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_blur_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_blur_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_focus_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_focus_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_focus_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_focus_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_focus_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_focusin_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_focusin_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_focusin_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_focusin_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_focusin_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_focusout_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_focusout_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_focusout_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_focusout_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func">em_focus_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_focusout_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving DOM element <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-blur">blur</a>, <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-focus">focus</a>, <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-focusin">focusin</a> and <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-focusout">focusout</a> events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_focus_callback_func" title="em_focus_callback_func"><em>em_focus_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2381,7 +2363,7 @@ double <code class="sig-name descname">gamma</code><a class="headerlink" href="#
 
 <dl class="member">
 <dt id="c.EmscriptenDeviceOrientationEvent.absolute">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">absolute</code><a class="headerlink" href="#c.EmscriptenDeviceOrientationEvent.absolute" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">absolute</code><a class="headerlink" href="#c.EmscriptenDeviceOrientationEvent.absolute" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">false</span></code>, the orientation is only relative to some other base orientation, not to the fixed coordinate frame.</p>
 </dd></dl>
 
@@ -2394,7 +2376,7 @@ double <code class="sig-name descname">gamma</code><a class="headerlink" href="#
 <dt id="c.em_deviceorientation_callback_func">
 <code class="sig-name descname">em_deviceorientation_callback_func</code><a class="headerlink" href="#c.em_deviceorientation_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_deviceorientation_callback" title="emscripten_set_deviceorientation_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">orientation</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_deviceorientation_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenDeviceOrientationEvent</span><span class="w"> </span><span class="o">*</span><span class="n">deviceOrientationEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_deviceorientation_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenDeviceOrientationEvent</span><span class="w"> </span><span class="o">*</span><span class="n">deviceOrientationEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2409,7 +2391,7 @@ double <code class="sig-name descname">gamma</code><a class="headerlink" href="#
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2419,13 +2401,13 @@ double <code class="sig-name descname">gamma</code><a class="headerlink" href="#
 <h3>Functions<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_deviceorientation_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_deviceorientation_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_deviceorientation_callback_func" title="em_deviceorientation_callback_func">em_deviceorientation_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_deviceorientation_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_deviceorientation_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_deviceorientation_callback_func" title="em_deviceorientation_callback_func">em_deviceorientation_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_deviceorientation_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="http://dev.w3.org/geo/api/spec-source-orientation.html#deviceorientation">deviceorientation</a> event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_deviceorientation_callback_func" title="em_deviceorientation_callback_func"><em>em_deviceorientation_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2524,7 +2506,7 @@ then the accelerationX/Y/Z fields of this structure should be assumed to not be 
 <dt id="c.em_devicemotion_callback_func">
 <code class="sig-name descname">em_devicemotion_callback_func</code><a class="headerlink" href="#c.em_devicemotion_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_devicemotion_callback" title="emscripten_set_devicemotion_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">devicemotion</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_devicemotion_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenDeviceMotionEvent</span><span class="w"> </span><span class="o">*</span><span class="n">deviceMotionEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_devicemotion_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenDeviceMotionEvent</span><span class="w"> </span><span class="o">*</span><span class="n">deviceMotionEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2539,7 +2521,7 @@ then the accelerationX/Y/Z fields of this structure should be assumed to not be 
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2549,13 +2531,13 @@ then the accelerationX/Y/Z fields of this structure should be assumed to not be 
 <h3>Functions<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_devicemotion_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_devicemotion_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_devicemotion_callback_func" title="em_devicemotion_callback_func">em_devicemotion_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_devicemotion_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_devicemotion_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_devicemotion_callback_func" title="em_devicemotion_callback_func">em_devicemotion_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_devicemotion_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="http://w3c.github.io/deviceorientation/spec-source-orientation.html#devicemotion">devicemotion</a> event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_devicemotion_callback_func" title="em_devicemotion_callback_func"><em>em_devicemotion_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2659,7 +2641,7 @@ int <code class="sig-name descname">orientationAngle</code><a class="headerlink"
 <dt id="c.em_orientationchange_callback_func">
 <code class="sig-name descname">em_orientationchange_callback_func</code><a class="headerlink" href="#c.em_orientationchange_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_orientationchange_callback" title="emscripten_set_orientationchange_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">orientationchange</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_orientationchange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenOrientationChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">orientationChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_orientationchange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenOrientationChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">orientationChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2674,7 +2656,7 @@ int <code class="sig-name descname">orientationAngle</code><a class="headerlink"
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2684,13 +2666,13 @@ int <code class="sig-name descname">orientationAngle</code><a class="headerlink"
 <h3>Functions<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_orientationchange_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_orientationchange_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_orientationchange_callback_func" title="em_orientationchange_callback_func">em_orientationchange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_orientationchange_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_orientationchange_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_orientationchange_callback_func" title="em_orientationchange_callback_func">em_orientationchange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_orientationchange_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="https://w3c.github.io/screen-orientation/">orientationchange</a> event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_orientationchange_callback_func" title="em_orientationchange_callback_func"><em>em_orientationchange_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -2860,13 +2842,13 @@ definition displays on retina iOS and other mobile and desktop devices with high
 <dd><p>The event structure passed in the <a class="reference external" href="https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html">fullscreenchange</a> event.</p>
 <dl class="member">
 <dt id="c.EmscriptenFullscreenChangeEvent.isFullscreen">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">isFullscreen</code><a class="headerlink" href="#c.EmscriptenFullscreenChangeEvent.isFullscreen" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">isFullscreen</code><a class="headerlink" href="#c.EmscriptenFullscreenChangeEvent.isFullscreen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies whether an element on the browser page is currently fullscreen.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenFullscreenChangeEvent.fullscreenEnabled">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">fullscreenEnabled</code><a class="headerlink" href="#c.EmscriptenFullscreenChangeEvent.fullscreenEnabled" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">fullscreenEnabled</code><a class="headerlink" href="#c.EmscriptenFullscreenChangeEvent.fullscreenEnabled" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies if the current page has the ability to display elements fullscreen.</p>
 </dd></dl>
 
@@ -2948,7 +2930,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dt id="c.em_fullscreenchange_callback_func">
 <code class="sig-name descname">em_fullscreenchange_callback_func</code><a class="headerlink" href="#c.em_fullscreenchange_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_fullscreenchange_callback" title="emscripten_set_fullscreenchange_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">fullscreen</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_fullscreenchange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenFullscreenChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">fullscreenChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_fullscreenchange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenFullscreenChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">fullscreenChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -2963,7 +2945,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2973,14 +2955,14 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <h3>Functions<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_fullscreenchange_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_fullscreenchange_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_fullscreenchange_callback_func" title="em_fullscreenchange_callback_func">em_fullscreenchange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_fullscreenchange_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_fullscreenchange_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_fullscreenchange_callback_func" title="em_fullscreenchange_callback_func">em_fullscreenchange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_fullscreenchange_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html">fullscreenchange</a> event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_fullscreenchange_callback_func" title="em_fullscreenchange_callback_func"><em>em_fullscreenchange_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -3014,7 +2996,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 
 <dl class="function">
 <dt id="c.emscripten_request_fullscreen">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_request_fullscreen</code><span class="sig-paren">(</span>const char<em> *target</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> deferUntilInEventHandler</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_fullscreen" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_request_fullscreen</code><span class="sig-paren">(</span>const char<em> *target</em>, bool<em> deferUntilInEventHandler</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_fullscreen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Requests the given target element to transition to full screen mode.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3028,7 +3010,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
-<li><p><strong>deferUntilInEventHandler</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – If <code class="docutils literal notranslate"><span class="pre">true</span></code> requests made outside of a user-generated event handler are automatically deferred until the user next presses a keyboard or mouse button. If <code class="docutils literal notranslate"><span class="pre">false</span></code> the request will fail if called outside of a user-generated event handler.</p></li>
+<li><p><strong>deferUntilInEventHandler</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">true</span></code> requests made outside of a user-generated event handler are automatically deferred until the user next presses a keyboard or mouse button. If <code class="docutils literal notranslate"><span class="pre">false</span></code> the request will fail if called outside of a user-generated event handler.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -3042,7 +3024,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 
 <dl class="function">
 <dt id="c.emscripten_request_fullscreen_strategy">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_request_fullscreen_strategy</code><span class="sig-paren">(</span>const char<em> *target</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> deferUntilInEventHandler</em>, const <a class="reference internal" href="#c.EmscriptenFullscreenStrategy" title="EmscriptenFullscreenStrategy">EmscriptenFullscreenStrategy</a><em> *fullscreenStrategy</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_fullscreen_strategy" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_request_fullscreen_strategy</code><span class="sig-paren">(</span>const char<em> *target</em>, bool<em> deferUntilInEventHandler</em>, const <a class="reference internal" href="#c.EmscriptenFullscreenStrategy" title="EmscriptenFullscreenStrategy">EmscriptenFullscreenStrategy</a><em> *fullscreenStrategy</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_fullscreen_strategy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Requests the given target element to transition to full screen mode, using a custom presentation mode for the element. This function is otherwise the same as <a class="reference internal" href="#c.emscripten_request_fullscreen" title="emscripten_request_fullscreen"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_request_fullscreen()</span></code></a>, but this function adds options to control how resizing and aspect ratio, and ensures that the behavior is consistent across browsers.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3112,7 +3094,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dd><p>The event structure passed in the <a class="reference external" href="http://www.w3.org/TR/pointerlock/#pointerlockchange-and-pointerlockerror-events">pointerlockchange</a> event.</p>
 <dl class="member">
 <dt id="c.EmscriptenPointerlockChangeEvent.isActive">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">isActive</code><a class="headerlink" href="#c.EmscriptenPointerlockChangeEvent.isActive" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">isActive</code><a class="headerlink" href="#c.EmscriptenPointerlockChangeEvent.isActive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies whether an element on the browser page currently has pointer lock enabled.</p>
 </dd></dl>
 
@@ -3139,7 +3121,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dt id="c.em_pointerlockchange_callback_func">
 <code class="sig-name descname">em_pointerlockchange_callback_func</code><a class="headerlink" href="#c.em_pointerlockchange_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_pointerlockchange_callback" title="emscripten_set_pointerlockchange_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">pointerlockchange</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_pointerlockchange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenPointerlockChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">pointerlockChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_pointerlockchange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenPointerlockChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">pointerlockChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -3154,7 +3136,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3163,7 +3145,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dt id="c.em_pointerlockerror_callback_func">
 <code class="sig-name descname">em_pointerlockerror_callback_func</code><a class="headerlink" href="#c.em_pointerlockerror_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_pointerlockerror_callback" title="emscripten_set_pointerlockerror_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">pointerlockerror</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_pointerlockerror_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">reserved</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_pointerlockerror_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">reserved</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -3178,7 +3160,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3188,7 +3170,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <h3>Functions<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_pointerlockchange_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_pointerlockchange_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_pointerlockchange_callback_func" title="em_pointerlockchange_callback_func">em_pointerlockchange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_pointerlockchange_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_pointerlockchange_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_pointerlockchange_callback_func" title="em_pointerlockchange_callback_func">em_pointerlockchange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_pointerlockchange_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="http://www.w3.org/TR/pointerlock/#pointerlockchange-and-pointerlockerror-events">pointerlockchange</a> event.</p>
 <p>Pointer lock hides the mouse cursor and exclusively gives the target element relative mouse movement events via the <a class="reference external" href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-mousemove">mousemove</a> event.</p>
 <dl class="field-list simple">
@@ -3196,7 +3178,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_pointerlockchange_callback_func" title="em_pointerlockchange_callback_func"><em>em_pointerlockchange_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -3211,14 +3193,14 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 
 <dl class="function">
 <dt id="c.emscripten_set_pointerlockerror_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_pointerlockerror_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_pointerlockerror_callback_func" title="em_pointerlockerror_callback_func">em_pointerlockerror_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_pointerlockerror_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_pointerlockerror_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_pointerlockerror_callback_func" title="em_pointerlockerror_callback_func">em_pointerlockerror_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_pointerlockerror_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="http://www.w3.org/TR/pointerlock/#pointerlockchange-and-pointerlockerror-events">pointerlockerror</a> event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_pointerlockerror_callback_func" title="em_pointerlockerror_callback_func"><em>em_pointerlockerror_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -3252,7 +3234,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 
 <dl class="function">
 <dt id="c.emscripten_request_pointerlock">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_request_pointerlock</code><span class="sig-paren">(</span>const char<em> *target</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> deferUntilInEventHandler</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_pointerlock" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_request_pointerlock</code><span class="sig-paren">(</span>const char<em> *target</em>, bool<em> deferUntilInEventHandler</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_pointerlock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Requests the given target element to grab pointerlock.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3262,7 +3244,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
-<li><p><strong>deferUntilInEventHandler</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – If <code class="docutils literal notranslate"><span class="pre">true</span></code> requests made outside of a user-generated event handler are automatically deferred until the user next presses a keyboard or mouse button. If <code class="docutils literal notranslate"><span class="pre">false</span></code> the request will fail if called outside of a user-generated event handler.</p></li>
+<li><p><strong>deferUntilInEventHandler</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">true</span></code> requests made outside of a user-generated event handler are automatically deferred until the user next presses a keyboard or mouse button. If <code class="docutils literal notranslate"><span class="pre">false</span></code> the request will fail if called outside of a user-generated event handler.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -3333,7 +3315,7 @@ void *<code class="sig-name descname">canvasResizedCallbackUserData</code><a cla
 <dd><p>The event structure passed in the <a class="reference external" href="http://www.w3.org/TR/page-visibility/">visibilitychange</a> event.</p>
 <dl class="member">
 <dt id="c.EmscriptenVisibilityChangeEvent.hidden">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">hidden</code><a class="headerlink" href="#c.EmscriptenVisibilityChangeEvent.hidden" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">hidden</code><a class="headerlink" href="#c.EmscriptenVisibilityChangeEvent.hidden" title="Permalink to this definition">¶</a></dt>
 <dd><p>If true, the current browser page is now hidden.</p>
 </dd></dl>
 
@@ -3352,7 +3334,7 @@ int <code class="sig-name descname">visibilityState</code><a class="headerlink" 
 <dt id="c.em_visibilitychange_callback_func">
 <code class="sig-name descname">em_visibilitychange_callback_func</code><a class="headerlink" href="#c.em_visibilitychange_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_visibilitychange_callback" title="emscripten_set_visibilitychange_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">visibilitychange</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_visibilitychange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenVisibilityChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">visibilityChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_visibilitychange_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenVisibilityChangeEvent</span><span class="w"> </span><span class="o">*</span><span class="n">visibilityChangeEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -3367,7 +3349,7 @@ int <code class="sig-name descname">visibilityState</code><a class="headerlink" 
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3377,13 +3359,13 @@ int <code class="sig-name descname">visibilityState</code><a class="headerlink" 
 <h3>Functions<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_visibilitychange_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_visibilitychange_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_visibilitychange_callback_func" title="em_visibilitychange_callback_func">em_visibilitychange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_visibilitychange_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_visibilitychange_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_visibilitychange_callback_func" title="em_visibilitychange_callback_func">em_visibilitychange_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_visibilitychange_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="http://www.w3.org/TR/page-visibility/">visibilitychange</a> event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_visibilitychange_callback_func" title="em_visibilitychange_callback_func"><em>em_visibilitychange_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -3474,13 +3456,13 @@ long <code class="sig-name descname">pageY</code><a class="headerlink" href="#c.
 
 <dl class="member">
 <dt id="c.EmscriptenTouchPoint.isChanged">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">isChanged</code><a class="headerlink" href="#c.EmscriptenTouchPoint.isChanged" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">isChanged</code><a class="headerlink" href="#c.EmscriptenTouchPoint.isChanged" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies whether the touch point changed during this event.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenTouchPoint.onTarget">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">onTarget</code><a class="headerlink" href="#c.EmscriptenTouchPoint.onTarget" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">onTarget</code><a class="headerlink" href="#c.EmscriptenTouchPoint.onTarget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies whether this touch point is still above the original target on which it was initially pressed.</p>
 </dd></dl>
 
@@ -3520,13 +3502,13 @@ int <code class="sig-name descname">numTouches</code><a class="headerlink" href=
 
 <dl class="member">
 <dt id="c.EmscriptenTouchEvent.ctrlKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">ctrlKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.ctrlKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">ctrlKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.ctrlKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenTouchEvent.shiftKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">shiftKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.shiftKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">shiftKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.shiftKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenTouchEvent.altKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">altKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.altKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">altKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.altKey" title="Permalink to this definition">¶</a></dt>
 <dt id="c.EmscriptenTouchEvent.metaKey">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">metaKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.metaKey" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">metaKey</code><a class="headerlink" href="#c.EmscriptenTouchEvent.metaKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies which modifiers were active during the touch event.</p>
 </dd></dl>
 
@@ -3545,7 +3527,7 @@ int <code class="sig-name descname">numTouches</code><a class="headerlink" href=
 <dt id="c.em_touch_callback_func">
 <code class="sig-name descname">em_touch_callback_func</code><a class="headerlink" href="#c.em_touch_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_touchstart_callback" title="emscripten_set_touchstart_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">touch</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_touch_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenTouchEvent</span><span class="w"> </span><span class="o">*</span><span class="n">touchEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_touch_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenTouchEvent</span><span class="w"> </span><span class="o">*</span><span class="n">touchEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -3560,7 +3542,7 @@ int <code class="sig-name descname">numTouches</code><a class="headerlink" href=
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3570,20 +3552,20 @@ int <code class="sig-name descname">numTouches</code><a class="headerlink" href=
 <h3>Functions<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_touchstart_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchstart_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchstart_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchstart_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchstart_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_touchend_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchend_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchend_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchend_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchend_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_touchmove_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchmove_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchmove_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchmove_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchmove_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_touchcancel_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchcancel_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchcancel_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_touchcancel_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func">em_touch_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_touchcancel_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving <a class="reference external" href="http://www.w3.org/TR/touch-events/)">touch events</a> : <a class="reference external" href="http://www.w3.org/TR/touch-events/#the-touchstart-event">touchstart</a>, <a class="reference external" href="http://www.w3.org/TR/touch-events/#dfn-touchend">touchend</a>, <a class="reference external" href="http://www.w3.org/TR/touch-events/#dfn-touchmove">touchmove</a> and <a class="reference external" href="http://www.w3.org/TR/touch-events/#dfn-touchcancel">touchcancel</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_touch_callback_func" title="em_touch_callback_func"><em>em_touch_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -3651,13 +3633,13 @@ int <code class="sig-name descname">numButtons</code><a class="headerlink" href=
 
 <dl class="member">
 <dt>
-<code class="sig-name descname">EM_BOOL digitalButton[64]</code></dt>
+<code class="sig-name descname">bool digitalButton[64]</code></dt>
 <dd><p>The digital state of the gamepad buttons, either 0 or 1.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenGamepadEvent.connected">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">connected</code><a class="headerlink" href="#c.EmscriptenGamepadEvent.connected" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">connected</code><a class="headerlink" href="#c.EmscriptenGamepadEvent.connected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Specifies whether this gamepad is connected to the browser page.</p>
 </dd></dl>
 
@@ -3690,7 +3672,7 @@ long <code class="sig-name descname">index</code><a class="headerlink" href="#c.
 <dt id="c.em_gamepad_callback_func">
 <code class="sig-name descname">em_gamepad_callback_func</code><a class="headerlink" href="#c.em_gamepad_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_gamepadconnected_callback" title="emscripten_set_gamepadconnected_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">gamepad</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_gamepad_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenGamepadEvent</span><span class="w"> </span><span class="o">*</span><span class="n">gamepadEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_gamepad_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenGamepadEvent</span><span class="w"> </span><span class="o">*</span><span class="n">gamepadEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -3705,7 +3687,7 @@ long <code class="sig-name descname">index</code><a class="headerlink" href="#c.
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3715,15 +3697,15 @@ long <code class="sig-name descname">index</code><a class="headerlink" href="#c.
 <h3>Functions<a class="headerlink" href="#id77" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_gamepadconnected_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_gamepadconnected_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_gamepad_callback_func" title="em_gamepad_callback_func">em_gamepad_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_gamepadconnected_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_gamepadconnected_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_gamepad_callback_func" title="em_gamepad_callback_func">em_gamepad_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_gamepadconnected_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_gamepaddisconnected_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_gamepaddisconnected_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_gamepad_callback_func" title="em_gamepad_callback_func">em_gamepad_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_gamepaddisconnected_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_gamepaddisconnected_callback</code><span class="sig-paren">(</span>void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_gamepad_callback_func" title="em_gamepad_callback_func">em_gamepad_callback_func</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_gamepaddisconnected_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for receiving the <a class="reference external" href="http://www.w3.org/TR/gamepad/#gamepad-interface">gamepad</a> events: <a class="reference external" href="http://www.w3.org/TR/gamepad/#the-gamepadconnected-event">gamepadconnected</a> and <a class="reference external" href="http://www.w3.org/TR/gamepad/#the-gamepaddisconnected-event">gamepaddisconnected</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_gamepad_callback_func" title="em_gamepad_callback_func"><em>em_gamepad_callback_func</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -3847,7 +3829,7 @@ double <code class="sig-name descname">level</code><a class="headerlink" href="#
 
 <dl class="member">
 <dt>
-<code class="sig-name descname">EM_BOOL charging;</code></dt>
+<code class="sig-name descname">bool charging;</code></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if the battery is charging, <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
 </dd></dl>
 
@@ -3860,7 +3842,7 @@ double <code class="sig-name descname">level</code><a class="headerlink" href="#
 <dt id="c.em_battery_callback_func">
 <code class="sig-name descname">em_battery_callback_func</code><a class="headerlink" href="#c.em_battery_callback_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_batterychargingchange_callback" title="emscripten_set_batterychargingchange_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">batterymanager</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_battery_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenBatteryEvent</span><span class="w"> </span><span class="o">*</span><span class="n">batteryEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_battery_callback_func</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenBatteryEvent</span><span class="w"> </span><span class="o">*</span><span class="n">batteryEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -3875,7 +3857,7 @@ double <code class="sig-name descname">level</code><a class="headerlink" href="#
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4063,37 +4045,37 @@ double <code class="sig-name descname">level</code><a class="headerlink" href="#
 <dd><p>Specifies <a class="reference external" href="http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.2">WebGL context creation parameters</a>.</p>
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.alpha">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">alpha</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.alpha" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">alpha</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.alpha" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, request an alpha channel for the context. If you create an alpha channel, you can blend the canvas rendering with the underlying web page contents. Default value: <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.depth">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">depth</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.depth" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">depth</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.depth" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, request a depth buffer of at least 16 bits. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, no depth buffer will be initialized. Default value: <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.stencil">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">stencil</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.stencil" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">stencil</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.stencil" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, request a stencil buffer of at least 8 bits. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, no stencil buffer will be initialized. Default value: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.antialias">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">antialias</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.antialias" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">antialias</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.antialias" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, antialiasing will be initialized with a browser-specified algorithm and quality level. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, antialiasing is disabled. Default value: <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.premultipliedAlpha">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">premultipliedAlpha</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.premultipliedAlpha" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">premultipliedAlpha</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.premultipliedAlpha" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the alpha channel of the rendering context will be treated as representing premultiplied alpha values. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, the alpha channel represents non-premultiplied alpha. Default value: <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.preserveDrawingBuffer">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">preserveDrawingBuffer</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.preserveDrawingBuffer" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">preserveDrawingBuffer</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.preserveDrawingBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the contents of the drawing buffer are preserved between consecutive <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code> calls. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, color, depth and stencil are cleared at the beginning of each <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code>. Generally setting this to <code class="docutils literal notranslate"><span class="pre">false</span></code> gives better performance. Default value: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
 </dd></dl>
 
@@ -4105,7 +4087,7 @@ EM_WEBGL_POWER_PREFERENCE <code class="sig-name descname">powerPreference</code>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.failIfMajorPerformanceCaveat">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">failIfMajorPerformanceCaveat</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.failIfMajorPerformanceCaveat" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">failIfMajorPerformanceCaveat</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.failIfMajorPerformanceCaveat" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, requests context creation to abort if the browser is only able to create a context that does not give good hardware-accelerated performance. Default value: <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p>
 </dd></dl>
 
@@ -4121,27 +4103,27 @@ int <code class="sig-name descname">minorVersion</code><a class="headerlink" hre
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">enableExtensionsByDefault</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">enableExtensionsByDefault</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, all GLES2-compatible non-performance-impacting WebGL extensions will automatically be enabled for you after the context has been created. If <code class="docutils literal notranslate"><span class="pre">false</span></code>, no extensions are enabled by default, and you need to manually call <a class="reference internal" href="#c.emscripten_webgl_enable_extension" title="emscripten_webgl_enable_extension"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_webgl_enable_extension()</span></code></a> to enable each extension that you want to use. Default value: <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.explicitSwapControl">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">explicitSwapControl</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.explicitSwapControl" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">explicitSwapControl</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.explicitSwapControl" title="Permalink to this definition">¶</a></dt>
 <dd><p>By default, when <code class="docutils literal notranslate"><span class="pre">explicitSwapControl</span></code> is in its default state <code class="docutils literal notranslate"><span class="pre">false</span></code>, rendered WebGL content is implicitly presented (displayed to the user) on the canvas when the event handler that renders with WebGL returns back to the browser event loop. If <code class="docutils literal notranslate"><span class="pre">explicitSwapControl</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, rendered content will not be displayed on screen automatically when event handler function finishes, but the control of swapping is given to the user to manage, via the <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_commit_frame()</span></code> function.</p>
 <p>In order to be able to set <code class="docutils literal notranslate"><span class="pre">explicitSwapControl==true</span></code>, support for it must explicitly be enabled either 1) via adding the <code class="docutils literal notranslate"><span class="pre">-sOFFSCREEN_FRAMEBUFFER</span></code> Emscripten linker flag, and enabling <code class="docutils literal notranslate"><span class="pre">renderViaOffscreenBackBuffer==1</span></code>, or 2) via adding the linker flag <code class="docutils literal notranslate"><span class="pre">-sOFFSCREENCANVAS_SUPPORT</span></code>, and running in a browser that supports OffscreenCanvas.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">renderViaOffscreenBackBuffer</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">renderViaOffscreenBackBuffer</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, an extra intermediate backbuffer (offscreen render target) is allocated to the created WebGL context, and rendering occurs to this backbuffer instead of directly onto the WebGL “default backbuffer”. This is required to be enabled if 1) <code class="docutils literal notranslate"><span class="pre">explicitSwapControl==true</span></code> and the browser does not support OffscreenCanvas, 2) when performing WebGL rendering in a worker thread and the browser does not support OffscreenCanvas, and 3) when performing WebGL context accesses from multiple threads simultaneously (independent of whether OffscreenCanvas is supported or not).</p>
 <p>Because supporting offscreen framebuffer adds some amount of extra code to the compiled output, support for it must explicitly be enabled via the <code class="docutils literal notranslate"><span class="pre">-sOFFSCREEN_FRAMEBUFFER</span></code> Emscripten linker flag. When building simultaneously with both <code class="docutils literal notranslate"><span class="pre">-sOFFSCREEN_FRAMEBUFFER</span></code> and <code class="docutils literal notranslate"><span class="pre">-sOFFSCREENCANVAS_SUPPORT</span></code> linker flags enabled, offscreen backbuffer can be used as a polyfill-like compatibility fallback to enable rendering WebGL from a pthread when the browser does not support the OffscreenCanvas API.</p>
 </dd></dl>
 
 <dl class="member">
 <dt id="c.EmscriptenWebGLContextAttributes.proxyContextToMainThread">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">proxyContextToMainThread</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">proxyContextToMainThread</code><a class="headerlink" href="#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread" title="Permalink to this definition">¶</a></dt>
 <dd><p>This member specifies the threading model that will be used for the created WebGL context, when the WebGL context is created in a pthread. Three values are possible: <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_DISALLOW</span></code>, <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_FALLBACK</span></code> or <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_ALWAYS</span></code>. If <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_DISALLOW</span></code> is specified, the WebGLRenderingContext object will be created inside the pthread that is calling the <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_create_context()</span></code> function as an OffscreenCanvas-based rendering context. This is only possible if 1) current browser supports OffscreenCanvas specification, 2) code was compiled with <code class="docutils literal notranslate"><span class="pre">-sOFFSCREENCANVAS_SUPPORT</span></code> linker flag enabled, 3) the Canvas object that the context is being created on was transferred over to the calling pthread with function <code class="docutils literal notranslate"><span class="pre">emscripten_pthread_attr_settransferredcanvases()</span></code> when the pthread was originally created, and 4) no OffscreenCanvas-based context already exists from the given Canvas at the same time.</p>
 <p>If a WebGL rendering context is created as an OffscreenCanvas-based context, it will have the limitation that only the pthread that created the context can enable access to it (via <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_make_context_current()</span></code> function). Other threads will not be able to activate rendering to the context, i.e. OffscreenCanvas-based contexts are essentially “pinned” to the pthread that created them.</p>
 <p>If the current browser does not support OffscreenCanvas, you can specify the <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_WEBGL_CONTEXT_PROXY_ALWAYS</span></code> WebGL context creation flag. If this flag is passed, and code was compiled with <code class="docutils literal notranslate"><span class="pre">-sOFFSCREEN_FRAMEBUFFER</span></code> enabled, the WebGL context will be created as a “proxied context”. In this context mode, the WebGLRenderingContext object will actually be created on the main browser thread, and all WebGL API calls will be proxied as asynchronous messages from the pthread into the main thread. This will have a performance and latency impact in comparison to OffscreenCanvas contexts, however unlike OffscreenCanvas-based contexts, proxied contexts can be shared across any number of pthreads: you can use the <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_make_context_current()</span></code> function in any pthread to activate and deactivate access to the WebGL context: for example, you could have one WebGL loading thread, and another WebGL rendering thread that coordinate shared access to the WebGL rendering context by cooperatively acquiring and releasing access to the WebGL rendering context via the <code class="docutils literal notranslate"><span class="pre">emscripten_webgl_make_context_current()</span></code> function. Proxied contexts do not require any special support from the browser, so any WebGL capable browser can create a proxied WebGL context.</p>
@@ -4158,7 +4140,7 @@ int <code class="sig-name descname">minorVersion</code><a class="headerlink" hre
 <dt id="c.em_webgl_context_callback">
 <code class="sig-name descname">em_webgl_context_callback</code><a class="headerlink" href="#c.em_webgl_context_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function pointer for the <a class="reference internal" href="#c.emscripten_set_webglcontextlost_callback" title="emscripten_set_webglcontextlost_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">WebGL</span> <span class="pre">Context</span> <span class="pre">event</span> <span class="pre">callback</span> <span class="pre">functions</span></code></a>, defined as:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="n">EM_BOOL</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_webgl_context_callback</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">reserved</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_webgl_context_callback</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">reserved</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -4173,7 +4155,7 @@ int <code class="sig-name descname">minorVersion</code><a class="headerlink" hre
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> (non zero) to indicate that the event was consumed by the <a class="reference internal" href="#callback-handler-return-em-bool-html5-api"><span class="std std-ref">callback handler</span></a>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4183,16 +4165,16 @@ int <code class="sig-name descname">minorVersion</code><a class="headerlink" hre
 <h3>Functions<a class="headerlink" href="#id93" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_webglcontextlost_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_webglcontextlost_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_webgl_context_callback" title="em_webgl_context_callback">em_webgl_context_callback</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_webglcontextlost_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_webglcontextlost_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_webgl_context_callback" title="em_webgl_context_callback">em_webgl_context_callback</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_webglcontextlost_callback" title="Permalink to this definition">¶</a></dt>
 <dt id="c.emscripten_set_webglcontextrestored_callback">
-<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_webglcontextrestored_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, <a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a><em> useCapture</em>, <a class="reference internal" href="#c.em_webgl_context_callback" title="em_webgl_context_callback">em_webgl_context_callback</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_webglcontextrestored_callback" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT">EMSCRIPTEN_RESULT</a> <code class="sig-name descname">emscripten_set_webglcontextrestored_callback</code><span class="sig-paren">(</span>const char<em> *target</em>, void<em> *userData</em>, bool<em> useCapture</em>, <a class="reference internal" href="#c.em_webgl_context_callback" title="em_webgl_context_callback">em_webgl_context_callback</a><em> callback</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_webglcontextrestored_callback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Registers a callback function for the canvas <a class="reference external" href="http://www.khronos.org/registry/webgl/specs/latest/1.0/#2.1">WebGL context</a> events: <code class="docutils literal notranslate"><span class="pre">webglcontextlost</span></code> and <code class="docutils literal notranslate"><span class="pre">webglcontextrestored</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target</strong> (<em>const char*</em>) – <a class="reference internal" href="#target-parameter-html5-api"><span class="std std-ref">Target HTML element id</span></a>.</p></li>
 <li><p><strong>userData</strong> (<em>void*</em>) – <a class="reference internal" href="#userdata-parameter-html5-api"><span class="std std-ref">User-defined data</span></a> to be passed to the callback (opaque to the API).</p></li>
-<li><p><strong>useCapture</strong> (<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><em>EM_BOOL</em></a>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
+<li><p><strong>useCapture</strong> (<em>bool</em>) – Set <code class="docutils literal notranslate"><span class="pre">true</span></code> to <a class="reference internal" href="#usecapture-parameter-html5-api"><span class="std std-ref">use capture</span></a>.</p></li>
 <li><p><strong>callback</strong> (<a class="reference internal" href="#c.em_webgl_context_callback" title="em_webgl_context_callback"><em>em_webgl_context_callback</em></a>) – A callback function. The function is called with the type of event, information about the event, and user data passed from this registration function. The callback should return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the event is consumed.</p></li>
 </ul>
 </dd>
@@ -4207,7 +4189,7 @@ int <code class="sig-name descname">minorVersion</code><a class="headerlink" hre
 
 <dl class="function">
 <dt id="c.emscripten_is_webgl_context_lost">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">emscripten_is_webgl_context_lost</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</a><em> context</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_is_webgl_context_lost" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">emscripten_is_webgl_context_lost</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</a><em> context</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_is_webgl_context_lost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Queries the given WebGL context if it is in a lost context state.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4219,7 +4201,7 @@ int <code class="sig-name descname">minorVersion</code><a class="headerlink" hre
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if the WebGL context is in a lost state (or the context does not exist)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4371,7 +4353,7 @@ void <code class="sig-name descname">emscripten_webgl_init_context_attributes</c
 
 <dl class="function">
 <dt id="c.emscripten_webgl_enable_extension">
-<a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> <code class="sig-name descname">emscripten_webgl_enable_extension</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</a><em> context</em>, const char<em> *extension</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_webgl_enable_extension" title="Permalink to this definition">¶</a></dt>
+bool <code class="sig-name descname">emscripten_webgl_enable_extension</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EMSCRIPTEN_WEBGL_CONTEXT_HANDLE" title="EMSCRIPTEN_WEBGL_CONTEXT_HANDLE">EMSCRIPTEN_WEBGL_CONTEXT_HANDLE</a><em> context</em>, const char<em> *extension</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_webgl_enable_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enables the given extension on the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4381,10 +4363,10 @@ void <code class="sig-name descname">emscripten_webgl_init_context_attributes</c
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>EM_TRUE if the given extension is supported by the context, and EM_FALSE if the extension was not available.</p>
+<dd class="field-even"><p>true if the given extension is supported by the context, and false if the extension was not available.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL"><code class="xref c c-type docutils literal notranslate"><span class="pre">EM_BOOL</span></code></a></p>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4515,9 +4497,9 @@ thread as the <a class="reference internal" href="#c.emscripten_set_timeout" tit
 
 <dl class="function">
 <dt id="c.emscripten_set_timeout_loop">
-void <code class="sig-name descname">emscripten_set_timeout_loop</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> (<em>*cb</em>)(double time, void *userData), double<em> intervalMsecs</em>, void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_timeout_loop" title="Permalink to this definition">¶</a></dt>
+void <code class="sig-name descname">emscripten_set_timeout_loop</code><span class="sig-paren">(</span>bool (<em>*cb</em>)(double time, void *userData), double<em> intervalMsecs</em>, void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_timeout_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a <code class="docutils literal notranslate"><span class="pre">setTimeout()</span></code> loop on the given function on the calling thread. The specified callback
-function ‘cb’ needs to keep returning <code class="docutils literal notranslate"><span class="pre">EM_TRUE</span></code> as long as the animation loop should continue to run.
+function ‘cb’ needs to keep returning <code class="docutils literal notranslate"><span class="pre">true</span></code> as long as the animation loop should continue to run.
 When the function returns false, the <code class="docutils literal notranslate"><span class="pre">setTimeout()</span></code> loop will stop.
 Note: The loop will start immediately with a 0 msecs delay - the passed in intervalMsecs time specifies
 the interval that the consecutive callback calls should fire at.</p>
@@ -4534,7 +4516,7 @@ the interval that the consecutive callback calls should fire at.</p>
 
 <dl class="function">
 <dt id="c.emscripten_request_animation_frame">
-long <code class="sig-name descname">emscripten_request_animation_frame</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> (<em>*cb</em>)(double time, void *userData), void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_animation_frame" title="Permalink to this definition">¶</a></dt>
+long <code class="sig-name descname">emscripten_request_animation_frame</code><span class="sig-paren">(</span>bool (<em>*cb</em>)(double time, void *userData), void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_animation_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a single <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code> callback call on the given function on the calling thread.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4569,9 +4551,9 @@ registered the callback.</p>
 
 <dl class="function">
 <dt id="c.emscripten_request_animation_frame_loop">
-void <code class="sig-name descname">emscripten_request_animation_frame_loop</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> (<em>*cb</em>)(double time, void *userData), void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_animation_frame_loop" title="Permalink to this definition">¶</a></dt>
+void <code class="sig-name descname">emscripten_request_animation_frame_loop</code><span class="sig-paren">(</span>bool (<em>*cb</em>)(double time, void *userData), void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_request_animation_frame_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code> loop on the given function on the calling thread. The specified
-callback function ‘cb’ needs to keep returning <code class="docutils literal notranslate"><span class="pre">EM_TRUE</span></code> as long as the animation loop should continue
+callback function ‘cb’ needs to keep returning <code class="docutils literal notranslate"><span class="pre">true</span></code> as long as the animation loop should continue
 to run. When the function returns false, the animation frame loop will stop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4620,9 +4602,9 @@ thread as the <a class="reference internal" href="#c.emscripten_set_immediate" t
 
 <dl class="function">
 <dt id="c.emscripten_set_immediate_loop">
-void <code class="sig-name descname">emscripten_set_immediate_loop</code><span class="sig-paren">(</span><a class="reference internal" href="#c.EM_BOOL" title="EM_BOOL">EM_BOOL</a> (<em>*cb</em>)(void *userData), void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_immediate_loop" title="Permalink to this definition">¶</a></dt>
+void <code class="sig-name descname">emscripten_set_immediate_loop</code><span class="sig-paren">(</span>bool (<em>*cb</em>)(void *userData), void<em> *userData</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_immediate_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a <code class="docutils literal notranslate"><span class="pre">setImmediate()</span></code> loop on the given function on the calling thread. The specified callback
-function ‘cb’ needs to keep returning <code class="docutils literal notranslate"><span class="pre">EM_TRUE</span></code> as long as the loop should continue to run.
+function ‘cb’ needs to keep returning <code class="docutils literal notranslate"><span class="pre">true</span></code> as long as the loop should continue to run.
 When the function returns false, the <code class="docutils literal notranslate"><span class="pre">setImmediate()</span></code> loop will stop.
 TODO: Currently the polyfill of <code class="docutils literal notranslate"><span class="pre">setImmediate()</span></code> only works in the main browser thread, but not in pthreads.</p>
 <dl class="field-list simple">
@@ -4846,7 +4828,7 @@ normally.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.66-git (dev)',
+            VERSION:'3.1.69-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

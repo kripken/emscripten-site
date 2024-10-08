@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emscripten.h &mdash; Emscripten 3.1.66-git (dev) documentation</title>
+  <title>emscripten.h &mdash; Emscripten 3.1.69-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.66-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.69-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="html5.h" href="html5.h.html"/>
         <link rel="prev" title="API Reference" href="index.html"/> 
@@ -308,6 +308,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#function-signatures">Function Signatures</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#access-memory-from-javascript">Access memory from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#affect-execution-behaviour">Affect execution behaviour</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#environment-variables">Environment variables</a></li>
@@ -1749,7 +1750,7 @@ void <code class="sig-name descname">emscripten_async_load_script</code><span cl
 <h3>Functions<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="c.emscripten_set_main_loop">
-void <code class="sig-name descname">emscripten_set_main_loop</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_callback_func" title="em_callback_func">em_callback_func</a><em> func</em>, int<em> fps</em>, int<em> simulate_infinite_loop</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop" title="Permalink to this definition">¶</a></dt>
+void <code class="sig-name descname">emscripten_set_main_loop</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_callback_func" title="em_callback_func">em_callback_func</a><em> func</em>, int<em> fps</em>, bool<em> simulate_infinite_loop</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a C function as the main event loop for the calling thread.</p>
 <p>If the main loop function needs to receive user-defined data, use <a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> instead.</p>
 <p>The JavaScript environment will call that function at a specified number of frames per second. If called on the main browser thread, setting 0 or a negative value as the <code class="docutils literal notranslate"><span class="pre">fps</span></code> will use the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism to call the main loop function. This is <strong>HIGHLY</strong> recommended if you are doing rendering, as the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> will make sure you render at a proper smooth rate that lines up properly with the browser and monitor. If you do not render at all in your application, then you should pick a specific frame rate that makes sense for your code.</p>
@@ -1777,7 +1778,7 @@ void <code class="sig-name descname">emscripten_set_main_loop</code><span class=
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<a class="reference internal" href="#c.em_callback_func" title="em_callback_func"><em>em_callback_func</em></a>) – C function to set as main event loop for the calling thread.</p></li>
 <li><p><strong>fps</strong> (<em>int</em>) – Number of frames per second that the JavaScript will call the function. Setting <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">&lt;=0</span></code> (recommended) uses the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism to call the function.</p></li>
-<li><p><strong>simulate_infinite_loop</strong> (<em>int</em>) – If true, this function will throw an exception in order to stop execution of the caller.</p></li>
+<li><p><strong>simulate_infinite_loop</strong> (<em>bool</em>) – If true, this function will throw an exception in order to stop execution of the caller.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1785,7 +1786,7 @@ void <code class="sig-name descname">emscripten_set_main_loop</code><span class=
 
 <dl class="function">
 <dt id="c.emscripten_set_main_loop_arg">
-void <code class="sig-name descname">emscripten_set_main_loop_arg</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func">em_arg_callback_func</a><em> func</em>, void<em> *arg</em>, int<em> fps</em>, int<em> simulate_infinite_loop</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop_arg" title="Permalink to this definition">¶</a></dt>
+void <code class="sig-name descname">emscripten_set_main_loop_arg</code><span class="sig-paren">(</span><a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func">em_arg_callback_func</a><em> func</em>, void<em> *arg</em>, int<em> fps</em>, bool<em> simulate_infinite_loop</em><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop_arg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a C function as the main event loop for the calling thread, passing it user-defined data.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1797,7 +1798,7 @@ void <code class="sig-name descname">emscripten_set_main_loop_arg</code><span cl
 <li><p><strong>func</strong> (<a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><em>em_arg_callback_func</em></a>) – C function to set as main event loop. The function signature must have a <code class="docutils literal notranslate"><span class="pre">void*</span></code> parameter for passing the <code class="docutils literal notranslate"><span class="pre">arg</span></code> value.</p></li>
 <li><p><strong>arg</strong> (<em>void*</em>) – User-defined data passed to the main loop function, untouched by the API itself.</p></li>
 <li><p><strong>fps</strong> (<em>int</em>) – Number of frames per second at which the JavaScript will call the function. Setting <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">&lt;=0</span></code> (recommended) uses the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism to call the function.</p></li>
-<li><p><strong>simulate_infinite_loop</strong> (<em>int</em>) – If true, this function will throw an exception in order to stop execution of the caller.</p></li>
+<li><p><strong>simulate_infinite_loop</strong> (<em>bool</em>) – If true, this function will throw an exception in order to stop execution of the caller.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3373,7 +3374,7 @@ to constantly check for after any Wasm code runs. See
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.66-git (dev)',
+            VERSION:'3.1.69-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

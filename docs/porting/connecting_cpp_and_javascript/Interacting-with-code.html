@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interacting with code &mdash; Emscripten 3.1.66-git (dev) documentation</title>
+  <title>Interacting with code &mdash; Emscripten 3.1.69-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../../genindex.html"/>
         <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.66-git (dev) documentation" href="../../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.69-git (dev) documentation" href="../../../index.html"/>
         <link rel="up" title="Connecting C++ and JavaScript" href="index.html"/>
         <link rel="next" title="Embind" href="embind.html"/>
         <link rel="prev" title="Connecting C++ and JavaScript" href="index.html"/> 
@@ -308,6 +308,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-signatures">Function Signatures</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#access-memory-from-javascript">Access memory from JavaScript</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#affect-execution-behaviour">Affect execution behaviour</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
@@ -1949,30 +1950,54 @@ stripped and no underscore added.</p></li>
 <section id="calling-javascript-functions-as-function-pointers-from-c">
 <span id="interacting-with-code-call-function-pointers-from-c"></span><h2>Calling JavaScript functions as function pointers from C<a class="headerlink" href="#calling-javascript-functions-as-function-pointers-from-c" title="Permalink to this headline">¶</a></h2>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> to return an integer value that represents a
-function pointer. Passing that integer to C code then lets it call that value as
-a function pointer, and the JavaScript function you sent to <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> will
-be called.</p>
+function pointer. Passing that integer to C code then lets it call that value
+as a function pointer, and the JavaScript function you sent to <code class="docutils literal notranslate"><span class="pre">addFunction</span></code>
+will be called.</p>
 <p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237">test_add_function in test/test_core.py</a> for an example.</p>
 <p>You should build with <code class="docutils literal notranslate"><span class="pre">-sALLOW_TABLE_GROWTH</span></code> to allow new functions to be
 added to the table. Otherwise by default the table has a fixed size.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When using <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> on LLVM Wasm backend, you need to provide
-an additional second argument, a Wasm function signature string. Each
-character within a signature string represents a type. The first character
-represents the return type of a function, and remaining characters are for
-parameter types.</p>
-<ul class="simple">
+<p>When using <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> with a JavaScript function, you need to provide
+an additional second argument, a Wasm function signature string, explained
+below. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/interop/test_add_function_post.js">test/interop/test_add_function_post.js</a> for an example.</p>
+</section>
+<section id="function-signatures">
+<span id="interacting-with-code-function-signatures"></span><h2>Function Signatures<a class="headerlink" href="#function-signatures" title="Permalink to this headline">¶</a></h2>
+<p>The LLVM Wasm backend requires a Wasm function signature string when using
+<code class="docutils literal notranslate"><span class="pre">addFunction</span></code> and in JavaScript libraries. Each character within a signature
+string represents a type. The first character represents the return type of a
+function, and remaining characters are for parameter types.</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'v'</span></code>: void type</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'i'</span></code>: 32-bit integer type</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'j'</span></code>: 64-bit integer type (currently does not exist in JavaScript)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'j'</span></code>: 64-bit integer type (see note below)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'f'</span></code>: 32-bit float type</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'d'</span></code>: 64-bit float type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'p'</span></code>: 32-bit or 64-bit pointer (MEMORY64)</p></li>
 </ul>
+</div></blockquote>
 <p>For example, if you add a function that takes an integer and does not return
-anything, you can do <code class="docutils literal notranslate"><span class="pre">addFunction(your_function,</span> <span class="pre">'vi');</span></code>. See
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/interop/test_add_function_post.js">test/interop/test_add_function_post.js</a> for an example.</p>
+anything, the signature is <code class="docutils literal notranslate"><span class="pre">'vi'</span></code>.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">'j'</span></code> is used there are several ways in which the parameter value will
+be passed to JavaScript. By default, the value will either be passed as a
+single BigInt or a pair of JavaScript numbers (double) depending on whether
+the <code class="docutils literal notranslate"><span class="pre">WASM_BIGINT</span></code> settings is enabled. In addition, if you only require 53
+bits of precision you can add the <code class="docutils literal notranslate"><span class="pre">__i53abi</span></code> decorator, which will ignore
+the upper bits and the value will be received as a single JavaScript number
+(double).  It cannot be used with <code class="docutils literal notranslate"><span class="pre">addFunction</span></code>.  Here is an example of a
+library function that sets the size of a file using a 64-bit value passed as
+a 53 bit (double) and returns an integer error code:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">_set_file_size</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">handle</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+</pre></div>
 </div>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">_set_file_size__i53abi</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// Handle 64-bit</span>
+<span class="nx">_set_file_size__sig</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;iij&#39;</span><span class="p">,</span><span class="w">    </span><span class="c1">// Function signature</span>
+<span class="nx">_set_file_size</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">handle</span><span class="p">,</span><span class="w"> </span><span class="nx">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">error</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">-sWASM_BIGINT</span></code> when linking is an alternative method of handling
+64-bit types in libraries.  <code class="docutils literal notranslate"><span class="pre">`Number()`</span></code> may be needed on the JavaScript
+side to convert it to a useable value.  See <a class="reference external" href="https://emscripten.org/docs/tools_reference/settings_reference.html?highlight=environment#wasm-bigint">settings reference</a>.</p>
 </section>
 <section id="access-memory-from-javascript">
 <span id="interacting-with-code-access-memory"></span><h2>Access memory from JavaScript<a class="headerlink" href="#access-memory-from-javascript" title="Permalink to this headline">¶</a></h2>
@@ -2231,7 +2256,7 @@ you can give it a try. See <a class="reference external" href="https://emnapi-do
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'3.1.66-git (dev)',
+            VERSION:'3.1.69-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
