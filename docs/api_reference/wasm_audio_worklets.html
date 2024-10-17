@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Wasm Audio Worklets API &mdash; Emscripten 3.1.69-git (dev) documentation</title>
+  <title>Wasm Audio Worklets API &mdash; Emscripten 3.1.70-git (dev) documentation</title>
   
 
   
@@ -33,7 +33,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Emscripten 3.1.69-git (dev) documentation" href="../../index.html"/>
+    <link rel="top" title="Emscripten 3.1.70-git (dev) documentation" href="../../index.html"/>
         <link rel="up" title="API Reference" href="index.html"/>
         <link rel="next" title="Advanced APIs" href="advanced-apis.html"/>
         <link rel="prev" title="Wasm Workers API" href="wasm_workers.html"/> 
@@ -1402,7 +1402,9 @@ and then, these processors are instantiated one or more times in the audio
 processing graph as AudioWorkletNodes.</p>
 <p>Once a class type is instantiated on the Web Audio graph and the graph is
 running, a C/C++ function pointer callback will be invoked for each 128
-samples of the processed audio stream that flows through the node.</p>
+samples of the processed audio stream that flows through the node. Newer Web
+Audio API specs allow this to be changed, so for future compatibility use the
+<code class="docutils literal notranslate"><span class="pre">AudioSampleFrame</span></code>’s <code class="docutils literal notranslate"><span class="pre">samplesPerChannel</span></code> to get the value.</p>
 <p>This callback will be executed on a dedicated separate audio processing
 thread with real-time processing priority. Each Web Audio context will
 utilize only a single audio processing thread. That is, even if there are
@@ -1502,7 +1504,7 @@ which resumes the audio context when the user clicks on the DOM Canvas element t
 <span class="w">                      </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">numOutputs</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">128</span><span class="o">*</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">numberOfChannels</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">samplesPerChannel</span><span class="o">*</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">numberOfChannels</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
 <span class="w">      </span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">emscripten_random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span><span class="w"> </span><span class="c1">// Warning: scale down audio volume by factor of 0.2, raw noise can be really loud otherwise</span>
 
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"> </span><span class="c1">// Keep the graph output going</span>
@@ -1640,7 +1642,7 @@ which resumes the audio context when the user clicks on the DOM Canvas element t
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'3.1.69-git (dev)',
+            VERSION:'3.1.70-git (dev)',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
