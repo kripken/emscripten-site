@@ -346,6 +346,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#operators">Operators</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#enums">enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sub-classing-c-base-classes-in-javascript-jsimplementation">Sub-classing C++ base classes in JavaScript (JSImplementation)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-overloads">Function overloads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pointers-and-comparisons">Pointers and comparisons</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#null">NULL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#void">void*</a></li>
@@ -1723,6 +1724,48 @@ interface<span class="w"> </span>ImplJS<span class="w"> </span>{
 <li><p>You <em>must</em> implement all the methods you mentioned in the IDL of the <code class="docutils literal notranslate"><span class="pre">JSImplementation</span></code> class (<code class="docutils literal notranslate"><span class="pre">ImplJS</span></code>) or compilation will fail with an error.</p></li>
 <li><p>You will also need to provide an interface definition for the <code class="docutils literal notranslate"><span class="pre">Base</span></code> class in the IDL file.</p></li>
 </ul>
+</div>
+</section>
+<section id="function-overloads">
+<h2>Function overloads<a class="headerlink" href="#function-overloads" title="Permalink to this headline">¶</a></h2>
+<p>C++ allows function overloads, where multiple member functions have the same name but different arguments. By default, the <em>WebIDL Binder</em> allows you to bind overloaded functions if they differ only in the number of arguments:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OverloadTest</span><span class="w"> </span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">test</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">arg1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">arg2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">test</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL
+interface<span class="w"> </span>OverloadTest<span class="w"> </span>{
+<span class="w">  </span>void<span class="w"> </span>OverloadTest();
+<span class="w">  </span>void<span class="w"> </span>test(<span class="nb">long</span><span class="w"> </span>arg1,<span class="w"> </span><span class="nb">long</span><span class="w"> </span>arg2);
+<span class="w">  </span>void<span class="w"> </span>test(<span class="nb">long</span><span class="w"> </span>arg);
+};
+</pre></div>
+</div>
+<p>If your overloaded functions differ in some other way (say, in the types) then you can use the <code class="docutils literal notranslate"><span class="pre">[BindTo]</span></code> attribute to tell the tool what function name to bind to (that is, to call):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// C++</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BindToTest</span><span class="w"> </span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">test</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">test</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<div class="highlight-idl notranslate"><div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span>WebIDL
+interface<span class="w"> </span>BindToTest<span class="w"> </span>{
+<span class="w">  </span>void<span class="w"> </span>BindToTest();
+<span class="w">  </span>[BindTo<span class="o">=</span><span class="s2">&quot;test&quot;</span>]<span class="w"> </span>void<span class="w"> </span>testString([Const]<span class="w"> </span>DOMString<span class="w"> </span>arg);
+<span class="w">  </span>[BindTo<span class="o">=</span><span class="s2">&quot;test&quot;</span>]<span class="w"> </span>void<span class="w"> </span>testInt(<span class="nb">long</span><span class="w"> </span>arg);
+};
+</pre></div>
+</div>
+<p>In this case the C++ function <code class="docutils literal notranslate"><span class="pre">test(const</span> <span class="pre">char*)</span></code> will be named <code class="docutils literal notranslate"><span class="pre">testString</span></code> in JavaScript and <code class="docutils literal notranslate"><span class="pre">test(int)</span></code> will be named <code class="docutils literal notranslate"><span class="pre">testInt</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">[BindTo]</span></code> to just rename a function, e.g. if you want to rename <code class="docutils literal notranslate"><span class="pre">MyFunctionName</span></code> to <code class="docutils literal notranslate"><span class="pre">myFunctionName</span></code>.</p>
 </div>
 </section>
 <section id="pointers-and-comparisons">

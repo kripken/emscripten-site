@@ -346,6 +346,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#operators">Operators</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#enums">enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#sub-classing-c-base-classes-in-javascript-jsimplementation">Sub-classing C++ base classes in JavaScript (JSImplementation)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#function-overloads">Function overloads</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#pointers-and-comparisons">Pointers and comparisons</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#null">NULL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html#void">void*</a></li>
@@ -1443,13 +1444,12 @@
 <span class="sd">      &lt;/html&gt;</span>
 <span class="sd">    &#39;&#39;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">file_data</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
-      <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMCC</span><span class="p">,</span> <span class="n">test_file</span><span class="p">(</span><span class="s1">&#39;hello_world_worker.cpp&#39;</span><span class="p">),</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;worker.js&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_emcc_args</span><span class="p">()</span>
-      <span class="k">if</span> <span class="n">file_data</span><span class="p">:</span>
-        <span class="n">cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;--preload-file&#39;</span><span class="p">,</span> <span class="s1">&#39;file.dat&#39;</span><span class="p">]</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">run_process</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">assertExists</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">)</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">run_browser</span><span class="p">(</span><span class="s1">&#39;main.html&#39;</span><span class="p">,</span> <span class="s1">&#39;/report_result?hello from worker, and :&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;data for w&#39;</span> <span class="k">if</span> <span class="n">file_data</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMCC</span><span class="p">,</span> <span class="n">test_file</span><span class="p">(</span><span class="s1">&#39;hello_world_worker.c&#39;</span><span class="p">),</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;worker.js&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_emcc_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">file_data</span><span class="p">:</span>
+      <span class="n">cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;--preload-file&#39;</span><span class="p">,</span> <span class="s1">&#39;file.dat&#39;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">run_process</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertExists</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">run_browser</span><span class="p">(</span><span class="s1">&#39;main.html&#39;</span><span class="p">,</span> <span class="s1">&#39;/report_result?hello from worker, and :&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;data for w&#39;</span> <span class="k">if</span> <span class="n">file_data</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
 
     <span class="c1"># code should run standalone too</span>
     <span class="c1"># To great memories &gt;4gb we need the canary version of node</span>
