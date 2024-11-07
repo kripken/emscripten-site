@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module Splitting &mdash; Emscripten 3.1.72-git (dev) documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
+
+  
+    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=27485112"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+<div class="grid-to-center-rtd-theme"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            <!-- <img src="../..//_static/" alt="Logo"> -->
+            
+              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Optimizing-WebGL.html">Optimizing WebGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Profiling-Toolchain.html">Profiling the Toolchain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <!-- <a href="../../index.html">Emscripten</a> -->
+          <a href="../../index.html"> <img src="../..//_static/" alt="Logo" /> </a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+        <!--begin hamishw addition -->
+
+        <!--Nav bar defined as a document followed by short version of nav text and long version
+            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+          displayed.   -->
+        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
+  
+        <div class="main-nav-bar" style="">   
+
+          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
+        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
+
+        <ul id="menu-options">
+             
+                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
+             
+                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
+             
+                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
+             
+                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
+                	
+          </ul>
+        <!-- <div style="clear:both;"></div> -->        
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Module Splitting</div>
+  </div>
+ 
+</div>
+   </div>
+   <!--end hamishw addition -->		
+          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Module Splitting</div>
+  </div>
+ 
+</div> -->
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-splitting">
+<span id="id1"></span><h1>Module Splitting<a class="headerlink" href="#module-splitting" title="Link to this heading">¶</a></h1>
+<p><em>wasm-split and the SPLIT_MODULE Emscripten integration are both in active
+development and may change and gain new features frequently. This page will be
+kept up-to-date with the latest changes.</em></p>
+<p>Large codebases often contain a lot of code that is very rarely used in practice
+or is never used early in the application’s life cycle. Loading that unused code
+can noticeably delay application startup, so it would be good to defer loading
+that code until after the application has already started. One excellent
+solution for this is to use dynamic linking, but that requires refactoring an
+application into shared libraries and also comes with some performance overhead,
+so it is not always feasible. Module splitting is another approach where a
+module is split into separate pieces, the primary and secondary modules, after
+it is built normally. The primary module is loaded first and contains the code
+necessary to start the application, while the secondary module contains code
+that will be needed later or not at all. The secondary module will automatically
+be loaded on demand.</p>
+<p>wasm-split is a Binaryen tool that performs module splitting. After running
+wasm-split, the primary module has all the same imports and exports as the
+original module and is meant to be a drop-in replacement for it. However, it
+also imports a placeholder function for each secondary function that was split
+out into the secondary module. Before the secondary module is loaded, calls of
+secondary functions will call the appropriate placeholder function instead. The
+placeholder functions are responsible for loading and instantiating the
+secondary module, which automatically replaces all the placeholder functions
+with the original secondary functions when it is instantiated. After the
+secondary module is loaded, the placeholder function that loaded it is also
+responsible for calling its corresponding newly-loaded secondary function and
+returning the result to its caller. The loading of the secondary module is
+therefore completely transparent to the primary module; it just looks like a
+function call took a long time to return.</p>
+<p>Currently the only workflow for splitting modules involves instrumenting the
+original module to collect a profile of what functions are run, running that
+instrumented module with a number of interesting workloads, and using the
+resulting profiles to determine how to split the module. wasm-split will leave
+any function that was run during any of the profiled workloads in the primary
+module and will split all other functions out into the secondary module.</p>
+<p>Emscripten has a prototype integration with wasm-split enabled by the
+<code class="docutils literal notranslate"><span class="pre">-sSPLIT_MODULE</span></code> option. This option will emit the original module with the
+wasm-split instrumentation applied so it is ready to collect profiles. It will
+also insert the placeholder functions responsible for loading a secondary module
+into the emitted JS. The developer is then responsible for running appropriate
+workloads, collecting the profiles, and using the wasm-split tool to perform the
+splitting. After the module is split, everything will work correctly with no
+further changes to the JS produced by the initial compilation.</p>
+<section id="basic-example">
+<h2>Basic Example<a class="headerlink" href="#basic-example" title="Link to this heading">¶</a></h2>
+<p>Let’s run through a basic example of using SPLIT_MODULE with Node. Later in the
+“Running on the Web” section we will discuss how to adapt the example to run on
+the Web as well.</p>
+<p>Here’s our application code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">application</span><span class="o">.</span><span class="n">c</span>
+
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;emscripten.h&gt;</span>
+
+<span class="n">void</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">void</span> <span class="n">bar</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;bar</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">void</span> <span class="n">unsupported</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> is not supported!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">EM_JS</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">get_number</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">typeof</span> <span class="n">prompt</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;prompt-sync&#39;</span><span class="p">)();</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">parseInt</span><span class="p">(</span><span class="n">prompt</span><span class="p">(</span><span class="s1">&#39;Give me 0 or 1: &#39;</span><span class="p">));</span>
+<span class="p">});</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">get_number</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">foo</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">bar</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">unsupported</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This application prompts the user for some input and executes different
+functions depending on what the user provides. It uses the prompt-sync npm
+module to make the prompting behavior portable between Node and the Web. We will
+see that the input we provide during profiling will determine how our functions
+are split between the primary and secondary modules.</p>
+<p>We can compile our application with <code class="docutils literal notranslate"><span class="pre">-sSPLIT_MODULE</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ emcc application.c -o application.js -sSPLIT_MODULE
+</pre></div>
+</div>
+<p>In addition to the typical application.wasm and application.js files, this also
+produces an application.wasm.orig file. application.wasm.orig is the original,
+unmodified module that a normal Emscripten build would produce, while
+application.wasm has been instrumented by wasm-split to collect profiles.</p>
+<p>The instrumented module has an additional exported function,
+<code class="docutils literal notranslate"><span class="pre">__write_profile</span></code>, that takes as arguments a pointer and length for an
+in-memory buffer to which it will write the profile. <code class="docutils literal notranslate"><span class="pre">__write_profile</span></code> returns
+the length of the profile, and only writes the data if the supplied buffer is
+large enough. <code class="docutils literal notranslate"><span class="pre">__write_profile</span></code> can be called externally from JS or
+internally, from the application itself. For simplicity, we will just call it at
+the end of our main function here, but note that this will mean that any
+functions called after main, such as destructors for global objects, will not be
+included in the profile.</p>
+<p>Here’s the function to write the profile and our new main function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>EM_JS(void, write_profile, (), {
+  var __write_profile = wasmExports.__write_profile;
+  if (!__write_profile) {
+    return;
+  }
+
+  // Get the size of the profile and allocate a buffer for it.
+  var len = __write_profile(0, 0);
+  var ptr = _malloc(len);
+
+  // Write the profile data to the buffer.
+  __write_profile(ptr, len);
+
+  // Write the profile file.
+  var profile_data = HEAPU8.subarray(ptr, ptr + len);
+  const fs = require(&quot;fs&quot;);
+  fs.writeFileSync(&#39;profile.data&#39;, profile_data);
+
+  // Free the buffer.
+  _free(ptr);
+});
+
+int main() {
+  int i = get_number();
+  if (i == 0) {
+    foo();
+  } else if (i == 1) {
+    bar();
+  } else {
+    unsupported(i);
+  }
+  write_profile();
+}
+</pre></div>
+</div>
+<p>Note that we only try to write the profile if the <code class="docutils literal notranslate"><span class="pre">__write_profile</span></code> export
+exists. This is important because only the instrumented, unsplit module exports
+<code class="docutils literal notranslate"><span class="pre">__write_profile</span></code>. The split modules will not include the profiling
+instrumentation or this export.</p>
+<p>Our new write_profile function depends on malloc and free being available to JS,
+so we need to explicitly export them on the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ emcc application.c -o application.js -sSPLIT_MODULE -sEXPORTED_FUNCTIONS=_malloc,_free,_main
+</pre></div>
+</div>
+<p>Now we can run our application, which produces a profile.data file. The next
+step is to use wasm-split and the profile to split the original module,
+application.wasm:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wasm-split --enable-mutable-globals --export-prefix=% application.wasm.orig -o1 application.wasm -o2 application.deferred.wasm --profile=profile.data
+</pre></div>
+</div>
+<p>Let’s break down what all those options are for.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--enable-mutable-globals</span></code></dt><dd><p>This option enables the mutable-global target feature, which allows mutable
+Wasm globals (as opposed to C/C++ globals) to be imported and exported.
+wasm-split has to share mutable globals between the primary and secondary
+modules, so it requires this feature to be enabled.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--export-prefix=%</span></code></dt><dd><p>This is a prefix added to all the new exports wasm-split creates to share
+module elements from the primary module to the secondary module. The prefix
+can be used to differentiate “true” exports from those that only exist to be
+consumed by the secondary module. Emscripten’s wasm-split integration expects
+“%” in particular to be used as the prefix.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-o1</span> <span class="pre">application.wasm</span></code></dt><dd><p>Write the primary module to application.wasm. Note that this will overwrite
+the instrumented module previously produced by Emscripten, so the application
+will now use the split modules rather than the instrumented module.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-o2</span> <span class="pre">application.deferred.wasm</span></code></dt><dd><p>Write the secondary module to application.deferred.wasm. Emscripten expects
+the name of the secondary module to be the same as the name of the primary
+module with “.wasm” replaced with “.deferred.wasm”.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--profile=profile.data</span></code></dt><dd><p>Directs wasm-split to use the profile in profile.data to guide the splitting.</p>
+</dd>
+</dl>
+<p>Running application.js in node again, we can see that the application works just
+as it did before, but if we execute any code path besides the one used in the
+profiled workload, the application will print a console message about a
+placeholder function being called and the deferred module being loaded.</p>
+</section>
+<section id="profiling-multiple-workloads">
+<h2>Profiling Multiple Workloads<a class="headerlink" href="#profiling-multiple-workloads" title="Link to this heading">¶</a></h2>
+<p>wasm-split supports merging profiles from multiple profiling workloads into a
+single profile to guide splitting. Any function that was run in any of the
+workloads will be kept in the primary module and all other functions will be
+split out into the secondary module.</p>
+<p>This command will merge any number of profiles (here just profile1.data and
+profile2.data) into a single profile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wasm-split --merge-profiles profile1.data profile2.data -o profile.data
+</pre></div>
+</div>
+</section>
+<section id="multithreaded-programs">
+<h2>Multithreaded Programs<a class="headerlink" href="#multithreaded-programs" title="Link to this heading">¶</a></h2>
+<p>By default, the data gathered by the wasm-split instrumentation is stored in
+Wasm globals, so it is thread local. But in a multithreaded program, it is
+important to collect profile information from all threads. To do so, you can
+tell wasm-split to collect shared profile information in shared memory using the
+<code class="docutils literal notranslate"><span class="pre">--in-memory</span></code> wasm-split flag. This will use memory starting at address zero
+to store the profile information, so you must also pass <code class="docutils literal notranslate"><span class="pre">-sGLOBAL_BASE=N</span></code> to
+Emscripten, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is at least the number of functions in the module, to
+prevent the program from clobbering that memory region.</p>
+<p>After splitting, multithreaded applications will currently fetch and compile the
+secondary module separately on each thread. The compiled secondary module is not
+postmessaged to each thread the way the Emscripten postmessages the primary
+module to the threads. This is not as bad as it sounds because downloads of the
+secondary module from workers will be serviced from the cache if the appropriate
+Cache-Control headers are set, but improving this is an area for future work.</p>
+</section>
+<section id="running-on-the-web">
+<h2>Running on the Web<a class="headerlink" href="#running-on-the-web" title="Link to this heading">¶</a></h2>
+<p>One complication to keep in mind when using SPLIT_MODULE for Web applications is
+that the secondary module cannot be loaded both lazily and asynchronously, which
+means it cannot be loaded lazily on the main browser thread. The reason is that
+the placeholder functions need to be completely transparent to the functions in
+the primary module, so they can’t return until they have synchronously loaded
+and called the correct secondary function.</p>
+<p>One workaround for this limitation would be to eagerly load and instantiate the
+secondary module and ensure that no secondary functions can possibly be called
+before it has been instantiated on the main browser thread. This may be
+difficult to ensure, though. Another fix would be to run the Asyncify
+transformation on the primary module to allow placeholder functions to return to
+the JS event loop while waiting for the secondary module to load asynchronously.
+This is on the wasm-split roadmap, although we do not yet know what the size and
+performance overhead of this solution will be.</p>
+<p>This limitation on lazy loading means that the best way to run applications with
+SPLIT_MODULE is in a worker thread, for example using <code class="docutils literal notranslate"><span class="pre">-sPROXY_TO_PTHREAD</span></code>. In
+PROXY_TO_PTHREAD mode, it is important to collect a profile for the browser main
+thread in addition to the application main thread because the browser main
+thread runs some functions not run in the application main thread, such as the
+shim that wraps the proxied main function and the functions involved in handling
+calls proxied back to the main browser thread. See the previous section for how
+to collect profiles from multiple threads.</p>
+<p>Another minor complication is that the profile data cannot be immediately
+written to a file from inside the browser. The data must instead be transmitted
+to developer machines some other way, such as posting it to the dev server or
+copying a base64 encoding of it from the console.</p>
+<p>Here’s code implementing the base64 solution:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">profile_data</span> <span class="o">=</span> <span class="n">HEAPU8</span><span class="o">.</span><span class="n">subarray</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ptr</span> <span class="o">+</span> <span class="nb">len</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">binary</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">var</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">profile_data</span><span class="o">.</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">binary</span> <span class="o">+=</span> <span class="n">String</span><span class="o">.</span><span class="n">fromCharCode</span><span class="p">(</span><span class="n">profile_data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;===BEGIN===&quot;</span><span class="p">);</span>
+<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">btoa</span><span class="p">(</span><span class="n">binary</span><span class="p">));</span>
+<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;===END===&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Then the profile file can be created by by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ echo [pasted base64] | base64 --decode &gt; profile.data
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ base64 --decode [base64 file] &gt; profile.data
+</pre></div>
+</div>
+</section>
+<section id="usage-with-dynamic-linking">
+<h2>Usage with Dynamic Linking<a class="headerlink" href="#usage-with-dynamic-linking" title="Link to this heading">¶</a></h2>
+<p>Module splitting can be used in conjunction with dynamic linking, but making the
+two features work correctly together requires some developer intervention.
+wasm-split often needs to grow the table to make space for placeholder
+functions, but that means that the instrumented and split modules would have
+different table sizes. Normally this is not a problem, but
+MAIN_MODULE/SIDE_MODULE dynamic linking support currently requires the table
+size to be baked into the JS Emscripten emits, so the table size needs to be
+stable.</p>
+<p>To ensure that the table size is the same between the instrumented module and
+the split modules, use the <code class="docutils literal notranslate"><span class="pre">-sINITIAL_TABLE=N</span></code> Emscripten setting, where <code class="docutils literal notranslate"><span class="pre">N</span></code>
+is the desired table size. Then, when using wasm-split to perform the splitting,
+pass <code class="docutils literal notranslate"><span class="pre">--initial-table=N</span></code> to wasm-split to ensure that the split modules have
+the correct table size as well.</p>
+<p>If the specified table size is too small, you will get an error message when the
+primary module is loaded after splitting. Adjust the table size you specify
+until it is large enough. Besides taking up extra space at runtime, there is no
+downside to specifying a table size that is larger than necessary.</p>
+</section>
+<section id="custom-loading-of-the-secondary-module">
+<h2>Custom Loading of the Secondary Module<a class="headerlink" href="#custom-loading-of-the-secondary-module" title="Link to this heading">¶</a></h2>
+<p>The default logic for lazily loading the secondary module can be overridden by
+implementing the “loadSplitModule” custom hook function. The hook is called from
+placeholder functions and is responsible for returning the [instance, module]
+pair for the secondary module. The hook takes as arguments the name of the file
+to load (e.g. “my_program.deferred.wasm”), the imports object to instantiate the
+module with, and the property corresponding to the called placeholder function.
+Here is an example implementation that does the same thing as the default
+implementation with some extra logging:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Module</span><span class="p">[</span><span class="s2">&quot;loadSplitModule&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">deferred</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Custom handler for loading split module.&#39;</span><span class="p">);</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Called with placeholder &#39;</span><span class="p">,</span> <span class="n">prop</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">instantiateSync</span><span class="p">(</span><span class="n">deferred</span><span class="p">,</span> <span class="n">imports</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the module was eagerly loaded, then this hook could simply instantiate the
+module rather than fetching and compiling it as well. However, if the eagerly
+loaded module is instantiated eagerly as well, the placeholder functions will be
+patched out and never called in the first place, so this custom hook will never
+be called either.</p>
+<p>When eagerly instantiating the secondary module, the imports object should be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="n">wasmExports</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h2>
+<p>wasm-split has several options to make debugging split modules easier.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">-v</span></code></dt><dd><p>When splitting, print the primary and secondary functions. When merging
+profiles, print profiles that do not contribute to the merged profile.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-g</span></code></dt><dd><p>Preserve names in both the primary and secondary modules. Without this option,
+wasm-split will strip the names instead.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--emit-module-names</span></code></dt><dd><p>Generate and emit module names to differentiate the primary and secondary
+module in stack traces, even if -g is not used.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--symbolmap</span></code></dt><dd><p>Emit separate map files for the primary and secondary modules, mapping
+function indices to function names. When combined with –emit-module-names,
+these maps can be used to re-symbolify stack traces. To ensure that the
+function names are available for wasm-split to emit into the maps,
+pass –profiling-funcs to Emscripten.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--placeholdermap</span></code></dt><dd><p>Emit a map file mapping placeholder function indices to their corresponding
+secondary functions. This can be useful for figuring out what function caused
+the secondary module to be loaded.</p>
+</dd>
+</dl>
+</section>
+<section id="upcoming-changes">
+<h2>Upcoming Changes<a class="headerlink" href="#upcoming-changes" title="Link to this heading">¶</a></h2>
+<p><em>A list of changes and new features that have not yet been incorporated into
+this documentation.</em></p>
+<p>Work is planned on an integration with the Asyncify instrumentation that will
+allow the secondary module to be asynchronously loaded on the main browser
+thread.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+     
+  <!--begin hamishw addition -->
+  
+    
+  
+  <!--  -->
+   
+   <!--Footer important links
+    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+	displayed.   -->
+
+	
+   <div class="footer-nav-bar" style="">
+     <div class="footer-options">
+   
+        
+              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
+        
+              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
+        
+              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
+         
+		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
+         
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
+        
+              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
+        
+              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
+        
+              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
+         
+				
+     </div>
+	 
+	
+ 
+   </div>
+  
+    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Module Splitting</div>
+  </div>
+ 
+</div> -->
+  
+    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
+   <!--end hamishw addition -->
+  
+  
+	  
+<!-- end section moved here by hamishw -->
+  <div role="contentinfo" class="copyright-box">
+    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
+  <ul class="wy-breadcrumbs">
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+
+	  <li class="wy-breadcrumbs-aside">
+         <a href="../site/about.html">About site</a>
+      </li>
+	  
+	  <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Module%20Splitting%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/optimizing/Module-Splitting&labels=bug">Page bug</a>
+      </li>
+  </ul>
+  
+    <p>
+        <!-- &copy; Copyright 2015, . -->
+		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
+		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
+    </p>
+	
+  </div>
+  
+  
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+</div>
+</body>
+</html>

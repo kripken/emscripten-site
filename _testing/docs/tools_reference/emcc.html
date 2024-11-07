@@ -1,0 +1,788 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emscripten Compiler Frontend (emcc) &mdash; Emscripten 3.1.72-git (dev) documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
+
+  
+    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=27485112"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Emscripten Windows Command Prompt (emcmdprompt.bat)" href="emcmdprompt.html" />
+    <link rel="prev" title="Emscripten SDK (emsdk)" href="emsdk.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+<div class="grid-to-center-rtd-theme"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            <!-- <img src="../..//_static/" alt="Logo"> -->
+            
+              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tools Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Emscripten Compiler Frontend (emcc)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-line-syntax">Command line syntax</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#arguments">Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings_reference.html">Emscripten Compiler Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <!-- <a href="../../index.html">Emscripten</a> -->
+          <a href="../../index.html"> <img src="../..//_static/" alt="Logo" /> </a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+        <!--begin hamishw addition -->
+
+        <!--Nav bar defined as a document followed by short version of nav text and long version
+            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+          displayed.   -->
+        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
+  
+        <div class="main-nav-bar" style="">   
+
+          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
+        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
+
+        <ul id="menu-options">
+             
+                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
+             
+                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
+             
+                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
+             
+                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
+                	
+          </ul>
+        <!-- <div style="clear:both;"></div> -->        
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Tools Reference</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Compiler Frontend (emcc)</div>
+  </div>
+ 
+</div>
+   </div>
+   <!--end hamishw addition -->		
+          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Tools Reference</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Compiler Frontend (emcc)</div>
+  </div>
+ 
+</div> -->
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="emscripten-compiler-frontend-emcc">
+<span id="emccdoc"></span><h1>Emscripten Compiler Frontend (emcc)<a class="headerlink" href="#emscripten-compiler-frontend-emcc" title="Link to this heading">¶</a></h1>
+<p>The Emscripten Compiler Frontend (<code class="docutils literal notranslate"><span class="pre">emcc</span></code>) is used to call the Emscripten compiler from the command line. It is effectively a drop-in replacement for a standard compiler like <em>gcc</em> or <em>clang</em>.</p>
+<section id="command-line-syntax">
+<h2>Command line syntax<a class="headerlink" href="#command-line-syntax" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">file</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>(Note that you will need <code class="docutils literal notranslate"><span class="pre">./emcc</span></code> if you want to run emcc from your current directory.)</p>
+<p>The input file(s) can be either source code files that <em>Clang</em> can handle (C or
+C++), object files (produced by <cite>emcc -c</cite>), or LLVM assembly files.</p>
+<section id="arguments">
+<h3>Arguments<a class="headerlink" href="#arguments" title="Link to this heading">¶</a></h3>
+<p>Most <a class="reference external" href="http://linux.die.net/man/1/clang">clang options</a> will work, as will <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html#Option-Summary">gcc options</a>, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display this information</span>
+<span class="n">emcc</span> <span class="o">--</span><span class="n">help</span>
+
+<span class="c1"># Display compiler version information</span>
+<span class="n">emcc</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
+</div>
+<p>To see the full list of <em>Clang</em> options supported on the version of <em>Clang</em> used by Emscripten, run <code class="docutils literal notranslate"><span class="pre">clang</span> <span class="pre">--help</span></code>.</p>
+<p>Options that are modified or new in <em>emcc</em> are listed below:</p>
+<span id="emcc-compiler-optimization-options"></span><dl id="emcc-o0">
+<dt><code class="docutils literal notranslate"><span class="pre">-O0</span></code></dt><dd><p>[compile+link]
+No optimizations (default). This is the recommended setting for starting to port a project, as it includes various assertions.</p>
+<p>This and other optimization settings are meaningful both during compile and
+during link. During compile it affects LLVM optimizations, and during link it
+affects final optimization of the code in Binaryen as well as optimization of
+the JS. (For fast incremental builds <code class="docutils literal notranslate"><span class="pre">-O0</span></code> is best, while for release you
+should link with something higher.)</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-o1">
+<dt><code class="docutils literal notranslate"><span class="pre">-O1</span></code></dt><dd><p>[compile+link]
+Simple optimizations. During the compile step these include LLVM <code class="docutils literal notranslate"><span class="pre">-O1</span></code> optimizations. During the link step this does not include various runtime assertions in JS that <cite>-O0</cite> would do.</p>
+</dd>
+</dl>
+<dl id="emcc-o2">
+<dt><code class="docutils literal notranslate"><span class="pre">-O2</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>, but enables more optimizations. During link this will also enable various JavaScript optimizations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These JavaScript optimizations can reduce code size by removing things that the compiler does not see being used, in particular, parts of the runtime may be stripped if they are not exported on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object. The compiler is aware of code in <a class="reference internal" href="#emcc-pre-js"><span class="std std-ref">–pre-js</span></a> and <a class="reference internal" href="#emcc-post-js"><span class="std std-ref">–post-js</span></a>, so you can safely use the runtime from there. Alternatively, you can use <code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code>, see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/settings.js">src/settings.js</a>.</p>
+</div>
+</dd>
+</dl>
+<dl id="emcc-o3">
+<dt><code class="docutils literal notranslate"><span class="pre">-O3</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but with additional optimizations that may take longer to run.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a good setting for a release build.</p>
+</div>
+</dd>
+</dl>
+<dl class="simple" id="emcc-og">
+<dt><code class="docutils literal notranslate"><span class="pre">-Og</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>. In future versions, this option might disable different
+optimizations in order to improve debuggability.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-os">
+<dt><code class="docutils literal notranslate"><span class="pre">-Os</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-O3</span></code>, but focuses more on code size (and may make tradeoffs with speed). This can affect both Wasm and JavaScript.</p>
+</dd>
+</dl>
+<dl id="emcc-oz">
+<dt><code class="docutils literal notranslate"><span class="pre">-Oz</span></code></dt><dd><p>[compile+link]
+Like <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, but reduces code size even further, and may take longer to run. This can affect both Wasm and JavaScript.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more tips on optimizing your code, see <a class="reference internal" href="../optimizing/Optimizing-Code.html#optimizing-code"><span class="std std-ref">Optimizing Code</span></a>.</p>
+</div>
+</dd>
+</dl>
+<dl id="emcc-s-option-value">
+<dt><code class="docutils literal notranslate"><span class="pre">-sOPTION[=VALUE]</span></code></dt><dd><p>[different OPTIONs affect at different stages, most at link time]
+Emscripten build options. For the available options, see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/settings.js">src/settings.js</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If no value is specified it will default to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is possible, with boolean options, to use the <code class="docutils literal notranslate"><span class="pre">NO_</span></code> prefix to reverse their meaning. For example, <code class="docutils literal notranslate"><span class="pre">-sEXIT_RUNTIME=0</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">-sNO_EXIT_RUNTIME=1</span></code> and vice versa.  This is not recommended in most cases.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Lists can be specified as comma separated strings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">foo</span><span class="p">,</span><span class="n">bar</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We also support older list formats that involve more quoting.  Lists can be specified with or without quotes around each element and with or without brackets around the list.  For example, all the following are equivalent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="s2">&quot;bar&quot;</span>
+<span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="s2">&quot;bar&quot;</span><span class="p">]</span>
+<span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="p">[</span><span class="n">foo</span><span class="p">,</span><span class="n">bar</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For lists that include brackets or quote, you need quotation marks (”) around the list in most shells (to avoid errors being raised). Two examples are shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="s2">&quot;[&#39;liblib.so&#39;]&quot;</span>
+<span class="o">-</span><span class="n">s</span><span class="s2">&quot;EXPORTED_FUNCTIONS=[&#39;liblib.so&#39;]&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>You can also specify that the value of an option will be read from a file. For example, the following will set <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> based on the contents of the file at <strong>path/to/file</strong>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=@/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">file</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>In this case the file should contain a list of symbols, one per line.  For legacy use cases JSON-formatted files are also supported: e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;_func1&quot;,</span> <span class="pre">&quot;func2&quot;]</span></code>.</p></li>
+<li><p>The specified file path must be absolute, not relative.</p></li>
+<li><p>The file may contain comments where the first character of the line is <code class="docutils literal notranslate"><span class="pre">'#'</span></code>.</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Options can be specified as a single argument with or without a space
+between the <code class="docutils literal notranslate"><span class="pre">-s</span></code> and option name.  e.g. <code class="docutils literal notranslate"><span class="pre">-sFOO</span></code> or <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">FOO</span></code>.
+It’s <a class="reference external" href="https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-specify-s-options-in-a-cmake-project">highly recommended</a> you use the notation without space.</p>
+</div>
+</dd>
+</dl>
+<dl class="simple" id="emcc-g">
+<dt><code class="docutils literal notranslate"><span class="pre">-g</span></code></dt><dd><p>[compile+link]
+Preserve debug information.</p>
+<ul class="simple">
+<li><p>When compiling to object files, this is the same as in <em>Clang</em> and <em>gcc</em>, it
+adds DWARF debug information to the object files.</p></li>
+<li><p>When linking, this is equivalent to <a class="reference internal" href="#emcc-g3"><span class="std std-ref">-g3</span></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="emcc-gseparate-dwarf">
+<dt><code class="docutils literal notranslate"><span class="pre">-gseparate-dwarf[=FILENAME]</span></code></dt><dd><p>[same as -g3 if passed at compile time, otherwise applies at link]
+Preserve debug information, but in a separate file on the side. This is the
+same as <code class="docutils literal notranslate"><span class="pre">-g</span></code>, but the main file will contain no debug info. Instead, debug
+info will be present in a file on the side, in <code class="docutils literal notranslate"><span class="pre">FILENAME</span></code> if provided,
+otherwise the same as the Wasm file but with suffix <code class="docutils literal notranslate"><span class="pre">.debug.wasm</span></code>. While
+the main file contains no debug info, it does contain a URL to where the
+debug file is, so that devtools can find it. You can use
+<code class="docutils literal notranslate"><span class="pre">-sSEPARATE_DWARF_URL=URL</span></code> to customize that location (this is useful if
+you want to host it on a different server, for example).</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-gsplit-dwarf">
+<dt><code class="docutils literal notranslate"><span class="pre">-gsplit-dwarf</span></code></dt><dd><p>Enable debug fission, which creates split DWARF object files alongside the
+wasm object files. This option must be used together with <code class="docutils literal notranslate"><span class="pre">-c</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-gsource-map">
+<dt><code class="docutils literal notranslate"><span class="pre">-gsource-map</span></code></dt><dd><p>[link]
+Generate a source map using LLVM debug information (which must
+be present in object files, i.e., they should have been compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code>).
+When this option is provided, the <strong>.wasm</strong> file is updated to have a
+<code class="docutils literal notranslate"><span class="pre">sourceMappingURL</span></code> section. The resulting URL will have format:
+<code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;wasm-file-name&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">.map</span></code>. <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> defaults
+to being empty (which means the source map is served from the same directory
+as the Wasm file). It can be changed using <a class="reference internal" href="#emcc-source-map-base"><span class="std std-ref">–source-map-base</span></a>.</p>
+</dd>
+</dl>
+<dl id="emcc-gn">
+<dt><code class="docutils literal notranslate"><span class="pre">-g&lt;level&gt;</span></code></dt><dd><p>[compile+link]
+Controls the level of debuggability. Each level builds on the previous one:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p id="emcc-g0"><code class="docutils literal notranslate"><span class="pre">-g0</span></code>: Make no effort to keep code debuggable.</p>
+</li>
+<li><p id="emcc-g1"><code class="docutils literal notranslate"><span class="pre">-g1</span></code>: When linking, preserve whitespace in JavaScript.</p>
+</li>
+<li><p id="emcc-g2"><code class="docutils literal notranslate"><span class="pre">-g2</span></code>: When linking, preserve function names in compiled code.</p>
+</li>
+<li><p id="emcc-g3"><code class="docutils literal notranslate"><span class="pre">-g3</span></code>: When compiling to object files, keep debug info, including JS whitespace, function names, and LLVM debug info (DWARF) if any (this is the same as <a class="reference internal" href="#emcc-g"><span class="std std-ref">-g</span></a>).</p>
+</li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="simple" id="emcc-profiling">
+<dt><code class="docutils literal notranslate"><span class="pre">--profiling</span></code></dt><dd><p>[same as -g2 if passed at compile time, otherwise applies at link]
+Use reasonable defaults when emitting JavaScript to make the build readable but still useful for profiling. This sets <code class="docutils literal notranslate"><span class="pre">-g2</span></code> (preserve whitespace and function names) and may also enable optimizations that affect performance and otherwise might not be performed in <code class="docutils literal notranslate"><span class="pre">-g2</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-profiling-funcs">
+<dt><code class="docutils literal notranslate"><span class="pre">--profiling-funcs</span></code></dt><dd><p>[link]
+Preserve function names in profiling, but otherwise minify whitespace and names as we normally do in optimized builds. This is useful if you want to look at profiler results based on function names, but do <em>not</em> intend to read the emitted code.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--tracing</span></code></dt><dd><p>[link]
+Enable the <a class="reference internal" href="../api_reference/trace.h.html#trace-h"><span class="std std-ref">Emscripten Tracing API</span></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--reproduce=&lt;file.tar&gt;</span></code></dt><dd><p>[compile+link]
+Write tar file containing inputs and command to reproduce invocation.  When
+sharing this file be aware that it will any object files, source files and
+libraries that that were passed to the compiler.</p>
+</dd>
+</dl>
+<dl id="emcc-emit-symbol-map">
+<dt><code class="docutils literal notranslate"><span class="pre">--emit-symbol-map</span></code></dt><dd><p>[link]
+Save a map file between function indexes in the Wasm and function names. By
+storing the names on a file on the side, you can avoid shipping the names, and
+can still reconstruct meaningful stack traces by translating the indexes back
+to the names.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When used with <code class="docutils literal notranslate"><span class="pre">-sWASM=2</span></code>, two symbol files are created. <code class="docutils literal notranslate"><span class="pre">[name].js.symbols</span></code> (with WASM symbols) and <code class="docutils literal notranslate"><span class="pre">[name].wasm.js.symbols</span></code> (with ASM.js symbols)</p>
+</div>
+</dd>
+</dl>
+<dl class="simple" id="emcc-emit-minification-map">
+<dt><code class="docutils literal notranslate"><span class="pre">--emit-minification-map</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+In cases where emscripten performs import/export minificiton this option can
+be used to output a file that maps minified names back to their original
+names.  The format of this file is single line per import/export of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;minname&gt;:&lt;origname&gt;</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-lto">
+<dt><code class="docutils literal notranslate"><span class="pre">-flto</span></code></dt><dd><p>[compile+link]
+Enables link-time optimizations (LTO).</p>
+</dd>
+</dl>
+<dl id="emcc-closure">
+<dt><code class="docutils literal notranslate"><span class="pre">--closure</span> <span class="pre">0|1|2</span></code></dt><dd><p>[link]
+Runs the <a class="reference internal" href="../site/glossary.html#term-Closure-Compiler"><span class="xref std std-term">Closure Compiler</span></a>. Possible values are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: No closure compiler (default in <code class="docutils literal notranslate"><span class="pre">-O2</span></code> and below).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>: Run closure compiler. This greatly reduces the size of the support JavaScript code (everything but the WebAssembly or asm.js). Note that this increases compile time significantly.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2</span></code>: Run closure compiler on <em>all</em> the emitted code, even on <strong>asm.js</strong> output in <strong>asm.js</strong> mode. This can further reduce code size, but does prevent a significant amount of <strong>asm.js</strong> optimizations, so it is not recommended unless you want to reduce code size at all costs.</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Consider using <code class="docutils literal notranslate"><span class="pre">-sMODULARIZE</span></code> when using closure, as it minifies globals to names that might conflict with others in the global scope. <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> puts all the output into a function (see <code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code>).</p></li>
+<li><p>Closure will minify the name of <cite>Module</cite> itself, by default! Using <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> will solve that as well. Another solution is to make sure a global variable called <cite>Module</cite> already exists before the closure-compiled code runs, because then it will reuse that variable.</p></li>
+<li><p>Closure is only run if JavaScript opts are being done (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> or above).</p></li>
+</ul>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--closure-args=&lt;args&gt;</span></code></dt><dd><p>[link]
+Pass arguments to the <a class="reference internal" href="../site/glossary.html#term-Closure-Compiler"><span class="xref std std-term">Closure compiler</span></a>. This is an alternative to <code class="docutils literal notranslate"><span class="pre">EMCC_CLOSURE_ARGS</span></code>.</p>
+<p>For example, one might want to pass an externs file to avoid minifying JS functions defined in <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> or <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> files.
+To pass to Closure the <code class="docutils literal notranslate"><span class="pre">externs.js</span></code> file containing those public APIs that should not be minified, one would add the flag:
+<code class="docutils literal notranslate"><span class="pre">--closure-args=--externs=path/to/externs.js</span></code></p>
+</dd>
+</dl>
+<dl id="emcc-pre-js">
+<dt><code class="docutils literal notranslate"><span class="pre">--pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Specify a file whose contents are added before the emitted code and optimized together with it. Note that this might not literally be the very first thing in the JS output, for example if <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> is used (see <code class="docutils literal notranslate"><span class="pre">src/settings.js</span></code>). If you want that, you can just prepend to the output from emscripten; the benefit of <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> is that it optimizes the code with the rest of the emscripten output, which allows better dead code elimination and minification, and it should only be used for that purpose. In particular, <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> code should not alter the main output from emscripten in ways that could confuse the optimizer, such as using <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> + <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> to put all the output in an inner function scope (see <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> for that).</p>
+<p><cite>–pre-js</cite> (but not <cite>–post-js</cite>) is also useful for specifying things on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object, as it appears before the JS looks at <code class="docutils literal notranslate"><span class="pre">Module</span></code> (for example, you can define <code class="docutils literal notranslate"><span class="pre">Module['print']</span></code> there).</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-post-js">
+<dt><code class="docutils literal notranslate"><span class="pre">--post-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Like <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>, but emits a file <em>after</em> the emitted code.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Specify a file whose contents are prepended to the JavaScript output. This
+file is prepended to the final JavaScript output, <em>after</em> all other
+work has been done, including optimization, optional <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code>-ation,
+instrumentation like <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code>, etc. This is the same as prepending
+this file after <code class="docutils literal notranslate"><span class="pre">emcc</span></code> finishes running, and is just a convenient
+way to do that. (For comparison, <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> and <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> optimize the
+code together with everything else, keep it in the same scope if running
+<cite>MODULARIZE</cite>, etc.).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--extern-post-js</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Like <code class="docutils literal notranslate"><span class="pre">--extern-pre-js</span></code>, but appends to the end.</p>
+</dd>
+</dl>
+<dl id="emcc-embed-file">
+<dt><code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">&lt;file&gt;</span></code></dt><dd><p>[link]
+Specify a file (with path) to embed inside the generated WebAssembly module.
+The path is relative to the current directory at compile time. If a directory
+is passed here, its entire contents will be embedded.</p>
+<p>For example, if the command includes <code class="docutils literal notranslate"><span class="pre">--embed-file</span> <span class="pre">dir/file.dat</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">dir/file.dat</span></code> must exist relative to the directory where you run <em>emcc</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Embedding files is generally more efficient than <a class="reference internal" href="#emcc-preload-file"><span class="std std-ref">preloading</span></a> as it avoids copying the file data at runtime.</p>
+</div>
+<p>For more information about the <code class="docutils literal notranslate"><span class="pre">--embed-file</span></code> options, see
+<a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
+</dd>
+</dl>
+<dl id="emcc-preload-file">
+<dt><code class="docutils literal notranslate"><span class="pre">--preload-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>[link]
+Specify a file to preload before running the compiled code asynchronously. The
+path is relative to the current directory at compile time. If a directory is
+passed here, its entire contents will be embedded.</p>
+<p>Preloaded files are stored in <strong>filename.data</strong>, where <strong>filename.html</strong> is
+the main file you are compiling to. To run your code, you will need both the
+<strong>.html</strong> and the <strong>.data</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This option is similar to <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a>,
+except that it is only relevant when generating HTML (it uses asynchronous
+binary <a class="reference internal" href="../site/glossary.html#term-XHR"><span class="xref std std-term">XHRs</span></a>), or JavaScript that will be used in a web page.</p>
+</div>
+<p><em>emcc</em> runs <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tools/file_packager.py">tools/file_packager</a>
+to do the actual packaging of embedded and preloaded files. You can run the
+file packager yourself if you want (see <a class="reference internal" href="../porting/files/packaging_files.html#packaging-files-file-packager"><span class="std std-ref">Packaging using the file packager tool</span></a>).
+You should then put the output of the file packager in an emcc <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>,
+so that it executes before your main compiled code.</p>
+<p>For more information about the <code class="docutils literal notranslate"><span class="pre">--preload-file</span></code> options, see
+<a class="reference internal" href="../porting/files/packaging_files.html#packaging-files"><span class="std std-ref">Packaging Files</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-exclude-file">
+<dt><code class="docutils literal notranslate"><span class="pre">--exclude-file</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>[link]
+Files and directories to be excluded from <a class="reference internal" href="#emcc-embed-file"><span class="std std-ref">–embed-file</span></a> and <a class="reference internal" href="#emcc-preload-file"><span class="std std-ref">–preload-file</span></a>. Wildcards (*) are supported.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code></dt><dd><p>[link]
+Tells the file packager to run preload plugins on the files as they are loaded. This performs tasks like decoding images and audio using the browser’s codecs.</p>
+</dd>
+</dl>
+<dl id="emcc-shell-file">
+<dt><code class="docutils literal notranslate"><span class="pre">--shell-file</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[link]
+The path name to a skeleton HTML file used when generating HTML output. The shell file used needs to have this token inside it: <code class="docutils literal notranslate"><span class="pre">{{{</span> <span class="pre">SCRIPT</span> <span class="pre">}}}</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/shell.html">src/shell.html</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/shell_minimal.html">src/shell_minimal.html</a> for examples.</p></li>
+<li><p>This argument is ignored if a target other than HTML is specified using the <code class="docutils literal notranslate"><span class="pre">-o</span></code> option.</p></li>
+</ul>
+</div>
+</dd>
+</dl>
+<dl class="simple" id="emcc-source-map-base">
+<dt><code class="docutils literal notranslate"><span class="pre">--source-map-base</span> <span class="pre">&lt;base-url&gt;</span></code></dt><dd><p>[link]
+The base URL for the location where WebAssembly source maps will be published. Must be used
+with <a class="reference internal" href="#emcc-gsource-map"><span class="std std-ref">-gsource-map</span></a>.</p>
+</dd>
+</dl>
+<dl id="emcc-minify">
+<dt><code class="docutils literal notranslate"><span class="pre">--minify</span> <span class="pre">0</span></code></dt><dd><p>[same as -g1 if passed at compile time, otherwise applies at link]
+Identical to <code class="docutils literal notranslate"><span class="pre">-g1</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--js-transform</span> <span class="pre">&lt;cmd&gt;</span></code></dt><dd><p>[link]
+Specifies a <code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> to be called on the generated code before it is optimized. This lets you modify the JavaScript, for example adding or removing some code, in a way that those modifications will be optimized together with the generated code.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> will be called with the file name of the generated code as a parameter. To modify the code, you can read the original data and then append to it or overwrite it with the modified data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> is interpreted as a space-separated list of arguments, for example, <code class="docutils literal notranslate"><span class="pre">&lt;cmd&gt;</span></code> of <strong>python processor.py</strong> will cause a Python script to be run.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-bind">
+<dt><code class="docutils literal notranslate"><span class="pre">--bind</span></code></dt><dd><p>[link]
+Links against embind library.  Deprecated: Use <code class="docutils literal notranslate"><span class="pre">-lembind</span></code> instead.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-embind-emit-tsd">
+<dt><code class="docutils literal notranslate"><span class="pre">--embind-emit-tsd</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[link]
+Generates TypeScript definition file.  Deprecated: Use <code class="docutils literal notranslate"><span class="pre">--emit-tsd</span></code> instead.</p>
+</dd>
+</dl>
+<dl id="emcc-emit-tsd">
+<dt><code class="docutils literal notranslate"><span class="pre">--emit-tsd</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[link]
+Generate a TypeScript definition file for the emscripten module. The definition
+file will include exported Wasm functions, runtime exports, and exported
+embind bindings (if used). In order to generate bindings from embind, the
+program will be instrumented and run in node.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--ignore-dynamic-linking</span></code></dt><dd><p>[link]
+Tells the compiler to ignore dynamic linking (the user will need to manually link to the shared libraries later on).</p>
+<p>Normally <em>emcc</em> will simply link in code from the dynamic library as though it were statically linked, which will fail if the same dynamic library is linked more than once. With this option, dynamic linking is ignored, which allows the build system to proceed without errors.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-js-library">
+<dt><code class="docutils literal notranslate"><span class="pre">--js-library</span> <span class="pre">&lt;lib&gt;</span></code></dt><dd><p>[link]
+A JavaScript library to use in addition to those in Emscripten’s core libraries (src/library_*).</p>
+</dd>
+</dl>
+<dl id="emcc-verbose">
+<dt><code class="docutils literal notranslate"><span class="pre">-v</span></code></dt><dd><p>[general]
+Turns on verbose output.</p>
+<p>This will print the internal sub-commands run by emscripten as well as <code class="docutils literal notranslate"><span class="pre">-v</span></code>
+to <em>Clang</em>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">-v</span></code> is a useful tool for diagnosing errors. It works with or without other arguments.</p>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--check</span></code></dt><dd><p>[general]
+Runs Emscripten’s internal sanity checks and reports any issues with the
+current configuration.</p>
+</dd>
+</dl>
+<dl id="emcc-cache">
+<dt><code class="docutils literal notranslate"><span class="pre">--cache</span> <span class="pre">&lt;directory&gt;</span></code></dt><dd><p>[general]
+Sets the directory to use as the Emscripten cache. The Emscripten cache
+is used to store pre-built versions of <code class="docutils literal notranslate"><span class="pre">libc</span></code>, <code class="docutils literal notranslate"><span class="pre">libcxx</span></code> and other
+libraries.</p>
+<p>If using this in combination with <code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code>, be sure to specify
+this argument first.</p>
+<p>The Emscripten cache defaults to <code class="docutils literal notranslate"><span class="pre">emscripten/cache</span></code> but can be overridden
+using the <code class="docutils literal notranslate"><span class="pre">EM_CACHE</span></code> environment variable or <code class="docutils literal notranslate"><span class="pre">CACHE</span></code> config setting.</p>
+</dd>
+</dl>
+<dl id="emcc-clear-cache">
+<dt><code class="docutils literal notranslate"><span class="pre">--clear-cache</span></code></dt><dd><p>[general]
+Manually clears the cache of compiled Emscripten system libraries (libc++,
+libc++abi, libc).</p>
+<p>This is normally handled automatically, but if you update LLVM in-place
+(instead of having a different directory for a new version), the caching
+mechanism can get confused. Clearing the cache can fix weird problems related
+to cache incompatibilities, like <em>Clang</em> failing to link with library files.
+This also clears other cached data. After the cache is cleared, this process
+will exit.</p>
+<p>By default this will also clear any download ports since the ports directory
+is usually within the cache directory.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-use-port">
+<dt><code class="docutils literal notranslate"><span class="pre">--use-port=&lt;port&gt;</span></code></dt><dd><p>[compile+link]
+Use the specified port. If you need to use more than one port you can use
+this option multiple times (ex: <code class="docutils literal notranslate"><span class="pre">--use-port=sdl2</span> <span class="pre">--use-port=bzip2</span></code>). A port
+can have options separated by <code class="docutils literal notranslate"><span class="pre">:</span></code>
+(ex: <code class="docutils literal notranslate"><span class="pre">--use-port=sdl2_image:formats=png,jpg</span></code>). To use an  external port,
+you provide the path to the port directly
+(ex: <code class="docutils literal notranslate"><span class="pre">--use-port=/path/to/my_port.py</span></code>). To get more information about a
+port, use the <code class="docutils literal notranslate"><span class="pre">help</span></code> option (ex: <code class="docutils literal notranslate"><span class="pre">--use-port=sdl2_image:help</span></code>).
+To get the list of available ports, use <code class="docutils literal notranslate"><span class="pre">--show-ports</span></code>.</p>
+</dd>
+</dl>
+<dl id="emcc-clear-ports">
+<dt><code class="docutils literal notranslate"><span class="pre">--clear-ports</span></code></dt><dd><p>[general]
+Manually clears the local copies of ports from the Emscripten Ports repos
+(sdl2, etc.). This also clears the cache, to remove their builds.</p>
+<p>You should only need to do this if a problem happens and you want all ports
+that you use to be downloaded and built from scratch. After this operation is
+complete, this process will exit.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-show-ports">
+<dt><code class="docutils literal notranslate"><span class="pre">--show-ports</span></code></dt><dd><p>[general]
+Shows the list of available projects in the Emscripten Ports repos. After this operation is complete, this process will exit.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">-Wwarn-absolute-paths</span></code></dt><dd><p>[compile+link]
+Enables warnings about the use of absolute paths in <code class="docutils literal notranslate"><span class="pre">-I</span></code> and <code class="docutils literal notranslate"><span class="pre">-L</span></code> command line directives. This is used to warn against unintentional use of absolute paths, which is sometimes dangerous when referring to nonportable local system headers.</p>
+</dd>
+</dl>
+<dl class="simple" id="proxy-to-worker">
+<dt><code class="docutils literal notranslate"><span class="pre">--proxy-to-worker</span></code></dt><dd><p>[link]
+Runs the main application code in a worker, proxying events to it and output from it. If emitting HTML, this emits a <strong>.html</strong> file, and a separate <strong>.js</strong> file containing the JavaScript to be run in a worker. If emitting JavaScript, the target file name contains the part to be run on the main thread, while a second <strong>.js</strong> file with suffix “.worker.js” will contain the worker portion.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-emrun">
+<dt><code class="docutils literal notranslate"><span class="pre">--emrun</span></code></dt><dd><p>[link]
+Enables the generated output to be aware of the <a class="reference internal" href="../compiling/Running-html-files-with-emrun.html#running-html-files-with-emrun"><span class="std std-ref">emrun</span></a> command line tool. This allows <code class="docutils literal notranslate"><span class="pre">stdout</span></code>, <code class="docutils literal notranslate"><span class="pre">stderr</span></code> and <code class="docutils literal notranslate"><span class="pre">exit(returncode)</span></code> capture when running the generated application through <em>emrun</em>. (This enables <cite>EXIT_RUNTIME=1</cite>, allowing normal runtime exiting with return code passing.)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--cpuprofiler</span></code></dt><dd><p>[link]
+Embeds a simple CPU profiler onto the generated page. Use this to perform cursory interactive performance profiling.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--memoryprofiler</span></code></dt><dd><p>[link]
+Embeds a memory allocation tracker onto the generated page. Use this to profile the application usage of the Emscripten HEAP.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--threadprofiler</span></code></dt><dd><p>[link]
+Embeds a thread activity profiler onto the generated page. Use this to profile the application usage of pthreads when targeting multithreaded builds (-pthread).</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-config">
+<dt><code class="docutils literal notranslate"><span class="pre">--em-config</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[general]
+Specifies the location of the <strong>.emscripten</strong> configuration file.  If not
+specified emscripten will search for <code class="docutils literal notranslate"><span class="pre">.emscripten</span></code> first in the emscripten
+directory itself, and then in the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/.emscripten</span></code>).
+This can be overridden using the <code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code> environment variable.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--valid-abspath</span> <span class="pre">&lt;path&gt;</span></code></dt><dd><p>[compile+link]
+Note an allowed absolute path, which we should not warn about (absolute
+include paths normally are warned about, since they may refer to the
+local system headers etc. which we need to avoid when cross-compiling).</p>
+</dd>
+</dl>
+<dl id="emcc-o-target">
+<dt><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">&lt;target&gt;</span></code></dt><dd><p>[link]
+When linking an executable, the <code class="docutils literal notranslate"><span class="pre">target</span></code> file name extension defines the output type to be generated:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&lt;name&gt; <strong>.js</strong> : JavaScript (+ separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly). (default)</p></li>
+<li><p>&lt;name&gt; <strong>.mjs</strong> : ES6 JavaScript module (+ separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly).</p></li>
+<li><p>&lt;name&gt; <strong>.html</strong> : HTML + separate JavaScript file (<strong>&lt;name&gt;.js</strong>; + separate <strong>&lt;name&gt;.wasm</strong> file if emitting WebAssembly).</p></li>
+<li><p>&lt;name&gt; <strong>.wasm</strong> : WebAssembly without JavaScript support code (“standalone Wasm”; this enables <code class="docutils literal notranslate"><span class="pre">STANDALONE_WASM</span></code>).</p></li>
+</ul>
+</div></blockquote>
+<p>These rules only apply when linking.  When compiling to object code (See <cite>-c</cite>
+below) the name of the output file is irrelevant.</p>
+</dd>
+</dl>
+<dl class="simple" id="emcc-c">
+<dt><code class="docutils literal notranslate"><span class="pre">-c</span></code></dt><dd><p>[compile]
+Tells <em>emcc</em> to emit an object file which can then be linked with other object files to produce an executable.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--output_eol</span> <span class="pre">windows|linux</span></code></dt><dd><p>[link]
+Specifies the line ending to generate for the text files that are outputted. If “–output_eol windows” is passed, the final output files will have Windows rn line endings in them. With “–output_eol linux”, the final generated files will be written with Unix n line endings.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--cflags</span></code></dt><dd><p>[other]
+Prints out the flags <code class="docutils literal notranslate"><span class="pre">emcc</span></code> would pass to <code class="docutils literal notranslate"><span class="pre">clang</span></code> to compile source code to object form. You can use this to invoke clang yourself, and then run <code class="docutils literal notranslate"><span class="pre">emcc</span></code> on those outputs just for the final linking+conversion to JS.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="environment-variables">
+<span id="emcc-environment-variables"></span><h2>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading">¶</a></h2>
+<p><em>emcc</em> is affected by several environment variables, as listed below:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EMMAKEN_JUST_CONFIGURE</span></code> [other]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_AUTODEBUG</span></code> [compile+link]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_CFLAGS</span></code> [compile+link]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_CORES</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG_SAVE</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_FORCE_STDLIBS</span></code> [link]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_ONLY_FORCED_STDLIBS</span></code> [link]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_LOCAL_PORTS</span></code> [compile+link]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_STDERR_FILE</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_CLOSURE_ARGS</span></code> [link] arguments to be passed to <em>Closure Compiler</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_STRICT</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EMCC_SKIP_SANITY_CHECK</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EM_IGNORE_SANITY</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EM_CONFIG</span></code> [general]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EM_LLVM_ROOT</span></code> [compile+link]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_EMCC_CCACHE</span></code> [general] Internal setting that is set to 1 by emsdk when integrating with ccache compiler frontend</p></li>
+</ul>
+</div></blockquote>
+<p>Search for ‘os.environ’ in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/emcc.py">emcc.py</a> to see how these are used. The most interesting is possibly <code class="docutils literal notranslate"><span class="pre">EMCC_DEBUG</span></code>, which forces the compiler to dump its build and temporary files to a temporary directory where they can be reviewed.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="emcmdprompt.html" class="btn btn-neutral float-right" title="Emscripten Windows Command Prompt (emcmdprompt.bat)"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="emsdk.html" class="btn btn-neutral" title="Emscripten SDK (emsdk)"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+     
+  <!--begin hamishw addition -->
+  
+    
+  
+  <!--  -->
+   
+   <!--Footer important links
+    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+	displayed.   -->
+
+	
+   <div class="footer-nav-bar" style="">
+     <div class="footer-options">
+   
+        
+              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
+        
+              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
+        
+              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
+         
+		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
+         
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
+        
+              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
+        
+              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
+        
+              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
+         
+				
+     </div>
+	 
+	
+ 
+   </div>
+  
+    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Tools Reference</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Emscripten Compiler Frontend (emcc)</div>
+  </div>
+ 
+</div> -->
+  
+    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
+   <!--end hamishw addition -->
+  
+  
+	  
+<!-- end section moved here by hamishw -->
+  <div role="contentinfo" class="copyright-box">
+    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
+  <ul class="wy-breadcrumbs">
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+
+	  <li class="wy-breadcrumbs-aside">
+         <a href="../site/about.html">About site</a>
+      </li>
+	  
+	  <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Emscripten%20Compiler%20Frontend%20%28emcc%29%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/tools_reference/emcc&labels=bug">Page bug</a>
+      </li>
+  </ul>
+  
+    <p>
+        <!-- &copy; Copyright 2015, . -->
+		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
+		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
+    </p>
+	
+  </div>
+  
+  
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+</div>
+</body>
+</html>

@@ -1,0 +1,1055 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interacting with code &mdash; Emscripten 3.1.72-git (dev) documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=6895f958" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=27485112"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Embind" href="embind.html" />
+    <link rel="prev" title="Connecting C++ and JavaScript" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+<div class="grid-to-center-rtd-theme"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            <!-- <img src="../../..//_static/" alt="Logo"> -->
+            
+              <img src="../../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introducing_emscripten/index.html">Introducing Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiling/index.html">Compiling and Running Projects</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Porting</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/index.html">Code Portability and Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Connecting C++ and JavaScript</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Interacting with code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#calling-compiled-c-functions-from-javascript-using-ccall-cwrap">Calling compiled C functions from JavaScript using ccall/cwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interacting-with-an-api-written-in-c-c-from-nodejs">Interacting with an API written in C/C++ from NodeJS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#call-compiled-c-c-code-directly-from-javascript">Call compiled C/C++ code “directly” from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#calling-javascript-from-c-c">Calling JavaScript from C/C++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implement-a-c-api-in-javascript">Implement a C API in JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#calling-javascript-functions-as-function-pointers-from-c">Calling JavaScript functions as function pointers from C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-signatures">Function Signatures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#access-memory-from-javascript">Access memory from JavaScript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#affect-execution-behaviour">Affect execution behaviour</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#environment-variables">Environment variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#binding-c-and-javascript-webidl-binder-and-embind">Binding C++ and JavaScript — WebIDL Binder and Embind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#binding-c-c-and-javascript-node-api">Binding C/C++ and JavaScript - Node-API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../files/index.html">Files and File Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../multimedia_and_graphics/index.html">Multimedia and Graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Audio.html">Audio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pthreads.html">Pthreads support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../networking.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#optimization-considerations">Optimization considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simd.html#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">C++ Exceptions Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asyncify.html">Asynchronous Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools_reference/index.html">Tools Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../building_from_source/index.html">Building Emscripten from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../site/about.html">About this site</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <!-- <a href="../../../index.html">Emscripten</a> -->
+          <a href="../../../index.html"> <img src="../../..//_static/" alt="Logo" /> </a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+        <!--begin hamishw addition -->
+
+        <!--Nav bar defined as a document followed by short version of nav text and long version
+            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+          displayed.   -->
+        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
+  
+        <div class="main-nav-bar" style="">   
+
+          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
+        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
+
+        <ul id="menu-options">
+             
+                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../../index.html">Documentation</a></li>
+             
+                   <li><a class="navlink-short" title="SDK" href="../../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../../getting_started/downloads.html">Downloads</a></li>
+             
+                   <li><a class="navlink-short" title="Help" href="../../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../../introducing_emscripten/community.html">Community</a></li>
+             
+                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../../index.html">GitHub</a><a class="navlink-long" title="" href="../../index.html"></a></li>
+                	
+          </ul>
+        <!-- <div style="clear:both;"></div> -->        
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="../index.html">&raquo;&nbsp;Porting</a>
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Connecting C++ and JavaScript</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Interacting with code</div>
+  </div>
+ 
+</div>
+   </div>
+   <!--end hamishw addition -->		
+          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="../index.html">&raquo;&nbsp;Porting</a>
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Connecting C++ and JavaScript</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Interacting with code</div>
+  </div>
+ 
+</div> -->
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="interacting-with-code">
+<span id="id1"></span><h1>Interacting with code<a class="headerlink" href="#interacting-with-code" title="Link to this heading">¶</a></h1>
+<p>Emscripten provides numerous methods to connect and interact between
+JavaScript and compiled C or C++:</p>
+<ul class="simple">
+<li><p>Call compiled <strong>C</strong> functions from normal JavaScript:</p>
+<ul>
+<li><p><a class="reference internal" href="#interacting-with-code-ccall-cwrap"><span class="std std-ref">Using ccall or cwrap</span></a>.</p></li>
+<li><p><a class="reference internal" href="#interacting-with-code-direct-function-calls"><span class="std std-ref">Using direct function calls</span></a> (faster but more complicated).</p></li>
+</ul>
+</li>
+<li><p>Call compiled <strong>C++</strong> classes from JavaScript using bindings
+created with:</p>
+<ul>
+<li><p><a class="reference internal" href="#interacting-with-code-binding-cpp"><span class="std std-ref">Embind or WebIDL-Binder</span></a></p></li>
+</ul>
+</li>
+<li><p>Call JavaScript functions from <strong>C/C++</strong>:</p>
+<ul>
+<li><p><a class="reference internal" href="#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Using emscripten_run_script()</span></a>.</p></li>
+<li><p><a class="reference internal" href="#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Using EM_JS()</span></a> (faster).</p></li>
+<li><p><a class="reference internal" href="#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Using EM_ASM()</span></a> (faster).</p></li>
+<li><p><a class="reference internal" href="#implement-c-in-javascript"><span class="std std-ref">Using a C API implemented in JavaScript</span></a>.</p></li>
+<li><p><a class="reference internal" href="#interacting-with-code-call-function-pointers-from-c"><span class="std std-ref">As function pointers from C</span></a>.</p></li>
+<li><p><a class="reference internal" href="embind.html#embind-val-guide"><span class="std std-ref">Using the Embind val class</span></a>.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#interacting-with-code-access-memory"><span class="std std-ref">Access compiled code memory from JavaScript</span></a>.</p></li>
+<li><p><a class="reference internal" href="#interacting-with-code-execution-behaviour"><span class="std std-ref">Affect execution behaviour</span></a>.</p></li>
+<li><p><a class="reference internal" href="#interacting-with-code-environment-variables"><span class="std std-ref">Access environment variables</span></a>.</p></li>
+</ul>
+<p>This article explains each of the methods listed above, and provides links
+to more detailed information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For information on how compiled code interacts with the browser
+environment, see <a class="reference internal" href="../emscripten-runtime-environment.html#emscripten-runtime-environment"><span class="std std-ref">Emscripten Runtime Environment</span></a>. For file system
+related manners, see the <a class="reference internal" href="../files/file_systems_overview.html#file-system-overview"><span class="std std-ref">File System Overview</span></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before you can call your code, the runtime environment may need
+to load a memory initialization file, preload files, or
+do other asynchronous operations depending on optimization
+and build settings.
+See <a class="reference internal" href="../../getting_started/FAQ.html#faq-when-safe-to-call-compiled-functions"><span class="std std-ref">How can I tell when the page is fully loaded and it is safe to call compiled functions?</span></a> in the FAQ.</p>
+</div>
+<section id="calling-compiled-c-functions-from-javascript-using-ccall-cwrap">
+<span id="interacting-with-code-ccall-cwrap"></span><h2>Calling compiled C functions from JavaScript using ccall/cwrap<a class="headerlink" href="#calling-compiled-c-functions-from-javascript-using-ccall-cwrap" title="Link to this heading">¶</a></h2>
+<p>The easiest way to call compiled C functions from JavaScript is to use
+<a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> or <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a>.</p>
+<p><a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> calls a compiled C function with specified parameters
+and returns the result, while <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a> “wraps” a compiled C
+function and returns a JavaScript function you can call normally.
+<a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a> is therefore more useful if you plan to call a compiled
+function a number of times.</p>
+<p>Consider the <strong>test/hello_function.cpp</strong> file shown below. The
+<code class="docutils literal notranslate"><span class="pre">int_sqrt()</span></code> function to be compiled is wrapped in <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>
+to prevent C++ name mangling.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Copyright</span> <span class="mi">2012</span> <span class="n">The</span> <span class="n">Emscripten</span> <span class="n">Authors</span><span class="o">.</span>  <span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">Emscripten</span> <span class="ow">is</span> <span class="n">available</span> <span class="n">under</span> <span class="n">two</span> <span class="n">separate</span> <span class="n">licenses</span><span class="p">,</span> <span class="n">the</span> <span class="n">MIT</span> <span class="n">license</span> <span class="ow">and</span> <span class="n">the</span>
+<span class="o">//</span> <span class="n">University</span> <span class="n">of</span> <span class="n">Illinois</span><span class="o">/</span><span class="n">NCSA</span> <span class="n">Open</span> <span class="n">Source</span> <span class="n">License</span><span class="o">.</span>  <span class="n">Both</span> <span class="n">these</span> <span class="n">licenses</span> <span class="n">can</span> <span class="n">be</span>
+<span class="o">//</span> <span class="n">found</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">LICENSE</span> <span class="n">file</span><span class="o">.</span>
+
+<span class="c1">#include &lt;math.h&gt;</span>
+
+<span class="n">extern</span> <span class="s2">&quot;C&quot;</span> <span class="p">{</span>
+
+<span class="nb">int</span> <span class="n">int_sqrt</span><span class="p">(</span><span class="nb">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To compile this code run the following command in the Emscripten
+home directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">test</span><span class="o">/</span><span class="n">hello_function</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">function</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sEXPORTED_FUNCTIONS</span><span class="o">=</span><span class="n">_int_sqrt</span> <span class="o">-</span><span class="n">sEXPORTED_RUNTIME_METHODS</span><span class="o">=</span><span class="n">ccall</span><span class="p">,</span><span class="n">cwrap</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> tells the compiler what we want to be accessible from the
+compiled code (everything else might be removed if it is not used), and
+<code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code> tells the compiler that we want to use the runtime
+functions <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> (otherwise, it will not include them).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>EXPORTED_FUNCTIONS</cite> affects compilation to JavaScript. If you first compile to an object file,
+then compile the object to JavaScript, you need that option on the second command. If you do
+it all together as in the example here (source straight to JavaScript) then this just works,
+of course.</p>
+</div>
+<p>After compiling, you can call this function with <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a> using the
+following JavaScript:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">int_sqrt</span> <span class="o">=</span> <span class="n">Module</span><span class="o">.</span><span class="n">cwrap</span><span class="p">(</span><span class="s1">&#39;int_sqrt&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+<span class="n">int_sqrt</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">int_sqrt</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first parameter is the name of the function to be wrapped, the second is
+the return type of the function (or a JavaScript <cite>null</cite> value if there isn’t one), and the third is an array of parameter
+types (which may be omitted if there are no parameters). The types are
+“number” (for a JavaScript number corresponding to a C integer, float, or general
+pointer), “string” (for a JavaScript string that corresponds to a C <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represents a string) or
+“array” (for a JavaScript array or typed array that corresponds to a C array; for typed arrays, it must be a Uint8Array or Int8Array).</p>
+<p>You can run this yourself by first opening the generated page
+<strong>function.html</strong> in a web browser (nothing will happen on page
+load because there is no <code class="docutils literal notranslate"><span class="pre">main()</span></code>). Open a JavaScript environment
+(<strong>Control-Shift-K</strong> on Firefox, <strong>Control-Shift-J</strong> on Chrome),
+and enter the above commands as three separate commands, pressing
+<strong>Enter</strong> after each one. You should get the results <code class="docutils literal notranslate"><span class="pre">3</span></code> and
+<code class="docutils literal notranslate"><span class="pre">5</span></code> — the expected output for these inputs using C++ integer
+mathematics.</p>
+<p><a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> is similar, but receives another parameter with the
+parameters to pass to the function:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;int_sqrt&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// name of C function</span>
+<span class="w">  </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span>
+<span class="w">  </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span><span class="w"> </span><span class="c1">// argument types</span>
+<span class="w">  </span><span class="p">[</span><span class="mf">28</span><span class="p">]);</span><span class="w"> </span><span class="c1">// arguments</span>
+
+<span class="c1">// result is 5</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example illustrates a few other points, which you should remember
+when using <a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> or <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a>:</p>
+<ul class="simple">
+<li><p>These methods can be used with compiled <strong>C</strong> functions — name-mangled
+C++ functions won’t work.</p></li>
+<li><p>We highly recommended that you <em>export</em> functions that are to be called
+from JavaScript:</p>
+<ul>
+<li><p>Exporting is done at compile time. For example:
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_FUNCTIONS=_main,_other_function</span></code> exports
+<code class="docutils literal notranslate"><span class="pre">main()</span></code> and <code class="docutils literal notranslate"><span class="pre">other_function()</span></code>.</p></li>
+<li><p>Note that you need <code class="docutils literal notranslate"><span class="pre">_</span></code> at the
+beginning of the function names in the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list.</p></li>
+<li><p>Note that <code class="docutils literal notranslate"><span class="pre">_main</span></code> is mentioned in that list. If you don’t have it there,
+the compiler will eliminate it as dead code. The list of exported
+functions is the <strong>entire</strong> list that will be kept alive (unless other
+code was kept alive in another manner).</p></li>
+<li><p>Emscripten does <a class="reference internal" href="../../getting_started/FAQ.html#faq-dead-code-elimination"><span class="std std-ref">dead code elimination</span></a>
+to minimize code size — exporting ensures the functions you need
+aren’t removed.</p></li>
+<li><p>At higher optimisation levels (<code class="docutils literal notranslate"><span class="pre">-O2</span></code> and above), code is minified,
+including function names.
+Exporting functions allows you to continue to access them using the
+original name through the global <code class="docutils literal notranslate"><span class="pre">Module</span></code> object.</p></li>
+<li><p>If you want to export a JS library function (something from a
+<code class="docutils literal notranslate"><span class="pre">src/library*.js</span></code> file, for example), then in addition to
+<code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code>, you need to add it to <code class="docutils literal notranslate"><span class="pre">DEFAULT_LIBRARY_FUNCS_TO_INCLUDE</span></code>,
+as the latter will force the method to actually be included in
+the build.</p></li>
+</ul>
+</li>
+<li><p>The compiler will remove code it does not see is used, to improve code
+size. If you use <code class="docutils literal notranslate"><span class="pre">ccall</span></code> in a place it sees, like code in a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code>
+or <code class="docutils literal notranslate"><span class="pre">--post-js</span></code>, it will just work. If you use it in a place the compiler
+didn’t see, like another script tag on the HTML or in the JS console like
+we did in this tutorial, then because of optimizations
+and minification you should export ccall from the runtime, using
+<code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code>, for example using
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_RUNTIME_METHODS=ccall,cwrap</span></code>,
+and call it on <code class="docutils literal notranslate"><span class="pre">Module</span></code> (which contains
+everything exported, in a safe way that is not influenced by minification
+or optimizations).</p></li>
+</ul>
+</div>
+</section>
+<section id="interacting-with-an-api-written-in-c-c-from-nodejs">
+<h2>Interacting with an API written in C/C++ from NodeJS<a class="headerlink" href="#interacting-with-an-api-written-in-c-c-from-nodejs" title="Link to this heading">¶</a></h2>
+<p>Say you have a C library that exposes some procedures:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">//api_example.c</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
+
+<span class="n">EMSCRIPTEN_KEEPALIVE</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">sayHi</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hi!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">EMSCRIPTEN_KEEPALIVE</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">daysInWeek</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Compile the library with emcc:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc<span class="w"> </span>api_example.c<span class="w"> </span>-o<span class="w"> </span>api_example.js<span class="w"> </span>-sMODULARIZE<span class="w"> </span>-sEXPORTED_RUNTIME_METHODS<span class="o">=</span>ccall
+</pre></div>
+</div>
+<p>Require the library and call its procedures from node:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./api_example.js&#39;</span><span class="p">);</span>
+
+<span class="nx">factory</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">instance</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">instance</span><span class="p">.</span><span class="nx">_sayHi</span><span class="p">();</span><span class="w"> </span><span class="c1">// direct calling works</span>
+<span class="w">  </span><span class="nx">instance</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s2">&quot;sayHi&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// using ccall etc. also work</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">instance</span><span class="p">.</span><span class="nx">_daysInWeek</span><span class="p">());</span><span class="w"> </span><span class="c1">// values can be returned, etc.</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> option makes <code class="docutils literal notranslate"><span class="pre">emcc</span></code> emit code in a modular format that is
+easy to import and use with <code class="docutils literal notranslate"><span class="pre">require()</span></code>: <code class="docutils literal notranslate"><span class="pre">require()</span></code> of the module returns
+a factory function that can instantiate the compiled code, returning a
+<code class="docutils literal notranslate"><span class="pre">Promise</span></code> to tell us when it is ready, and giving us the instance of the
+module as a parameter.</p>
+<p>(Note that we use <code class="docutils literal notranslate"><span class="pre">ccall</span></code> here, so we need to add it to the exported runtime
+methods, as before.)</p>
+</section>
+<section id="call-compiled-c-c-code-directly-from-javascript">
+<span id="interacting-with-code-direct-function-calls"></span><h2>Call compiled C/C++ code “directly” from JavaScript<a class="headerlink" href="#call-compiled-c-c-code-directly-from-javascript" title="Link to this heading">¶</a></h2>
+<p>Functions in the original source become JavaScript functions, so you can
+call them directly if you do type translations yourself — this will be
+faster than using <a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> or <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a>, but a little
+more complicated.</p>
+<p>To call the method directly, you will need to use the full name as it
+appears in the generated code. This will be the same as the original C
+function, but with a leading <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use <a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> or <a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a>, you do not need
+to prefix function calls with <code class="docutils literal notranslate"><span class="pre">_</span></code> – just use the C name.</p>
+</div>
+<p>The parameters you pass to and receive from functions need to be primitive values:</p>
+<blockquote>
+<div><ul>
+<li><p>Integer and floating point numbers can be passed as-is.</p></li>
+<li><p>Pointers can be passed as-is also, as they are simply integers in the generated code.</p></li>
+<li><p>JavaScript string <code class="docutils literal notranslate"><span class="pre">someString</span></code> can be converted to a <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> using <code class="docutils literal notranslate"><span class="pre">ptr</span> <span class="pre">=</span> <span class="pre">stringToNewUTF8(someString)</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The conversion to a pointer allocates memory, which needs to be
+freed up via a call to <code class="docutils literal notranslate"><span class="pre">free(ptr)</span></code> afterwards (<code class="docutils literal notranslate"><span class="pre">_free</span></code> in JavaScript side) -</p>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> received from C/C++ can be converted to a JavaScript string using <a class="reference internal" href="../../api_reference/preamble.js.html#UTF8ToString" title="UTF8ToString"><code class="xref js js-func docutils literal notranslate"><span class="pre">UTF8ToString()</span></code></a>.</p>
+<p>There are other convenience functions for converting strings and encodings
+in <a class="reference internal" href="../../api_reference/preamble.js.html#preamble-js"><span class="std std-ref">preamble.js</span></a>.</p>
+</li>
+<li><p>Other values can be passed via <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">emscripten::val</span></code>. Check out examples
+on <a class="reference internal" href="../../api_reference/val.h.html#val-as-handle"><span class="std std-ref">as_handle and take_ownership methods</span></a>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="calling-javascript-from-c-c">
+<span id="interacting-with-code-call-javascript-from-native"></span><h2>Calling JavaScript from C/C++<a class="headerlink" href="#calling-javascript-from-c-c" title="Link to this heading">¶</a></h2>
+<p>Emscripten provides two main approaches for calling JavaScript from C/C++:
+running the script using <a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_run_script" title="emscripten_run_script"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_script()</span></code></a> or writing
+“inline JavaScript”.</p>
+<p>The most direct, but slightly slower, way is to use
+<a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_run_script" title="emscripten_run_script"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_script()</span></code></a>. This effectively runs the specified
+JavaScript code from C/C++ using <code class="docutils literal notranslate"><span class="pre">eval()</span></code>. For example, to call the
+browser’s <code class="docutils literal notranslate"><span class="pre">alert()</span></code> function with the text ‘hi’, you would call the
+following JavaScript:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">emscripten_run_script</span><span class="p">(</span><span class="s2">&quot;alert(&#39;hi&#39;)&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">alert</span></code> is present in browsers, but not in <em>node</em>
+or other JavaScript shells. A more generic alternative is to call
+<cite>console.log</cite>.</p>
+</div>
+<p>A faster way to call JavaScript from C is to write “inline JavaScript”,
+using <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_JS" title="EM_JS"><code class="xref c c-func docutils literal notranslate"><span class="pre">EM_JS()</span></code></a> or <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM" title="EM_ASM"><code class="xref c c-func docutils literal notranslate"><span class="pre">EM_ASM()</span></code></a> (and related macros).</p>
+<p>EM_JS is used to declare JavaScript functions from inside a C file. The “alert”
+example might be written using EM_JS like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;emscripten.h&gt;</span>
+
+<span class="n">EM_JS</span><span class="p">(</span><span class="n">void</span><span class="p">,</span> <span class="n">call_alert</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+  <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;hello world!&#39;</span><span class="p">);</span>
+  <span class="n">throw</span> <span class="s1">&#39;all done&#39;</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">call_alert</span><span class="p">();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>EM_JS’s implementation is essentially a shorthand for <a class="reference internal" href="#implement-c-in-javascript"><span class="std std-ref">implementing a
+JavaScript library</span></a>.</p>
+<p>EM_ASM is used in a similar manner to inline assembly code. The “alert” example
+might be written with inline JavaScript as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &lt;emscripten.h&gt;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">EM_ASM</span><span class="p">(</span>
+    <span class="n">alert</span><span class="p">(</span><span class="s1">&#39;hello world!&#39;</span><span class="p">);</span>
+    <span class="n">throw</span> <span class="s1">&#39;all done&#39;</span><span class="p">;</span>
+  <span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When compiled and run, Emscripten will execute the two lines of JavaScript
+as if they appeared directly in the generated code. The result would be
+an alert, followed by an exception. (Note, however, that under the hood
+Emscripten still does a function call even in this case, which has some
+amount of overhead.)</p>
+<p>You can also send values from C into JavaScript inside <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM" title="EM_ASM"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM</span></code></a>,
+for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>EM_ASM({
+  console.log(&#39;I received: &#39; + $0);
+}, 100);
+</pre></div>
+</div>
+<p>This will show <code class="docutils literal notranslate"><span class="pre">I</span> <span class="pre">received:</span> <span class="pre">100</span></code>.</p>
+<p>You can also receive values back, for example the following will print out <code class="docutils literal notranslate"><span class="pre">I</span>
+<span class="pre">received:</span> <span class="pre">100</span></code> and then <code class="docutils literal notranslate"><span class="pre">101</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>int x = EM_ASM_INT({
+  console.log(&#39;I received: &#39; + $0);
+  return $0 + 1;
+}, 100);
+printf(&quot;%d\n&quot;, x);
+</pre></div>
+</div>
+<p>See the <code class="xref c c-macro docutils literal notranslate"><span class="pre">emscripten.h</span> <span class="pre">docs</span></code> for more details.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>You need to specify if the return value is an <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>
+or pointer type using the appropriate macro <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_INT" title="EM_ASM_INT"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_INT</span></code></a>,
+<a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_DOUBLE" title="EM_ASM_DOUBLE"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_DOUBLE</span></code></a> or <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_PTR" title="EM_ASM_PTR"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_PTR</span></code></a>.
+(<a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_PTR" title="EM_ASM_PTR"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_PTR</span></code></a> is the same as <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM_INT" title="EM_ASM_INT"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM_INT</span></code></a> unless
+<code class="docutils literal notranslate"><span class="pre">MEMORY64</span></code> is used, so is mostly needed in code that wants to be
+compatible with <code class="docutils literal notranslate"><span class="pre">MEMORY64</span></code>).</p></li>
+<li><p>The input values appear as <code class="docutils literal notranslate"><span class="pre">$0</span></code>, <code class="docutils literal notranslate"><span class="pre">$1</span></code>, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">return</span></code> is used to provide the value sent from JavaScript back to C.</p></li>
+<li><p>See how <code class="docutils literal notranslate"><span class="pre">{</span></code> and <code class="docutils literal notranslate"><span class="pre">}</span></code> are used here to enclose the code. This is
+necessary to differentiate the code from the arguments passed later,
+which are the input values (this is how C macros work).</p></li>
+<li><p>When using the <a class="reference internal" href="../../api_reference/emscripten.h.html#c.EM_ASM" title="EM_ASM"><code class="xref c c-macro docutils literal notranslate"><span class="pre">EM_ASM</span></code></a> macro, ensure that you only use
+single quotes(‘). Double quotes(”) will cause a syntax error that
+is not detected by the compiler and is only shown when looking at
+a JavaScript console while running the offending code.</p></li>
+<li><p>clang-format may clobber Javascript constructions, such as <code class="docutils literal notranslate"><span class="pre">=&gt;</span></code>
+turning to <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">&gt;</span></code>. To avoid this, add to your <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code>:
+<code class="docutils literal notranslate"><span class="pre">WhitespaceSensitiveMacros:</span> <span class="pre">['EM_ASM',</span> <span class="pre">'EM_JS',</span> <span class="pre">'EM_ASM_INT',</span> <span class="pre">'EM_ASM_DOUBLE',</span> <span class="pre">'EM_ASM_PTR',</span> <span class="pre">'MAIN_THREAD_EM_ASM',</span> <span class="pre">'MAIN_THREAD_EM_ASM_INT',</span> <span class="pre">'MAIN_THREAD_EM_ASM_DOUBLE',</span> <span class="pre">'MAIN_THREAD_EM_ASM_DOUBLE',</span> <span class="pre">'MAIN_THREAD_ASYNC_EM_ASM']</span></code>.
+Or, turn <a class="reference external" href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html#disabling-formatting-on-a-piece-of-code">clang-format off</a> by writing <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">clang-format</span> <span class="pre">off</span></code>
+before the <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> section and <code class="docutils literal notranslate"><span class="pre">//</span> <span class="pre">clang-format</span> <span class="pre">on</span></code> after it.</p></li>
+</ul>
+</div>
+</section>
+<section id="implement-a-c-api-in-javascript">
+<span id="implement-c-in-javascript"></span><h2>Implement a C API in JavaScript<a class="headerlink" href="#implement-a-c-api-in-javascript" title="Link to this heading">¶</a></h2>
+<p>It is possible to implement a C API in JavaScript! This is the approach
+used in many of Emscripten’s libraries, like SDL1 and OpenGL.</p>
+<p>You can use it to write your own APIs to call from C/C++. To do this
+you define the interface, decorating with <code class="docutils literal notranslate"><span class="pre">extern</span></code> to mark the methods
+in the API as external symbols. You then implement the symbols in
+JavaScript by simply adding their definition to <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/library.js">library.js</a> (by
+default). When compiling the C code, the compiler looks in the JavaScript
+libraries for relevant external symbols.</p>
+<p>By default, the implementation is added to <strong>library.js</strong> (and this is
+where you’ll find parts of Emscripten’s <em>libc</em>). You can put
+the JavaScript implementation in your own library file and add it using
+the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-js-library"><span class="std std-ref">emcc option</span></a> <code class="docutils literal notranslate"><span class="pre">--js-library</span></code>. See
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L5043">test_js_libraries</a> in <strong>test/test_other.py</strong> for a complete working
+example, including the syntax you should use inside the JavaScript library
+file.</p>
+<p>As a simple example, consider the case where you have some C code like this:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">my_js</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">my_js</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using C++ you should encapsulate <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">void</span> <span class="pre">my_js();</span></code>
+in an <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span> <span class="pre">{}</span></code> block to prevent C++ name mangling:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">extern</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">my_js</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Then you can implement <code class="docutils literal notranslate"><span class="pre">my_js</span></code> in JavaScript by simply adding the
+implementation to <strong>library.js</strong> (or your own file). Like our other
+examples of calling JavaScript from C, the example below just creates
+a dialog box using a simple <code class="docutils literal notranslate"><span class="pre">alert()</span></code> function.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">my_js</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">);</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+<p>If you add it to your own file, you should write something like</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">addToLibrary</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">my_js</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hi&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">addToLibrary</span></code> copies the properties of the input object into
+<code class="docutils literal notranslate"><span class="pre">LibraryManager.library</span></code> (the global object where all JavaScript library code
+lives). In this case its adds a function called <code class="docutils literal notranslate"><span class="pre">my_js</span></code> onto this object.</p>
+<section id="javascript-limits-in-library-files">
+<h3>JavaScript limits in library files<a class="headerlink" href="#javascript-limits-in-library-files" title="Link to this heading">¶</a></h3>
+<p>If you’re not familiar with JavaScript, say if you’re a C/C++ programmer
+and just using emscripten, then the following issues probably won’t come up, but
+if you’re an experienced JavaScript programmer you need to be aware
+some common JavaScript practices can not be used in certain ways in emscripten
+library files.</p>
+<p>To save space, by default, emscripten only includes library properties
+referenced from C/C++. It does this by calling <code class="docutils literal notranslate"><span class="pre">toString</span></code> on each
+used property on the JavaScript libraries that are linked in. That means
+that you can’t use a closure directly, for example, as <code class="docutils literal notranslate"><span class="pre">toString</span></code>
+isn’t compatible with that - just like when using a string to create
+a Web Worker, where you also can’t pass a closure. (Note that this
+limitation is just for the values for the keys of the object
+passes to <code class="docutils literal notranslate"><span class="pre">addToLibrary</span></code> in the JS library, that is, the toplevel
+key-value pairs are special. Interior code inside a function can
+have arbitrary JS, of course).</p>
+<p>To avoid this limitation of JS libraries, you can put code in another file using
+the <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> or <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> options, which allow arbitrary normal
+JS, and it is included and optimized with the rest of the output. That is
+the recommended approach for most cases. Another option is another <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tag.</p>
+<p>Alternatively, if you prefer to use a JS library file, you can
+have a function replace itself and have it called during
+initialization.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">addToLibrary</span><span class="p">({</span>
+
+<span class="w">  </span><span class="c1">// Solution for bind or referencing other functions directly</span>
+<span class="w">  </span><span class="nx">good_02__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;_good_02();&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">good_02</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">_good_02</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="c1">// Solution for closures</span>
+<span class="w">  </span><span class="nx">good_03__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;_good_03();&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">good_03</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">_good_03</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span><span class="w"> </span><span class="o">++</span><span class="nx">callCount</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="c1">// Solution for curry/transform</span>
+<span class="w">  </span><span class="nx">good_05__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;_good_05();&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">good_05</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">_good_05</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span>
+<span class="w"> </span><span class="p">},</span>
+
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>A <cite>__postset</cite> is a string the compiler will emit directly to the
+output file. For the example above this code will be emitted.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">_good_02</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nx">_good_o2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span>
+
+<span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">_good_03</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="kd">var</span><span class="w"> </span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">   </span><span class="nx">_good_03</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;times called: &quot;</span><span class="p">,</span><span class="w"> </span><span class="o">++</span><span class="nx">callCount</span><span class="p">);</span>
+<span class="w">   </span><span class="p">};</span>
+<span class="w"> </span><span class="p">}</span>
+
+<span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">_good_05</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nx">_good_05</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">curry</span><span class="p">(</span><span class="nx">scrollTo</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// Call each function once so it will replace itself</span>
+<span class="nx">_good_02</span><span class="p">();</span>
+<span class="nx">_good_03</span><span class="p">();</span>
+<span class="nx">_good_05</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>You can also put most of your code in the <code class="docutils literal notranslate"><span class="pre">xxx__postset</span></code> strings.
+The example below each method declares a dependency on <code class="docutils literal notranslate"><span class="pre">$method_support</span></code>
+and are otherwise dummy functions. <code class="docutils literal notranslate"><span class="pre">$method_support</span></code> itself has a
+corresponding <code class="docutils literal notranslate"><span class="pre">__postset</span></code> property with all the code to set the
+various methods to the functions we actually want.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">addToLibrary</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">$method_support</span><span class="o">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">$method_support__postset</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s1">&#39;(function() {                                  &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  var SomeLib = function() {                   &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  SomeLib.prototype.getCallCount = function() {&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;    return this.callCount;                     &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  SomeLib.prototype.process = function() {     &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;    ++this.callCount;                          &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  SomeLib.prototype.reset = function() {       &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;    this.callCount = 0;                        &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  };                                           &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;                                               &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  var inst = new SomeLib();                    &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  _method_01 = inst.getCallCount.bind(inst);   &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  _method_02 = inst.process.bind(inst);        &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;  _method_03 = inst.reset.bind(inst);          &#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">&#39;}());                                          &#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">method_01</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">method_02</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">method_03</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+<span class="w"> </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>Note: If you are using node 4.1 or newer you can use multi-line strings.
+They are only used at compile time not runtime so output will still run in
+ES5 based environments.</p>
+<p>Another option is to put most of your code in an object, not
+a function,</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">addToLibrary</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">$method_support__postset</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;method_support();&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">$method_support</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">SomeLib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">getCallCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">process</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="o">++</span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">SomeLib</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">reset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">callCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">inst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">SomeLib</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">_method_01</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inst</span><span class="p">.</span><span class="nx">getCallCount</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">_method_02</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inst</span><span class="p">.</span><span class="nx">process</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">_method_03</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inst</span><span class="p">.</span><span class="nx">reset</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">inst</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">method_01</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">method_02</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">method_03</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nx">method_01__deps</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;$method_support&#39;</span><span class="p">],</span>
+<span class="w"> </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/src">library_*.js</a> files for other examples.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>JavaScript libraries can declare dependencies (<code class="docutils literal notranslate"><span class="pre">__deps</span></code>), however
+those are only for other JavaScript libraries. See examples in
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/src">/src</a>
+with the name format <strong>library_*.js</strong></p></li>
+<li><p>You can add dependencies for all your methods using
+<code class="docutils literal notranslate"><span class="pre">autoAddDeps(myLibrary,</span> <span class="pre">name)</span></code> where myLibrary is the object with
+all your methods, and <code class="docutils literal notranslate"><span class="pre">name</span></code> is the thing they all depend upon.
+This is useful when all the implemented methods use a JavaScript
+singleton containing helper methods. See <code class="docutils literal notranslate"><span class="pre">library_webgl.js</span></code> for
+an example.</p></li>
+<li><p>The keys passed into <cite>addToLibrary</cite> generate functions that are prefixed
+by <code class="docutils literal notranslate"><span class="pre">_</span></code>. In other words <code class="docutils literal notranslate"><span class="pre">my_func:</span> <span class="pre">function()</span> <span class="pre">{},</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">_my_func()</span> <span class="pre">{}</span></code>, as all C methods in emscripten have a <code class="docutils literal notranslate"><span class="pre">_</span></code> prefix. Keys starting with <code class="docutils literal notranslate"><span class="pre">$</span></code> have the <code class="docutils literal notranslate"><span class="pre">$</span></code>
+stripped and no underscore added.</p></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="calling-javascript-functions-as-function-pointers-from-c">
+<span id="interacting-with-code-call-function-pointers-from-c"></span><h2>Calling JavaScript functions as function pointers from C<a class="headerlink" href="#calling-javascript-functions-as-function-pointers-from-c" title="Link to this heading">¶</a></h2>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> to return an integer value that represents a
+function pointer. Passing that integer to C code then lets it call that value
+as a function pointer, and the JavaScript function you sent to <code class="docutils literal notranslate"><span class="pre">addFunction</span></code>
+will be called.</p>
+<p>See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L6237">test_add_function in test/test_core.py</a> for an example.</p>
+<p>You should build with <code class="docutils literal notranslate"><span class="pre">-sALLOW_TABLE_GROWTH</span></code> to allow new functions to be
+added to the table. Otherwise by default the table has a fixed size.</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">addFunction</span></code> with a JavaScript function, you need to provide
+an additional second argument, a Wasm function signature string, explained
+below. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/interop/test_add_function_post.js">test/interop/test_add_function_post.js</a> for an example.</p>
+</section>
+<section id="function-signatures">
+<span id="interacting-with-code-function-signatures"></span><h2>Function Signatures<a class="headerlink" href="#function-signatures" title="Link to this heading">¶</a></h2>
+<p>The LLVM Wasm backend requires a Wasm function signature string when using
+<code class="docutils literal notranslate"><span class="pre">addFunction</span></code> and in JavaScript libraries. Each character within a signature
+string represents a type. The first character represents the return type of a
+function, and remaining characters are for parameter types.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'v'</span></code>: void type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'i'</span></code>: 32-bit integer type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'j'</span></code>: 64-bit integer type (see note below)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'f'</span></code>: 32-bit float type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'d'</span></code>: 64-bit float type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'p'</span></code>: 32-bit or 64-bit pointer (MEMORY64)</p></li>
+</ul>
+</div></blockquote>
+<p>For example, if you add a function that takes an integer and does not return
+anything, the signature is <code class="docutils literal notranslate"><span class="pre">'vi'</span></code>.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">'j'</span></code> is used there are several ways in which the parameter value will
+be passed to JavaScript. By default, the value will either be passed as a
+single BigInt or a pair of JavaScript numbers (double) depending on whether
+the <code class="docutils literal notranslate"><span class="pre">WASM_BIGINT</span></code> settings is enabled. In addition, if you only require 53
+bits of precision you can add the <code class="docutils literal notranslate"><span class="pre">__i53abi</span></code> decorator, which will ignore
+the upper bits and the value will be received as a single JavaScript number
+(double).  It cannot be used with <code class="docutils literal notranslate"><span class="pre">addFunction</span></code>.  Here is an example of a
+library function that sets the size of a file using a 64-bit value passed as
+a 53 bit (double) and returns an integer error code:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">_set_file_size</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">handle</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">_set_file_size__i53abi</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// Handle 64-bit</span>
+<span class="nx">_set_file_size__sig</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;iij&#39;</span><span class="p">,</span><span class="w">    </span><span class="c1">// Function signature</span>
+<span class="nx">_set_file_size</span><span class="o">:</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">handle</span><span class="p">,</span><span class="w"> </span><span class="nx">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">error</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">-sWASM_BIGINT</span></code> when linking is an alternative method of handling
+64-bit types in libraries.  <code class="docutils literal notranslate"><span class="pre">`Number()`</span></code> may be needed on the JavaScript
+side to convert it to a useable value.  See <a class="reference external" href="https://emscripten.org/docs/tools_reference/settings_reference.html?highlight=environment#wasm-bigint">settings reference</a>.</p>
+</section>
+<section id="access-memory-from-javascript">
+<span id="interacting-with-code-access-memory"></span><h2>Access memory from JavaScript<a class="headerlink" href="#access-memory-from-javascript" title="Link to this heading">¶</a></h2>
+<p>You can access memory using <a class="reference internal" href="../../api_reference/preamble.js.html#getValue" title="getValue"><code class="xref js js-func docutils literal notranslate"><span class="pre">getValue(ptr,</span> <span class="pre">type)</span></code></a> and
+<a class="reference internal" href="../../api_reference/preamble.js.html#setValue" title="setValue"><code class="xref js js-func docutils literal notranslate"><span class="pre">setValue(ptr,</span> <span class="pre">value,</span> <span class="pre">type)</span></code></a>. The first argument is a
+pointer (a number representing a memory address). <code class="docutils literal notranslate"><span class="pre">type</span></code> must be an
+LLVM IR type, one of <code class="docutils literal notranslate"><span class="pre">i8</span></code>, <code class="docutils literal notranslate"><span class="pre">i16</span></code>, <code class="docutils literal notranslate"><span class="pre">i32</span></code>, <code class="docutils literal notranslate"><span class="pre">i64</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>,
+<code class="docutils literal notranslate"><span class="pre">double</span></code> or a pointer type like <code class="docutils literal notranslate"><span class="pre">i8*</span></code> (or just <code class="docutils literal notranslate"><span class="pre">*</span></code>).</p>
+<p>There are examples of these functions being used in the tests — see
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/core/test_utf.in">test/core/test_utf.in</a> and <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L4597">test/test_core.py</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a lower-level operation than <a class="reference internal" href="../../api_reference/preamble.js.html#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a> and
+<a class="reference internal" href="../../api_reference/preamble.js.html#cwrap" title="cwrap"><code class="xref js js-func docutils literal notranslate"><span class="pre">cwrap()</span></code></a> — we <em>do</em> need to care what specific type (e.g.
+integer) is being used.</p>
+</div>
+<p>You can also access memory ‘directly’ by manipulating the arrays that
+represent memory. This is not recommended unless you are sure you know
+what you are doing, and need the additional speed over <a class="reference internal" href="../../api_reference/preamble.js.html#getValue" title="getValue"><code class="xref js js-func docutils literal notranslate"><span class="pre">getValue()</span></code></a>
+and <a class="reference internal" href="../../api_reference/preamble.js.html#setValue" title="setValue"><code class="xref js js-func docutils literal notranslate"><span class="pre">setValue()</span></code></a>.</p>
+<p>A case where this might be required is if you want to import a large amount
+of data from JavaScript to be processed by compiled code. For example, the
+following code allocates a buffer, copies in some data, calls a C function
+to process the data, and finally frees the buffer.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">buf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">_malloc</span><span class="p">(</span><span class="nx">myTypedArray</span><span class="p">.</span><span class="nx">length</span><span class="o">*</span><span class="nx">myTypedArray</span><span class="p">.</span><span class="nx">BYTES_PER_ELEMENT</span><span class="p">);</span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">myTypedArray</span><span class="p">,</span><span class="w"> </span><span class="nx">buf</span><span class="p">);</span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;my_function&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="nx">buf</span><span class="p">]);</span>
+<span class="nx">Module</span><span class="p">.</span><span class="nx">_free</span><span class="p">(</span><span class="nx">buf</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">my_function</span></code> is a C function that receives a single integer parameter
+(or a pointer, they are both just 32-bit integers for us) and returns an
+integer. This could be something like <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">my_function(char</span> <span class="pre">*buf)</span></code>.</p>
+<p>The converse case of exporting allocated memory into JavaScript can be
+tricky when Wasm-based memory is allowed to <strong>grow</strong>, by compiling with
+<code class="docutils literal notranslate"><span class="pre">-sALLOW_MEMORY_GROWTH</span></code>. Increasing the size of memory changes
+to a new buffer and existing array views essentially become invalid,
+so you cannot simply do this:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">someView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">compute</span><span class="p">(</span><span class="nx">someView</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// This may grow memory, which would invalidate all views.</span>
+<span class="w">  </span><span class="nx">maybeGrow</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// If we grew, this use of an invalidated view will fail. Failure in this</span>
+<span class="w">  </span><span class="c1">// case will return undefined, the same as reading out of bounds from a</span>
+<span class="w">  </span><span class="c1">// typed array. If the operation were someView.subarray(), however, then it</span>
+<span class="w">  </span><span class="c1">// would throw an error.</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">someView</span><span class="p">[</span><span class="nx">z</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Emscripten will refresh the canonical views like <code class="docutils literal notranslate"><span class="pre">HEAPU8</span></code> for you, which you
+can use to refresh your own views:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">someView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">compute</span><span class="p">(</span><span class="nx">someView</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// This may grow memory, which would invalidate all views.</span>
+<span class="w">  </span><span class="nx">maybeGrow</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// Create a new, fresh view after the possible growth.</span>
+<span class="w">  </span><span class="nx">someView</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">HEAPU8</span><span class="p">.</span><span class="nx">subarray</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">someView</span><span class="p">[</span><span class="nx">z</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Another option to avoid such problems is to copy the data, when that makes
+sense.</p>
+</section>
+<section id="affect-execution-behaviour">
+<span id="interacting-with-code-execution-behaviour"></span><h2>Affect execution behaviour<a class="headerlink" href="#affect-execution-behaviour" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Module</span></code> is a global JavaScript object, with attributes that
+Emscripten-generated code calls at various points in its execution.</p>
+<p>Developers provide an implementation of <code class="docutils literal notranslate"><span class="pre">Module</span></code> to control how
+notifications from Emscripten are displayed, which files that are
+loaded before the main loop is run, and a number of other behaviours.
+For more information see <a class="reference internal" href="../../api_reference/module.html#module"><span class="std std-ref">Module object</span></a>.</p>
+</section>
+<section id="environment-variables">
+<span id="interacting-with-code-environment-variables"></span><h2>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading">¶</a></h2>
+<p>Sometimes compiled code needs to access environment variables (for instance,
+in C, by calling the <code class="docutils literal notranslate"><span class="pre">getenv()</span></code> function). Emscripten-generated JavaScript
+cannot access the computer’s environment variables directly, so a
+“virtualised” environment is provided.</p>
+<p>The JavaScript object <code class="docutils literal notranslate"><span class="pre">ENV</span></code> contains the virtualised environment variables,
+and by modifying it you can pass variables to your compiled code. Care must
+be taken to ensure that the <code class="docutils literal notranslate"><span class="pre">ENV</span></code> variable has been initialised by
+Emscripten before it is modified — using <a class="reference internal" href="../../api_reference/module.html#Module.preRun" title="Module.preRun"><code class="xref js js-attr docutils literal notranslate"><span class="pre">Module.preRun</span></code></a> is a
+convenient way to do this.</p>
+<p>For example, to set an environment variable <code class="docutils literal notranslate"><span class="pre">MY_FILE_ROOT</span></code> to be
+<code class="docutils literal notranslate"><span class="pre">&quot;/usr/lib/test/&quot;</span></code> you could add the following JavaScript to your
+<code class="docutils literal notranslate"><span class="pre">Module</span></code> <a class="reference internal" href="../../api_reference/module.html#module-creating"><span class="std std-ref">setup code</span></a>:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">preRun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">ENV</span><span class="p">.</span><span class="nx">MY_FILE_ROOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/usr/lib/test&quot;</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>Note that Emscripten will set default values for some environment variables
+(e.g. LANG) after you have configured <code class="docutils literal notranslate"><span class="pre">ENV</span></code>, if you have not set your own
+values. If you want such variables to remain unset, you can explicitly set
+their value to <cite>undefined</cite>. For example:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">preRun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">ENV</span><span class="p">.</span><span class="nx">LANG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">undefined</span><span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="binding-c-and-javascript-webidl-binder-and-embind">
+<span id="interacting-with-code-binding-cpp"></span><h2>Binding C++ and JavaScript — WebIDL Binder and Embind<a class="headerlink" href="#binding-c-and-javascript-webidl-binder-and-embind" title="Link to this heading">¶</a></h2>
+<p>The JavaScript methods for calling compiled C functions are efficient, but
+cannot be used with name-mangled C++ functions.</p>
+<p><a class="reference internal" href="WebIDL-Binder.html#webidl-binder"><span class="std std-ref">WebIDL Binder</span></a> and <a class="reference internal" href="embind.html#embind"><span class="std std-ref">Embind</span></a> create bindings between C++ and
+JavaScript, allowing C++ code entities to be used in a natural manner from
+JavaScript. <em>Embind</em> additionally supports calling JavaScript code from C++.</p>
+<p><em>Embind</em> can bind almost any C++ code, including sophisticated C++ constructs
+(e.g. <code class="docutils literal notranslate"><span class="pre">shared_ptr</span></code> and <code class="docutils literal notranslate"><span class="pre">unique_ptr</span></code>). The <em>WebIDL Binder</em> supports C++
+types that can be expressed in WebIDL. While this subset is smaller than
+supported by <em>Embind</em>, it is more than sufficient for most use cases —
+examples of projects that have been ported using the binder include the
+<a class="reference external" href="https://github.com/kripken/box2d.js/#box2djs">Box2D</a> and <a class="reference external" href="https://github.com/kripken/ammo.js/#ammojs">Bullet</a> physics engines.</p>
+<p>Both tools allow mapped items to be used from JavaScript in a similar way.
+However they operate at different levels, and use very different approaches
+for defining the binding:</p>
+<ul class="simple">
+<li><p><em>Embind</em> declares bindings within the C/C++ file.</p></li>
+<li><p><em>WebIDL-Binder</em> declares the binding in a separate file. This is run
+through the binder tool to create “glue” code that is then compiled
+with the project.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no strong evidence that one tool is “better” than the
+other in terms of performance (no comparative benchmarks exist), and
+both have been used successfully in a number of projects. The selection
+of one tool over the other will usually be based on which is the most
+natural fit for the project and its build system.</p>
+</div>
+</section>
+<section id="binding-c-c-and-javascript-node-api">
+<span id="interacting-with-code-emnapi"></span><h2>Binding C/C++ and JavaScript - Node-API<a class="headerlink" href="#binding-c-c-and-javascript-node-api" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/toyobayashi/emnapi">Emnapi</a> is an unofficial <a class="reference external" href="https://nodejs.org/dist/latest/docs/api/n-api.html">Node-API</a> implementation which can be used
+on Emscripten. If you would like to port existing Node-API addon to WebAssembly
+or compile the same binding code to both Node.js native addon and WebAssembly,
+you can give it a try. See <a class="reference external" href="https://emnapi-docs.vercel.app/guide/getting-started.html">Emnapi documentation</a> for more details.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="embind.html" class="btn btn-neutral float-right" title="Embind"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Connecting C++ and JavaScript"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+     
+  <!--begin hamishw addition -->
+  
+    
+  
+  <!--  -->
+   
+   <!--Footer important links
+    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+	displayed.   -->
+
+	
+   <div class="footer-nav-bar" style="">
+     <div class="footer-options">
+   
+        
+              <a class="footer-navlink-short" title="Report Bug" href="../../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../../getting_started/bug_reports.html">Report Bug</a>
+        
+              <a class="footer-navlink-short" title="Licensing" href="../../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../../introducing_emscripten/emscripten_license.html">Licensing</a>
+        
+              <a class="footer-navlink-short" title="Contributing" href="../../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../../contributing/contributing.html">Contributing</a>
+         
+		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
+         
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
+        
+              <a class="footer-navlink-short" title="Release notes" href="../../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../../introducing_emscripten/release_notes.html">Release notes</a>
+        
+              <a class="footer-navlink-short" title="Blogs" href="../../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../../introducing_emscripten/community.html">Blogs</a>
+        
+              <a class="footer-navlink-short" title="Help" href="../../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../../introducing_emscripten/community.html">Contact</a>
+         
+				
+     </div>
+	 
+	
+ 
+   </div>
+  
+    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="../index.html">&raquo;&nbsp;Porting</a>
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Connecting C++ and JavaScript</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Interacting with code</div>
+  </div>
+ 
+</div> -->
+  
+    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
+   <!--end hamishw addition -->
+  
+  
+	  
+<!-- end section moved here by hamishw -->
+  <div role="contentinfo" class="copyright-box">
+    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
+  <ul class="wy-breadcrumbs">
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+
+	  <li class="wy-breadcrumbs-aside">
+         <a href="../../site/about.html">About site</a>
+      </li>
+	  
+	  <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Interacting%20with%20code%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../../docs/porting/connecting_cpp_and_javascript/Interacting-with-code&labels=bug">Page bug</a>
+      </li>
+  </ul>
+  
+    <p>
+        <!-- &copy; Copyright 2015, . -->
+		&copy; Copyright 2015,  <a href="../../contributing/AUTHORS.html">Emscripten Contributors</a>.
+		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
+    </p>
+	
+  </div>
+  
+  
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+</div>
+</body>
+</html>

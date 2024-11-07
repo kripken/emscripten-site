@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running HTML files with emrun &mdash; Emscripten 3.1.72-git (dev) documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
+
+  
+    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=27485112"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Deploying Emscripten Compiled Pages" href="Deploying-Pages.html" />
+    <link rel="prev" title="Dynamic Linking" href="Dynamic-Linking.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+<div class="grid-to-center-rtd-theme"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            <!-- <img src="../..//_static/" alt="Logo"> -->
+            
+              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Running HTML files with emrun</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quick-how-to">Quick how-to</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-the-browser-to-run">Choosing the browser to run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#security-implications">Security implications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controlling-web-server-operation">Controlling web server operation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controlling-log-output">Controlling log output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cleaning-up-after-the-run">Cleaning up after the run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-web-pages-in-firefox">Running web pages in Firefox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-web-pages-on-an-android-device">Running web pages on an Android device</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <!-- <a href="../../index.html">Emscripten</a> -->
+          <a href="../../index.html"> <img src="../..//_static/" alt="Logo" /> </a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+        <!--begin hamishw addition -->
+
+        <!--Nav bar defined as a document followed by short version of nav text and long version
+            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+          displayed.   -->
+        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
+  
+        <div class="main-nav-bar" style="">   
+
+          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
+        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
+
+        <ul id="menu-options">
+             
+                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
+             
+                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
+             
+                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
+             
+                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
+                	
+          </ul>
+        <!-- <div style="clear:both;"></div> -->        
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Running HTML files with emrun</div>
+  </div>
+ 
+</div>
+   </div>
+   <!--end hamishw addition -->		
+          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Running HTML files with emrun</div>
+  </div>
+ 
+</div> -->
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="running-html-files-with-emrun">
+<span id="id1"></span><h1>Running HTML files with emrun<a class="headerlink" href="#running-html-files-with-emrun" title="Link to this heading">¶</a></h1>
+<p><em>emrun</em> is a command line tool that can run generated HTML pages via a locally launched web server. This is helpful when using web browsers that cannot run a generated <strong>.html</strong> file via a <code class="docutils literal notranslate"><span class="pre">file://</span></code> URL (e.g. by double-clicking the file) because of the default browser CORS rules.</p>
+<p><em>emrun</em> also enables all kinds of command-line automation, for example, integrating unit tests into an Emscripten environment in a project build farm.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<p><em>emrun</em> supports the following uses:</p>
+<ul class="simple">
+<li><p>Launch your Emscripten-generated HTML page in a web browser from the command line.</p></li>
+<li><p>Capture application <code class="docutils literal notranslate"><span class="pre">stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code> streams during the run, and print them to a terminal or log them to a file.</p></li>
+<li><p>Pass command-line arguments to the application and read them from <code class="docutils literal notranslate"><span class="pre">GET</span></code> parameters in the launched URL, or <code class="docutils literal notranslate"><span class="pre">argc</span></code> and <code class="docutils literal notranslate"><span class="pre">argv</span></code> in <code class="docutils literal notranslate"><span class="pre">main()</span></code>.</p></li>
+<li><p>Detect when a launched application quits via a call to C’s <code class="docutils literal notranslate"><span class="pre">exit(returncode)</span></code>, then pass the specified return code to the terminal.</p></li>
+<li><p>Choose which installed browser to run, or even run a browser on an Android device connected to the local computer through <em>adb</em>.</p></li>
+</ul>
+</section>
+<section id="quick-how-to">
+<h2>Quick how-to<a class="headerlink" href="#quick-how-to" title="Link to this heading">¶</a></h2>
+<p>Using <em>emrun</em> is simple:</p>
+<ol class="arabic simple">
+<li><p>Rebuild your Emscripten application and add the <code class="docutils literal notranslate"><span class="pre">--emrun</span></code> <a class="reference internal" href="../tools_reference/emcc.html#emcc-emrun"><span class="std std-ref">linker flag</span></a>.</p></li>
+</ol>
+<blockquote>
+<div><p>This flag injects code into the generated <a class="reference internal" href="../api_reference/module.html#module"><span class="std std-ref">Module object</span></a> to enable capture of <code class="docutils literal notranslate"><span class="pre">stdout</span></code>, <code class="docutils literal notranslate"><span class="pre">stderr</span></code> and <code class="docutils literal notranslate"><span class="pre">exit()</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you skip this step, you can still run any <strong>.html</strong> file with <em>emrun</em>, but the capture will not work.</p>
+</div>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Open a terminal, navigate to the build output directory, and call <code class="docutils literal notranslate"><span class="pre">emrun</span> <span class="pre">page.html</span></code>.</p></li>
+</ol>
+<blockquote>
+<div><p>This will spawn a new web server to host the page and launch your default system browser to visit that page. <em>emrun</em> will block until the page calls <code class="docutils literal notranslate"><span class="pre">exit(returncode)</span></code>, after which it will quit back to shell with the given process exit code.</p>
+</div></blockquote>
+</section>
+<section id="choosing-the-browser-to-run">
+<h2>Choosing the browser to run<a class="headerlink" href="#choosing-the-browser-to-run" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">--browser</span> <span class="pre">&lt;filename-or-browser-alias&gt;</span></code> command line option allows you to launch an HTML file using a particular browser, by specifying either its “browser alias” or the full path to its executable (if the flag is not specified, the default system browser is launched).</p>
+<p>To enumerate the list of browser aliases on your system, use the <code class="docutils literal notranslate"><span class="pre">--list_browsers</span></code> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>emrun<span class="w"> </span>--list_browsers
+
+emrun<span class="w"> </span>has<span class="w"> </span>automatically<span class="w"> </span>found<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>browsers<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>default<span class="w"> </span>install<span class="w"> </span>locations<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>system:
+
+-<span class="w"> </span>firefox:<span class="w"> </span>Mozilla<span class="w"> </span>Firefox<span class="w"> </span><span class="m">26</span>.0.0.5087
+-<span class="w"> </span>firefox_beta:<span class="w"> </span>Mozilla<span class="w"> </span>Firefox<span class="w"> </span><span class="m">26</span>.0.0.5077
+-<span class="w"> </span>firefox_aurora:<span class="w"> </span>Mozilla<span class="w"> </span>Firefox<span class="w"> </span>Aurora<span class="w"> </span><span class="m">28</span>.0.0.5098
+-<span class="w"> </span>firefox_nightly:<span class="w"> </span>Mozilla<span class="w"> </span>Firefox<span class="w"> </span>Nightly<span class="w"> </span><span class="m">29</span>.0.0.5098
+-<span class="w"> </span>chrome:<span class="w"> </span>Google<span class="w"> </span>Chrome<span class="w"> </span><span class="m">31</span>.0.1650.63
+-<span class="w"> </span>chrome_canary:<span class="w"> </span>Google<span class="w"> </span>Chrome<span class="w"> </span><span class="m">34</span>.0.1752.0
+-<span class="w"> </span>iexplore:<span class="w"> </span>Microsoft<span class="w"> </span>Internet<span class="w"> </span>Explorer<span class="w"> </span><span class="m">11</span>.0.9600.16384
+-<span class="w"> </span>opera:<span class="w"> </span>Opera<span class="w"> </span><span class="m">18</span>.0.1284.63
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For your browser to be detected, it should be installed in the default install location on the system (<code class="docutils literal notranslate"><span class="pre">%ProgramFiles%</span></code> on Windows and <code class="docutils literal notranslate"><span class="pre">/Applications/</span></code> on macOS) or by adding it to the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> for the current user.</p>
+</div>
+<p>You can pass the <code class="docutils literal notranslate"><span class="pre">--browser</span> <span class="pre">&lt;alias&gt;</span></code> option to launch with a given browser. For example, to run the <em>Firefox Nightly</em> browser you would call:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emrun<span class="w"> </span>--browser<span class="w"> </span>firefox_nightly<span class="w"> </span>page.html
+</pre></div>
+</div>
+<p>To launch using a browser’s filename use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--browser<span class="w"> </span>/path/to/browser/executable<span class="w"> </span>page.html
+</pre></div>
+</div>
+<p>If you just want to launch a web server you can pass the <code class="docutils literal notranslate"><span class="pre">--no_browser</span></code>
+command line flag. In this case <em>emrun</em> will run the server without spawning the
+browser (this is similar to using a
+<a class="reference internal" href="../getting_started/FAQ.html#faq-local-webserver"><span class="std std-ref">local webserver</span></a>).</p>
+</section>
+<section id="security-implications">
+<h2>Security implications<a class="headerlink" href="#security-implications" title="Link to this heading">¶</a></h2>
+<p><em>emrun</em> spawns its own web server to host the target <strong>.html</strong> file. This has the following security implications:</p>
+<ul class="simple">
+<li><p>The web server is a generic file server that by default serves all files in the directory where the <strong>.html</strong> file resides, and all directories under that directory tree.</p></li>
+<li><p>The web server will be visible to other computers on the same network.</p></li>
+</ul>
+</section>
+<section id="controlling-web-server-operation">
+<h2>Controlling web server operation<a class="headerlink" href="#controlling-web-server-operation" title="Link to this heading">¶</a></h2>
+<p>The following command line flags control how <em>emrun</em> spawns the web server:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_server</span></code>: Do not launch a web server. The target file is run via the <code class="docutils literal notranslate"><span class="pre">file://</span></code> protocol, if possible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--serve_after_close</span></code>: Do not quit <em>emrun</em>; continue running the server even after the user closes the web browser. Use this flag when you want to visit the page multiple times or with different browsers during the same run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--serve_after_exit</span></code>: Do not quit <em>emrun</em>; continue running the server after the page finishes with a call to <code class="docutils literal notranslate"><span class="pre">exit(returncode)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--serve_root</span> <span class="pre">&lt;path&gt;</span></code>: Specify a custom directory to use as the root directory for the spawned web server. By default, the directory where the <strong>.html</strong> file resides is used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--port</span> <span class="pre">&lt;number&gt;</span></code>: Specify the web server TCP port. The default port is <code class="docutils literal notranslate"><span class="pre">6931</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--silence_timeout</span> <span class="pre">&lt;seconds&gt;</span></code>: Specify the <em>emrun</em> silence timeout. If the application does not print anything to <code class="docutils literal notranslate"><span class="pre">stdout</span></code> or <code class="docutils literal notranslate"><span class="pre">stderr</span></code> in this many seconds, the page/browser is assumed to be hung, and <em>emrun</em> will quit. This is disabled by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--timeout</span> <span class="pre">&lt;seconds&gt;</span></code>: Specify the <em>emrun</em> timeout. If the whole page run lasts longer than this many seconds, the page/browser is assumed to be hung, and <em>emrun</em> will quit. This is disabled by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--hostname</span> <span class="pre">&lt;name&gt;</span></code>: Specify the web server TCP hostname. The default hostname is <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--timeout_returncode</span> <span class="pre">&lt;code&gt;</span></code>: Specifies the process return code that <em>emrun</em> quits with if a page run timeout occurs. By default this is <code class="docutils literal notranslate"><span class="pre">99999</span></code>.</p></li>
+</ul>
+</section>
+<section id="controlling-log-output">
+<h2>Controlling log output<a class="headerlink" href="#controlling-log-output" title="Link to this heading">¶</a></h2>
+<p>The following command line flags affect logging output:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--verbose</span></code>: Print detailed information about <em>emrun</em> internal steps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--log_stdout</span> <span class="pre">&lt;filename&gt;</span></code>: Write all <code class="docutils literal notranslate"><span class="pre">stdout</span></code> messages from the application to the named file (instead of printing to terminal).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--lot_stderr</span> <span class="pre">&lt;filename&gt;</span></code>: Write all <code class="docutils literal notranslate"><span class="pre">stderr</span></code> messages from the application to the named file (instead of printing to terminal).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--system_info</span></code>: Print detailed information about the current system before launching. This is useful during automated runs when you want to capture hardware information to logs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--browser_info</span></code>: Print information about which browser is about to be launched.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_emrun_detect</span></code>: Hide the warning message that is launched if a target <strong>.html</strong> file is detected to not have been built with <code class="docutils literal notranslate"><span class="pre">--emrun</span></code>.</p></li>
+</ul>
+</section>
+<section id="cleaning-up-after-the-run">
+<h2>Cleaning up after the run<a class="headerlink" href="#cleaning-up-after-the-run" title="Link to this heading">¶</a></h2>
+<p>These command line flags allow you to clean up open browser processes before starting a new run — this is important for automated testing on build servers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--kill_start</span></code>: Terminate all instances of the target browser process before starting the run. Pass this flag to ensure that no old (hung) instances of the target browser process exist that could interfere with the current run. This is disabled by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--kill_exit</span></code>: Terminate all instances of the target browser process when <em>emrun</em> quits. Pass this flag to ensure that browser pages closed when the run is over. This is disabled by default. Note that it may be necessary to explicitly use the <code class="docutils literal notranslate"><span class="pre">--browser=/path/to/browser</span></code> command line option when using <code class="docutils literal notranslate"><span class="pre">--kill_exit</span></code>, or otherwise the termination might not function properly.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>These operations cause the browser process to be forcibly terminated.  Any windows or tabs you have open will be closed, including any that might contain unsaved data.</p>
+</div>
+</section>
+<section id="running-web-pages-in-firefox">
+<h2>Running web pages in Firefox<a class="headerlink" href="#running-web-pages-in-firefox" title="Link to this heading">¶</a></h2>
+<p>When running web pages via <code class="docutils literal notranslate"><span class="pre">emrun</span></code> using Firefox, you may want to set one or more of the following browser prefs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>; Make sure to unblock popups being spawned from http://localhost/.
+browser.popups.showPopupBlocker;false
+
+; Don&#39;t ask the user to change the default browser when spawning the browser.
+browser.shell.checkDefaultBrowser;false
+
+; Don&#39;t autorestore previous tabs, just open the one from the command line.
+browser.sessionstore.resume_from_crash;false
+services.sync.prefs.sync.browser.sessionstore.restore_on_demand;false
+browser.sessionstore.restore_on_demand;false
+
+; Don&#39;t bring up the modal &quot;Start in Safe Mode&quot; dialog after browser is killed, since
+; that is an expected path for --kill_start and --kill_exit options.
+browser.sessionstore.max_resumed_crashes;-1
+toolkit.startup.max_resumed_crashes;-1
+
+; Don&#39;t fail on long-running scripts, but have emrun instead control execution termination.
+dom.max_script_run_time;0
+dom.max_chrome_script_run_time;0
+
+; Accelerate browser update background timer tick so that autoupdates take place as quickly as possible.
+; This is useful for continuous integration servers wanting to always test the latest browser version.
+app.update.download.backgroundInterval;1
+
+; Always run in private browsing mode to avoid caching any pages (but also disables IndexedDB persistency!).
+browser.privatebrowsing.autostart;true
+
+; When switching between multiple Firefox browser versions/channels, suppress showing the first time welcome page.
+startup.homepage_override_url;about:blank
+startup.homepage_welcome_url;about:blank
+</pre></div>
+</div>
+<p>To set a Firefox browser pref, navigate to the page <code class="docutils literal notranslate"><span class="pre">about:config</span></code> in the browser navigation bar.</p>
+</section>
+<section id="running-web-pages-on-an-android-device">
+<h2>Running web pages on an Android device<a class="headerlink" href="#running-web-pages-on-an-android-device" title="Link to this heading">¶</a></h2>
+<p><em>emrun</em> can automate browser-based testing on Android.</p>
+<p>For this to work, you need to:</p>
+<ul class="simple">
+<li><p>Connect an Android phone to the local system via USB, with its developer mode enabled. There is no need to root the phone.</p></li>
+<li><p>Install the <em>adb</em> tool on the host system and make sure it is present in the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.</p></li>
+<li><p>Check that <em>adb</em> is working by calling <code class="docutils literal notranslate"><span class="pre">adb</span> <span class="pre">devices</span></code> to see that your device is listed.</p></li>
+<li><p>Install any browser apk to the device that you want to be able to run.</p></li>
+</ul>
+<p>To run on Android, add the <code class="docutils literal notranslate"><span class="pre">--android</span></code> command line flag and use the <code class="docutils literal notranslate"><span class="pre">--browser</span> <span class="pre">&lt;alias&gt;</span></code> command line flag to explicitly choose the correct browser to run.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Omitting <code class="docutils literal notranslate"><span class="pre">--browser</span></code> (to launch a default Android browser) is not supported.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Running on Android will omit the <code class="docutils literal notranslate"><span class="pre">--hostname</span></code> option</p>
+</div>
+<p>The following browser aliases have been tested and shown to work: <code class="docutils literal notranslate"><span class="pre">firefox,</span> <span class="pre">firefox_beta,</span> <span class="pre">firefox_aurora,</span> <span class="pre">firefox_nightly,</span> <span class="pre">chrome,</span> <span class="pre">chrome_beta,</span> <span class="pre">opera</span></code>.</p>
+<p>The following browser aliases are also supported, but have known issues:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">opera_mini</span></code>: The browser launches, but for some reason it times out when trying to load any page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dolphin</span></code>: Works, but does not support WebGL.</p></li>
+</ul>
+<p>Otherwise, using <em>emrun</em> for browser-based testing on Android is the same as when testing on the host system.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Deploying-Pages.html" class="btn btn-neutral float-right" title="Deploying Emscripten Compiled Pages"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Dynamic-Linking.html" class="btn btn-neutral" title="Dynamic Linking"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+     
+  <!--begin hamishw addition -->
+  
+    
+  
+  <!--  -->
+   
+   <!--Footer important links
+    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
+	displayed.   -->
+
+	
+   <div class="footer-nav-bar" style="">
+     <div class="footer-options">
+   
+        
+              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
+        
+              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
+        
+              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
+         
+		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
+         
+		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
+        
+              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
+        
+              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
+        
+              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
+         
+				
+     </div>
+	 
+	
+ 
+   </div>
+  
+    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <div class="breadcrumb-box">
+     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
+      
+          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
+      
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Running HTML files with emrun</div>
+  </div>
+ 
+</div> -->
+  
+    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
+   <!--end hamishw addition -->
+  
+  
+	  
+<!-- end section moved here by hamishw -->
+  <div role="contentinfo" class="copyright-box">
+    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
+  <ul class="wy-breadcrumbs">
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+
+	  <li class="wy-breadcrumbs-aside">
+         <a href="../site/about.html">About site</a>
+      </li>
+	  
+	  <li class="wy-breadcrumbs-aside">
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Running%20HTML%20files%20with%20emrun%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/Running-html-files-with-emrun&labels=bug">Page bug</a>
+      </li>
+  </ul>
+  
+    <p>
+        <!-- &copy; Copyright 2015, . -->
+		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
+		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
+    </p>
+	
+  </div>
+  
+  
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+</div>
+</body>
+</html>
