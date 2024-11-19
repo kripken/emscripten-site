@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=27485112"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c7127ad6"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -124,6 +124,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
 </ul>
 
         </div>
@@ -133,7 +134,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <!-- <a href="../../index.html">Emscripten</a> -->
-          <a href="../../index.html"> <img src="../..//_static/" alt="Logo" /> </a>
+          <a href="../../index.html"> <img src="../../_static/Emscripten_logo_full.png" alt="Logo" /> </a>
       </nav>
 
       <div class="wy-nav-content">
@@ -190,7 +191,7 @@
            <div itemprop="articleBody">
              
   <section id="preamble-js">
-<span id="id1"></span><h1>preamble.js<a class="headerlink" href="#preamble-js" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>preamble.js<a class="headerlink" href="#preamble-js" title="Permalink to this heading"></a></h1>
 <p>The JavaScript APIs in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/preamble.js">preamble.js</a> provide programmatic access for interacting with the compiled C code, including: calling compiled C functions, accessing memory, converting pointers to JavaScript <code class="docutils literal notranslate"><span class="pre">Strings</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings</span></code> to pointers (with different encodings/formats), and other convenience functions.</p>
 <p>We call this “<code class="docutils literal notranslate"><span class="pre">preamble.js</span></code>” because Emscripten’s output JS, at a high level, contains the preamble (from <code class="docutils literal notranslate"><span class="pre">src/preamble.js</span></code>), then the compiled code, then the postamble. (In slightly more detail, the preamble contains utility functions and setup, while the postamble connects things and handles running the application.)</p>
 <p>The preamble code is included in the output JS, which is then optimized all together by the compiler, together with any <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> and <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> files you added and code from any JavaScript libraries (<code class="docutils literal notranslate"><span class="pre">--js-library</span></code>). That means that you can call methods from the preamble directly, and the compiler will see that you need them, and not remove them as being unused.</p>
@@ -211,10 +212,10 @@
 </ul>
 </nav>
 <section id="calling-compiled-c-functions-from-javascript">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Calling compiled C functions from JavaScript</a><a class="headerlink" href="#calling-compiled-c-functions-from-javascript" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Calling compiled C functions from JavaScript</a><a class="headerlink" href="#calling-compiled-c-functions-from-javascript" title="Permalink to this heading"></a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="ccall">
-<span class="sig-name descname"><span class="n"><span class="pre">ccall</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccall" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">ccall</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccall" title="Permalink to this definition"></a></dt>
 <dd><p>Call a compiled C function from JavaScript.</p>
 <p>The function executes a compiled C function from JavaScript and returns the result. C++ name mangling means that “normal” C++ functions cannot be called; the function must either be defined in a <strong>.c</strong> file or be a C++ function defined with <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">returnType</span></code> and <code class="docutils literal notranslate"><span class="pre">argTypes</span></code> let you specify the types of parameters and the return value. The possible types are <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code>, which correspond to the appropriate JavaScript types. Use <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code> for any numeric type or C pointer, <code class="docutils literal notranslate"><span class="pre">string</span></code> for C <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represent strings, <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code> for a boolean type, <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code> for JavaScript arrays and typed arrays, containing 8-bit integer data - that is, the data is written into a C array of 8-bit integers; and in particular if you provide a typed array here, it must be a Uint8Array or Int8Array. If you want to receive an array of another type of data, you can manually allocate memory and write to it, then provide a pointer here (as a <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, as pointers are just numbers).</p>
@@ -280,7 +281,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="cwrap">
-<span class="sig-name descname"><span class="n"><span class="pre">cwrap</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argTypes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cwrap" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">cwrap</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argTypes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cwrap" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a native JavaScript wrapper for a C function.</p>
 <p>This is similar to <a class="reference internal" href="#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a>, but returns a JavaScript function that can be reused as many time as needed. The C function can be defined in a C file, or be a C-compatible C++ function defined using <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> (to prevent name mangling).</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Call C from JavaScript</span>
@@ -327,10 +328,10 @@
 
 </section>
 <section id="accessing-memory">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Accessing memory</a><a class="headerlink" href="#accessing-memory" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Accessing memory</a><a class="headerlink" href="#accessing-memory" title="Permalink to this heading"></a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="setValue">
-<span class="sig-name descname"><span class="n"><span class="pre">setValue</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">noSafe</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#setValue" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">setValue</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">noSafe</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#setValue" title="Permalink to this definition"></a></dt>
 <dd><p>Sets a value at a specific memory address at run-time.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -353,7 +354,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="getValue">
-<span class="sig-name descname"><span class="n"><span class="pre">getValue</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">noSafe</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#getValue" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">getValue</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">noSafe</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#getValue" title="Permalink to this definition"></a></dt>
 <dd><p>Gets a value at a specific memory address at run-time.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -378,10 +379,10 @@
 
 </section>
 <section id="conversion-functions-strings-pointers-and-arrays">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Conversion functions — strings, pointers and arrays</a><a class="headerlink" href="#conversion-functions-strings-pointers-and-arrays" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Conversion functions — strings, pointers and arrays</a><a class="headerlink" href="#conversion-functions-strings-pointers-and-arrays" title="Permalink to this heading"></a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="UTF8ToString">
-<span class="sig-name descname"><span class="n"><span class="pre">UTF8ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToRead</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#UTF8ToString" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">UTF8ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToRead</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#UTF8ToString" title="Permalink to this definition"></a></dt>
 <dd><p>Given a pointer <code class="docutils literal notranslate"><span class="pre">ptr</span></code> to a null-terminated UTF8-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -398,7 +399,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="stringToUTF8">
-<span class="sig-name descname"><span class="n"><span class="pre">stringToUTF8</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outPtr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToWrite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stringToUTF8" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">stringToUTF8</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outPtr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToWrite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stringToUTF8" title="Permalink to this definition"></a></dt>
 <dd><p>Copies the given JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object <code class="docutils literal notranslate"><span class="pre">str</span></code> to the Emscripten HEAP at address <code class="docutils literal notranslate"><span class="pre">outPtr</span></code>, null-terminated and encoded in UTF8 form.</p>
 <p>The copy will require at most <code class="docutils literal notranslate"><span class="pre">str.length*4+1</span></code> bytes of space in the HEAP. You can use the function <code class="docutils literal notranslate"><span class="pre">lengthBytesUTF8()</span></code> to compute the exact amount of bytes (excluding the null terminator) needed to encode the string.</p>
 <dl class="field-list simple">
@@ -414,7 +415,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="UTF16ToString">
-<span class="sig-name descname"><span class="n"><span class="pre">UTF16ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#UTF16ToString" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">UTF16ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#UTF16ToString" title="Permalink to this definition"></a></dt>
 <dd><p>Given a pointer <code class="docutils literal notranslate"><span class="pre">ptr</span></code> to a null-terminated UTF16LE-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -430,7 +431,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="stringToUTF16">
-<span class="sig-name descname"><span class="n"><span class="pre">stringToUTF16</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outPtr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToWrite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stringToUTF16" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">stringToUTF16</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outPtr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToWrite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stringToUTF16" title="Permalink to this definition"></a></dt>
 <dd><p>Copies the given JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object <code class="docutils literal notranslate"><span class="pre">str</span></code> to the Emscripten HEAP at address <code class="docutils literal notranslate"><span class="pre">outPtr</span></code>, null-terminated and encoded in UTF16LE form.</p>
 <p>The copy will require exactly <code class="docutils literal notranslate"><span class="pre">(str.length+1)*2</span></code> bytes of space in the HEAP.</p>
 <dl class="field-list simple">
@@ -446,7 +447,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="UTF32ToString">
-<span class="sig-name descname"><span class="n"><span class="pre">UTF32ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#UTF32ToString" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">UTF32ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#UTF32ToString" title="Permalink to this definition"></a></dt>
 <dd><p>Given a pointer <code class="docutils literal notranslate"><span class="pre">ptr</span></code> to a null-terminated UTF32LE-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -462,7 +463,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="stringToUTF32">
-<span class="sig-name descname"><span class="n"><span class="pre">stringToUTF32</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outPtr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToWrite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stringToUTF32" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">stringToUTF32</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outPtr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToWrite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stringToUTF32" title="Permalink to this definition"></a></dt>
 <dd><p>Copies the given JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object <code class="docutils literal notranslate"><span class="pre">str</span></code> to the Emscripten HEAP at address <code class="docutils literal notranslate"><span class="pre">outPtr</span></code>, null-terminated and encoded in UTF32LE form.</p>
 <p>The copy will require at most <code class="docutils literal notranslate"><span class="pre">(str.length+1)*4</span></code> bytes of space in the HEAP, but can use less, since <code class="docutils literal notranslate"><span class="pre">str.length</span></code> does not return the number of characters in the string, but the number of UTF-16 code units in the string. You can use the function <code class="docutils literal notranslate"><span class="pre">lengthBytesUTF32()</span></code> to compute the exact amount of bytes (excluding the null terminator) needed to encode the string.</p>
 <dl class="field-list simple">
@@ -478,7 +479,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="AsciiToString">
-<span class="sig-name descname"><span class="n"><span class="pre">AsciiToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AsciiToString" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">AsciiToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AsciiToString" title="Permalink to this definition"></a></dt>
 <dd><p>Converts an ASCII or Latin-1 encoded string to a JavaScript String object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -497,7 +498,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="intArrayFromString">
-<span class="sig-name descname"><span class="n"><span class="pre">intArrayFromString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stringy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dontAddNull</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#intArrayFromString" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">intArrayFromString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stringy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dontAddNull</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#intArrayFromString" title="Permalink to this definition"></a></dt>
 <dd><p>This converts a JavaScript string into a C-line array of numbers, 0-terminated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -515,7 +516,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="intArrayToString">
-<span class="sig-name descname"><span class="n"><span class="pre">intArrayToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#intArrayToString" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">intArrayToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#intArrayToString" title="Permalink to this definition"></a></dt>
 <dd><p>This creates a JavaScript string from a zero-terminated C-line array of numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -531,7 +532,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="writeArrayToMemory">
-<span class="sig-name descname"><span class="n"><span class="pre">writeArrayToMemory</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#writeArrayToMemory" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">writeArrayToMemory</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#writeArrayToMemory" title="Permalink to this definition"></a></dt>
 <dd><p>Writes an array to a specified address in the heap. Note that memory should to be allocated for the array before it is written.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -545,11 +546,11 @@
 
 </section>
 <section id="run-dependencies">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Run dependencies</a><a class="headerlink" href="#run-dependencies" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Run dependencies</a><a class="headerlink" href="#run-dependencies" title="Permalink to this heading"></a></h2>
 <p>Note that generally run dependencies are managed by the file packager and other parts of the system. It is rare for developers to use this API directly.</p>
 <dl class="js function">
 <dt class="sig sig-object js" id="addRunDependency">
-<span class="sig-name descname"><span class="n"><span class="pre">addRunDependency</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#addRunDependency" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">addRunDependency</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#addRunDependency" title="Permalink to this definition"></a></dt>
 <dd><p>Adds an <code class="docutils literal notranslate"><span class="pre">id</span></code> to the list of run dependencies.</p>
 <p>This adds a run dependency and increments the run dependency counter.</p>
 <dl class="field-list simple">
@@ -563,7 +564,7 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="removeRunDependency">
-<span class="sig-name descname"><span class="n"><span class="pre">removeRunDependency</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#removeRunDependency" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">removeRunDependency</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#removeRunDependency" title="Permalink to this definition"></a></dt>
 <dd><p>Removes a specified <code class="docutils literal notranslate"><span class="pre">id</span></code> from the list of run dependencies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -576,10 +577,10 @@
 
 </section>
 <section id="stack-trace">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Stack trace</a><a class="headerlink" href="#stack-trace" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Stack trace</a><a class="headerlink" href="#stack-trace" title="Permalink to this heading"></a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="stackTrace">
-<span class="sig-name descname"><span class="n"><span class="pre">stackTrace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#stackTrace" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">stackTrace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#stackTrace" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the current stack track.</p>
 <blockquote>
 <div><div class="admonition note">
@@ -596,53 +597,53 @@
 
 </section>
 <section id="type-accessors-for-the-memory-model">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Type accessors for the memory model</a><a class="headerlink" href="#type-accessors-for-the-memory-model" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Type accessors for the memory model</a><a class="headerlink" href="#type-accessors-for-the-memory-model" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-memory-model"><span class="std std-ref">Emscripten memory representation</span></a> uses a typed array buffer (<code class="docutils literal notranslate"><span class="pre">ArrayBuffer</span></code>) to represent memory, with different views into it giving access to the different types. The views for accessing different types of memory are listed below.</p>
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAP8">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAP8</span></span></span><a class="headerlink" href="#HEAP8" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAP8</span></span></span><a class="headerlink" href="#HEAP8" title="Permalink to this definition"></a></dt>
 <dd><p>View for 8-bit signed memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAP16">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAP16</span></span></span><a class="headerlink" href="#HEAP16" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAP16</span></span></span><a class="headerlink" href="#HEAP16" title="Permalink to this definition"></a></dt>
 <dd><p>View for 16-bit signed memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAP32">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAP32</span></span></span><a class="headerlink" href="#HEAP32" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAP32</span></span></span><a class="headerlink" href="#HEAP32" title="Permalink to this definition"></a></dt>
 <dd><p>View for 32-bit signed memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAPU8">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAPU8</span></span></span><a class="headerlink" href="#HEAPU8" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAPU8</span></span></span><a class="headerlink" href="#HEAPU8" title="Permalink to this definition"></a></dt>
 <dd><p>View for 8-bit unsigned memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAPU16">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAPU16</span></span></span><a class="headerlink" href="#HEAPU16" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAPU16</span></span></span><a class="headerlink" href="#HEAPU16" title="Permalink to this definition"></a></dt>
 <dd><p>View for 16-bit unsigned memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAPU32">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAPU32</span></span></span><a class="headerlink" href="#HEAPU32" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAPU32</span></span></span><a class="headerlink" href="#HEAPU32" title="Permalink to this definition"></a></dt>
 <dd><p>View for 32-bit unsigned memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAPF32">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAPF32</span></span></span><a class="headerlink" href="#HEAPF32" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAPF32</span></span></span><a class="headerlink" href="#HEAPF32" title="Permalink to this definition"></a></dt>
 <dd><p>View for 32-bit float memory.</p>
 </dd></dl>
 
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAPF64">
-<span class="sig-name descname"><span class="n"><span class="pre">HEAPF64</span></span></span><a class="headerlink" href="#HEAPF64" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">HEAPF64</span></span></span><a class="headerlink" href="#HEAPF64" title="Permalink to this definition"></a></dt>
 <dd><p>View for 64-bit float memory.</p>
 </dd></dl>
 
