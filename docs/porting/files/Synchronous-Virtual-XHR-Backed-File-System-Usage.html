@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.73-git (dev) documentation</title>
+  <title>Synchronous Virtual XHR Backed File System Usage &mdash; Emscripten 3.1.74-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=eb41fcef"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2efb6e40"></script>
       <script src="../../../_static/doctools.js?v=888ff710"></script>
       <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -217,83 +217,20 @@
 </li>
 <li><p>You will need a page that spawns the web worker.</p>
 <p>The <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L1286">test code</a> that does this is shown below:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">      &lt;html&gt;</span>
-<span class="sd">      &lt;body&gt;</span>
-<span class="sd">        Worker Test</span>
-<span class="sd">        &lt;script&gt;</span>
-<span class="sd">          var worker = new Worker(&#39;worker.js&#39;);</span>
-<span class="sd">          worker.onmessage = async (event) =&gt; {</span>
-<span class="sd">            await fetch(&#39;http://localhost:%s/report_result?&#39; + event.data);</span>
-<span class="sd">            window.close();</span>
-<span class="sd">          };</span>
-<span class="sd">        &lt;/script&gt;</span>
-<span class="sd">      &lt;/body&gt;</span>
-<span class="sd">      &lt;/html&gt;</span>
-<span class="sd">    &#39;&#39;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-
-    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMCC</span><span class="p">,</span> <span class="n">test_file</span><span class="p">(</span><span class="s1">&#39;hello_world_worker.c&#39;</span><span class="p">),</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;worker.js&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_emcc_args</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">file_data</span><span class="p">:</span>
-      <span class="n">cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;--preload-file&#39;</span><span class="p">,</span> <span class="s1">&#39;file.dat&#39;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">run_process</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">assertExists</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">run_browser</span><span class="p">(</span><span class="s1">&#39;main.html&#39;</span><span class="p">,</span> <span class="s1">&#39;/report_result?hello from worker, and :&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;data for w&#39;</span> <span class="k">if</span> <span class="n">file_data</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
-
-    <span class="c1"># code should run standalone too</span>
-    <span class="c1"># To great memories &gt;4gb we need the canary version of node</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_4gb</span><span class="p">():</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">require_node_canary</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">assertContained</span><span class="p">(</span><span class="s1">&#39;you should not see this text when in a worker!&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_js</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">))</span>
-
-  <span class="nd">@no_wasmfs</span><span class="p">(</span><span class="s1">&#39;https://github.com/emscripten-core/emscripten/issues/19608&#39;</span><span class="p">)</span>
-  <span class="k">def</span> <span class="nf">test_mmap_lazyfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">create_file</span><span class="p">(</span><span class="s1">&#39;lazydata.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;hello world&#39;</span><span class="p">)</span>
-    <span class="n">create_file</span><span class="p">(</span><span class="s1">&#39;pre.js&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">      Module[&quot;preInit&quot;] = () =&gt; {</span>
-<span class="s1">        FS.createLazyFile(&#39;/&#39;, &quot;lazy.txt&quot;, &quot;lazydata.dat&quot;, true, false);</span>
-<span class="s1">      }</span>
-<span class="s1">    &#39;&#39;&#39;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">emcc_args</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;--pre-js=pre.js&#39;</span><span class="p">,</span> <span class="s1">&#39;--proxy-to-worker&#39;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">btest_exit</span><span class="p">(</span><span class="s1">&#39;test_mmap_lazyfile.c&#39;</span><span class="p">)</span>
-
-  <span class="nd">@no_wasmfs</span><span class="p">(</span><span class="s1">&#39;https://github.com/emscripten-core/emscripten/issues/19608&#39;</span><span class="p">)</span>
-  <span class="nd">@no_firefox</span><span class="p">(</span><span class="s1">&#39;keeps sending OPTIONS requests, and eventually errors&#39;</span><span class="p">)</span>
-  <span class="k">def</span> <span class="nf">test_chunked_synchronous_xhr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="n">main</span> <span class="o">=</span> <span class="s1">&#39;chunked_sync_xhr.html&#39;</span>
-    <span class="n">worker_filename</span> <span class="o">=</span> <span class="s2">&quot;download_and_checksum_worker.js&quot;</span>
-
-    <span class="n">create_file</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">      &lt;!doctype html&gt;</span>
-<span class="s2">      &lt;html&gt;</span>
-<span class="s2">      &lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;Chunked XHR&lt;/title&gt;&lt;/head&gt;</span>
-<span class="s2">      &lt;body&gt;</span>
-<span class="s2">        Chunked XHR Web Worker Test</span>
-<span class="s2">        &lt;script&gt;</span>
-<span class="s2">          var worker = new Worker(&quot;</span><span class="si">%s</span><span class="s2">&quot;);</span>
-<span class="s2">          var buffer = [];</span>
-<span class="s2">          worker.onmessage = async (event) =&gt; {</span>
-<span class="s2">            if (event.data.channel === &quot;stdout&quot;) {</span>
-<span class="s2">              await fetch(&#39;http://localhost:</span><span class="si">%s</span><span class="s2">/report_result?&#39; + event.data.line);</span>
-<span class="s2">              window.close();</span>
-<span class="s2">            } else {</span>
-<span class="s2">              if (event.data.trace) event.data.trace.split(&quot;\n&quot;).map(function(v) { console.error(v); });</span>
-<span class="s2">              if (event.data.line) {</span>
-<span class="s2">                console.error(event.data.line);</span>
-<span class="s2">              } else {</span>
-<span class="s2">                var v = event.data.char;</span>
-<span class="s2">                if (v == 10) {</span>
-<span class="s2">                  var line = buffer.splice(0);</span>
-<span class="s2">                  console.error(line = line.map(function(charCode){return String.fromCharCode(charCode);}).join(&#39;&#39;));</span>
-<span class="s2">                } else {</span>
-<span class="s2">                  buffer.push(v);</span>
-<span class="s2">                }</span>
-<span class="s2">              }</span>
-<span class="s2">            }</span>
-<span class="s2">          };</span>
-<span class="s2">        &lt;/script&gt;</span>
-<span class="s2">      &lt;/body&gt;</span>
-<span class="s2">      &lt;/html&gt;</span>
-<span class="s2">    </span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+      <span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+        <span class="n">Worker</span> <span class="n">Test</span>
+        <span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+          <span class="n">var</span> <span class="n">worker</span> <span class="o">=</span> <span class="n">new</span> <span class="n">Worker</span><span class="p">(</span><span class="s1">&#39;worker.js&#39;</span><span class="p">);</span>
+          <span class="n">worker</span><span class="o">.</span><span class="n">onmessage</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">await</span> <span class="n">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:</span><span class="si">%s</span><span class="s1">/report_result?&#39;</span> <span class="o">+</span> <span class="n">event</span><span class="o">.</span><span class="n">data</span><span class="p">);</span>
+            <span class="n">window</span><span class="o">.</span><span class="n">close</span><span class="p">();</span>
+          <span class="p">};</span>
+        <span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+    
 </pre></div>
 </div>
 </li>
