@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emscripten Contrib Ports &mdash; Emscripten 4.0.0-git (dev) documentation</title>
+  <title>Emscripten Contrib Ports &mdash; Emscripten 4.0.5-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=faf469f6"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=67e9f72b"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="GitLab.html">Building and Deploying on GitLab</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Emscripten Contrib Ports</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#contrib-glfw3">contrib.glfw3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contrib-lua">contrib.lua</a></li>
 </ul>
 </li>
 </ul>
@@ -149,11 +150,11 @@ available in emscripten. In order to use a contrib port you use the
 <code class="docutils literal notranslate"><span class="pre">--use-port=&lt;port_name&gt;</span></code> option (<a class="reference internal" href="../tools_reference/emcc.html#emcc-use-port"><span class="std std-ref">emcc</span></a>).</p>
 <section id="contrib-glfw3">
 <span id="id1"></span><h2>contrib.glfw3<a class="headerlink" href="#contrib-glfw3" title="Permalink to this heading"></a></h2>
-<p>This project is an emscripten port of GLFW written in C++ for the
+<p>This project is an Emscripten port of GLFW written in C++ for the
 web/webassembly platform.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>emscripten includes support for both GLFW 2 and 3 written in Javascript.
+<p>Emscripten includes support for both GLFW 2 and 3 written in Javascript.
 These can be activated with the <a class="reference internal" href="../tools_reference/settings_reference.html#use-glfw"><span class="std std-ref">settings</span></a> <code class="docutils literal notranslate"><span class="pre">-sUSE_GLFW=2</span></code>
 and <code class="docutils literal notranslate"><span class="pre">-sUSE_GLFW=3</span></code>. This non-official contribution, written in C++,
 provides a more extensive and up-to-date implementation of the GLFW 3 API
@@ -162,6 +163,34 @@ than the built-in port. It is enabled with the option
 </div>
 <p><a class="reference external" href="https://github.com/pongasoft/emscripten-glfw">Project information</a></p>
 <p>License: Apache 2.0 license</p>
+</section>
+<section id="contrib-lua">
+<span id="id2"></span><h2>contrib.lua<a class="headerlink" href="#contrib-lua" title="Permalink to this heading"></a></h2>
+<p>Lua is a powerful, efficient, lightweight, embeddable scripting language.</p>
+<p>Example usage:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>// main.c
+#include &lt;lua.h&gt;
+#include &lt;lualib.h&gt;
+#include &lt;lauxlib.h&gt;
+#include &lt;stdio.h&gt;
+
+int main() {
+  lua_State *L = luaL_newstate();
+  luaL_openlibs(L);
+  if (luaL_dostring(L, &quot;print(&#39;hello world&#39;)&quot;) != LUA_OK) {
+    printf(&quot;Error running Lua code %s\n&quot;, lua_tostring(L, -1));
+    lua_pop(L, 1);
+  }
+  lua_close(L);
+  return 0;
+}
+
+// compile with
+emcc --use-port=contrib.lua main.c -o /tmp/index.html
+</pre></div>
+</div>
+<p><a class="reference external" href="https://www.lua.org/">Project information</a></p>
+<p>License: MIT License</p>
 </section>
 </section>
 
