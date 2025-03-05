@@ -410,11 +410,22 @@ returns or errors thrown.</p>
 </div>
 <section id="automatic-memory-management">
 <h3>Automatic memory management<a class="headerlink" href="#automatic-memory-management" title="Permalink to this heading"></a></h3>
-<p>JavaScript only gained support for <a class="reference external" href="http://en.wikipedia.org/wiki/Finalizer">finalizers</a> in ECMAScript 2021, or ECMA-262
-Edition 12. The new API is called <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry">FinalizationRegistry</a> and it still does not
-offer any guarantees that the provided finalization callback will be called.
-Embind uses this for cleanup if available, but only for smart pointers,
-and only as a last resort.</p>
+<p>Embind integrates with the <a class="reference external" href="https://tc39.es/proposal-explicit-resource-management/">Explicit Resource Management</a> proposal.</p>
+<p>It allows to automatically delete short-lived C++ objects at the end of the
+scope when they’re declared with a <cite>using</cite> keyword:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">using</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">MyClass</span><span class="p">;</span>
+<span class="nx">x</span><span class="p">.</span><span class="nx">method</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>At the moment of writing, this proposal is natively supported in
+Chromium-based browsers as well as Babel and TypeScript via transpilation.</p>
+<p>Embind also supports <a class="reference external" href="http://en.wikipedia.org/wiki/Finalizer">finalizers</a>, which were added in ECMAScript 2021 under a
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry">FinalizationRegistry</a> API. Unlike the <cite>using</cite> keyword, finalizers are not
+guaranteed to be called, and even if they are, there are no guarantees about
+their timing or order of execution, which makes them unsuitable for general
+RAII-style resource management.</p>
+<p>Embind uses it for cleanup if available, but only for smart pointers, and only
+as a last resort.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>It is strongly recommended that JavaScript code explicitly deletes
