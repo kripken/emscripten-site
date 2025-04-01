@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>C++ Exceptions Support &mdash; Emscripten 4.0.5-git (dev) documentation</title>
+  <title>C++ Exceptions Support &mdash; Emscripten 4.0.7-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=67e9f72b"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3f4efb59"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -77,6 +77,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#using-exceptions-and-setjmp-longjmp-together">Using Exceptions and setjmp-longjmp Together</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations-regarding-std-terminate">Limitations regarding std::terminate()</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
@@ -286,6 +287,58 @@ code example.</p>
 <section id="using-exceptions-and-setjmp-longjmp-together">
 <h2>Using Exceptions and setjmp-longjmp Together<a class="headerlink" href="#using-exceptions-and-setjmp-longjmp-together" title="Permalink to this heading"></a></h2>
 <p>See <a class="reference internal" href="setjmp-longjmp.html#using-exceptions-and-setjmp-longjmp-together"><span class="std std-ref">Using Exceptions and setjmp-longjmp Together</span></a>.</p>
+</section>
+<section id="limitations-regarding-std-terminate">
+<h2>Limitations regarding std::terminate()<a class="headerlink" href="#limitations-regarding-std-terminate" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><ul>
+<li><p>Currently <a class="reference external" href="https://en.cppreference.com/w/cpp/error/set_terminate">std::set_terminate</a> is NOT supported
+when a thrown exception does not have a matching handler and unwinds all the
+stack up to the topmost caller and crashes the program, i.e., there is no
+<code class="docutils literal notranslate"><span class="pre">catch</span></code> that catches it and the callers are not marked as <code class="docutils literal notranslate"><span class="pre">noexcept</span></code>.
+This applies to both Emscripten-style and WebAssembly exceptions. That
+functionality requires <a class="reference external" href="https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html">two-phase exception handling</a>, which neither
+supports. So the following program does NOT print <code class="docutils literal notranslate"><span class="pre">my</span> <span class="pre">set_terminate</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;exception&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">set_terminate</span><span class="p">([]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;my set_terminate&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">abort</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="k">throw</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>When the exception handling encounters a termination condition, libc++abi
+spec says we call <cite>__cxa_begin_catch()</cite> to mark the exception as handled and
+then call <cite>std::terminate()</cite>. But currently Wasm EH does not support calling
+<cite>__cxa_begin_catch()</cite>. So the following program prints <code class="docutils literal notranslate"><span class="pre">exception_ptr</span> <span class="pre">is</span>
+<span class="pre">null</span></code>, where it is supposed to print <code class="docutils literal notranslate"><span class="pre">exception_ptr</span> <span class="pre">is</span> <span class="pre">NOT</span> <span class="pre">null</span></code>; note
+that the use of <code class="docutils literal notranslate"><span class="pre">noexcept</span></code> here means that the <code class="docutils literal notranslate"><span class="pre">throw</span> <span class="pre">3</span></code> will turn into
+a termination condition.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;exception&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">set_terminate</span><span class="p">([]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">current_exception</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;exception_ptr is NOT null&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;exception_ptr is null&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">abort</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="k">throw</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This can possibly be supported in the future.</p>
+</li>
+</ul>
+</div></blockquote>
 </section>
 </section>
 
