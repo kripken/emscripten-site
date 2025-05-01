@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FAQ &mdash; Emscripten 4.0.7-git (dev) documentation</title>
+  <title>FAQ &mdash; Emscripten 4.0.9-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3f4efb59"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6f4ad846"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -453,21 +453,14 @@ anything new, but you can set it from JavaScript at runtime in a flexible way.</
 <p>The crucial thing is that <code class="docutils literal notranslate"><span class="pre">Module</span></code> exists, and has the property
 <code class="docutils literal notranslate"><span class="pre">onRuntimeInitialized</span></code>, before the script containing emscripten output
 (<code class="docutils literal notranslate"><span class="pre">my_project.js</span></code> in this example) is loaded.</p>
-<p>Another option is to use the <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> option, using <code class="docutils literal notranslate"><span class="pre">-sMODULARIZE</span></code>.
-That puts all of the generated JavaScript into a factory function, which you can
-call to create an instance of your module. The factory function returns a
-Promise that resolves with the module instance. The promise is resolved once
-it’s safe to call the compiled code, i.e. after the compiled code has been
-downloaded and instantiated. For example, if you build with <code class="docutils literal notranslate"><span class="pre">-sMODULARIZE</span> <span class="pre">-s</span>
-<span class="pre">'EXPORT_NAME=&quot;createMyModule&quot;'</span></code>, then you can do this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">createMyModule</span><span class="p">(</span><span class="o">/*</span> <span class="n">optional</span> <span class="n">default</span> <span class="n">settings</span> <span class="o">*/</span><span class="p">)</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">Module</span><span class="p">)</span> <span class="p">{</span>
+<p>When using the <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> is it sufficient to await the returned promise
+from the factory function.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">createMyModule</span><span class="p">(</span><span class="o">/*</span> <span class="n">optional</span> <span class="n">default</span> <span class="n">settings</span> <span class="o">*/</span><span class="p">)</span><span class="o">.</span><span class="n">then</span><span class="p">((</span><span class="n">myModule</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="o">//</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">reached</span> <span class="n">when</span> <span class="n">everything</span> <span class="ow">is</span> <span class="n">ready</span><span class="p">,</span> <span class="ow">and</span> <span class="n">you</span> <span class="n">can</span> <span class="n">call</span> <span class="n">methods</span> <span class="n">on</span> <span class="n">Module</span>
 <span class="p">});</span>
 </pre></div>
 </div>
-<p>Note that in <code class="docutils literal notranslate"><span class="pre">MODULARIZE</span></code> mode we do not look for a global Module object for
-default values. Default values must be passed as a parameter to the factory
-function.  (see details in settings.js)</p>
+<p>See <a class="reference internal" href="../compiling/Modularized-Output.html#modularized-output"><span class="std std-ref">Modularized Output</span></a> for more this.</p>
 </section>
 <section id="what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run">
 <span id="faq-no-exit-runtime"></span><h2>What does “exiting the runtime” mean? Why don’t <code class="docutils literal notranslate"><span class="pre">atexit()s</span></code> run?<a class="headerlink" href="#what-does-exiting-the-runtime-mean-why-don-t-atexit-s-run" title="Permalink to this heading"></a></h2>

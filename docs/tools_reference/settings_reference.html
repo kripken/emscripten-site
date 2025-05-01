@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emscripten Compiler Settings &mdash; Emscripten 4.0.7-git (dev) documentation</title>
+  <title>Emscripten Compiler Settings &mdash; Emscripten 4.0.9-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3f4efb59"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6f4ad846"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -287,6 +287,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#signature-conversions">SIGNATURE_CONVERSIONS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#source-phase-imports">SOURCE_PHASE_IMPORTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#wasm-esm-integration">WASM_ESM_INTEGRATION</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#js-base64-api">JS_BASE64_API</a></li>
 </ul>
 </li>
 </ul>
@@ -366,12 +367,12 @@
              
   <section id="emscripten-compiler-settings">
 <span id="settings-reference"></span><h1>Emscripten Compiler Settings<a class="headerlink" href="#emscripten-compiler-settings" title="Permalink to this heading"></a></h1>
-<p>The following is a complete list of settings that can be passed
-to emscripten via <code class="docutils literal notranslate"><span class="pre">-s</span></code> on the command line.  For example
-<code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> or <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS=0</span></code>.  For more details see the
-<a class="reference internal" href="emcc.html#emcc-s-option-value"><span class="std std-ref">emcc</span></a> documentation.</p>
-<p>Unless otherwise noted these settings only apply when linking
-and have no effect during compilation.</p>
+<p>The following is a complete list of settings that can be passed to emscripten
+via <code class="docutils literal notranslate"><span class="pre">-s</span></code> on the command line.  For example <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> or
+<code class="docutils literal notranslate"><span class="pre">-sASSERTIONS=0</span></code>.  For more details see the <a class="reference internal" href="emcc.html#emcc-s-option-value"><span class="std std-ref">emcc</span></a>
+documentation.</p>
+<p>Unless otherwise noted these settings only apply when linking and have no effect
+during compilation.</p>
 <section id="assertions">
 <span id="id1"></span><h2>ASSERTIONS<a class="headerlink" href="#assertions" title="Permalink to this heading"></a></h2>
 <p>Whether we should add runtime assertions. This affects both JS and how
@@ -711,11 +712,8 @@ sent value to memory and loaded the received type from the same memory (using
 truncs/extends/ reinterprets). This means that when types do not match the
 emulated values may not match (this is true of native too, for that matter -
 this is all undefined behavior). This approaches appears good enough to
-support Python, which is the main use case motivating this feature.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This setting is deprecated</p>
-</div>
+support Python (the original motiviation for this feature) and Glib (the
+continued motivation).</p>
 <p>Default value: false</p>
 </section>
 <section id="exception-debug">
@@ -2208,13 +2206,9 @@ Alternate syntax: –use-port=sqlite3</p>
 </section>
 <section id="wasm-workers">
 <span id="id173"></span><h2>WASM_WORKERS<a class="headerlink" href="#wasm-workers" title="Permalink to this heading"></a></h2>
-<p>If 1, enables support for Wasm Workers. Wasm Workers enable applications
+<p>Enables support for Wasm Workers.  Wasm Workers enable applications
 to create threads using a lightweight web-specific API that builds on top
-of Wasm SharedArrayBuffer + Atomics API. When enabled, a new build output
-file a.ww.js will be generated to bootstrap the Wasm Worker JS contexts.
-If 2, enables support for Wasm Workers, but without using a separate a.ww.js
-file on the side. This can simplify deployment of builds, but will have a
-downside that the generated build will no longer be csp-eval compliant.
+of Wasm SharedArrayBuffer + Atomics API.
 [compile+link] - affects user code at compile and system libraries at link.</p>
 <p>Default value: 0</p>
 </section>
@@ -2827,6 +2821,18 @@ Requires EXPORT_ES6</p>
 <span id="id229"></span><h2>WASM_ESM_INTEGRATION<a class="headerlink" href="#wasm-esm-integration" title="Permalink to this heading"></a></h2>
 <p>Experimental support for wasm ESM integration.
 Requires EXPORT_ES6 and MODULARIZE=instance</p>
+<p>Default value: false</p>
+</section>
+<section id="js-base64-api">
+<span id="id230"></span><h2>JS_BASE64_API<a class="headerlink" href="#js-base64-api" title="Permalink to this heading"></a></h2>
+<p>Enable use of the JS arraybuffer-base64 API:
+<a class="reference external" href="https://github.com/tc39/proposal-arraybuffer-base64">https://github.com/tc39/proposal-arraybuffer-base64</a>
+To run the resulting code currently requires passing <cite>–js_base_64</cite> to node
+or chrome.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an experimental setting</p>
+</div>
 <p>Default value: false</p>
 </section>
 </section>

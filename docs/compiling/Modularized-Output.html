@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Building and Deploying on GitLab &mdash; Emscripten 4.0.9-git (dev) documentation</title>
+  <title>Modularized Output &mdash; Emscripten 4.0.9-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Emscripten Contrib Ports" href="Contrib-Ports.html" />
-    <link rel="prev" title="Deploying Emscripten Compiled Pages" href="Deploying-Pages.html" /> 
+    <link rel="next" title="Dynamic Linking" href="Dynamic-Linking.html" />
+    <link rel="prev" title="Building to WebAssembly" href="WebAssembly.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -53,14 +53,18 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WebAssembly.html">Building to WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Modularized Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-smodularize">Using -sMODULARIZE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-es6-modules">Generating ES6 Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-smodularize-instance-experimental">Using -sMODULARIZE=instance (experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#source-phase-imports-experimental">Source Phase Imports (experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#es-module-integration-experimental">ES Module Integration (experimental)</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Dynamic-Linking.html">Dynamic Linking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Building and Deploying on GitLab</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#a-sample-gitlab-ci-yml">A sample .gitlab-ci.yml</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="GitLab.html">Building and Deploying on GitLab</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Contrib-Ports.html">Emscripten Contrib Ports</a></li>
 </ul>
 </li>
@@ -120,7 +124,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Building and Deploying on GitLab</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Modularized Output</div>
   </div>
  
 </div>
@@ -133,46 +137,107 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Building and Deploying on GitLab</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Modularized Output</div>
   </div>
  
 </div> -->
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="building-and-deploying-on-gitlab">
-<span id="gitlab"></span><h1>Building and Deploying on GitLab<a class="headerlink" href="#building-and-deploying-on-gitlab" title="Permalink to this heading"></a></h1>
-<p><a class="reference external" href="https://about.gitlab.com/product/continuous-integration/">GitLab CI/CD</a> is a popular continuous integration service which offers free plans to everyone. Thanks to an <a class="reference external" href="https://pkgs.alpinelinux.org/packages?name=emscripten">Alpine Linux package by Jakub Jirutka</a> installing emscripten in GitLab CI/CD is literally a one line task.</p>
-<section id="a-sample-gitlab-ci-yml">
-<h2>A sample .gitlab-ci.yml<a class="headerlink" href="#a-sample-gitlab-ci-yml" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alpine:3.9</span>
-
-<span class="nt">before_script</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apk add emscripten make --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing</span>
-
-<span class="nt">pages</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">script</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make</span>
-<span class="w">  </span><span class="nt">artifacts</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
-<span class="w">  </span><span class="nt">only</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
+  <section id="modularized-output">
+<span id="id1"></span><h1>Modularized Output<a class="headerlink" href="#modularized-output" title="Permalink to this heading"></a></h1>
+<p>By default, emscripten outputs regular JS scripts which can be loaded on the Web
+via a <code class="docutils literal notranslate"><span class="pre">script</span></code> tag, or on the command line using Node or other JS runtime.</p>
+<p>In this default configuration the generated <a class="reference internal" href="../api_reference/module.html#module"><span class="std std-ref">Module object</span></a> variable (and indeed
+all of the emscripten internal symbols) are added to the global scope.  This
+means that only one emscripten-built program can be loaded in a given scope
+(since multiple modules would clobber each other’s state).</p>
+<p>The <a class="reference internal" href="../tools_reference/settings_reference.html#modularize"><span class="std std-ref">MODULARIZE</span></a> setting (along with other related settings) can be used to
+isolate the generated module within its own private scope and/or allow multiple
+instances of the same module to be created.</p>
+<p>This section covers the various modularization options available and how to use
+them.</p>
+<section id="using-smodularize">
+<h2>Using -sMODULARIZE<a class="headerlink" href="#using-smodularize" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference internal" href="../tools_reference/settings_reference.html#modularize"><span class="std std-ref">MODULARIZE</span></a> setting has two primary functions.  Firstly, it
+puts all of the generated code inside its own scope so that the global namespace
+is not polluted when the JS is loaded (for example, via <code class="docutils literal notranslate"><span class="pre">script</span></code> tag).
+Secondly, it allows multiple instances of the module to be created.</p>
+<p>The generated factory function is async and it returns a promise of an instance
+of the program.  It can be called any number of times to create multiple
+separate and isolated instances of the same program.</p>
+<p>By default, the factory function is called <code class="docutils literal notranslate"><span class="pre">Module</span></code>, but it can be given a
+unique name via the <code class="docutils literal notranslate"><span class="pre">-sEXPORT_NAME</span></code> setting.</p>
+<p>For example, a program is built using <code class="docutils literal notranslate"><span class="pre">-sMODUARLIZE</span> <span class="pre">-sEXPORT_NAME=Foo</span></code> can
+be instantiated using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">myFoo</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Foo</span><span class="p">({</span> <span class="o">/*</span> <span class="n">optional</span> <span class="n">params</span> <span class="o">*/</span> <span class="p">});</span>
+<span class="n">myFoo</span><span class="o">.</span><span class="n">_nativeMethod</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>Let’s break it down:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">before_script</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apk add emscripten make --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing</span>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Foo</span><span class="p">({</span> <span class="o">/*</span> <span class="n">optional</span> <span class="n">params</span> <span class="o">*/</span> <span class="p">})</span><span class="o">.</span><span class="n">then</span><span class="p">((</span><span class="n">myFoo</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="n">myFoo</span><span class="o">.</span><span class="n">_nativeMethod</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>In the before_script stage we download the package from the Alpine Linux testing repository.</p>
-<p>This step also contains the command to add an additional build tool <em>make</em>.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">script</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make</span>
+<p>If node is included in the <code class="docutils literal notranslate"><span class="pre">-sENVIRONMENT</span></code> setting then the generated module
+also acts as a <code class="docutils literal notranslate"><span class="pre">CommonJS</span></code> module under node.</p>
+<p>Because there is no global <code class="docutils literal notranslate"><span class="pre">Module</span></code> object in this case any parameters to the
+module creation are passed via the optional parameter to the factory function.
+For example, if you wanted to use a custom <code class="docutils literal notranslate"><span class="pre">print</span></code> method you could write:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">myFoo</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Foo</span><span class="p">({</span> <span class="nb">print</span><span class="p">:</span> <span class="n">myPrint</span> <span class="p">});</span>
 </pre></div>
 </div>
-<p>In the script stage we can now run the commands we want. In this sample we are using <em>make</em>, but you can call <em>emcc</em> directly if you prefer.</p>
-<p>For an example of this setup in practice, see <a class="reference external" href="https://pages.gitlab.io/emscripten">the Example Emscripten site using GitLab Pages</a>.</p>
+</section>
+<section id="generating-es6-modules">
+<h2>Generating ES6 Modules<a class="headerlink" href="#generating-es6-modules" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> setting can be used to instead output JavaScript in the
+form of an ES module.  (The ES module format did not exist at time when the
+<cite>MODULARIZE</cite> setting was first created otherwise this would likely be the
+default).</p>
+<p>Using an output filename that ends in <cite>.mjs</cite> will automatically enable this
+setting.</p>
+<p>In this mode the module has a single default export which is the factory
+function for creating new instances of the module.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Foo</span> <span class="kn">from</span> <span class="s1">&#39;./emcc-output.js&#39;</span><span class="p">;</span>
+<span class="n">var</span> <span class="n">myFoo</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Foo</span><span class="p">({</span> <span class="nb">print</span><span class="p">:</span> <span class="n">myPrint</span> <span class="p">});</span>
+</pre></div>
+</div>
+<p>The name <code class="docutils literal notranslate"><span class="pre">Foo</span></code> here can be whatever you choose and will always be assigned to
+the default export of the module.</p>
+</section>
+<section id="using-smodularize-instance-experimental">
+<h2>Using -sMODULARIZE=instance (experimental)<a class="headerlink" href="#using-smodularize-instance-experimental" title="Permalink to this heading"></a></h2>
+<p>Emscripten has experimental support for performing only the encapsulation part of
+modularization, and not the ability to create multiple instances.  In this
+mode a module is created that exports a single instance of the program rather
+than a factory function.</p>
+<p>This setting only works when <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is enabled.</p>
+<p>In this mode the default export of the module is an initializer function which
+allows input parameters to be passed to the instance.  Other elements normally
+found on the module object are instead exported directly.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Import</span> <span class="n">the</span> <span class="n">default</span> <span class="n">init</span> <span class="n">function</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">named</span> <span class="n">native</span> <span class="n">method</span>
+<span class="kn">import</span> <span class="nn">init</span><span class="o">,</span> <span class="p">{</span> <span class="n">_nativeMethod</span> <span class="p">}</span>  <span class="kn">from</span> <span class="s1">&#39;./emcc-output.js&#39;</span><span class="p">;</span>
+<span class="k">await</span> <span class="n">init</span><span class="p">({</span> <span class="nb">print</span><span class="p">:</span> <span class="n">myPrint</span> <span class="p">});</span>
+<span class="n">_nativeMethod</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="source-phase-imports-experimental">
+<h2>Source Phase Imports (experimental)<a class="headerlink" href="#source-phase-imports-experimental" title="Permalink to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/tc39/proposal-source-phase-imports">Source phase imports</a> is a JavaScript proposal that adds support for importing
+Wasm modules via ES import statements.  This allows emscripten to elide some of
+the auto-generated code for finding and fetching the Wasm binary.</p>
+<p>See <a class="reference internal" href="../tools_reference/settings_reference.html#source-phase-imports"><span class="std std-ref">SOURCE_PHASE_IMPORTS</span></a>.</p>
+<p>This setting only works when <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is enabled.</p>
+</section>
+<section id="es-module-integration-experimental">
+<h2>ES Module Integration (experimental)<a class="headerlink" href="#es-module-integration-experimental" title="Permalink to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/WebAssembly/esm-integration">Wasm ESM integration</a> is a WebAssembly proposal that allows Wasm instances to
+be imported directly as ES modules.  This allows emscripten to elide a lot of
+boilerplate code for linking up Wasm and JavaScript.</p>
+<p>See <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-esm-integration"><span class="std std-ref">WASM_ESM_INTEGRATION</span></a>.</p>
+<p>This setting only works when <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is enabled.</p>
 </section>
 </section>
 
@@ -183,10 +248,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Contrib-Ports.html" class="btn btn-neutral float-right" title="Emscripten Contrib Ports"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="Dynamic-Linking.html" class="btn btn-neutral float-right" title="Dynamic Linking"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Deploying-Pages.html" class="btn btn-neutral" title="Deploying Emscripten Compiled Pages"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="WebAssembly.html" class="btn btn-neutral" title="Building to WebAssembly"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -237,7 +302,7 @@
       
           <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Compiling and Running Projects</a>
       
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Building and Deploying on GitLab</div>
+    <div class="breadcrumb-box-item">&raquo;&nbsp;Modularized Output</div>
   </div>
  
 </div> -->
@@ -260,7 +325,7 @@
       </li>
 	  
 	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Building%20and%20Deploying%20on%20GitLab%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/GitLab&labels=bug">Page bug</a>
+        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Modularized%20Output%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/compiling/Modularized-Output&labels=bug">Page bug</a>
       </li>
   </ul>
   
