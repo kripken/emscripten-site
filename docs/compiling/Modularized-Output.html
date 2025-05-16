@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Modularized Output &mdash; Emscripten 4.0.9-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
   
@@ -56,9 +56,15 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Modularized Output</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#using-smodularize">Using -sMODULARIZE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#generating-es6-modules">Generating ES6 Modules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#using-smodularize-instance-experimental">Using -sMODULARIZE=instance (experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-smodularize-instance-experimental">Using -sMODULARIZE=instance (experimental)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#source-phase-imports-experimental">Source Phase Imports (experimental)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#es-module-integration-experimental">ES Module Integration (experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#es-module-integration-experimental">ES Module Integration (experimental)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Limitations</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Dynamic-Linking.html">Dynamic Linking</a></li>
@@ -199,7 +205,7 @@ default).</p>
 setting.</p>
 <p>In this mode the module has a single default export which is the factory
 function for creating new instances of the module.  For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Foo</span> <span class="kn">from</span> <span class="s1">&#39;./emcc-output.js&#39;</span><span class="p">;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">Foo</span> <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;./emcc-output.js&#39;</span><span class="p">;</span>
 <span class="n">var</span> <span class="n">myFoo</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Foo</span><span class="p">({</span> <span class="nb">print</span><span class="p">:</span> <span class="n">myPrint</span> <span class="p">});</span>
 </pre></div>
 </div>
@@ -212,16 +218,38 @@ the default export of the module.</p>
 modularization, and not the ability to create multiple instances.  In this
 mode a module is created that exports a single instance of the program rather
 than a factory function.</p>
-<p>This setting only works when <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is enabled.</p>
+<p>This setting implicitly enables <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> and will not work when
+<a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is explictly disabled.</p>
 <p>In this mode the default export of the module is an initializer function which
 allows input parameters to be passed to the instance.  Other elements normally
 found on the module object are instead exported directly.  For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Import</span> <span class="n">the</span> <span class="n">default</span> <span class="n">init</span> <span class="n">function</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">named</span> <span class="n">native</span> <span class="n">method</span>
-<span class="kn">import</span> <span class="nn">init</span><span class="o">,</span> <span class="p">{</span> <span class="n">_nativeMethod</span> <span class="p">}</span>  <span class="kn">from</span> <span class="s1">&#39;./emcc-output.js&#39;</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">init</span><span class="o">,</span><span class="w"> </span><span class="p">{</span> <span class="n">_nativeMethod</span> <span class="p">}</span>  <span class="kn">from</span><span class="w"> </span><span class="s1">&#39;./emcc-output.js&#39;</span><span class="p">;</span>
 <span class="k">await</span> <span class="n">init</span><span class="p">({</span> <span class="nb">print</span><span class="p">:</span> <span class="n">myPrint</span> <span class="p">});</span>
 <span class="n">_nativeMethod</span><span class="p">();</span>
 </pre></div>
 </div>
+<section id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h3>
+<p>Some major features still do not work in this mode.  Many of these we hope to
+fix in future releses.  Current limitations include:</p>
+<ul class="simple">
+<li><p>Internal usage (e.g. usage within EM_JS / JS libary code) of the <code class="docutils literal notranslate"><span class="pre">Module</span></code>
+global does not work.  This is because symbols are exported directly using
+ES6 module syntax rathar than using the <code class="docutils literal notranslate"><span class="pre">Module</span></code> global.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">wasmExports</span></code> internal global does not exist.</p></li>
+<li><p><cite>ccall</cite>/<cite>cwrap</cite> are not supported (depends on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> global).</p></li>
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#abort-on-wasm-exceptions"><span class="std std-ref">ABORT_ON_WASM_EXCEPTIONS</span></a> is not supported (requires wrapping wasm
+exports).</p></li>
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#dyncalls"><span class="std std-ref">DYNCALLS</span></a> is not supported (depends on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> global)</p></li>
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify"><span class="std std-ref">ASYNCIFY</span></a> is not supported (depends on <a class="reference internal" href="../tools_reference/settings_reference.html#dyncalls"><span class="std std-ref">DYNCALLS</span></a>)</p></li>
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-lazy-load-code"><span class="std std-ref">ASYNCIFY_LAZY_LOAD_CODE</span></a> is not supported (depends on <code class="docutils literal notranslate"><span class="pre">wasmExports</span></code>
+global)</p></li>
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#minimal-runtime"><span class="std std-ref">MINIMAL_RUNTIME</span></a> is not supported.</p></li>
+<li><p>The output of file_packager is not compatible so <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">--preload-file &lt;name&gt;</span></a> and
+<a class="reference internal" href="../tools_reference/emcc.html#emcc-embed-file"><span class="std std-ref">--embed-file &lt;file&gt;</span></a> do not work.</p></li>
+</ul>
+</section>
 </section>
 <section id="source-phase-imports-experimental">
 <h2>Source Phase Imports (experimental)<a class="headerlink" href="#source-phase-imports-experimental" title="Permalink to this heading"></a></h2>
@@ -229,7 +257,8 @@ found on the module object are instead exported directly.  For example:</p>
 Wasm modules via ES import statements.  This allows emscripten to elide some of
 the auto-generated code for finding and fetching the Wasm binary.</p>
 <p>See <a class="reference internal" href="../tools_reference/settings_reference.html#source-phase-imports"><span class="std std-ref">SOURCE_PHASE_IMPORTS</span></a>.</p>
-<p>This setting only works when <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is enabled.</p>
+<p>This setting implicitly enables <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> and will not work when
+<a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is explictly disabled.</p>
 </section>
 <section id="es-module-integration-experimental">
 <h2>ES Module Integration (experimental)<a class="headerlink" href="#es-module-integration-experimental" title="Permalink to this heading"></a></h2>
@@ -237,7 +266,18 @@ the auto-generated code for finding and fetching the Wasm binary.</p>
 be imported directly as ES modules.  This allows emscripten to elide a lot of
 boilerplate code for linking up Wasm and JavaScript.</p>
 <p>See <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-esm-integration"><span class="std std-ref">WASM_ESM_INTEGRATION</span></a>.</p>
-<p>This setting only works when <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> is enabled.</p>
+<section id="id2">
+<h3>Limitations<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p>This setting implicitly enables <a class="reference internal" href="../tools_reference/settings_reference.html#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> and sets <a class="reference internal" href="../tools_reference/settings_reference.html#modularize"><span class="std std-ref">MODULARIZE</span></a> to
+<code class="docutils literal notranslate"><span class="pre">instance</span></code>.  Because of this all the same limitations mentioned above for
+<code class="docutils literal notranslate"><span class="pre">-sMODULARIZE=intance</span></code> apply.</p>
+<p>Some additional limitations are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-pthread</span></code> / <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-workers"><span class="std std-ref">WASM_WORKERS</span></a> are not yet supported.</p></li>
+<li><p>Setting <a class="reference internal" href="../tools_reference/settings_reference.html#wasm"><span class="std std-ref">WASM</span></a> to <code class="docutils literal notranslate"><span class="pre">0</span></code> is not supported.</p></li>
+<li><p>Setting <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-async-compilation"><span class="std std-ref">WASM_ASYNC_COMPILATION</span></a> to <code class="docutils literal notranslate"><span class="pre">0</span></code> is not supported.</p></li>
+</ul>
+</section>
 </section>
 </section>
 
