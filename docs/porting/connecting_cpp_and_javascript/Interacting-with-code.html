@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interacting with code &mdash; Emscripten 4.0.9-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+  <title>Interacting with code &mdash; Emscripten 4.0.10-git (dev) documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=6895f958" />
 
   
     <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=6f4ad846"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a94b31d4"></script>
       <script src="../../../_static/doctools.js?v=888ff710"></script>
       <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -521,19 +521,17 @@ before the <code class="docutils literal notranslate"><span class="pre">EM_ASM</
 <span id="implement-c-in-javascript"></span><h2>Implement a C API in JavaScript<a class="headerlink" href="#implement-a-c-api-in-javascript" title="Permalink to this heading"></a></h2>
 <p>It is possible to implement a C API in JavaScript! This is the approach
 used in many of Emscripten’s libraries, like SDL1 and OpenGL.</p>
-<p>You can use it to write your own APIs to call from C/C++. To do this
-you define the interface, decorating with <code class="docutils literal notranslate"><span class="pre">extern</span></code> to mark the methods
-in the API as external symbols. You then implement the symbols in
-JavaScript by simply adding their definition to <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/library.js">library.js</a> (by
-default). When compiling the C code, the compiler looks in the JavaScript
-libraries for relevant external symbols.</p>
-<p>By default, the implementation is added to <strong>library.js</strong> (and this is
-where you’ll find parts of Emscripten’s <em>libc</em>). You can put
-the JavaScript implementation in your own library file and add it using
-the <a class="reference internal" href="../../tools_reference/emcc.html#emcc-js-library"><span class="std std-ref">emcc option</span></a> <code class="docutils literal notranslate"><span class="pre">--js-library</span></code>. See
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_core.py#L5043">test_jslib</a> in <strong>test/test_other.py</strong> for a complete working
-example, including the syntax you should use inside the JavaScript library
-file.</p>
+<p>You can use it to write your own APIs to call from C/C++. To do this you define
+the interface, decorating with <code class="docutils literal notranslate"><span class="pre">extern</span></code> to mark the methods in the API as
+external symbols. You can then implement the symbols in JavaScript by simply
+adding their definition to one of the <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/lib/">core JS library</a> files.  Undefined
+native symbols will be resolved by looking for them in JavaScript library files.</p>
+<p>The <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/lib/">core JS library</a> files are where you will find Emscripten internals. For
+example, parts of Emscripten’s <em>libc</em> are implemented there. You can also put
+the JavaScript implementation in your own library file and add it using the
+<a class="reference internal" href="../../tools_reference/emcc.html#emcc-js-library"><span class="std std-ref">emcc option</span></a> <code class="docutils literal notranslate"><span class="pre">--js-library</span></code>. See <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/4.0.9/test/test_core.py#L6261">test_jslib</a> in
+<strong>test/test_other.py</strong> for a complete working example, including the syntax you
+should use inside the JavaScript library file.</p>
 <p>As a simple example, consider the case where you have some C code like this:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">my_js</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
