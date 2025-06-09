@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>preamble.js &mdash; Emscripten 4.0.10-git (dev) documentation</title>
+  <title>preamble.js &mdash; Emscripten 4.0.11-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=a94b31d4"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=8518b7ed"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -382,13 +382,14 @@
 <h2><a class="toc-backref" href="#id5" role="doc-backlink">Conversion functions — strings, pointers and arrays</a><a class="headerlink" href="#conversion-functions-strings-pointers-and-arrays" title="Permalink to this heading"></a></h2>
 <dl class="js function">
 <dt class="sig sig-object js" id="UTF8ToString">
-<span class="sig-name descname"><span class="n"><span class="pre">UTF8ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToRead</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#UTF8ToString" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">UTF8ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToRead</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">ignoreNul</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#UTF8ToString" title="Permalink to this definition"></a></dt>
 <dd><p>Given a pointer <code class="docutils literal notranslate"><span class="pre">ptr</span></code> to a null-terminated UTF8-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ptr</strong> – A pointer to a null-terminated UTF8-encoded string in the Emscripten HEAP.</p></li>
-<li><p><strong>maxBytesToRead</strong> – An optional length that specifies the maximum number of bytes to read. You can omit this parameter to scan the string until the first 0 byte. If maxBytesToRead is passed, and the string at <code class="docutils literal notranslate"><span class="pre">[ptr,</span> <span class="pre">ptr+maxBytesToReadr)</span></code> contains a null byte in the middle, then the string will cut short at that byte index (i.e. maxBytesToRead will not produce a string of exact length <code class="docutils literal notranslate"><span class="pre">[ptr,</span> <span class="pre">ptr+maxBytesToRead)</span></code>) N.B. mixing frequent uses of <code class="docutils literal notranslate"><span class="pre">UTF8ToString()</span></code> with and without maxBytesToRead may throw JS JIT optimizations off, so it is worth to consider consistently using one style or the other.</p></li>
+<li><p><strong>maxBytesToRead</strong> – An optional length that specifies the maximum number of bytes to read. You can omit this parameter to scan the string until the first 0 byte. If maxBytesToRead is passed, and the string at <code class="docutils literal notranslate"><span class="pre">[ptr,</span> <span class="pre">ptr+maxBytesToReadr)</span></code> contains a null byte in the middle, then the string will cut short at that byte index. N.B. mixing frequent uses of this function with and without maxBytesToRead may throw JS JIT optimizations off, so it is worth to consider consistently using one style or the other.</p></li>
+<li><p><strong>ignoreNul</strong> – If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the function will not stop on a NUL character, but will read the entire string up to <code class="docutils literal notranslate"><span class="pre">maxBytesToRead</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -415,12 +416,14 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="UTF16ToString">
-<span class="sig-name descname"><span class="n"><span class="pre">UTF16ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#UTF16ToString" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">UTF16ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToRead</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">ignoreNul</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#UTF16ToString" title="Permalink to this definition"></a></dt>
 <dd><p>Given a pointer <code class="docutils literal notranslate"><span class="pre">ptr</span></code> to a null-terminated UTF16LE-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ptr</strong> – A pointer to a null-terminated UTF16LE-encoded string in the Emscripten HEAP.</p></li>
+<li><p><strong>maxBytesToRead</strong> – An optional length that specifies the maximum number of bytes to read. You can omit this parameter to scan the string until the first 0 byte. If maxBytesToRead is passed, and the string at <code class="docutils literal notranslate"><span class="pre">[ptr,</span> <span class="pre">ptr+maxBytesToReadr)</span></code> contains a null byte in the middle, then the string will cut short at that byte index. N.B. mixing frequent uses of this function with and without maxBytesToRead may throw JS JIT optimizations off, so it is worth to consider consistently using one style or the other.</p></li>
+<li><p><strong>ignoreNul</strong> – If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the function will not stop on a NUL character, but will read the entire string up to <code class="docutils literal notranslate"><span class="pre">maxBytesToRead</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -447,12 +450,14 @@
 
 <dl class="js function">
 <dt class="sig sig-object js" id="UTF32ToString">
-<span class="sig-name descname"><span class="n"><span class="pre">UTF32ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#UTF32ToString" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="n"><span class="pre">UTF32ToString</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptr</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">maxBytesToRead</span></span></em><span class="optional">]</span><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">ignoreNul</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#UTF32ToString" title="Permalink to this definition"></a></dt>
 <dd><p>Given a pointer <code class="docutils literal notranslate"><span class="pre">ptr</span></code> to a null-terminated UTF32LE-encoded string in the Emscripten HEAP, returns a copy of that string as a JavaScript <code class="docutils literal notranslate"><span class="pre">String</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ptr</strong> – A pointer to a null-terminated UTF32LE-encoded string in the Emscripten HEAP.</p></li>
+<li><p><strong>maxBytesToRead</strong> – An optional length that specifies the maximum number of bytes to read. You can omit this parameter to scan the string until the first 0 byte. If maxBytesToRead is passed, and the string at <code class="docutils literal notranslate"><span class="pre">[ptr,</span> <span class="pre">ptr+maxBytesToReadr)</span></code> contains a null byte in the middle, then the string will cut short at that byte index. N.B. mixing frequent uses of this function with and without maxBytesToRead may throw JS JIT optimizations off, so it is worth to consider consistently using one style or the other.</p></li>
+<li><p><strong>ignoreNul</strong> – If <code class="docutils literal notranslate"><span class="pre">true</span></code>, the function will not stop on a NUL character, but will read the entire string up to <code class="docutils literal notranslate"><span class="pre">maxBytesToRead</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
