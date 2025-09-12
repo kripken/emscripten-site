@@ -175,7 +175,7 @@ should link with something higher.)</p>
 </dl>
 <dl class="simple" id="emcc-o1">
 <dt><code class="docutils literal notranslate"><span class="pre">-O1</span></code></dt><dd><p>[compile+link]
-Simple optimizations. During the compile step these include LLVM <code class="docutils literal notranslate"><span class="pre">-O1</span></code> optimizations. During the link step this does not include various runtime assertions in JS that <cite>-O0</cite> would do.</p>
+Simple optimizations. During the compile step these include LLVM <code class="docutils literal notranslate"><span class="pre">-O1</span></code> optimizations. During the link step this omits various runtime assertions in JS that <cite>-O0</cite> would include.</p>
 </dd>
 </dl>
 <dl id="emcc-o2">
@@ -189,7 +189,7 @@ Like <code class="docutils literal notranslate"><span class="pre">-O1</span></co
 </dl>
 <dl id="emcc-o3">
 <dt><code class="docutils literal notranslate"><span class="pre">-O3</span></code></dt><dd><p>[compile+link]
-Like <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but with additional optimizations that may take longer to run.</p>
+Like <code class="docutils literal notranslate"><span class="pre">-O2</span></code>, but with additional optimizations that may take longer to run and may increase code size.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is a good setting for a release build.</p>
@@ -198,8 +198,8 @@ Like <code class="docutils literal notranslate"><span class="pre">-O2</span></co
 </dl>
 <dl class="simple" id="emcc-og">
 <dt><code class="docutils literal notranslate"><span class="pre">-Og</span></code></dt><dd><p>[compile+link]
-Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>. In future versions, this option might disable different
-optimizations in order to improve debuggability.</p>
+Like <code class="docutils literal notranslate"><span class="pre">-O1</span></code>, with an additional flag to extend the liveness of variables for improved debugging.
+In future versions, additional optimizations might also be disabled.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-os">
@@ -299,9 +299,11 @@ wasm object files. This option must be used together with <code class="docutils 
 </dd>
 </dl>
 <dl id="emcc-gsource-map">
-<dt><code class="docutils literal notranslate"><span class="pre">-gsource-map[=inline]</span></code></dt><dd><p>[link]
+<dt><code class="docutils literal notranslate"><span class="pre">-gsource-map[=inline]</span></code></dt><dd><p>[compile+link]
+[same as -g3 if passed at compile time, otherwise applies at link]
 Generate a source map using LLVM debug information (which must
-be present in object files, i.e., they should have been compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code>).</p>
+be present in object files, i.e., they should have been compiled with <code class="docutils literal notranslate"><span class="pre">-g</span></code>
+or <code class="docutils literal notranslate"><span class="pre">-gsource-map</span></code>).</p>
 <p>When this option is provided, the <strong>.wasm</strong> file is updated to have a
 <code class="docutils literal notranslate"><span class="pre">sourceMappingURL</span></code> section. The resulting URL will have format:
 <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;wasm-file-name&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">.map</span></code>. <code class="docutils literal notranslate"><span class="pre">&lt;base-url&gt;</span></code> defaults
@@ -316,29 +318,33 @@ having a large source map file).</p>
 </dl>
 <dl id="emcc-gn">
 <dt><code class="docutils literal notranslate"><span class="pre">-g&lt;level&gt;</span></code></dt><dd><p>[compile+link]
-Controls the level of debuggability. Each level builds on the previous one:</p>
+If used at compile time, adds progressively more DWARF information to the object file,
+according to the underlying behavior of clang.
+If used at link time, controls the level of debuggability overall. Each level builds on the previous one:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p id="emcc-g0"><code class="docutils literal notranslate"><span class="pre">-g0</span></code>: Make no effort to keep code debuggable.</p>
 </li>
-<li><p id="emcc-g1"><code class="docutils literal notranslate"><span class="pre">-g1</span></code>: When linking, preserve whitespace in JavaScript.</p>
+<li><p id="emcc-g1"><code class="docutils literal notranslate"><span class="pre">-g1</span></code>: Preserve whitespace in JavaScript.</p>
 </li>
-<li><p id="emcc-g2"><code class="docutils literal notranslate"><span class="pre">-g2</span></code>: When linking, preserve function names in compiled code.</p>
+<li><p id="emcc-g2"><code class="docutils literal notranslate"><span class="pre">-g2</span></code>: Also preserve function names in compiled code (via the wasm name section).</p>
 </li>
-<li><p id="emcc-g3"><code class="docutils literal notranslate"><span class="pre">-g3</span></code>: When compiling to object files, keep debug info, including JS whitespace, function names, and LLVM debug info (DWARF) if any (this is the same as <a class="reference internal" href="#emcc-g"><span class="std std-ref">-g</span></a>).</p>
+<li><p id="emcc-g3"><code class="docutils literal notranslate"><span class="pre">-g3</span></code>: Also keep LLVM debug info (DWARF) if there is any in the object files (this is the same as <a class="reference internal" href="#emcc-g"><span class="std std-ref">-g</span></a>).</p>
 </li>
 </ul>
 </div></blockquote>
 </dd>
 </dl>
 <dl class="simple" id="emcc-profiling">
-<dt><code class="docutils literal notranslate"><span class="pre">--profiling</span></code></dt><dd><p>[same as -g2 if passed at compile time, otherwise applies at link]
-Use reasonable defaults when emitting JavaScript to make the build readable but still useful for profiling. This sets <code class="docutils literal notranslate"><span class="pre">-g2</span></code> (preserve whitespace and function names) and may also enable optimizations that affect performance and otherwise might not be performed in <code class="docutils literal notranslate"><span class="pre">-g2</span></code>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">--profiling</span></code></dt><dd><p>[link]
+Make the output suitable for profiling. This means including function names in the wasm and JS output, and
+preserving whitespace in the JS output. It does not affect optimizations (to ensure that performance profiles
+reflect production builds). Currenly this is the same as <code class="docutils literal notranslate"><span class="pre">-g2</span></code>.</p>
 </dd>
 </dl>
 <dl class="simple" id="emcc-profiling-funcs">
 <dt><code class="docutils literal notranslate"><span class="pre">--profiling-funcs</span></code></dt><dd><p>[link]
-Preserve function names in profiling, but otherwise minify whitespace and names as we normally do in optimized builds. This is useful if you want to look at profiler results based on function names, but do <em>not</em> intend to read the emitted code.</p>
+Preserve wasm function names as in <code class="docutils literal notranslate"><span class="pre">--profiling</span></code>, but otherwise minify whitespace and names as we normally do in optimized builds. This is useful if you want to look at profiler results based on function names, but do <em>not</em> intend to read the emitted code.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">--tracing</span></code></dt><dd><p>[link]
 Enable the <a class="reference internal" href="../api_reference/trace.h.html#trace-h"><span class="std std-ref">Emscripten Tracing API</span></a>.</p>
@@ -354,7 +360,8 @@ libraries that that were passed to the compiler.</p>
 Save a map file between function indexes in the Wasm and function names. By
 storing the names on a file on the side, you can avoid shipping the names, and
 can still reconstruct meaningful stack traces by translating the indexes back
-to the names.</p>
+to the names. This is a simpler format than source maps, but less detailed
+because it only describes function names and not source locations.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When used with <code class="docutils literal notranslate"><span class="pre">-sWASM=2</span></code>, two symbol files are created. <code class="docutils literal notranslate"><span class="pre">[name].js.symbols</span></code> (with WASM symbols) and <code class="docutils literal notranslate"><span class="pre">[name].wasm.js.symbols</span></code> (with ASM.js symbols)</p>
