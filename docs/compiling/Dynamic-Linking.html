@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dynamic Linking &mdash; Emscripten 4.0.15-git (dev) documentation</title>
+  <title>Dynamic Linking &mdash; Emscripten 4.0.19-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3456af09"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3cf58064"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -251,9 +251,9 @@ along with the main module, during startup and they are linked together
 before your application starts to run.</p>
 <ul class="simple">
 <li><p>Build one part of your code as the main module, linking it using
-<code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE</span></code> (See <a class="reference internal" href="../tools_reference/settings_reference.html#main-module"><span class="std std-ref">MAIN_MODULE</span></a>).</p></li>
 <li><p>Build other parts of your code as side modules, linking it using
-<code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code> (See <a class="reference internal" href="../tools_reference/settings_reference.html#side-module"><span class="std std-ref">SIDE_MODULE</span></a>).</p></li>
 </ul>
 <p>For the main module the output suffix should be <code class="docutils literal notranslate"><span class="pre">.js</span></code> (the WebAssembly
 file will be generated alongside it just like normal).  For the side
@@ -289,14 +289,14 @@ then use <code class="docutils literal notranslate"><span class="pre">dlopen(),<
 <p>By default, main modules disable dead code elimination. That means that
 all the code compiled remains in the output, including all system
 libraries linked in, and also all the JS library code.</p>
-<p>That is the default behavior since it is the least surprising. But it is
-also possible to use normal dead code elimination, by building with
-<code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE=2</span></code> (instead of 1). In that mode, the main module is
-built normally, with no special behavior for keeping code alive. It is
-then your responsibility to make sure that code that side modules need
-is kept alive. You can do this either by adding to <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> or
-tagging the symbol <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code> in the source code.
-See <code class="docutils literal notranslate"><span class="pre">other.test_minimal_dynamic</span></code> for an example of this in action.</p>
+<p>That is the default behavior since it is the least surprising. But it is also
+possible to use normal dead code elimination, by building with
+<code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE=2</span></code> (instead of 1). In that mode, the main module is built
+normally, with no special behavior for keeping code alive. It is then your
+responsibility to make sure that code that side modules need is kept alive. You
+can do this either by adding to <a class="reference internal" href="../tools_reference/settings_reference.html#exported-functions"><span class="std std-ref">EXPORTED_FUNCTIONS</span></a> or tagging the symbol
+<code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code> in the source code. See <code class="docutils literal notranslate"><span class="pre">other.test_minimal_dynamic</span></code>
+for an example of this in action.</p>
 <p>If you are doing load time dynamic linking then any symbols needed by
 the side modules specified on the command line will be kept alive
 automatically. For this reason we strongly recommend using <code class="docutils literal notranslate"><span class="pre">MAIN_MODULE=2</span></code>
@@ -331,24 +331,24 @@ symbols remain unresolved, and code can start to run even if there are.
 It will run successfully if they are not called in practice. If they
 are, you will get a runtime error. What went wrong should be clear from
 the stack trace (in an unminified build); building with
-<code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> can help some more.</p>
+<a class="reference internal" href="../tools_reference/settings_reference.html#assertions"><span class="std std-ref">ASSERTIONS</span></a> can help some more.</p>
 </section>
 <section id="limitations">
 <h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>Chromium does not support compiling &gt;4kB WASM on the main thread, and that
-includes side modules; you can use <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code> (in <code class="docutils literal notranslate"><span class="pre">emcc</span></code> or
-<code class="docutils literal notranslate"><span class="pre">file_packager.py</span></code>) to make Emscripten compile them on startup
-<a class="reference external" href="https://emscripten.org/docs/porting/files/packaging_files.html#preloading-files">[doc]</a>
-<a class="reference external" href="https://groups.google.com/forum/#!topic/emscripten-discuss/cE3hUV3fDSw">[discuss]</a>.</p></li>
+<li><p>Chromium does not support synchronous compiling of Wasm modules over 8Mb on
+the main thread.  You could run into this limit when using the synchronous
+<code class="docutils literal notranslate"><span class="pre">dlopen</span></code> API to load large side modules.   Emscripten has async versions of
+<code class="docutils literal notranslate"><span class="pre">dlopen</span></code> that can work around this issue (See <a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_dlopen" title="emscripten_dlopen"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_dlopen()</span></code></a>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> and <code class="docutils literal notranslate"><span class="pre">EM_JS</span></code> code defined within side modules depends on <code class="docutils literal notranslate"><span class="pre">eval</span></code>
-support and are therefore incompatible with <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code>.</p></li>
+support and are therefore incompatible with <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> (See
+<a class="reference internal" href="../tools_reference/settings_reference.html#dynamic-execution"><span class="std std-ref">DYNAMIC_EXECUTION</span></a>).</p></li>
 </ul>
 </section>
 <section id="pthreads-support">
 <h3>Pthreads support<a class="headerlink" href="#pthreads-support" title="Permalink to this heading"></a></h3>
 <p>Dynamic linking + pthreads is is still experimental.  As such, linking with both
-<code class="docutils literal notranslate"><span class="pre">MAIN_MODULE</span></code> and <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> will produce a warning.</p>
+<a class="reference internal" href="../tools_reference/settings_reference.html#main-module"><span class="std std-ref">MAIN_MODULE</span></a> and <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> will produce a warning.</p>
 <p>While load-time dynamic linking works without any complications, runtime dynamic
 linking via <code class="docutils literal notranslate"><span class="pre">dlopen</span></code>/<code class="docutils literal notranslate"><span class="pre">dlsym</span></code> can require some extra consideration.  The
 reason for this is that keeping the indirection function pointer table in sync

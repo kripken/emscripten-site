@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Embind &mdash; Emscripten 4.0.15-git (dev) documentation</title>
+  <title>Embind &mdash; Emscripten 4.0.19-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=3456af09"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=3cf58064"></script>
       <script src="../../../_static/doctools.js?v=888ff710"></script>
       <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -1316,6 +1316,19 @@ which does not provide much useful information for API’s that consume or
 produce <cite>val</cite> types. To give better type information, custom <cite>val</cite> types can be
 registered using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">EMSCRIPTEN_DECLARE_VAL_TYPE()</span></code> in combination with
 <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">emscripten::register_type</span></code>. An example below:</p>
+<p>Two registration forms are supported:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Single parameter: <code class="docutils literal notranslate"><span class="pre">register_type&lt;T&gt;(definition)</span></code> — the provided string is inlined</dt><dd><p>everywhere the type appears.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Two parameters: <code class="docutils literal notranslate"><span class="pre">register_type&lt;T&gt;(name,</span> <span class="pre">definition)</span></code> — creates a named TypeScript</dt><dd><p>type alias (<code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">name</span> <span class="pre">=</span> <span class="pre">definition;</span></code>) and uses <code class="docutils literal notranslate"><span class="pre">name</span></code> at call sites.</p>
+</dd>
+</dl>
+</li>
+</ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_DECLARE_VAL_TYPE</span><span class="p">(</span><span class="n">CallbackType</span><span class="p">);</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">function_with_callback_param</span><span class="p">(</span><span class="n">CallbackType</span><span class="w"> </span><span class="n">ct</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1326,6 +1339,9 @@ registered using <code class="xref cpp cpp-func docutils literal notranslate"><s
 <span class="n">EMSCRIPTEN_BINDINGS</span><span class="p">(</span><span class="n">custom_val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">function</span><span class="p">(</span><span class="s">&quot;function_with_callback_param&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">function_with_callback_param</span><span class="p">);</span>
 <span class="w">    </span><span class="n">register_type</span><span class="o">&lt;</span><span class="n">CallbackType</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;(message: string) =&gt; void&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Named alias form (emits: type Callback = (message: string) =&gt; void;)</span>
+<span class="w">    </span><span class="n">register_type</span><span class="o">&lt;</span><span class="n">CallbackType</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;Callback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;(message: string) =&gt; void&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>

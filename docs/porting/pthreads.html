@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pthreads support &mdash; Emscripten 4.0.15-git (dev) documentation</title>
+  <title>Pthreads support &mdash; Emscripten 4.0.19-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3456af09"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=3cf58064"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -283,7 +283,7 @@ main browser thread, where it can return to the main event loop as needed.</p></
 </li>
 <li><p>The Emscripten implementation does not support <a class="reference external" href="http://man7.org/linux/man-pages/man7/signal.7.html">POSIX signals</a>, which are sometimes used in conjunction with pthreads. This is because it is not possible to send signals to web workers and pre-empt their execution. The only exception to this is pthread_kill() which can be used as normal to forcibly terminate a running thread.</p></li>
 <li><p>The Emscripten implementation does also not support multiprocessing via <code class="docutils literal notranslate"><span class="pre">fork()</span></code> and <code class="docutils literal notranslate"><span class="pre">join()</span></code>.</p></li>
-<li><p>For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref “dom.workers.maxPerDomain”.</p></li>
+<li><p>For web security purposes, there exists a fixed limit (by default 20) of threads that can be spawned when running in Firefox Nightly. <a class="reference external" href="https://bugzil.la/1052398">#1052398</a>. To adjust the limit, navigate to <a class="reference external" href="about:config">about:config</a> and change the value of the pref “dom.workers.maxPerDomain”.</p></li>
 <li><p>Some of the features in the pthreads specification are unsupported since the upstream musl library that Emscripten utilizes does not support them, or they are marked optional and a conformant implementation need not support them. Such unsupported features in Emscripten include prioritization of threads, and pthread_rwlock_unlock() is not performed in thread priority order. The functions pthread_mutexattr_set/getprotocol(), pthread_mutexattr_set/getprioceiling() and pthread_attr_set/getscope() are no-ops.</p></li>
 <li><p>One particular note to pay attention to when porting is that sometimes in existing codebases the callback function pointers to pthread_create() and pthread_cleanup_push() omit the void* argument, which strictly speaking is undefined behavior in C/C++, but works in several x86 calling conventions. Doing this in Emscripten will issue a compiler warning, and can abort at runtime when attempting to call a function pointer with incorrect signature, so in the presence of such errors, it is good to check the signatures of the thread callback functions.</p></li>
 <li><p>Note that the function emscripten_num_logical_cores() will always return the value of navigator.hardwareConcurrency, i.e. the number of logical cores on the system, even when shared memory is not supported. This means that it is possible for emscripten_num_logical_cores() to return a value greater than 1, while at the same time emscripten_has_threading_support() can return false. The return value of emscripten_has_threading_support() denotes whether the browser has shared memory support available.</p></li>
