@@ -2,7 +2,7 @@ Emscripten Website
 ==================
 
 This repo holds the static emscripten documentation website.  It gets
-built and published automatically based on the file that live in the
+built and published automatically based on the files that live in the
 main emscripten repo.
 
 The update manually you can run `tools/main/update_docs.py` from the
