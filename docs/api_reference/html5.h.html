@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>html5.h &mdash; Emscripten 4.0.20-git (dev) documentation</title>
+  <title>html5.h &mdash; Emscripten 4.0.21-git (dev) documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=48315d46"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6462db7f"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -57,6 +57,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">html5.h</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-use-this-api">How to use this API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#registration-functions">Registration functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unregister-function">Unregister function</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#callback-functions">Callback functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#functions-affected-by-web-security">Functions affected by web security</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#test-example-code">Test/Example code</a></li>
@@ -382,6 +383,50 @@ call the registration function, for example.)</p>
 <p id="userdata-parameter-html5-api">The <code class="docutils literal notranslate"><span class="pre">userData</span></code> parameter is a user-defined value that is passed (unchanged) to the registered event callback. This can be used to, for example, pass a pointer to a C++ class or similarly to enclose the C API in a clean object-oriented manner.</p>
 <p id="usecapture-parameter-html5-api">The <code class="docutils literal notranslate"><span class="pre">useCapture</span></code> parameter  maps to <code class="docutils literal notranslate"><span class="pre">useCapture</span></code> in <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">EventTarget.addEventListener</a>. It indicates whether or not to initiate <em>capture</em>: if <code class="docutils literal notranslate"><span class="pre">true</span></code> the callback will be invoked only for the DOM capture and target phases; if <code class="docutils literal notranslate"><span class="pre">false</span></code> the callback will be triggered during the target and bubbling phases. See <a class="reference external" href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-phases">DOM Level 3 Events</a> for a more detailed explanation.</p>
 <p>Most functions return the result using the type <a class="reference internal" href="#c.EMSCRIPTEN_RESULT" title="EMSCRIPTEN_RESULT"><code class="xref c c-data docutils literal notranslate"><span class="pre">EMSCRIPTEN_RESULT</span></code></a>. Zero and positive values denote success. Negative values signal failure. None of the functions fail or abort by throwing a JavaScript or C++ exception. If a particular browser does not support the given feature, the value <code class="xref c c-data docutils literal notranslate"><span class="pre">EMSCRIPTEN_RESULT_NOT_SUPPORTED</span></code> will be returned at the time the callback is registered.</p>
+</section>
+<section id="unregister-function">
+<h3>Unregister function<a class="headerlink" href="#unregister-function" title="Permalink to this heading"></a></h3>
+<p>In order to unregister a single event handler callback, call the following function:</p>
+<blockquote>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">EMSCRIPTEN_RESULT</span><span class="w"> </span><span class="n">emscripten_html5_remove_event_listener</span><span class="p">(</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">target</span><span class="p">,</span><span class="w">   </span><span class="c1">// ID of the target HTML element.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">,</span><span class="w">       </span><span class="c1">// User-defined data (passed to the callback).</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">eventTypeId</span><span class="p">,</span><span class="w">      </span><span class="c1">// The event type ID (EMSCRIPTEN_EVENT_XXX).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">callback</span><span class="w">        </span><span class="c1">// Callback function.</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">target</span></code>, <code class="docutils literal notranslate"><span class="pre">userData</span></code> and <code class="docutils literal notranslate"><span class="pre">callback</span></code> parameters are the same parameters provided in <code class="docutils literal notranslate"><span class="pre">emscripten_set_some_callback</span></code> with the only difference being that, since this function applies to all types of callbacks, the type of <code class="docutils literal notranslate"><span class="pre">callback</span></code> is <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">*</span></code>.</p>
+<p>Note in particular that the value of <code class="docutils literal notranslate"><span class="pre">userData</span></code> will need to match with the call that was used to register the callback. If you are having trouble, double check the value of <code class="docutils literal notranslate"><span class="pre">userData</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">eventTypeId</span></code> represents the event type, the same Id received in the callback functions.</p>
+<p>The function returns <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_RESULT_SUCCESS</span></code> when the event handler callback is removed and <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_RESULT_INVALID_PARAM</span></code> otherwise.</p>
+<blockquote>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">my_mouse_callback_1</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenMouseEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mouseEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="nf">my_mouse_callback_2</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">EmscriptenMouseEvent</span><span class="w"> </span><span class="o">*</span><span class="n">mouseEvent</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="c1">// 1. set callbacks for mouse down and mouse move</span>
+<span class="w">  </span><span class="n">emscripten_set_mousedown_callback</span><span class="p">(</span><span class="s">&quot;#mydiv&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">my_mouse_callback_1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_set_mousedown_callback</span><span class="p">(</span><span class="s">&quot;#mydiv&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="n">my_mouse_callback_2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_set_mousemove_callback</span><span class="p">(</span><span class="s">&quot;#mydiv&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">my_mouse_callback_1</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 2. remove these callbacks</span>
+<span class="w">  </span><span class="n">emscripten_html5_remove_event_listener</span><span class="p">(</span><span class="s">&quot;#mydiv&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">EMSCRIPTEN_EVENT_MOUSEDOWN</span><span class="p">,</span><span class="w"> </span><span class="n">my_mouse_callback_1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_html5_remove_event_listener</span><span class="p">(</span><span class="s">&quot;#mydiv&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="n">EMSCRIPTEN_EVENT_MOUSEDOWN</span><span class="p">,</span><span class="w"> </span><span class="n">my_mouse_callback_2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">emscripten_html5_remove_event_listener</span><span class="p">(</span><span class="s">&quot;#mydiv&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">EMSCRIPTEN_EVENT_MOUSEMOVE</span><span class="p">,</span><span class="w"> </span><span class="n">my_mouse_callback_1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 <section id="callback-functions">
 <h3>Callback functions<a class="headerlink" href="#callback-functions" title="Permalink to this heading"></a></h3>
