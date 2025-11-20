@@ -246,6 +246,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#fetch-support-indexeddb">FETCH_SUPPORT_INDEXEDDB</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fetch-debug">FETCH_DEBUG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fetch">FETCH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fetch-streaming">FETCH_STREAMING</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#wasmfs">WASMFS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#single-file">SINGLE_FILE</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#single-file-binary-encode">SINGLE_FILE_BINARY_ENCODE</a></li>
@@ -2441,8 +2442,26 @@ application, to save a few kBytes.</p>
 <p>If nonzero, enables emscripten_fetch API.</p>
 <p>Default value: false</p>
 </section>
+<section id="fetch-streaming">
+<span id="id189"></span><h2>FETCH_STREAMING<a class="headerlink" href="#fetch-streaming" title="Permalink to this heading"></a></h2>
+<p>Enables streaming fetched data when the fetch attribute
+EMSCRIPTEN_FETCH_STREAM_DATA is used. For streaming requests, the DOM Fetch
+API is used otherwise XMLHttpRequest is used.
+Both modes generally support the same API, but there are some key
+differences:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>XHR supports synchronous requests</p></li>
+<li><p>XHR supports overriding mime types</p></li>
+<li><p>Fetch supports streaming data using the ‘onprogress’ callback</p></li>
+</ul>
+</div></blockquote>
+<p>If set to a value of 2, only the DOM Fetch backend will be used. This should
+only be used in testing.</p>
+<p>Default value: 0</p>
+</section>
 <section id="wasmfs">
-<span id="id189"></span><h2>WASMFS<a class="headerlink" href="#wasmfs" title="Permalink to this heading"></a></h2>
+<span id="id190"></span><h2>WASMFS<a class="headerlink" href="#wasmfs" title="Permalink to this heading"></a></h2>
 <p>ATTENTION [WIP]: Experimental feature. Please use at your own risk.
 This will eventually replace the current JS file system implementation.
 If set to 1, uses new filesystem implementation.</p>
@@ -2453,7 +2472,7 @@ If set to 1, uses new filesystem implementation.</p>
 <p>Default value: false</p>
 </section>
 <section id="single-file">
-<span id="id190"></span><h2>SINGLE_FILE<a class="headerlink" href="#single-file" title="Permalink to this heading"></a></h2>
+<span id="id191"></span><h2>SINGLE_FILE<a class="headerlink" href="#single-file" title="Permalink to this heading"></a></h2>
 <p>If set to 1, embeds all subresources in the emitted file as base64 string
 literals. Embedded subresources may include (but aren’t limited to) wasm,
 asm.js, and static memory initialization code.</p>
@@ -2468,7 +2487,7 @@ served with UTF-8 encoding. See the details on SINGLE_FILE_BINARY_ENCODE.</p>
 <p>Default value: false</p>
 </section>
 <section id="single-file-binary-encode">
-<span id="id191"></span><h2>SINGLE_FILE_BINARY_ENCODE<a class="headerlink" href="#single-file-binary-encode" title="Permalink to this heading"></a></h2>
+<span id="id192"></span><h2>SINGLE_FILE_BINARY_ENCODE<a class="headerlink" href="#single-file-binary-encode" title="Permalink to this heading"></a></h2>
 <p>If true, binary Wasm content is encoded using a custom UTF-8 embedding
 instead of base64. This generates a smaller binary that compresses well.
 Set this to false to revert back to earlier base64 encoding if you run into
@@ -2491,7 +2510,7 @@ If none of these are possible, disable binary encoding with
 <p>Default value: true</p>
 </section>
 <section id="auto-js-libraries">
-<span id="id192"></span><h2>AUTO_JS_LIBRARIES<a class="headerlink" href="#auto-js-libraries" title="Permalink to this heading"></a></h2>
+<span id="id193"></span><h2>AUTO_JS_LIBRARIES<a class="headerlink" href="#auto-js-libraries" title="Permalink to this heading"></a></h2>
 <p>If set to 1, all JS libraries will be automatically available at link time.
 This gets set to 0 in STRICT mode (or with MINIMAL_RUNTIME) which mean you
 need to explicitly specify -lfoo.js in at link time in order to access
@@ -2499,14 +2518,14 @@ library function in library_foo.js.</p>
 <p>Default value: true</p>
 </section>
 <section id="auto-native-libraries">
-<span id="id193"></span><h2>AUTO_NATIVE_LIBRARIES<a class="headerlink" href="#auto-native-libraries" title="Permalink to this heading"></a></h2>
+<span id="id194"></span><h2>AUTO_NATIVE_LIBRARIES<a class="headerlink" href="#auto-native-libraries" title="Permalink to this heading"></a></h2>
 <p>Like AUTO_JS_LIBRARIES but for the native libraries such as libgl, libal
 and libhtml5.   If this is disabled it is necessary to explicitly add
 e.g. -lhtml5 and also to first build the library using <code class="docutils literal notranslate"><span class="pre">embuilder</span></code>.</p>
 <p>Default value: true</p>
 </section>
 <section id="min-firefox-version">
-<span id="id194"></span><h2>MIN_FIREFOX_VERSION<a class="headerlink" href="#min-firefox-version" title="Permalink to this heading"></a></h2>
+<span id="id195"></span><h2>MIN_FIREFOX_VERSION<a class="headerlink" href="#min-firefox-version" title="Permalink to this heading"></a></h2>
 <p>Specifies the oldest major version of Firefox to target. I.e. all Firefox
 versions &gt;= MIN_FIREFOX_VERSION
 are desired to work. Pass -sMIN_FIREFOX_VERSION=majorVersion to drop support
@@ -2518,7 +2537,7 @@ feature_matrix.py)</p>
 <p>Default value: 79</p>
 </section>
 <section id="min-safari-version">
-<span id="id195"></span><h2>MIN_SAFARI_VERSION<a class="headerlink" href="#min-safari-version" title="Permalink to this heading"></a></h2>
+<span id="id196"></span><h2>MIN_SAFARI_VERSION<a class="headerlink" href="#min-safari-version" title="Permalink to this heading"></a></h2>
 <p>Specifies the oldest version of desktop Safari to target. Version is encoded
 in MMmmVV, e.g. 70101 denotes Safari 7.1.1.
 Safari 14.1.0 was released on April 26, 2021, bundled with macOS 11.0 Big
@@ -2536,7 +2555,7 @@ feature_matrix.py).</p>
 <p>Default value: 150000</p>
 </section>
 <section id="min-chrome-version">
-<span id="id196"></span><h2>MIN_CHROME_VERSION<a class="headerlink" href="#min-chrome-version" title="Permalink to this heading"></a></h2>
+<span id="id197"></span><h2>MIN_CHROME_VERSION<a class="headerlink" href="#min-chrome-version" title="Permalink to this heading"></a></h2>
 <p>Specifies the oldest version of Chrome. E.g. pass -sMIN_CHROME_VERSION=78 to
 drop support for Chrome 77 and older.
 This setting also applies to modern Chromium-based Edge, which shares version
@@ -2548,7 +2567,7 @@ feature_matrix.py).</p>
 <p>Default value: 85</p>
 </section>
 <section id="min-node-version">
-<span id="id197"></span><h2>MIN_NODE_VERSION<a class="headerlink" href="#min-node-version" title="Permalink to this heading"></a></h2>
+<span id="id198"></span><h2>MIN_NODE_VERSION<a class="headerlink" href="#min-node-version" title="Permalink to this heading"></a></h2>
 <p>Specifies minimum node version to target for the generated code.  This is
 distinct from the minimum version required run the emscripten compiler.
 Version is encoded in MMmmVV, e.g. 181401 denotes Node 18.14.01.
@@ -2557,7 +2576,7 @@ feature_matrix.py). This version aligns with the Ubuntu TLS 22.04 (Jammy).</p>
 <p>Default value: 160000</p>
 </section>
 <section id="minimal-runtime">
-<span id="id198"></span><h2>MINIMAL_RUNTIME<a class="headerlink" href="#minimal-runtime" title="Permalink to this heading"></a></h2>
+<span id="id199"></span><h2>MINIMAL_RUNTIME<a class="headerlink" href="#minimal-runtime" title="Permalink to this heading"></a></h2>
 <p>If true, uses minimal sized runtime without POSIX features, Module,
 preRun/preInit/etc., Emscripten built-in XHR loading or library_browser.js.
 Enable this setting to target the smallest code size possible.  Set
@@ -2570,7 +2589,7 @@ to export kept alive symbols, please use <code class="docutils literal notransla
 <p>Default value: 0</p>
 </section>
 <section id="minimal-runtime-streaming-wasm-compilation">
-<span id="id199"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-compilation" title="Permalink to this heading"></a></h2>
+<span id="id200"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_COMPILATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-compilation" title="Permalink to this heading"></a></h2>
 <p>If set to 1, MINIMAL_RUNTIME will utilize streaming WebAssembly compilation,
 where WebAssembly module is compiled already while it is being downloaded.
 In order for this to work, the web server MUST properly serve the .wasm file
@@ -2591,7 +2610,7 @@ This setting is only compatible with html output.</p>
 <p>Default value: false</p>
 </section>
 <section id="minimal-runtime-streaming-wasm-instantiation">
-<span id="id200"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-instantiation" title="Permalink to this heading"></a></h2>
+<span id="id201"></span><h2>MINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION<a class="headerlink" href="#minimal-runtime-streaming-wasm-instantiation" title="Permalink to this heading"></a></h2>
 <p>If set to 1, MINIMAL_RUNTIME will utilize streaming WebAssembly instantiation,
 where WebAssembly module is compiled+instantiated already while it is being
 downloaded. Same restrictions/requirements apply as with
@@ -2604,7 +2623,7 @@ to download, and the browser in question.</p>
 <p>Default value: false</p>
 </section>
 <section id="support-longjmp">
-<span id="id201"></span><h2>SUPPORT_LONGJMP<a class="headerlink" href="#support-longjmp" title="Permalink to this heading"></a></h2>
+<span id="id202"></span><h2>SUPPORT_LONGJMP<a class="headerlink" href="#support-longjmp" title="Permalink to this heading"></a></h2>
 <p>If set to ‘emscripten’ or ‘wasm’, compiler supports setjmp() and longjmp().
 If set to 0, these APIs are not available.  If you are using C++ exceptions,
 but do not need setjmp()+longjmp() API, then you can set this to 0 to save a
@@ -2625,7 +2644,7 @@ at codegen time, while at link it allows linking in the library support.</p>
 <p>Default value: true</p>
 </section>
 <section id="disable-deprecated-find-event-target-behavior">
-<span id="id202"></span><h2>DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR<a class="headerlink" href="#disable-deprecated-find-event-target-behavior" title="Permalink to this heading"></a></h2>
+<span id="id203"></span><h2>DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR<a class="headerlink" href="#disable-deprecated-find-event-target-behavior" title="Permalink to this heading"></a></h2>
 <p>If set to 1, disables old deprecated HTML5 API event target lookup behavior.
 When enabled, there is no “Module.canvas” object, no magic “null” default
 handling, and DOM element ‘target’ parameters are taken to refer to CSS
@@ -2633,7 +2652,7 @@ selectors, instead of referring to DOM IDs.</p>
 <p>Default value: true</p>
 </section>
 <section id="html5-support-deferring-user-sensitive-requests">
-<span id="id203"></span><h2>HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS<a class="headerlink" href="#html5-support-deferring-user-sensitive-requests" title="Permalink to this heading"></a></h2>
+<span id="id204"></span><h2>HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS<a class="headerlink" href="#html5-support-deferring-user-sensitive-requests" title="Permalink to this heading"></a></h2>
 <p>Certain browser DOM API operations, such as requesting fullscreen mode
 transition or pointer lock require that the request originates from within
 an user initiated event, such as mouse click or keyboard press. Refactoring
@@ -2645,7 +2664,7 @@ size if your application does not need support for deferred calls.</p>
 <p>Default value: true</p>
 </section>
 <section id="minify-html">
-<span id="id204"></span><h2>MINIFY_HTML<a class="headerlink" href="#minify-html" title="Permalink to this heading"></a></h2>
+<span id="id205"></span><h2>MINIFY_HTML<a class="headerlink" href="#minify-html" title="Permalink to this heading"></a></h2>
 <p>Specifies whether the generated .html file is run through html-minifier. The
 set of optimization passes run by html-minifier depends on debug and
 optimization levels. In -g2 and higher, no minification is performed. In -g1,
@@ -2655,14 +2674,14 @@ disable HTML minification altogether.</p>
 <p>Default value: true</p>
 </section>
 <section id="asan-shadow-size">
-<span id="id205"></span><h2>ASAN_SHADOW_SIZE<a class="headerlink" href="#asan-shadow-size" title="Permalink to this heading"></a></h2>
+<span id="id206"></span><h2>ASAN_SHADOW_SIZE<a class="headerlink" href="#asan-shadow-size" title="Permalink to this heading"></a></h2>
 <p>This option is no longer used. The appropriate shadow memory size is now
 calculated from INITIAL_MEMORY and MAXIMUM_MEMORY. Will be removed in a
 future release.</p>
 <p>Default value: -1</p>
 </section>
 <section id="source-map-prefixes">
-<span id="id206"></span><h2>SOURCE_MAP_PREFIXES<a class="headerlink" href="#source-map-prefixes" title="Permalink to this heading"></a></h2>
+<span id="id207"></span><h2>SOURCE_MAP_PREFIXES<a class="headerlink" href="#source-map-prefixes" title="Permalink to this heading"></a></h2>
 <p>List of path substitutions to apply in the “sources” field of the source map.
 Corresponds to the <code class="docutils literal notranslate"><span class="pre">--prefix</span></code> option used in <code class="docutils literal notranslate"><span class="pre">tools/wasm-sourcemap.py</span></code>.
 Must be used with <code class="docutils literal notranslate"><span class="pre">-gsource-map</span></code>.</p>
@@ -2672,14 +2691,14 @@ Must be used with <code class="docutils literal notranslate"><span class="pre">-
 <p>Default value: []</p>
 </section>
 <section id="default-to-cxx">
-<span id="id207"></span><h2>DEFAULT_TO_CXX<a class="headerlink" href="#default-to-cxx" title="Permalink to this heading"></a></h2>
+<span id="id208"></span><h2>DEFAULT_TO_CXX<a class="headerlink" href="#default-to-cxx" title="Permalink to this heading"></a></h2>
 <p>Default to c++ mode even when run as <code class="docutils literal notranslate"><span class="pre">emcc</span></code> rather then <code class="docutils literal notranslate"><span class="pre">emc++</span></code>.
 When this is disabled <code class="docutils literal notranslate"><span class="pre">em++</span></code> is required linking C++ programs. Disabling
 this will match the behaviour of gcc/g++ and clang/clang++.</p>
 <p>Default value: true</p>
 </section>
 <section id="printf-long-double">
-<span id="id208"></span><h2>PRINTF_LONG_DOUBLE<a class="headerlink" href="#printf-long-double" title="Permalink to this heading"></a></h2>
+<span id="id209"></span><h2>PRINTF_LONG_DOUBLE<a class="headerlink" href="#printf-long-double" title="Permalink to this heading"></a></h2>
 <p>While LLVM’s wasm32 has long double = float128, we don’t support printing
 that at full precision by default. Instead we print as 64-bit doubles, which
 saves libc code size. You can flip this option on to get a libc with full
@@ -2687,14 +2706,14 @@ long double printing precision.</p>
 <p>Default value: false</p>
 </section>
 <section id="separate-dwarf-url">
-<span id="id209"></span><h2>SEPARATE_DWARF_URL<a class="headerlink" href="#separate-dwarf-url" title="Permalink to this heading"></a></h2>
+<span id="id210"></span><h2>SEPARATE_DWARF_URL<a class="headerlink" href="#separate-dwarf-url" title="Permalink to this heading"></a></h2>
 <p>Setting this affects the path emitted in the wasm that refers to the DWARF
 file, in -gseparate-dwarf mode. This allows the debugging file to be hosted
 in a custom location.</p>
 <p>Default value: ‘’</p>
 </section>
 <section id="error-on-wasm-changes-after-link">
-<span id="id210"></span><h2>ERROR_ON_WASM_CHANGES_AFTER_LINK<a class="headerlink" href="#error-on-wasm-changes-after-link" title="Permalink to this heading"></a></h2>
+<span id="id211"></span><h2>ERROR_ON_WASM_CHANGES_AFTER_LINK<a class="headerlink" href="#error-on-wasm-changes-after-link" title="Permalink to this heading"></a></h2>
 <p>Emscripten runs wasm-ld to link, and in some cases will do further changes to
 the wasm afterwards, like running wasm-opt to optimize the binary in
 optimized builds. However, in some builds no wasm changes are necessary after
@@ -2712,7 +2731,7 @@ Some example of features that require post-link wasm changes are:</p>
 <p>Default value: false</p>
 </section>
 <section id="abort-on-wasm-exceptions">
-<span id="id211"></span><h2>ABORT_ON_WASM_EXCEPTIONS<a class="headerlink" href="#abort-on-wasm-exceptions" title="Permalink to this heading"></a></h2>
+<span id="id212"></span><h2>ABORT_ON_WASM_EXCEPTIONS<a class="headerlink" href="#abort-on-wasm-exceptions" title="Permalink to this heading"></a></h2>
 <p>Abort on unhandled excptions that occur when calling exported WebAssembly
 functions. This makes the program behave more like a native program where the
 OS would terminate the process and no further code can be executed when an
@@ -2730,7 +2749,7 @@ alternative mechanimsm.</p>
 <p>Default value: false</p>
 </section>
 <section id="pure-wasi">
-<span id="id212"></span><h2>PURE_WASI<a class="headerlink" href="#pure-wasi" title="Permalink to this heading"></a></h2>
+<span id="id213"></span><h2>PURE_WASI<a class="headerlink" href="#pure-wasi" title="Permalink to this heading"></a></h2>
 <p>Build binaries that use as many WASI APIs as possible, and include additional
 JS support libraries for those APIs.  This allows emscripten to produce binaries
 are more WASI compliant and also allows it to process and execute WASI
@@ -2744,7 +2763,7 @@ Implies <a class="reference internal" href="#standalone-wasm"><span class="std s
 <p>Default value: false</p>
 </section>
 <section id="imported-memory">
-<span id="id213"></span><h2>IMPORTED_MEMORY<a class="headerlink" href="#imported-memory" title="Permalink to this heading"></a></h2>
+<span id="id214"></span><h2>IMPORTED_MEMORY<a class="headerlink" href="#imported-memory" title="Permalink to this heading"></a></h2>
 <p>Set to 1 to define the WebAssembly.Memory object outside of the wasm
 module.  By default the wasm module defines the memory and exports
 it to JavaScript.
@@ -2759,7 +2778,7 @@ depend on being able to define the memory in JavaScript:</p>
 <p>Default value: false</p>
 </section>
 <section id="split-module">
-<span id="id214"></span><h2>SPLIT_MODULE<a class="headerlink" href="#split-module" title="Permalink to this heading"></a></h2>
+<span id="id215"></span><h2>SPLIT_MODULE<a class="headerlink" href="#split-module" title="Permalink to this heading"></a></h2>
 <p>Generate code to loading split wasm modules.
 This option will automatically generate two wasm files as output, one
 with the <code class="docutils literal notranslate"><span class="pre">.orig</span></code> suffix and one without.  The default file (without
@@ -2774,27 +2793,27 @@ to loading split modules.</p>
 <p>Default value: false</p>
 </section>
 <section id="autoload-dylibs">
-<span id="id215"></span><h2>AUTOLOAD_DYLIBS<a class="headerlink" href="#autoload-dylibs" title="Permalink to this heading"></a></h2>
+<span id="id216"></span><h2>AUTOLOAD_DYLIBS<a class="headerlink" href="#autoload-dylibs" title="Permalink to this heading"></a></h2>
 <p>For MAIN_MODULE builds, automatically load any dynamic library dependencies
 on startup, before loading the main module.</p>
 <p>Default value: true</p>
 </section>
 <section id="allow-unimplemented-syscalls">
-<span id="id216"></span><h2>ALLOW_UNIMPLEMENTED_SYSCALLS<a class="headerlink" href="#allow-unimplemented-syscalls" title="Permalink to this heading"></a></h2>
+<span id="id217"></span><h2>ALLOW_UNIMPLEMENTED_SYSCALLS<a class="headerlink" href="#allow-unimplemented-syscalls" title="Permalink to this heading"></a></h2>
 <p>Include unimplemented JS syscalls to be included in the final output.  This
 allows programs that depend on these syscalls at runtime to be compiled, even
 though these syscalls will fail (or do nothing) at runtime.</p>
 <p>Default value: true</p>
 </section>
 <section id="trusted-types">
-<span id="id217"></span><h2>TRUSTED_TYPES<a class="headerlink" href="#trusted-types" title="Permalink to this heading"></a></h2>
+<span id="id218"></span><h2>TRUSTED_TYPES<a class="headerlink" href="#trusted-types" title="Permalink to this heading"></a></h2>
 <p>Allow calls to Worker(…) and importScripts(…) to be Trusted Types compatible.
 Trusted Types is a Web Platform feature designed to mitigate DOM XSS by restricting
 the usage of DOM sink APIs. See <a class="reference external" href="https://w3c.github.io/webappsec-trusted-types/">https://w3c.github.io/webappsec-trusted-types/</a>.</p>
 <p>Default value: false</p>
 </section>
 <section id="polyfill">
-<span id="id218"></span><h2>POLYFILL<a class="headerlink" href="#polyfill" title="Permalink to this heading"></a></h2>
+<span id="id219"></span><h2>POLYFILL<a class="headerlink" href="#polyfill" title="Permalink to this heading"></a></h2>
 <p>When targeting older browsers emscripten will sometimes require that
 polyfills be included in the output.  If you would prefer to take care of
 polyfilling yourself via some other mechanism you can prevent emscripten
@@ -2804,7 +2823,7 @@ settings is <em>only</em> needed when also explicitly targeting older browsers.<
 <p>Default value: true</p>
 </section>
 <section id="runtime-debug">
-<span id="id219"></span><h2>RUNTIME_DEBUG<a class="headerlink" href="#runtime-debug" title="Permalink to this heading"></a></h2>
+<span id="id220"></span><h2>RUNTIME_DEBUG<a class="headerlink" href="#runtime-debug" title="Permalink to this heading"></a></h2>
 <p>If non-zero, add tracing to core runtime functions.  Can be set to 2 for
 extra tracing (for example, tracing that occurs on each turn of the event
 loop or each user callback, which can flood the console).
@@ -2825,7 +2844,7 @@ are enabled:</p>
 <p>Default value: 0</p>
 </section>
 <section id="legacy-runtime">
-<span id="id220"></span><h2>LEGACY_RUNTIME<a class="headerlink" href="#legacy-runtime" title="Permalink to this heading"></a></h2>
+<span id="id221"></span><h2>LEGACY_RUNTIME<a class="headerlink" href="#legacy-runtime" title="Permalink to this heading"></a></h2>
 <p>Include JS library symbols that were previously part of the default runtime.
 Without this, such symbols can be made available by adding them to
 <a class="reference internal" href="#default-library-funcs-to-include"><span class="std std-ref">DEFAULT_LIBRARY_FUNCS_TO_INCLUDE</span></a>, or via the dependencies of another JS
@@ -2833,7 +2852,7 @@ library symbol.</p>
 <p>Default value: false</p>
 </section>
 <section id="signature-conversions">
-<span id="id221"></span><h2>SIGNATURE_CONVERSIONS<a class="headerlink" href="#signature-conversions" title="Permalink to this heading"></a></h2>
+<span id="id222"></span><h2>SIGNATURE_CONVERSIONS<a class="headerlink" href="#signature-conversions" title="Permalink to this heading"></a></h2>
 <p>User-defined functions to wrap with signature conversion, which take or return
 pointer argument. Only affects <code class="docutils literal notranslate"><span class="pre">MEMORY64=1</span></code> builds, see
 <code class="docutils literal notranslate"><span class="pre">create_pointer_conversion_wrappers</span></code> in <code class="docutils literal notranslate"><span class="pre">emscripten.py</span></code> for details.
@@ -2842,7 +2861,7 @@ Example use <code class="docutils literal notranslate"><span class="pre">-sSIGNA
 <p>Default value: []</p>
 </section>
 <section id="source-phase-imports">
-<span id="id222"></span><h2>SOURCE_PHASE_IMPORTS<a class="headerlink" href="#source-phase-imports" title="Permalink to this heading"></a></h2>
+<span id="id223"></span><h2>SOURCE_PHASE_IMPORTS<a class="headerlink" href="#source-phase-imports" title="Permalink to this heading"></a></h2>
 <p>Experimental support for wasm source phase imports.
 This is only currently implemented in the pre-release/nightly version of node,
 and not yet supported by browsers.
@@ -2854,7 +2873,7 @@ Requires EXPORT_ES6</p>
 <p>Default value: false</p>
 </section>
 <section id="wasm-esm-integration">
-<span id="id223"></span><h2>WASM_ESM_INTEGRATION<a class="headerlink" href="#wasm-esm-integration" title="Permalink to this heading"></a></h2>
+<span id="id224"></span><h2>WASM_ESM_INTEGRATION<a class="headerlink" href="#wasm-esm-integration" title="Permalink to this heading"></a></h2>
 <p>Experimental support for wasm ESM integration.
 Requires <a class="reference internal" href="#export-es6"><span class="std std-ref">EXPORT_ES6</span></a> and <code class="docutils literal notranslate"><span class="pre">MODULARIZE=instance</span></code></p>
 <div class="admonition note">
@@ -2864,7 +2883,7 @@ Requires <a class="reference internal" href="#export-es6"><span class="std std-r
 <p>Default value: false</p>
 </section>
 <section id="js-base64-api">
-<span id="id224"></span><h2>JS_BASE64_API<a class="headerlink" href="#js-base64-api" title="Permalink to this heading"></a></h2>
+<span id="id225"></span><h2>JS_BASE64_API<a class="headerlink" href="#js-base64-api" title="Permalink to this heading"></a></h2>
 <p>Enable use of the JS arraybuffer-base64 API:
 <a class="reference external" href="https://github.com/tc39/proposal-arraybuffer-base64">https://github.com/tc39/proposal-arraybuffer-base64</a>
 To run the resulting code currently requires passing <cite>–js_base_64</cite> to node
@@ -2876,7 +2895,7 @@ or chrome.</p>
 <p>Default value: false</p>
 </section>
 <section id="growable-arraybuffers">
-<span id="id225"></span><h2>GROWABLE_ARRAYBUFFERS<a class="headerlink" href="#growable-arraybuffers" title="Permalink to this heading"></a></h2>
+<span id="id226"></span><h2>GROWABLE_ARRAYBUFFERS<a class="headerlink" href="#growable-arraybuffers" title="Permalink to this heading"></a></h2>
 <p>Enable support for GrowableSharedArrayBuffer.
 This features is only available behind a flag in recent versions of
 node/chrome.</p>
@@ -2887,7 +2906,7 @@ node/chrome.</p>
 <p>Default value: false</p>
 </section>
 <section id="wasm-js-types">
-<span id="id226"></span><h2>WASM_JS_TYPES<a class="headerlink" href="#wasm-js-types" title="Permalink to this heading"></a></h2>
+<span id="id227"></span><h2>WASM_JS_TYPES<a class="headerlink" href="#wasm-js-types" title="Permalink to this heading"></a></h2>
 <p>Experimental support for WebAssembly js-types proposal.
 It’s currently only available under a flag in certain browsers,
 so we disable it by default to save on code size.</p>
@@ -2898,7 +2917,7 @@ so we disable it by default to save on code size.</p>
 <p>Default value: false</p>
 </section>
 <section id="cross-origin">
-<span id="id227"></span><h2>CROSS_ORIGIN<a class="headerlink" href="#cross-origin" title="Permalink to this heading"></a></h2>
+<span id="id228"></span><h2>CROSS_ORIGIN<a class="headerlink" href="#cross-origin" title="Permalink to this heading"></a></h2>
 <p>If the emscripten-generated program is hosted on separate origin then
 starting new pthread worker can violate CSP rules.  Enabling
 CROSS_ORIGIN uses an inline worker to instead load the worker script
@@ -2907,7 +2926,7 @@ indirectly using <cite>importScripts</cite></p>
 </section>
 </section>
 <section id="deprecated-settings">
-<span id="id228"></span><h1>Deprecated Settings<a class="headerlink" href="#deprecated-settings" title="Permalink to this heading"></a></h1>
+<span id="id229"></span><h1>Deprecated Settings<a class="headerlink" href="#deprecated-settings" title="Permalink to this heading"></a></h1>
 <p>The following settings have been proposed for removal from emscripten.  These settings
 still function but may be removed in a future version.  If your project is using of
 the these settings please open a bug (or reply to one of the existing bugs).</p>
@@ -2923,7 +2942,7 @@ the these settings please open a bug (or reply to one of the existing bugs).</p>
 </div></blockquote>
 </section>
 <section id="legacy-settings">
-<span id="id229"></span><h1>Legacy Settings<a class="headerlink" href="#legacy-settings" title="Permalink to this heading"></a></h1>
+<span id="id230"></span><h1>Legacy Settings<a class="headerlink" href="#legacy-settings" title="Permalink to this heading"></a></h1>
 <p>The following settings no longer have any effect but are still accepted by emscripten
 for backwards compatbility with older versions:</p>
 <blockquote>
