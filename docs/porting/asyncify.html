@@ -73,6 +73,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Asynchronous Code</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#marking-js-library-functions-as-async">Marking JS library functions as async</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ways-to-use-asyncify-apis-in-older-engines">Ways to use Asyncify APIs in older engines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
@@ -309,6 +310,40 @@ You will see something like this:</p>
 <p>That shows that the C code only continued to execute after the async JS
 completed.</p>
 </section>
+<section id="marking-js-library-functions-as-async">
+<h2>Marking JS library functions as async<a class="headerlink" href="#marking-js-library-functions-as-async" title="Permalink to this heading"></a></h2>
+<p>If you mark a JS library function as async using the <code class="docutils literal notranslate"><span class="pre">__async</span></code> decorator then
+the compiler will take a care of all the details of using the <code class="docutils literal notranslate"><span class="pre">Asyncify</span></code> API
+for you.  The function will also automatically be incldued in
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>.  All you need to do is write normal async JS function
+(either using the explict <code class="docutils literal notranslate"><span class="pre">async</span></code> JS keyword or returning a <code class="docutils literal notranslate"><span class="pre">Promise</span></code>
+object).  For example:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="nx">addToLibrary</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">fetch_v1__async</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">fetch_v2</span><span class="o">:</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">url</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">UTF8ToString</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">stringToNewUTF8</span><span class="p">(</span><span class="nx">json_data</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="nx">fetch_v2__async</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">fetch_v2</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">url</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">UTF8ToString</span><span class="p">(</span><span class="nx">url</span><span class="p">))</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">rsp</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">json_data</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">stringToNewUTF8</span><span class="p">(</span><span class="nx">json_data</span><span class="p">));</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>This JS library file contains two JS functions (<code class="docutils literal notranslate"><span class="pre">fetch_v1</span></code> and <code class="docutils literal notranslate"><span class="pre">fetch_v2</span></code>)
+which do exactly the same thing, one using the JS <code class="docutils literal notranslate"><span class="pre">async</span></code> keyword and one
+using promise chaining.  They are both marked as <code class="docutils literal notranslate"><span class="pre">__async:</span> <span class="pre">'auto'</span></code> which means
+they will automatically suspend Wasm executation when called and resume when the
+resulting promise resolves.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">__async:</span> <span class="pre">1</span></code> if you just want to include the function in
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a> or <code class="docutils literal notranslate"><span class="pre">__async:</span> <span class="pre">'auto'</span></code> if you also want the function to
+wrapper in <code class="docutils literal notranslate"><span class="pre">Asyncify.handleAsync</span></code>.</p>
+</section>
 <section id="ways-to-use-asyncify-apis-in-older-engines">
 <h2>Ways to use Asyncify APIs in older engines<a class="headerlink" href="#ways-to-use-asyncify-apis-in-older-engines" title="Permalink to this heading"></a></h2>
 <p>If your target JS engine doesn’t support the modern <code class="docutils literal notranslate"><span class="pre">async/await</span></code> JS
@@ -328,8 +363,9 @@ directly with <code class="docutils literal notranslate"><span class="pre">EM_JS
 </div>
 <p>When using this form, the compiler doesn’t statically know that <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> is
 asynchronous anymore. Instead, you must tell the compiler that <code class="docutils literal notranslate"><span class="pre">do_fetch()</span></code>
-can do an asynchronous operation using <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>, otherwise it won’t
-instrument the code to allow pausing and resuming (see more details later down):</p>
+can do an asynchronous operation using <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>, otherwise it
+won’t instrument the code to allow pausing and resuming (see more details later
+down):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">example</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">o</span> <span class="n">a</span><span class="o">.</span><span class="n">html</span> <span class="o">-</span><span class="n">sASYNCIFY</span> <span class="o">-</span><span class="n">sASYNCIFY_IMPORTS</span><span class="o">=</span><span class="n">do_fetch</span>
 </pre></div>
 </div>
@@ -358,10 +394,10 @@ itself.</p>
 <h2>More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code><a class="headerlink" href="#more-on-asyncify-imports" title="Permalink to this heading"></a></h2>
 <p>As in the above example, you can add JS functions that do an async operation but
 look synchronous from the perspective of C. If you don’t use <code class="docutils literal notranslate"><span class="pre">EM_ASYNC_JS</span></code>,
-it’s vital to add such methods to <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>. That list of imports is
-the list of imports to the Wasm module that the Asyncify instrumentation must be
-aware of. Giving it that list tells it that all other JS calls will <strong>not</strong> do
-an async operation, which lets it not add overhead where it isn’t needed.</p>
+it’s vital to add such methods to <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>. That list of imports
+is the list of imports to the Wasm module that the Asyncify instrumentation must
+be aware of. Giving it that list tells it that all other JS calls will <strong>not</strong>
+do an async operation, which lets it not add overhead where it isn’t needed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If the import is not inside <code class="docutils literal notranslate"><span class="pre">env</span></code> the full path must be specified, for example, <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS=wasi_snapshot_preview1.fd_write</span></code></p>
@@ -371,7 +407,7 @@ an async operation, which lets it not add overhead where it isn’t needed.</p>
 <h2>Asyncify with Dynamic Linking<a class="headerlink" href="#asyncify-with-dynamic-linking" title="Permalink to this heading"></a></h2>
 <p>If you want to use Asyncify in dynamic libraries, those methods which are imported
 from other linked modules (and that will be on the stack in an async operation)
-should be listed in <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>.</p>
+should be listed in <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// sleep.cpp</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;emscripten.h&gt;</span>
 
@@ -397,8 +433,8 @@ linking manner:</p>
 </pre></div>
 </div>
 <p>In the main module, the compiler doesn’t statically know that <code class="docutils literal notranslate"><span class="pre">sleep_for_seconds</span></code> is
-asynchronous. Therefore, you must add <code class="docutils literal notranslate"><span class="pre">sleep_for_seconds</span></code> to the <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>
-list.</p>
+asynchronous. Therefore, you must add <code class="docutils literal notranslate"><span class="pre">sleep_for_seconds</span></code> to the
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a> list.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">emcc</span> <span class="n">main</span><span class="o">.</span><span class="n">cpp</span> <span class="n">libsleep</span><span class="o">.</span><span class="n">wasm</span> <span class="o">-</span><span class="n">O3</span> <span class="o">-</span><span class="n">sASYNCIFY</span> <span class="o">-</span><span class="n">sASYNCIFY_IMPORTS</span><span class="o">=</span><span class="n">sleep_for_seconds</span> <span class="o">-</span><span class="n">sMAIN_MODULE</span>
 </pre></div>
 </div>
@@ -412,9 +448,9 @@ and want to <code class="docutils literal notranslate"><span class="pre">await</
 <span class="n">val</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_object</span><span class="p">.</span><span class="n">call</span><span class="o">&lt;</span><span class="n">val</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;someAsyncMethod&quot;</span><span class="p">).</span><span class="n">await</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>In this case you don’t need to worry about <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code> or
-<code class="docutils literal notranslate"><span class="pre">JSPI_IMPORTS</span></code>, since it’s an internal implementation detail of <code class="docutils literal notranslate"><span class="pre">val::await</span></code>
-and Emscripten takes care of it automatically.</p>
+<p>In this case you don’t need to worry about <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a> or
+<a class="reference internal" href="../tools_reference/settings_reference.html#jspi-imports"><span class="std std-ref">JSPI_IMPORTS</span></a>, since it’s an internal implementation detail of
+<code class="docutils literal notranslate"><span class="pre">val::await</span></code> and Emscripten takes care of it automatically.</p>
 <p>Note that when using Embind exports, Asyncify and JSPI behave differently. When
 Asyncify is used with Embind and the code is invoked from JavaScript, then the
 function will return a <code class="docutils literal notranslate"><span class="pre">Promise</span></code> if the export calls any suspending functions,
@@ -489,9 +525,9 @@ function once the computation completes.</p>
 <p>Besides using different underlying mechanisms, Asyncify and JSPI also handle
 async imports and exports differently. Asyncify will automatically determine
 what exports will become async based on what could potentially call an
-an async import (<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>). However, with JSPI, the async imports
-and exports must be explicitly set using <code class="docutils literal notranslate"><span class="pre">JSPI_IMPORTS</span></code> and <code class="docutils literal notranslate"><span class="pre">JSPI_EXPORTS</span></code>
-settings.</p>
+an async import (<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>). However, with JSPI, the async imports
+and exports must be explicitly set using <a class="reference internal" href="../tools_reference/settings_reference.html#jspi-imports"><span class="std std-ref">JSPI_IMPORTS</span></a> and
+<a class="reference internal" href="../tools_reference/settings_reference.html#jspi-exports"><span class="std std-ref">JSPI_EXPORTS</span></a> settings.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JSPI/ASYNCIFY&gt;_IMPORTS</span></code> and <code class="docutils literal notranslate"><span class="pre">JSPI_EXPORTS</span></code> aren’t needed when
@@ -512,36 +548,36 @@ code to allow unwinding and rewinding. That overhead is usually not extreme,
 something like 50% or so. Asyncify achieves that by doing a whole-program
 analysis to find functions need to be instrumented and which do not -
 basically, which can call something that reaches one of
-<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code>. That analysis avoids a lot of unnecessary overhead,
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>. That analysis avoids a lot of unnecessary overhead,
 however, it is limited by <strong>indirect calls</strong>, since it can’t tell where
 they go - it could be anything in the function table (with the same type).</p>
 <p>If you know that indirect calls are never on the stack when unwinding, then
 you can tell Asyncify to ignore indirect calls using
-<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IGNORE_INDIRECT</span></code>.</p>
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-ignore-indirect"><span class="std std-ref">ASYNCIFY_IGNORE_INDIRECT</span></a>.</p>
 <p>If you know that some indirect calls matter and others do not, then you
 can provide a manual list of functions to Asyncify:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ASYNCIFY_REMOVE</span></code> is a list of functions that do not unwind the stack.
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-remove"><span class="std std-ref">ASYNCIFY_REMOVE</span></a> is a list of functions that do not unwind the stack.
 As Asyncify processes the call tree, functions in this list will be removed,
 and neither they nor their callers will be instrumented (unless their callers
 need to be instrumented for other reasons.)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ASYNCIFY_ADD</span></code> is a list of functions that do unwind the stack, and will be
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-add"><span class="std std-ref">ASYNCIFY_ADD</span></a> is a list of functions that do unwind the stack, and will be
 processed like the imports. This is mostly useful
-if you use <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IGNORE_INDIRECT</span></code> but want to also mark some additional
-functions that need to unwind. If the <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_PROPAGATE_ADD</span></code> setting is
+if you use <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-ignore-indirect"><span class="std std-ref">ASYNCIFY_IGNORE_INDIRECT</span></a> but want to also mark some additional
+functions that need to unwind. If the <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-propagate-add"><span class="std std-ref">ASYNCIFY_PROPAGATE_ADD</span></a> setting is
 disabled however, then this list will only be added after the whole-program
-analysis. If <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_PROPAGATE_ADD</span></code> is disabled then you must also add
+analysis. If <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-propagate-add"><span class="std std-ref">ASYNCIFY_PROPAGATE_ADD</span></a> is disabled then you must also add
 their callers, their callers’ callers, and so on.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ASYNCIFY_ONLY</span></code> is a list of the <strong>only</strong> functions that can unwind
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-only"><span class="std std-ref">ASYNCIFY_ONLY</span></a> is a list of the <strong>only</strong> functions that can unwind
 the stack. Asyncify will instrument exactly those and no others.</p></li>
 </ul>
-<p>You can enable the <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_ADVISE</span></code> setting, which will tell the compiler to
+<p>You can enable the <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-advise"><span class="std std-ref">ASYNCIFY_ADVISE</span></a> setting, which will tell the compiler to
 output which functions it is currently instrumenting and why. You can then
-determine whether you should add any functions to <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_REMOVE</span></code> or
-whether it would be safe to enable <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IGNORE_INDIRECT</span></code>. Note that this
+determine whether you should add any functions to <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-remove"><span class="std std-ref">ASYNCIFY_REMOVE</span></a> or
+whether it would be safe to enable <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-ignore-indirect"><span class="std std-ref">ASYNCIFY_IGNORE_INDIRECT</span></a>. Note that this
 phase of the compiler happens after many optimization phases, and several
 functions maybe be inlined already. To be safe, run it with <cite>-O0</cite>.</p>
-<p>For more details see <code class="docutils literal notranslate"><span class="pre">settings.js</span></code>. Note that the manual settings
+<p>For more details see <a class="reference internal" href="../tools_reference/settings_reference.html#settings-reference"><span class="std std-ref">Emscripten Compiler Settings</span></a>. Note that the manual settings
 mentioned here are error-prone - if you don’t get things exactly right,
 your application can break. If you don’t absolutely need maximal performance,
 it’s usually ok to use the defaults.</p>
@@ -552,7 +588,7 @@ it’s usually ok to use the defaults.</p>
 <h3>Stack overflows (Asyncify)<a class="headerlink" href="#stack-overflows-asyncify" title="Permalink to this heading"></a></h3>
 <p>If you see an exception thrown from an <code class="docutils literal notranslate"><span class="pre">asyncify_*</span></code> API, then it may be
 a stack overflow. You can increase the stack size with the
-<code class="docutils literal notranslate"><span class="pre">ASYNCIFY_STACK_SIZE</span></code> option.</p>
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-stack-size"><span class="std std-ref">ASYNCIFY_STACK_SIZE</span></a> option.</p>
 </section>
 <section id="reentrancy">
 <h3>Reentrancy<a class="headerlink" href="#reentrancy" title="Permalink to this heading"></a></h3>
@@ -576,7 +612,7 @@ change that global, then bad things can happen.</p>
 typically), and without any compiled code on the stack. If there <em>were</em> compiled
 code on the stack, then that could interfere with properly rewinding and
 resuming execution, in confusing ways, and therefore an assertion will be
-thrown in a build with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code>.</p>
+thrown in a build with <a class="reference internal" href="../tools_reference/settings_reference.html#assertions"><span class="std std-ref">ASSERTIONS</span></a>.</p>
 <p>(Specifically, the problem there is that while rewinding will work properly,
 if you later unwind again, that unwinding will also unwind through that extra
 compiled code that was on the stack - causing a later rewind to behave badly.)</p>
