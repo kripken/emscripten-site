@@ -61,13 +61,15 @@
 <li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pthreads.html">Pthreads support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Using SIMD with WebAssembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using SIMD with WebAssembly</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimization-considerations">Optimization considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">C++ Exceptions Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asynchronous Code</a></li>
@@ -170,14 +172,13 @@
 </ul>
 <p>See <a class="reference external" href="https://webassembly.org/roadmap/">WebAssembly Roadmap</a> for details about other VMs.</p>
 <p>An upcoming <a class="reference external" href="https://github.com/WebAssembly/relaxed-simd/tree/main/proposals/relaxed-simd">Relaxed SIMD proposal</a> will add more SIMD instructions to WebAssembly.</p>
-</section>
 <section id="gcc-clang-simd-vector-extensions">
-<h1>GCC/Clang SIMD Vector Extensions<a class="headerlink" href="#gcc-clang-simd-vector-extensions" title="Permalink to this heading"></a></h1>
+<h2>GCC/Clang SIMD Vector Extensions<a class="headerlink" href="#gcc-clang-simd-vector-extensions" title="Permalink to this heading"></a></h2>
 <p>At the source level, the GCC/Clang <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a> can be used and will be lowered to WebAssembly SIMD instructions where possible.</p>
 <p>This enables developers to create custom wide vector types via typedefs, and use arithmetic operators (+,-,*,/) on the vectorized types, as well as allow individual lane access via the vector[i] notation. However, the <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html">GCC vector built-in functions</a> are not available. Instead, use the WebAssembly SIMD Intrinsics functions below.</p>
 </section>
 <section id="webassembly-simd-intrinsics">
-<h1>WebAssembly SIMD Intrinsics<a class="headerlink" href="#webassembly-simd-intrinsics" title="Permalink to this heading"></a></h1>
+<h2>WebAssembly SIMD Intrinsics<a class="headerlink" href="#webassembly-simd-intrinsics" title="Permalink to this heading"></a></h2>
 <p>LLVM maintains a WebAssembly SIMD Intrinsics header file that is provided with Emscripten, and adds type definitions for the different supported vector types.</p>
 <blockquote>
 <div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wasm_simd128.h&gt;</span>
@@ -204,7 +205,7 @@
 <p>Pass <code class="docutils literal notranslate"><span class="pre">-mrelaxed-simd</span></code> to target WebAssembly Relaxed SIMD Intrinsics. C/C++ code can use the built-in preprocessor define <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__wasm_relaxed_simd__</span></code> to detect when this target is active.</p>
 </section>
 <section id="limitations-and-behavioral-differences">
-<h1>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this heading"></a></h1>
+<h2>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Permalink to this heading"></a></h2>
 <p>When porting native SIMD code, it should be noted that because of portability concerns, the WebAssembly SIMD specification does not expose access to all of the native x86/ARM SIMD instructions. In particular the following changes exist:</p>
 <blockquote>
 <div><ul class="simple">
@@ -217,7 +218,7 @@
 <p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
 </section>
 <section id="optimization-considerations">
-<h1>Optimization considerations<a class="headerlink" href="#optimization-considerations" title="Permalink to this heading"></a></h1>
+<h2>Optimization considerations<a class="headerlink" href="#optimization-considerations" title="Permalink to this heading"></a></h2>
 <p>When developing SIMD code to use WebAssembly SIMD, implementors should be aware of semantic differences between the host hardware and WebAssembly semantics; as acknowledged in the WebAssembly design documentation, “<a class="reference external" href="https://github.com/WebAssembly/design/blob/master/Portability.md#assumptions-for-efficient-execution">this sometimes will lead to poor performance</a>.” The following list outlines some WebAssembly SIMD instructions to look out for when performance tuning:</p>
 <table class="wrap-table-content docutils align-default" id="id5">
 <caption><span class="caption-text">WebAssembly SIMD instructions with performance implications</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
@@ -273,7 +274,7 @@
 </table>
 </section>
 <section id="compiling-simd-code-targeting-x86-sse-instruction-sets">
-<h1>Compiling SIMD code targeting x86 SSE* instruction sets<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-sets" title="Permalink to this heading"></a></h1>
+<h2>Compiling SIMD code targeting x86 SSE* instruction sets<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-sets" title="Permalink to this heading"></a></h2>
 <p>Emscripten supports compiling existing codebases that use x86 SSE instructions by passing the <code class="docutils literal notranslate"><span class="pre">-msimd128</span></code> flag, and additionally one of the following:</p>
 <ul class="simple">
 <li><p><strong>SSE</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;xmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE__</span></code> to gate code.</p></li>
@@ -1887,7 +1888,7 @@ Only a small part of the 256-bit AVX2 instruction set are listed, most of the
 256-bit wide AVX2 instructions are emulated by two 128-bit wide instructions.</p>
 </section>
 <section id="compiling-simd-code-targeting-arm-neon-instruction-set">
-<h1>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Permalink to this heading"></a></h1>
+<h2>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Permalink to this heading"></a></h2>
 <p>Emscripten supports compiling existing codebases that use ARM NEON by
 passing the <cite>-mfpu=neon</cite> directive to the compiler, and including the
 header <cite>&lt;arm_neon.h&gt;</cite>.</p>
@@ -2445,6 +2446,7 @@ status</a>.</p>
 </tr>
 </tbody>
 </table>
+</section>
 </section>
 
 
