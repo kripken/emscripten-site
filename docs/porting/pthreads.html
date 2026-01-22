@@ -195,23 +195,34 @@ proxy messages back and forth).</p>
 <section id="proxying">
 <h2>Proxying<a class="headerlink" href="#proxying" title="Permalink to this heading"></a></h2>
 <p>The Web allows certain operations to only happen from the main browser thread,
-like interacting with the DOM. As a result, various operations are proxied to
-the main browser thread if they are called on a background thread. See
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/3495">bug 3495</a> for
-more information and how to try to work around this until then. To check which
-operations are proxied, you can look for the function’s implementation in
-the JS library (<code class="docutils literal notranslate"><span class="pre">src/library_*</span></code>) and see if it is annotated with
-<code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'sync'</span></code> or <code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'async'</span></code>; however, note that the browser
-itself proxies certain things (like some GL operations), so there is no
-general way to be safe here (aside from not blocking on the main browser
-thread).</p>
-<p>In addition, Emscripten currently has a simple model of file I/O only happening
-on the main application thread (as we support JS plugin filesystems, which
-cannot share memory); this is another set of operations that are proxied.</p>
-<p>When a JS library function is marked as both <code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'sync'</span></code> and <code class="docutils literal notranslate"><span class="pre">__proxy:</span>
-<span class="pre">'async'</span></code> the calling thread will block until the async operation on the
-main thread is completed (i.e. the returned promise is resolved).</p>
-<p>Proxying can cause problems in certain cases, see the section on blocking below.</p>
+like interacting with the DOM. As a result, these operations need to be proxied
+to the main browser thread if they are called from a background thread.</p>
+<p>For JS library functions this proxying is automatic.  You can see which
+functions are proxied by looking for the <code class="docutils literal notranslate"><span class="pre">__proxy:</span></code> annotations in the JS
+libraries. For example, <code class="docutils literal notranslate"><span class="pre">getaddrinfo__proxy:</span> <span class="pre">'sync'</span></code> marks the <code class="docutils literal notranslate"><span class="pre">getaddrinfo</span></code>
+function for automatic proxying.</p>
+<p>Functions can be marked using a <code class="docutils literal notranslate"><span class="pre">__proxy</span></code> annotation of either <code class="docutils literal notranslate"><span class="pre">sync</span></code> or
+<code class="docutils literal notranslate"><span class="pre">async</span></code>.  By far the most common (and useful) is <code class="docutils literal notranslate"><span class="pre">sync</span></code> which means that
+the calling thread will be blocked until the main thread has performed the
+proxied function and the return value will be returned synchronously on the
+calling thread.  <code class="docutils literal notranslate"><span class="pre">async</span></code> proxied functions will return immediately on the
+calling thread and the JS function will be queued for execution on the main
+thread at some point in the future.</p>
+<p>This automatic proxying mechanism is built on the <a class="reference internal" href="../api_reference/proxying.h.html#proxying-h"><span class="std std-ref">proxying.h</span></a> API which
+can also be used directly for more precise control over how work is run on
+different threads.</p>
+<p>When a JS library function is marked as both <code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'sync'</span></code> and <code class="docutils literal notranslate"><span class="pre">__async:</span>
+<span class="pre">'auto'</span></code> the calling thread will block until the async operation on the
+main thread is completed (i.e. the returned promise is resolved).  This allows
+functions that would require <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify"><span class="std std-ref">ASYNCIFY</span></a> (when called from the main browser
+thread) to be called without <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify"><span class="std std-ref">ASYNCIFY</span></a> from a background thread.  In other
+words, background threads can block on proxied work even without <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify"><span class="std std-ref">ASYNCIFY</span></a>
+enabled.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Proxying can cause problems, such as deadlocks, in certain cases, see
+the section on blocking below.</p>
+</div>
 </section>
 <section id="blocking-on-the-main-browser-thread">
 <h2>Blocking on the main browser thread<a class="headerlink" href="#blocking-on-the-main-browser-thread" title="Permalink to this heading"></a></h2>
