@@ -198,18 +198,27 @@ be supported in all WebAssembly engines yet</a>.</p>
 <span id="id1"></span><h2>Using Exceptions and setjmp-longjmp Together<a class="headerlink" href="#using-exceptions-and-setjmp-longjmp-together" title="Permalink to this heading"></a></h2>
 <p>We also have two kinds of <a class="reference internal" href="exceptions.html#exceptions"><span class="std std-ref">exception handling support</span></a>:
 JavaScript-based support and the new WebAssembly EH-based support. Our
-setjmp-longjmp support use the same mechanisms. Because of that, you should use
-the same kind of EH and setjmp-longjmp support when using exceptions and
-setjmp-longjmp together.</p>
+setjmp-longjmp support use the same mechanisms. Because of that, when they are
+used together, the kind of setjmp-longjmp support will be determined by the EH
+support.</p>
 <p>For example, to use the JavaScript-based EH and setjmp-longjmp support together:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++<span class="w"> </span>-fexceptions<span class="w"> </span>test.cpp<span class="w"> </span>-o<span class="w"> </span>test.js
+</pre></div>
+</div>
+<p>To use the WebAssembly EH and setjmp-longjmp support together:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++<span class="w"> </span>-fwasm-exceptions<span class="w"> </span>test.cpp<span class="w"> </span>-o<span class="w"> </span>test.js
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">-sSUPPORT_LONGJMP</span></code>, which defaults to <code class="docutils literal notranslate"><span class="pre">emscripten</span></code> or <code class="docutils literal notranslate"><span class="pre">wasm</span></code> depending on
 the exception mode, is enabled by default, so you don’t need to pass it
 explicitly.</p>
-<p>To use the WebAssembly EH and setjmp-longjmp support together:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>em++<span class="w"> </span>-fwasm-exceptions<span class="w"> </span>-sSUPPORT_LONGJMP<span class="o">=</span>wasm<span class="w"> </span>test.cpp<span class="w"> </span>-o<span class="w"> </span>test.js
+<p>But you need to pass <code class="docutils literal notranslate"><span class="pre">-sSUPPORT_LONGJMP=wasm</span></code> at compile time explicitly
+before you link C and C++ code together, because you don’t use exception flags
+at C compile time, but it needs to match the setjmp-longjmp handling model of
+the C++ code.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc<span class="w"> </span>-c<span class="w"> </span>-sSUPPORT_LONGJMP<span class="o">=</span>wasm<span class="w"> </span>a.c<span class="w"> </span>-o<span class="w"> </span>a.o
+em++<span class="w"> </span>-c<span class="w"> </span>-fwasm-exceptions<span class="w"> </span>b.cpp<span class="w"> </span>-o<span class="w"> </span>b.o
+em++<span class="w"> </span>-fwasm-exceptions<span class="w"> </span>a.o<span class="w"> </span>b.o<span class="w"> </span>-o<span class="w"> </span>test.js
 </pre></div>
 </div>
 <p>There is one specific restriction for using WebAssembly EH-based support for
