@@ -70,6 +70,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#quick-example">Quick Example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pthreads-vs-wasm-workers-which-one-to-use">Pthreads vs Wasm Workers: Which One to Use?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c11-thread-apis-are-not-available-under-wasm-workers">C11 thread APIs are not available under Wasm Workers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#some-standard-c-apis-are-not-available-under-wasm-workers">Some standard C++ APIs are not available under Wasm Workers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-can-proxy-js-functions">Pthreads can proxy JS functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-have-cancellation-points">Pthreads have cancellation points</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-may-start-up-synchronously-wasm-workers-always-start-asynchronously">Pthreads may start up synchronously - Wasm Workers always start asynchronously</a></li>
@@ -262,6 +264,17 @@ execute JS code on the calling thread.</p></li>
 </ul>
 </div></blockquote>
 <p>However, the differences are more notable.</p>
+<section id="c11-thread-apis-are-not-available-under-wasm-workers">
+<h3>C11 thread APIs are not available under Wasm Workers<a class="headerlink" href="#c11-thread-apis-are-not-available-under-wasm-workers" title="Permalink to this heading"></a></h3>
+<p>Becuase our C11 threading API is based on pthreads internally these APIs are not
+available under Wasm Worker.</p>
+</section>
+<section id="some-standard-c-apis-are-not-available-under-wasm-workers">
+<h3>Some standard C++ APIs are not available under Wasm Workers<a class="headerlink" href="#some-standard-c-apis-are-not-available-under-wasm-workers" title="Permalink to this heading"></a></h3>
+<p>Some parts of the libc++ stndard library are not available under Wasm Workers
+becuase they depend on pthreads internally.  For example <cite>std::call_once`</cite>:
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/26375">https://github.com/emscripten-core/emscripten/issues/26375</a>.</p>
+</section>
 <section id="pthreads-can-proxy-js-functions">
 <h3>Pthreads can proxy JS functions<a class="headerlink" href="#pthreads-can-proxy-js-functions" title="Permalink to this heading"></a></h3>
 <p>Only pthreads can use the <code class="docutils literal notranslate"><span class="pre">MAIN_THREAD_EM_ASM*()</span></code> and <code class="docutils literal notranslate"><span class="pre">MAIN_THREAD_ASYNC_EM_ASM()</span></code> functions and
