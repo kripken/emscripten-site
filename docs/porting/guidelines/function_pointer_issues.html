@@ -162,10 +162,15 @@
 <p>There are two main issues with function pointers:</p>
 <ol class="arabic">
 <li><p>Function pointer casts can cause function pointer calls to fail.</p>
-<p>Function pointers must be called with the correct type: it is undefined behavior in C and C++ to cast a function pointer to another type and call it that way. This does work in most native platforms, however, despite it being UB, but in Wasm it can fail. In that case, you may see an <code class="docutils literal notranslate"><span class="pre">abort(10)</span></code> or some other number, and if assertions are on you may see a message with details that start with</p>
+<p>Function pointers must be called with the correct type: it is undefined behavior in C/C++ to cast a function pointer to another type and call it that way. This does work in most native platforms, however, despite it being UB, but in Wasm it can fail. In that case, you may see an error like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">RuntimeError</span><span class="p">:</span> <span class="n">null</span> <span class="n">function</span> <span class="ow">or</span> <span class="n">function</span> <span class="n">signature</span> <span class="n">mismatch</span>
+</pre></div>
+</div>
+<p>or</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Invalid</span> <span class="n">function</span> <span class="n">pointer</span> <span class="n">called</span>
 </pre></div>
 </div>
+<p>or <code class="docutils literal notranslate"><span class="pre">abort(10)</span></code> or some other number (depending on the type of build).</p>
 <p>Rarely, you may see a compiler warning like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">warning</span><span class="p">:</span> <span class="n">implicit</span> <span class="n">declaration</span> <span class="n">of</span> <span class="n">function</span>
 </pre></div>
@@ -179,6 +184,12 @@
 <section id="debugging-function-pointer-issues">
 <span id="asm-pointer-casts"></span><span id="function-pointer-issues-point-asmjs"></span><h2>Debugging function pointer issues<a class="headerlink" href="#debugging-function-pointer-issues" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> and <code class="docutils literal notranslate"><span class="pre">ASSERTION</span></code> options can catch some of these errors at runtime and provide useful information. You can also see if <code class="docutils literal notranslate"><span class="pre">EMULATE_FUNCTION_POINTER_CASTS</span></code> fixes things for you, but see later down about the overhead.</p>
+<p>You can get compiler errors for some of these problems with</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">Werror</span><span class="o">=</span><span class="n">cast</span><span class="o">-</span><span class="n">function</span><span class="o">-</span><span class="nb">type</span>
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 <section id="working-around-function-pointer-issues">
 <h2>Working around function pointer issues<a class="headerlink" href="#working-around-function-pointer-issues" title="Permalink to this heading"></a></h2>
