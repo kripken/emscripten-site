@@ -76,7 +76,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-have-cancellation-points">Pthreads have cancellation points</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-may-start-up-synchronously-wasm-workers-always-start-asynchronously">Pthreads may start up synchronously - Wasm Workers always start asynchronously</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthread-topology-is-flat-wasm-workers-are-hierarchical">Pthread topology is flat - Wasm Workers are hierarchical</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa">Pthreads can use the Wasm Worker synchronization API, but not vice versa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pthreads-can-use-the-wasm-worker-synchronization-api">Pthreads can use the Wasm Worker synchronization API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wasm-workers-cannot-use-the-pthread-api-unless-building-in-hybrid-mode">Wasm Workers cannot use the pthread API, unless building in hybrid mode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-have-a-thread-main-function-and-atexit-handlers">Pthreads have a “thread main” function and atexit handlers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-have-a-per-thread-incoming-proxy-message-queue-wasm-workers-do-not">Pthreads have a per-thread incoming proxy message queue, Wasm Workers do not</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pthreads-synchronize-wallclock-times">Pthreads synchronize wallclock times</a></li>
@@ -316,13 +317,28 @@ hierarchy manually by posting the Worker creation over to the main thread yourse
 <p>Note that support for nested Workers varies across browsers. As of 02/2022, nested Workers are <a class="reference external" href="https://webkit.org/b/22723">not
 supported in Safari</a>. See <a class="reference external" href="https://github.com/johanholmerin/nested-worker">here</a> for a polyfill.</p>
 </section>
-<section id="pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa">
-<h3>Pthreads can use the Wasm Worker synchronization API, but not vice versa<a class="headerlink" href="#pthreads-can-use-the-wasm-worker-synchronization-api-but-not-vice-versa" title="Permalink to this heading"></a></h3>
+<section id="pthreads-can-use-the-wasm-worker-synchronization-api">
+<h3>Pthreads can use the Wasm Worker synchronization API<a class="headerlink" href="#pthreads-can-use-the-wasm-worker-synchronization-api" title="Permalink to this heading"></a></h3>
 <p>The multithreading synchronization primitives offered in <code class="docutils literal notranslate"><span class="pre">emscripten/wasm_worker.h</span></code>
 (<code class="docutils literal notranslate"><span class="pre">emscripten_lock_*</span></code>, <code class="docutils literal notranslate"><span class="pre">emscripten_semaphore_*</span></code>, <code class="docutils literal notranslate"><span class="pre">emscripten_condvar_*</span></code>) can be freely invoked
-from within pthreads if one so wishes, but Wasm Workers cannot utilize any of the synchronization
-functionality in the Pthread API (<code class="docutils literal notranslate"><span class="pre">pthread_mutex_*</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_cond_</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_rwlock_*</span></code>, etc),
-since they lack the needed pthread runtime.</p>
+from within pthreads if one so wishes.</p>
+</section>
+<section id="wasm-workers-cannot-use-the-pthread-api-unless-building-in-hybrid-mode">
+<h3>Wasm Workers cannot use the pthread API, unless building in hybrid mode<a class="headerlink" href="#wasm-workers-cannot-use-the-pthread-api-unless-building-in-hybrid-mode" title="Permalink to this heading"></a></h3>
+<p>By default, Wasm Workers cannot call any pthread APIs (<code class="docutils literal notranslate"><span class="pre">pthread_mutex_*</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pthread_cond_*</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_self()</span></code>, etc.), since they lack the needed
+thread metadata.</p>
+<p>However, when building in <strong>hybrid mode</strong> (linking with both <code class="docutils literal notranslate"><span class="pre">-sWASM_WORKERS</span></code>
+and <code class="docutils literal notranslate"><span class="pre">-pthread</span></code>), Wasm Workers are created with the additional metadata needed.
+In this mode, Wasm Workers support a subset of the pthread API:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pthread_self()</span></code> and <code class="docutils literal notranslate"><span class="pre">pthread_equal()</span></code></p></li>
+<li><p>Thread Specific Data (TSD) via <code class="docutils literal notranslate"><span class="pre">pthread_getspecific()</span></code> and <code class="docutils literal notranslate"><span class="pre">pthread_setspecific()</span></code></p></li>
+<li><p>Thread synchronization API such was <cite>pthread_mutex_*</cite> and <cite>pthread_cond_*</cite>.</p></li>
+</ul>
+<p>APIs that manage the thread lifecycle (like <code class="docutils literal notranslate"><span class="pre">pthread_create</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pthread_join</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_detach</span></code>, <code class="docutils literal notranslate"><span class="pre">pthread_cancel</span></code>) are still not
+supported for Wasm Workers, even in hybrid mode.</p>
 </section>
 <section id="pthreads-have-a-thread-main-function-and-atexit-handlers">
 <h3>Pthreads have a “thread main” function and atexit handlers<a class="headerlink" href="#pthreads-have-a-thread-main-function-and-atexit-handlers" title="Permalink to this heading"></a></h3>
@@ -413,7 +429,7 @@ table.</p>
 
   <tr><td class='cellborder'>Thread ID</td>
   <td class='cellborder'>Creating a pthread obtains its ID. Call <pre>pthread_self()</pre> to acquire ID of calling thread.</td>
-  <td class='cellborder'>Creating a Worker obtains its ID. Call <pre>emscripten_wasm_worker_self_id()</pre> acquire ID of calling thread.</td></tr>
+  <td class='cellborder'>Creating a Worker obtains its ID. Call <pre>emscripten_wasm_worker_self_id()</pre> acquire ID of calling thread.<br>In hybrid mode, <pre>pthread_self()</pre> also works.</td></tr>
 
   <tr><td class='cellborder'>High resolution timer</td>
   <td class='cellborder'>``emscripten_get_now()``</td>
@@ -456,7 +472,7 @@ table.</p>
 
   <tr><td class='cellborder'>Recursive mutex</td>
   <td class='cellborder'><pre>pthread_mutex_*</pre></td>
-  <td class='cellborder'>N/A</td></tr>
+  <td class='cellborder'>Supported in hybrid mode</td></tr>
 
   <tr><td class='cellborder'>Semaphores</td>
   <td class='cellborder'>N/A</td>
@@ -468,7 +484,7 @@ table.</p>
 
   <tr><td class='cellborder'>Read-Write locks</td>
   <td class='cellborder'><pre>pthread_rwlock_*</pre></td>
-  <td class='cellborder'>N/A</td></tr>
+  <td class='cellborder'>Supported in hybrid mode</td></tr>
 
   <tr><td class='cellborder'>Spinlocks</td>
   <td class='cellborder'><pre>pthread_spin_*</pre></td>
