@@ -76,6 +76,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#Module.preInit"><code class="docutils literal notranslate"><span class="pre">Module.preInit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Module.preinitializedWebGLContext"><code class="docutils literal notranslate"><span class="pre">Module.preinitializedWebGLContext</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Module.preRun"><code class="docutils literal notranslate"><span class="pre">Module.preRun</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Module.postRun"><code class="docutils literal notranslate"><span class="pre">Module.postRun</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Module.print"><code class="docutils literal notranslate"><span class="pre">Module.print</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Module.printErr"><code class="docutils literal notranslate"><span class="pre">Module.printErr</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Module.mainScriptUrlOrBlob"><code class="docutils literal notranslate"><span class="pre">Module.mainScriptUrlOrBlob</span></code></a></li>
@@ -307,7 +308,7 @@ them out, like this: <code class="docutils literal notranslate"><span class="pre
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Module.noExitRuntime">
 <span class="sig-prename descclassname"><span class="n"><span class="pre">Module</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">noExitRuntime</span></span></span><a class="headerlink" href="#Module.noExitRuntime" title="Permalink to this definition"></a></dt>
-<dd><p>If <code class="docutils literal notranslate"><span class="pre">noExitRuntime</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the runtime is not shut down after <code class="docutils literal notranslate"><span class="pre">run</span></code> completes. Shutting down the runtime calls shutdown callbacks, for example <code class="docutils literal notranslate"><span class="pre">atexit</span></code> calls. If you want to continue using the code after <code class="docutils literal notranslate"><span class="pre">run()</span></code> finishes, it is necessary to set this. This is automatically set for you if you use an API command that implies that you want the runtime to not be shut down, for example <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop</span></code>.</p>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">noExitRuntime</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the runtime is not shut down after <code class="docutils literal notranslate"><span class="pre">main()</span></code> completes. Shutting down the runtime calls shutdown callbacks, for example <code class="docutils literal notranslate"><span class="pre">atexit</span></code> calls. If you want to continue using the code after <code class="docutils literal notranslate"><span class="pre">main()</span></code> finishes, it is necessary to set this. This is automatically set for you if you use an API command that implies that you want the runtime to not be shut down, for example <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop</span></code>.</p>
 </dd></dl>
 
 <dl class="js attribute">
@@ -331,11 +332,17 @@ them out, like this: <code class="docutils literal notranslate"><span class="pre
 <dl class="js attribute">
 <dt class="sig sig-object js" id="Module.preRun">
 <span class="sig-prename descclassname"><span class="n"><span class="pre">Module</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">preRun</span></span></span><a class="headerlink" href="#Module.preRun" title="Permalink to this definition"></a></dt>
-<dd><p>An array of functions to call right before calling <code class="docutils literal notranslate"><span class="pre">run()</span></code>, but after defining and setting up the environment, including global initializers. This is useful, for example, to set up directories and files using the <a class="reference internal" href="Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> — as this needs to happen after the FileSystem API has been loaded, but before the program starts to run.</p>
+<dd><p>A function (or array of functions) to call right before calling <code class="docutils literal notranslate"><span class="pre">main()</span></code>, but after defining and setting up the environment, including global initializers. This is useful, for example, to set up directories and files using the <a class="reference internal" href="Filesystem-API.html#filesystem-api"><span class="std std-ref">File System API</span></a> — as this needs to happen after the FileSystem API has been loaded, but before the program starts to run.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If code needs to affect global initializers, it should instead be run using <a class="reference internal" href="#Module.preInit" title="Module.preInit"><code class="xref js js-attr docutils literal notranslate"><span class="pre">preInit</span></code></a>.</p>
 </div>
+</dd></dl>
+
+<dl class="js attribute">
+<dt class="sig sig-object js" id="Module.postRun">
+<span class="sig-prename descclassname"><span class="n"><span class="pre">Module</span></span><span class="p"><span class="pre">.</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">postRun</span></span></span><a class="headerlink" href="#Module.postRun" title="Permalink to this definition"></a></dt>
+<dd><p>A function (or array of functions) to call after the program’s <code class="docutils literal notranslate"><span class="pre">main()</span></code> returns.</p>
 </dd></dl>
 
 <dl class="js attribute">
