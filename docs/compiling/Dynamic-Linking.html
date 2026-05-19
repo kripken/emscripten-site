@@ -62,6 +62,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#runtime-dynamic-linking-with-dlopen">Runtime Dynamic Linking with <code class="docutils literal notranslate"><span class="pre">dlopen()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#building-dynamic-libraries-using-shared">Building Dynamic Libraries using <code class="docutils literal notranslate"><span class="pre">-shared</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#code-size">Code Size</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#system-libraries">System Libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#miscellaneous-notes">Miscellaneous Notes</a><ul>
@@ -160,10 +161,10 @@
 <p class="admonition-title">Note</p>
 <p>This documentation is somewhat outdated and is in the process of being refreshed.</p>
 </div>
-<p>Emscripten supports linking object files (and ar archives that contain
+<p>Emscripten supports linking object files (and <code class="docutils literal notranslate"><span class="pre">ar</span></code> archives that contain
 object files) statically.  This lets most build systems work with Emscripten
 with little or no changes (see <a class="reference internal" href="Building-Projects.html#building-projects"><span class="std std-ref">Building Projects</span></a>).</p>
-<p>In addition, Emscripten also has support for a form of <strong>dynamic</strong> linking of
+<p>In addition, Emscripten also has support for <strong>dynamic</strong> linking of
 WebAssembly modules.  This can add overhead, so for best performance static
 linking should still be preferred.  However, this overhead can be reduced
 with the use of certain command line flags. See below for details.</p>
@@ -283,6 +284,21 @@ it (except for <code class="docutils literal notranslate"><span class="pre">dlop
 which just works without filesystem integration). That’s basically it - you can
 then use <code class="docutils literal notranslate"><span class="pre">dlopen(),</span> <span class="pre">dlsym()</span></code>, etc. normally.</p>
 </section>
+</section>
+<section id="building-dynamic-libraries-using-shared">
+<h2>Building Dynamic Libraries using <code class="docutils literal notranslate"><span class="pre">-shared</span></code><a class="headerlink" href="#building-dynamic-libraries-using-shared" title="Permalink to this heading"></a></h2>
+<p>In traditional toolchains the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag is used to generated dynamic
+libraries.  However, because dynamic linking in Emscripten comes with caveats
+and has some overhead, Emscripten does not currently produce real dynamic
+libraries when this flag is used.  Instead, Emscripten will produce a fake
+dynamic library (along with a warning) that is actually a single static object
+file.  When your main program is linked against this fake dynamic library it
+gets linked into your main program like any other object file.</p>
+<p>The reason for this behaviour is to allow projects (and build systems) that
+assume a working <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag to build successfully (albeit using static
+linking).</p>
+<p>This behaviour can be controlled using the <a class="reference internal" href="../tools_reference/settings_reference.html#fake-dylibs"><span class="std std-ref">FAKE_DYLIBS</span></a> settings.  If you
+disable <cite>FAKE_DYLIBS</cite> then <code class="docutils literal notranslate"><span class="pre">-shared</span></code> will act like <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code>.</p>
 </section>
 <section id="code-size">
 <h2>Code Size<a class="headerlink" href="#code-size" title="Permalink to this heading"></a></h2>
