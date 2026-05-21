@@ -254,7 +254,8 @@ before your application starts to run.</p>
 <li><p>Build one part of your code as the main module, linking it using
 <code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE</span></code> (See <a class="reference internal" href="../tools_reference/settings_reference.html#main-module"><span class="std std-ref">MAIN_MODULE</span></a>).</p></li>
 <li><p>Build other parts of your code as side modules, linking it using
-<code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code> (See <a class="reference internal" href="../tools_reference/settings_reference.html#side-module"><span class="std std-ref">SIDE_MODULE</span></a>).</p></li>
+<code class="docutils literal notranslate"><span class="pre">-shared</span></code>.  You can also used the emscripten-specific <a class="reference internal" href="../tools_reference/settings_reference.html#side-module"><span class="std std-ref">SIDE_MODULE</span></a>
+setting which does the same thing by default.</p></li>
 </ul>
 <p>For the main module the output suffix should be <code class="docutils literal notranslate"><span class="pre">.js</span></code> (the WebAssembly
 file will be generated alongside it just like normal).  For the side
@@ -288,17 +289,15 @@ then use <code class="docutils literal notranslate"><span class="pre">dlopen(),<
 <section id="building-dynamic-libraries-using-shared">
 <h2>Building Dynamic Libraries using <code class="docutils literal notranslate"><span class="pre">-shared</span></code><a class="headerlink" href="#building-dynamic-libraries-using-shared" title="Permalink to this heading"></a></h2>
 <p>In traditional toolchains the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag is used to generated dynamic
-libraries.  However, because dynamic linking in Emscripten comes with caveats
-and has some overhead, Emscripten does not currently produce real dynamic
-libraries when this flag is used.  Instead, Emscripten will produce a fake
-dynamic library (along with a warning) that is actually a single static object
-file.  When your main program is linked against this fake dynamic library it
-gets linked into your main program like any other object file.</p>
-<p>The reason for this behaviour is to allow projects (and build systems) that
-assume a working <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag to build successfully (albeit using static
-linking).</p>
+libraries.  Historically, due to early limitations, Emscripten would produce a
+fake dynamic library (along with a warning) when the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag was used.
+When your main program is linked against these fake dynamic library they would
+be linked into your main program like regular static other object files.</p>
+<p>These days Emscripten will produce real dynamic libraries by default and
+<code class="docutils literal notranslate"><span class="pre">-shared</span></code> is essentially the same as <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code>.</p>
 <p>This behaviour can be controlled using the <a class="reference internal" href="../tools_reference/settings_reference.html#fake-dylibs"><span class="std std-ref">FAKE_DYLIBS</span></a> settings.  If you
-disable <cite>FAKE_DYLIBS</cite> then <code class="docutils literal notranslate"><span class="pre">-shared</span></code> will act like <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code>.</p>
+prefer the older behaviour with fake dynamic libraryies you can enable this
+setting.</p>
 </section>
 <section id="code-size">
 <h2>Code Size<a class="headerlink" href="#code-size" title="Permalink to this heading"></a></h2>
