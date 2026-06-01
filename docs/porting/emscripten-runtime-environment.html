@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b62e0b6d"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=39ecd167"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -155,11 +155,11 @@
            <div itemprop="articleBody">
              
   <section id="emscripten-runtime-environment">
-<span id="id1"></span><h1>Emscripten Runtime Environment<a class="headerlink" href="#emscripten-runtime-environment" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Emscripten Runtime Environment<a class="headerlink" href="#emscripten-runtime-environment" title="Link to this heading"></a></h1>
 <p>The Emscripten runtime environment is different to that expected by most C/C++ applications. Emscripten works hard to abstract and mitigate these differences, so that in general code can be compiled with little or no change.</p>
 <p>This article expands on some of the differences and the resulting <a class="reference internal" href="guidelines/api_limitations.html#api-limitations"><span class="std std-ref">API Limitations</span></a>, and outlines the few changes you may need to make to your C/C++ code.</p>
 <section id="input-output">
-<h2>Input/output<a class="headerlink" href="#input-output" title="Permalink to this heading"></a></h2>
+<h2>Input/output<a class="headerlink" href="#input-output" title="Link to this heading"></a></h2>
 <p>Emscripten implements the Simple DirectMedia Layer API (<a class="reference internal" href="../site/glossary.html#term-SDL"><span class="xref std std-term">SDL</span></a>) for the browser environment, which provides low level access to audio, keyboard, mouse, joystick, and graphics hardware. Applications that use <em>SDL</em> typically require no input/output changes to run in the browser.</p>
 <p>In addition, we have more limited support for <em>glut</em>, <em>glfw</em>, <em>glew</em> and <em>xlib</em>.</p>
 <p>Applications that do not use <em>SDL</em> or the other APIs can use the Emscripten-specific APIs for input and output:</p>
@@ -169,7 +169,7 @@
 </ul>
 </section>
 <section id="file-systems">
-<h2>File Systems<a class="headerlink" href="#file-systems" title="Permalink to this heading"></a></h2>
+<h2>File Systems<a class="headerlink" href="#file-systems" title="Link to this heading"></a></h2>
 <p>A lot of C/C++ code uses the synchronous file system APIs in <em>libc</em> and <em>libcxx</em> to access code in the local file system. This is problematic because the browser prevents code from directly accessing files on the host system, and because JavaScript only supports asynchronous file access outside of web workers.</p>
 <p>Emscripten provides an implementation of <em>libc</em> and <em>libcxx</em> and a <em>virtual file system</em> so that normal C/C++ code can be compiled and run without change. Most developers need only specify the set of files to be <a class="reference internal" href="files/packaging_files.html#packaging-files"><span class="std std-ref">packaged</span></a> for preloading into the virtual file system at runtime.</p>
 <div class="admonition note">
@@ -181,12 +181,12 @@
 <p>For more information and examples see <a class="reference internal" href="files/index.html#packaging-code-index"><span class="std std-ref">Files and File Systems</span></a>.</p>
 </section>
 <section id="browser-main-loop">
-<span id="emscripten-runtime-environment-main-loop"></span><h2>Browser main loop<a class="headerlink" href="#browser-main-loop" title="Permalink to this heading"></a></h2>
+<span id="emscripten-runtime-environment-main-loop"></span><h2>Browser main loop<a class="headerlink" href="#browser-main-loop" title="Link to this heading"></a></h2>
 <p>The browser event model uses co-operative multitasking — each event has a “turn” to run, and must then return control to the browser so that other events can be processed. A common cause of HTML pages hanging is JavaScript that does not complete and return control to the browser.</p>
 <p>Graphical C++ apps typically run in an infinite loop. Within each iteration of the loop the app performs event handling, processing and rendering, followed by a delay (“wait”) to keep the frame rate constant. This infinite loop is a problem in the browser environment because there is no way for control to return to the browser so other code can run. After a period the browser will notify the user that the page is stuck and offer to halt or close it.</p>
 <p>Similarly, JavaScript APIs like WebGL can only run when the current “turn” is over, and will automatically render and swap buffers at that point. This contrasts with OpenGL C++ apps where you would need to swap the buffers manually.</p>
 <section id="implementing-an-asynchronous-main-loop-in-c-c">
-<span id="emscripten-runtime-environment-howto-main-loop"></span><h3>Implementing an asynchronous main loop in C/C++<a class="headerlink" href="#implementing-an-asynchronous-main-loop-in-c-c" title="Permalink to this heading"></a></h3>
+<span id="emscripten-runtime-environment-howto-main-loop"></span><h3>Implementing an asynchronous main loop in C/C++<a class="headerlink" href="#implementing-an-asynchronous-main-loop-in-c-c" title="Link to this heading"></a></h3>
 <p>The standard solution for this problem is to define a C function that performs one iteration of your main loop (not including the “delay”). For a native build this function can be called in an infinite loop, leaving the behaviour effectively unchanged.</p>
 <p>Within Emscripten compiled code we use
 <a class="reference internal" href="../api_reference/html5.h.html#c.emscripten_request_animation_frame_loop" title="emscripten_request_animation_frame_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_request_animation_frame_loop()</span></code></a> to get the environment to call
@@ -242,7 +242,7 @@ frequency at which to call the function, and other things.</p>
 </div>
 </section>
 <section id="using-asyncify-to-yield-to-the-browser">
-<h3>Using Asyncify to yield to the browser<a class="headerlink" href="#using-asyncify-to-yield-to-the-browser" title="Permalink to this heading"></a></h3>
+<h3>Using Asyncify to yield to the browser<a class="headerlink" href="#using-asyncify-to-yield-to-the-browser" title="Link to this heading"></a></h3>
 <p>Another option is to use <a class="reference internal" href="asyncify.html#yielding-to-main-loop"><span class="std std-ref">Asyncify</span></a> which will
 rewrite the program so that it can return to the browser’s main event loop
 by just calling <code class="docutils literal notranslate"><span class="pre">emscripten_sleep()</span></code>. Note that this rewriting causes size and speed overhead
@@ -251,7 +251,7 @@ as described earlier do not.</p>
 </section>
 </section>
 <section id="execution-lifecycle">
-<h2>Execution lifecycle<a class="headerlink" href="#execution-lifecycle" title="Permalink to this heading"></a></h2>
+<h2>Execution lifecycle<a class="headerlink" href="#execution-lifecycle" title="Link to this heading"></a></h2>
 <p>When an Emscripten-compiled application is loaded, it starts by preparing data in the <code class="docutils literal notranslate"><span class="pre">preloading</span></code> phase. Files you marked for <a class="reference internal" href="../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preloading</span></a> (using <code class="docutils literal notranslate"><span class="pre">emcc</span> <span class="pre">--preload-file</span></code>, or manually from JavaScript with <a class="reference internal" href="../api_reference/Filesystem-API.html#FS.createPreloadedFile" title="FS.createPreloadedFile"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.createPreloadedFile()</span></code></a>) are set up at this stage.</p>
 <p>You can add additional operations with <a class="reference internal" href="../api_reference/preamble.js.html#addRunDependency" title="addRunDependency"><code class="xref js js-func docutils literal notranslate"><span class="pre">addRunDependency()</span></code></a>, which is a counter of all dependencies to be executed before compiled code can run. As these are completed you can call <a class="reference internal" href="../api_reference/preamble.js.html#removeRunDependency" title="removeRunDependency"><code class="xref js js-func docutils literal notranslate"><span class="pre">removeRunDependency()</span></code></a> to remove the completed dependencies.</p>
 <div class="admonition note">
@@ -270,7 +270,7 @@ as described earlier do not.</p>
 <p>The <a class="reference internal" href="../api_reference/emscripten.h.html#emscripten-h-browser-execution-environment"><span class="std std-ref">browser execution environment reference (emscripten.h)</span></a> describes a number of other methods for controlling execution.</p>
 </section>
 <section id="emscripten-memory-representation">
-<span id="emscripten-memory-model"></span><h2>Emscripten memory representation<a class="headerlink" href="#emscripten-memory-representation" title="Permalink to this heading"></a></h2>
+<span id="emscripten-memory-model"></span><h2>Emscripten memory representation<a class="headerlink" href="#emscripten-memory-representation" title="Link to this heading"></a></h2>
 <p>In both asm.js and WebAssembly Emscripten represents memory in a way similar to native architectures. Pointers represent offsets into memory, structs use the same amount of address space as they normally do, and so forth.</p>
 <p>In WebAssembly, this is done using a <code class="docutils literal notranslate"><span class="pre">WebAssembly.Memory</span></code> which was designed for that purpose. In asm.js, Emscripten uses a single <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed array</a>, with different <em>views</em> providing access to different types (<a class="reference internal" href="../api_reference/preamble.js.html#HEAPU32" title="HEAPU32"><code class="xref js js-data docutils literal notranslate"><span class="pre">HEAPU32</span></code></a> for 32-bit unsigned integers, etc.).</p>
 <p>Emscripten experimented with other memory representations in the past, ending up on the “typed arrays mode 2” approach for JS and then asm.js, as described above, and then WebAssembly implemented something similar.</p>

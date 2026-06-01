@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b62e0b6d"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=39ecd167"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -160,18 +160,18 @@
            <div itemprop="articleBody">
              
   <section id="portability-guidelines">
-<span id="code-portability-guidelines"></span><h1>Portability Guidelines<a class="headerlink" href="#portability-guidelines" title="Permalink to this heading"></a></h1>
+<span id="code-portability-guidelines"></span><h1>Portability Guidelines<a class="headerlink" href="#portability-guidelines" title="Link to this heading"></a></h1>
 <p>Emscripten can be used to compile almost any <em>portable</em> C++/C code to JavaScript.</p>
 <p>This section explains what types of code are non-portable (or more difficult to port), and what code can be compiled but will run slowly. Developers can use this information for evaluating the effort to port and re-write code.</p>
 <section id="current-web-limitations">
-<h2>Current Web limitations<a class="headerlink" href="#current-web-limitations" title="Permalink to this heading"></a></h2>
+<h2>Current Web limitations<a class="headerlink" href="#current-web-limitations" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Multithreading depends on SharedArrayBuffer, which is still being standardized and implemented by browsers. Emscripten has working support for threads, which you can try in development browsers by setting the proper preference.</p></li>
 <li><p>SIMD is also in the process of standardization and implementation.</p></li>
 </ul>
 </section>
 <section id="code-that-cannot-be-compiled">
-<h2>Code that cannot be compiled<a class="headerlink" href="#code-that-cannot-be-compiled" title="Permalink to this heading"></a></h2>
+<h2>Code that cannot be compiled<a class="headerlink" href="#code-that-cannot-be-compiled" title="Link to this heading"></a></h2>
 <p>The following types of code would need to be re-written in order to work with Emscripten. (While in theory it might be possible for Emscripten to work around these issues using emulation, it would be very slow.)</p>
 <ul class="simple">
 <li><p>Code relying on a big-endian architecture. Emscripten-compiled code currently requires a little-endian host to run on, which accounts for 99% of machines connected to the internet. This is because JavaScript typed arrays (used for views on memory) obey the host byte ordering and LLVM needs to know which endianness to target.</p></li>
@@ -189,7 +189,7 @@
 </ul>
 </section>
 <section id="code-that-compiles-but-might-run-slowly">
-<h2>Code that compiles but might run slowly<a class="headerlink" href="#code-that-compiles-but-might-run-slowly" title="Permalink to this heading"></a></h2>
+<h2>Code that compiles but might run slowly<a class="headerlink" href="#code-that-compiles-but-might-run-slowly" title="Link to this heading"></a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Understanding these issues can be helpful when optimising code.</p>
@@ -202,7 +202,7 @@
 </ul>
 </section>
 <section id="other-issues">
-<h2>Other issues<a class="headerlink" href="#other-issues" title="Permalink to this heading"></a></h2>
+<h2>Other issues<a class="headerlink" href="#other-issues" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Code that relies on x86 alignment behavior. x86 allows unaligned reads and writes (so for example you can read a 16-bit value from a non-even address), but other architectures do not (32-bit ARM will raise <code class="docutils literal notranslate"><span class="pre">SIGILL</span></code>). For asm.js loads and stores are forced to aligned offsets; for WebAssembly unaligned loads and stores will work but may be slow depending on the underlying CPU. If you build your code with <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP=1</span></code> then you will get a clear runtime exception, see <a class="reference internal" href="../Debugging.html#debugging"><span class="std std-ref">Debugging</span></a>.</p></li>
 </ul>

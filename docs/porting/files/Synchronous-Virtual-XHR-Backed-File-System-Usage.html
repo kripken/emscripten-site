@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b62e0b6d"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=39ecd167"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -157,7 +157,7 @@
            <div itemprop="articleBody">
              
   <section id="synchronous-virtual-xhr-backed-file-system-usage">
-<span id="id1"></span><h1>Synchronous Virtual XHR Backed File System Usage<a class="headerlink" href="#synchronous-virtual-xhr-backed-file-system-usage" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Synchronous Virtual XHR Backed File System Usage<a class="headerlink" href="#synchronous-virtual-xhr-backed-file-system-usage" title="Link to this heading"></a></h1>
 <p>Emscripten supports lazy loading of binary data from HTTP servers using <a class="reference internal" href="../../site/glossary.html#term-XHR"><span class="xref std std-term">XHR</span></a>. This functionality can be used to create a backend for synchronous file access from compiled code.</p>
 <p>The backend can improve start up time as the whole file system does not need to be preloaded before compiled code is run. It can also be very efficient if the web server supports <a class="reference external" href="http://en.wikipedia.org/wiki/Byte_serving">byte serving</a> — in this case Emscripten can just read the parts of files that are actually needed.</p>
 <div class="admonition warning">
@@ -169,13 +169,13 @@
 <p>If byte serving is not supported then Emscripten will have to load the whole file (however big) even if a single byte is read.</p>
 </div>
 <section id="test-code">
-<h2>Test code<a class="headerlink" href="#test-code" title="Permalink to this heading"></a></h2>
+<h2>Test code<a class="headerlink" href="#test-code" title="Link to this heading"></a></h2>
 <p>An example of how to implement a synchronous virtual XHR backed file system is provided in the test code at <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L1313">test/test_browser.py</a> (see <code class="docutils literal notranslate"><span class="pre">test_chunked_synchronous_xhr</span></code>). The test case also contains an HTTP server (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/tests/test_browser.py#L14">test_chunked_synchronous_xhr_server</a>) showing CORS headers that might need to be set (if the resources are hosted from the same domain Emscripten runs from, there is no issue).</p>
 <p>The tests use <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/checksummer.c">checksummer.c</a> as the Emscripten-compiled program. This is simply a vanilla C program using synchronous <em>libc</em> file system calls like <code class="docutils literal notranslate"><span class="pre">fopen()</span></code>, <code class="docutils literal notranslate"><span class="pre">fread()</span></code>, <code class="docutils literal notranslate"><span class="pre">fclose()</span></code> etc.</p>
 <p>JavaScript code is added (using <em>emcc</em>’s <a class="reference internal" href="../../tools_reference/emcc.html#emcc-pre-js"><span class="std std-ref">pre-js</span></a> option) to map the file system calls in <strong>checksummer.c</strong> to a file in the virtual file system. This file is <em>created</em> early in Emscripten initialisation using <a class="reference internal" href="../../api_reference/Filesystem-API.html#FS.createLazyFile" title="FS.createLazyFile"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.createLazyFile()</span></code></a>, but only loaded with content from the server when the file is first accessed by compiled code. The added JavaScript code also sets up communication between the web worker and the main thread.</p>
 </section>
 <section id="instructions">
-<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading"></a></h2>
+<h2>Instructions<a class="headerlink" href="#instructions" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p>You will need to add JavaScript to the generated code to map the file accessed by your compiled native code and the server.</p>
 <p>The test code simply creates a file in the virtual file system using <a class="reference internal" href="../../api_reference/Filesystem-API.html#FS.createLazyFile" title="FS.createLazyFile"><code class="xref js js-func docutils literal notranslate"><span class="pre">FS.createLazyFile()</span></code></a> and sets the compiled code to use the same file (<strong>/bigfile</strong>):</p>

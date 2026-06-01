@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b62e0b6d"></script>
-      <script src="../../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../../_static/documentation_options.js?v=39ecd167"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -163,7 +163,7 @@
            <div itemprop="articleBody">
              
   <section id="packaging-files">
-<span id="id1"></span><h1>Packaging Files<a class="headerlink" href="#packaging-files" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Packaging Files<a class="headerlink" href="#packaging-files" title="Link to this heading"></a></h1>
 <p>This topic shows how to package the files that will be used to populate <a class="reference internal" href="file_systems_overview.html#file-system-overview"><span class="std std-ref">Emscripten’s virtual file system</span></a> when the page is loaded.</p>
 <p>There are two alternatives for how files are packaged: <em>preloading</em> and
 <em>embedding</em>. Embedding stores the specified files inside the wasm file, while
@@ -174,7 +174,7 @@ copy, but preloading enables the option to separately host the data.</p>
 <p>With <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code>, files can be automatically decoded based on
 their extension. See <a class="reference internal" href="#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information.</p>
 <section id="packaging-using-emcc">
-<h2>Packaging using emcc<a class="headerlink" href="#packaging-using-emcc" title="Permalink to this heading"></a></h2>
+<h2>Packaging using emcc<a class="headerlink" href="#packaging-using-emcc" title="Link to this heading"></a></h2>
 <p>The easiest way to package files is to use <a class="reference internal" href="../../tools_reference/emcc.html#emccdoc"><span class="std std-ref">emcc</span></a> at compile time. The <a class="reference internal" href="../../tools_reference/emcc.html#emcc-preload-file"><span class="std std-ref">preload</span></a> and <a class="reference internal" href="../../tools_reference/emcc.html#emcc-embed-file"><span class="std std-ref">embed</span></a> commands select their respective packaging methods.</p>
 <p>The command below shows how to package files for preloading:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcc<span class="w"> </span>file.cpp<span class="w"> </span>-o<span class="w"> </span>file.html<span class="w"> </span>--preload-file<span class="w"> </span>asset_dir
@@ -198,7 +198,7 @@ their extension. See <a class="reference internal" href="#preloading-files"><spa
 <p>The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> symbol can be used to map packaged files from any location in the local file system to any location in the virtual file system. This is discussed below in <a class="reference internal" href="#packaging-files-packaged-file-location"><span class="std std-ref">Modifying file locations in the virtual file system</span></a>.</p>
 </section>
 <section id="packaging-using-the-file-packager-tool">
-<span id="packaging-files-file-packager"></span><h2>Packaging using the file packager tool<a class="headerlink" href="#packaging-using-the-file-packager-tool" title="Permalink to this heading"></a></h2>
+<span id="packaging-files-file-packager"></span><h2>Packaging using the file packager tool<a class="headerlink" href="#packaging-using-the-file-packager-tool" title="Link to this heading"></a></h2>
 <p>You can also run the <em>file packager</em> manually using the instructions at the top of <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/tools/file_packager.py">file_packager</a>.</p>
 <p>The file packager generates a <strong>.data</strong> file and <strong>.js</strong> file. The <strong>.js</strong> file contains the code to use the data file, and must be loaded <em>before</em> loading your main compiled code.
 (For instance, add <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> tags at the end of your <code class="docutils literal notranslate"><span class="pre">--shell-file</span></code> right before <code class="docutils literal notranslate"><span class="pre">{{{</span> <span class="pre">SCRIPT</span> <span class="pre">}}}`</span></code>.)</p>
@@ -221,12 +221,12 @@ act as negative patterns (re-include matches after an earlier exclude pattern).
 Patterns are checked in order.</p>
 </section>
 <section id="changing-the-data-file-location">
-<span id="packaging-files-data-file-location"></span><h2>Changing the data file location<a class="headerlink" href="#changing-the-data-file-location" title="Permalink to this heading"></a></h2>
+<span id="packaging-files-data-file-location"></span><h2>Changing the data file location<a class="headerlink" href="#changing-the-data-file-location" title="Link to this heading"></a></h2>
 <p>By default, the <strong>.data</strong> file containing all the preloaded files is loaded from the same URL as your <strong>.js</strong> file. In some cases it may be useful to have the data file in a different location from the other files — for example if your <strong>.html</strong> and <strong>.js</strong> change a lot you may want to keep the data file on a fast CDN somewhere else.</p>
 <p>This model is supported by specifying <a class="reference internal" href="../../api_reference/module.html#Module.locateFile" title="Module.locateFile"><code class="xref js js-attr docutils literal notranslate"><span class="pre">Module.locateFile</span></code></a> function to return URL where the data file is stored. The function must be specified in a <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> element before the one that loads the data file.</p>
 </section>
 <section id="modifying-file-locations-in-the-virtual-file-system">
-<span id="packaging-files-packaged-file-location"></span><h2>Modifying file locations in the virtual file system<a class="headerlink" href="#modifying-file-locations-in-the-virtual-file-system" title="Permalink to this heading"></a></h2>
+<span id="packaging-files-packaged-file-location"></span><h2>Modifying file locations in the virtual file system<a class="headerlink" href="#modifying-file-locations-in-the-virtual-file-system" title="Link to this heading"></a></h2>
 <p>The default approach for packaging is to directly map the nested file structure at compile time — relative to the compile-time command prompt directory — to the root of the virtual file system. The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> symbol can be used in a path at build time to <em>explicitly</em> specify where the resource will be located in the virtual file system at runtime.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -242,11 +242,11 @@ Patterns are checked in order.</p>
 </div>
 </section>
 <section id="valid-character-set">
-<span id="packaging-files-file-usage"></span><h2>Valid Character Set<a class="headerlink" href="#valid-character-set" title="Permalink to this heading"></a></h2>
+<span id="packaging-files-file-usage"></span><h2>Valid Character Set<a class="headerlink" href="#valid-character-set" title="Link to this heading"></a></h2>
 <p>The following characters may be used in filenames: <code class="docutils literal notranslate"><span class="pre">A-Z</span></code>, <code class="docutils literal notranslate"><span class="pre">a-z</span></code>, <code class="docutils literal notranslate"><span class="pre">0-9</span></code>, the space character and any of the characters <code class="docutils literal notranslate"><span class="pre">!#$%&amp;'()+,-.;=&#64;[]^_`{}~</span></code>. Additionally, the following characters may be used if your host filesystem supports them: <code class="docutils literal notranslate"><span class="pre">&quot;*&lt;&gt;?|</span></code> (Windows does not allow using these in filenames). When specifying the character <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> on the command line, it must be escaped to the form <code class="docutils literal notranslate"><span class="pre">&#64;&#64;</span></code> to avoid triggering the <code class="docutils literal notranslate"><span class="pre">src&#64;dst</span></code> mapping notation (see above). The characters <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">\</span></code> and <code class="docutils literal notranslate"><span class="pre">:</span></code> cannot be used.</p>
 </section>
 <section id="monitoring-file-usage">
-<h2>Monitoring file usage<a class="headerlink" href="#monitoring-file-usage" title="Permalink to this heading"></a></h2>
+<h2>Monitoring file usage<a class="headerlink" href="#monitoring-file-usage" title="Link to this heading"></a></h2>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Only package the files your app actually needs, in order to reduce download size and improve startup speed.</p>
@@ -265,7 +265,7 @@ potentially multiple file accesses.</p>
 </div>
 </section>
 <section id="preloading-files">
-<span id="id2"></span><h2>Preloading files<a class="headerlink" href="#preloading-files" title="Permalink to this heading"></a></h2>
+<span id="id2"></span><h2>Preloading files<a class="headerlink" href="#preloading-files" title="Link to this heading"></a></h2>
 <p>With <code class="docutils literal notranslate"><span class="pre">--use-preload-plugins</span></code>, files can be automatically decoded based on
 their extension. This can also be done manually by calling
 <a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins()</span></code></a> on each file. The files remain stored
@@ -288,7 +288,7 @@ you then want to load the module synchronously using <code class="docutils liter
 </ul>
 </section>
 <section id="test-code">
-<h2>Test code<a class="headerlink" href="#test-code" title="Permalink to this heading"></a></h2>
+<h2>Test code<a class="headerlink" href="#test-code" title="Link to this heading"></a></h2>
 <p>The <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/">test suite</a> contains many file packaging examples, and is a good place to search for working code.</p>
 </section>
 </section>
