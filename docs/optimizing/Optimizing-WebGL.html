@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -14,9 +14,9 @@
     <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b62e0b6d"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=39ecd167"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -135,13 +135,13 @@
            <div itemprop="articleBody">
              
   <section id="optimizing-webgl">
-<span id="id1"></span><h1>Optimizing WebGL<a class="headerlink" href="#optimizing-webgl" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>Optimizing WebGL<a class="headerlink" href="#optimizing-webgl" title="Link to this heading"></a></h1>
 <p>Due to the extra validation that WebGL needs to impose to ensure web security, the CPU side overhead of running WebGL applications is known to be higher in comparison to native OpenGL applications. Because of this, porting graphics heavy applications can become bottlenecked on the CPU side when interfacing with GL functions. Therefore for best performance, special care should be taken to profile and optimize GL API usage in applications that are expected to be WebGL heavy. This optimization guide focuses on different techniques that have been found useful for improving WebGL performance.</p>
 <p>There are so many GL hardware and driver vendors out there, as well as operating system combinations, such that generating a specific optimization guide is difficult. Some optimizations that are efficient on certain hardware/driver/OS combinations have been seen to not make much difference on drivers from another vendor. Fortunately it has been somewhat rare to find a conflicting scenario where certain optimization for one driver would have led to falling down a performance cliff on hardware from another GPU vendor. Most often when this happens it is due to a specific feature not being supported by a particular hardware, which causes the driver to resort to emulation. For example, in one case it was found that a native GL driver advertises having support for the ETC2 compressed texture format, even though the graphics hardware did not implement this, and in another case, it was found that using vertex shader primitive restart index would cause the GL driver to fall back to running vertex shaders in software. Unfortunately OpenGL specifications do not provide means for a driver to report these types of performance caveats, which is why being able to benchmark across a large variety of target hardware is almost necessary when optimizing GL. It is also useful to pay close attention to the web page console of the browser when running, since browsers can report extra performance warnings in the console logs.</p>
 <p>It should also be acknowledged that some detected performance issues have been due to inefficiencies or outright performance bugs in browsers and their utilized software libraries, and have nothing to do with the underlying GL drivers or web security in general. When initially working on optimizing Emscripten ported GL codebases, most browsers were found to be inefficient with their WebGL stacks, but this was to be expected, since before Emscripten and asm.js, it was not even possible to perform such precise GL performance comparisons between native versus the web, such that a large number of performance critical issues fell through the gaps. This aspect has steadily been improving as more people stress WebGL with large Emscripten codebases, so some of the items in this guide might not be relevant in the future. If reading this guide in the future you do find something that seems like a net loss in all cases, please do submit a doc PR to discuss. Likewise, if certain GL access pattern is orders of magnitude slower on the web compared to native, it is likely to be a performance bug.</p>
 <p>The following optimization tips list different situations that have been known to make an impact in practice, although it is advised to never perform an optimization blindly, but keep the profiler close at hand when experimenting.</p>
 <section id="which-gl-mode-to-target">
-<h2>Which GL Mode To Target?<a class="headerlink" href="#which-gl-mode-to-target" title="Permalink to this heading"></a></h2>
+<h2>Which GL Mode To Target?<a class="headerlink" href="#which-gl-mode-to-target" title="Link to this heading"></a></h2>
 <p>Emscripten allows targeting various different OpenGL and OpenGL ES API flavors with different linker flags.</p>
 <p>By default, if no special GL related linker flags are chosen, Emscripten targets the WebGL 1 API, which user code accesses by including OpenGL ES 2.0 headers in C/C++ code (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;GLES2/gl2.h&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;GLES2/gl2ext.h&gt;</span></code>). This mode works like GLES 2, with the exception that a number of WebGL specific changes and restrictions are applied. For a close to complete reference of differences between WebGL 1 and OpenGL ES 2, refer to <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#6">WebGL 1 Specification: Differences Between WebGL and OpenGL ES 2.0</a>.</p>
 <ul class="simple">
@@ -152,7 +152,7 @@
 </ul>
 </section>
 <section id="how-to-profile-webgl">
-<h2>How To Profile WebGL<a class="headerlink" href="#how-to-profile-webgl" title="Permalink to this heading"></a></h2>
+<h2>How To Profile WebGL<a class="headerlink" href="#how-to-profile-webgl" title="Link to this heading"></a></h2>
 <p>A mix of tools are available for measuring GL performance. In general, here it is recommended that developers do not restrict the focus to only searching for web browser specific profiling tools, but in practice native profilers have been found to work equally well, if not even better. The only drawback when using a native profiler is that some intimate knowledge of how WebGL is implemented in the browser can be critical, or it might be difficult to understand the call streams going to the GPU otherwise.</p>
 <ul class="simple">
 <li><p>To get an overview of how much time is spent in different WebGL entry points, use Firefox with its <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Profiling_with_the_Built-in_Profiler">Gecko Profiler add-on</a>. This profiler tool is able to show timing data across the whole stack of executed code: handwritten JavaScript, asm.js/WebAssembly and native Firefox C/C++ browser code, which makes it very valuable compared to other profiling tools.</p></li>
@@ -161,7 +161,7 @@
 </ul>
 </section>
 <section id="avoid-redundant-calls">
-<h2>Avoid Redundant Calls<a class="headerlink" href="#avoid-redundant-calls" title="Permalink to this heading"></a></h2>
+<h2>Avoid Redundant Calls<a class="headerlink" href="#avoid-redundant-calls" title="Link to this heading"></a></h2>
 <p>In WebGL, every single GL function call has some amount of overhead, even those that are seemingly simple and do nearly nothing. This is because WebGL implementations need to validate each call since the underlying native OpenGL specifications provide no guarantees about security that could be relied upon on the web. Additionally in asm.js/WebAssembly side, each WebGL call generates an FFI transition (a jump between executing code in asm.js context and executing code in browser’s native C++ context), which has a slightly higher overhead than a regular function call inside asm.js/WebAssembly. Therefore on the web, it is generally best for CPU side performance to attempt to minimize the number of calls that is made to WebGL. The following tips can be applied here.</p>
 <ul>
 <li><p>Optimize the renderer and input assets at high level to avoid redundant calls. Refactor the design if needed so that the renderer is able to better reason what kind of state changes are relevant and which ones are not needed. The best kind of cache is one that is unnecessary, so if the high level renderer is able to keep the GL call stream lean, that will produce the fastest results. However, in cases when that is difficult to achieve, some types of lower level caching can be effective, discussed below.</p></li>
@@ -195,7 +195,7 @@
 <p>A good rule of thumb is that a renderer that inherently avoids redundant state calls in the first place by high level design is generally more efficient than one that relies heavily on state caching at the low level.</p>
 </section>
 <section id="techniques-to-minimize-api-calls">
-<h2>Techniques To Minimize API Calls<a class="headerlink" href="#techniques-to-minimize-api-calls" title="Permalink to this heading"></a></h2>
+<h2>Techniques To Minimize API Calls<a class="headerlink" href="#techniques-to-minimize-api-calls" title="Link to this heading"></a></h2>
 <p>In addition to removing API calls that are outright redundant, it is good to also pay attention to how to minimize state changes using other techniques. The following checklist offers some possibilities.</p>
 <ul class="simple">
 <li><p>When rendering to offscreen render targets, use multiple FBOs so that switching render targets only requires a single glBindFramebuffer() call. This avoids having to perform multiple calls each frame to set FBO state.</p></li>
@@ -209,7 +209,7 @@
 </ul>
 </section>
 <section id="avoid-gpu-cpu-sync-points">
-<h2>Avoid GPU-CPU Sync Points<a class="headerlink" href="#avoid-gpu-cpu-sync-points" title="Permalink to this heading"></a></h2>
+<h2>Avoid GPU-CPU Sync Points<a class="headerlink" href="#avoid-gpu-cpu-sync-points" title="Link to this heading"></a></h2>
 <p>The most important aspect of efficient GPU usage is to make sure that the CPU will never need to block on the GPU during render time, and vice versa. These types of stalls create extremely costly CPU-GPU sync points, which lead to poor utilization of both resources. Generally a hint of this type of a scenario happening can be detected by observing overall GPU and CPU utilization rates. If a GPU profiler is claiming that the GPU is idle for large portions of the time, but a CPU profiler is claiming that the CPU in turn is idle, or that certain GL functions take a very long time to complete, it suggests that frames are not being efficiently submitted to the GPU, but GPU-CPU sync(s) occur somewhere during draw call submission. Unfortunately OpenGL specifications do not provide any performance guarantees of which GL calls may cause a stall, so look out for the following behavior and experiment by changing these and reprofiling the effects.</p>
 <blockquote>
 <div><ul class="simple">
@@ -223,7 +223,7 @@
 </div></blockquote>
 </section>
 <section id="gpu-driver-friendly-memory-access-behavior">
-<h2>GPU Driver Friendly Memory Access Behavior<a class="headerlink" href="#gpu-driver-friendly-memory-access-behavior" title="Permalink to this heading"></a></h2>
+<h2>GPU Driver Friendly Memory Access Behavior<a class="headerlink" href="#gpu-driver-friendly-memory-access-behavior" title="Link to this heading"></a></h2>
 <p>Transferring memory between the CPU and the GPU is a common source of GL performance issues. This is because creating new GL resources can be slow, and uploading or downloading data can block the CPU if the data is not ready, or if an old version of the data is still needed before being able to overwrite it with a new version.</p>
 <ul class="simple">
 <li><p>Prefer interleaved vertex data in a single VBO over multiple VBOs that contain planar attributes. This improves GPU vertex cache behavior, and avoids multiple redundant <code class="docutils literal notranslate"><span class="pre">glBindBuffer()</span></code> calls when setting up vertex attribute pointers for rendering.</p></li>
@@ -233,7 +233,7 @@
 </ul>
 </section>
 <section id="when-the-gpu-is-the-bottleneck">
-<h2>When The GPU Is The Bottleneck<a class="headerlink" href="#when-the-gpu-is-the-bottleneck" title="Permalink to this heading"></a></h2>
+<h2>When The GPU Is The Bottleneck<a class="headerlink" href="#when-the-gpu-is-the-bottleneck" title="Link to this heading"></a></h2>
 <p>After having verified that CPU-GPU pipeline sync bubbles do not occur, and rendering is still GPU bound, the following optimizations can be useful.</p>
 <ul class="simple">
 <li><p>Multiple additive lighting draw passes of geometry in a forward lighting renderer can be straightforward to implement, but the amount of GL API calls this generates can be too costly. In such cases, consider computing multiple light contributions in one shader pass, even if this would create no-op arithmetic operations in shaders when some objects are not affected by certain lights.</p></li>
@@ -243,7 +243,7 @@
 </ul>
 </section>
 <section id="optimizing-load-times-and-other-best-practices">
-<h2>Optimizing Load Times and Other Best Practices<a class="headerlink" href="#optimizing-load-times-and-other-best-practices" title="Permalink to this heading"></a></h2>
+<h2>Optimizing Load Times and Other Best Practices<a class="headerlink" href="#optimizing-load-times-and-other-best-practices" title="Link to this heading"></a></h2>
 <p>Finally, a number of miscellaneous optimizations have been proven to be effective.</p>
 <ul class="simple">
 <li><p>On the web one cannot generally expect which compressed texture formats will be available. Author textures to multiple compressed texture bundles, e.g. one per format, and download the appropriate one in at runtime to minimize excessive downloads. Store textures and other assets to IndexedDB to avoid having to redownload on subsequent runs. The Emscripten linker flag <code class="docutils literal notranslate"><span class="pre">-sGL_PREINITIALIZED_CONTEXT</span></code> can help in authoring a html shell page that performs such texture format checks up front.</p></li>
@@ -258,7 +258,7 @@
 </ul>
 </section>
 <section id="migrating-to-webgl-2">
-<h2>Migrating To WebGL 2<a class="headerlink" href="#migrating-to-webgl-2" title="Permalink to this heading"></a></h2>
+<h2>Migrating To WebGL 2<a class="headerlink" href="#migrating-to-webgl-2" title="Link to this heading"></a></h2>
 <p>Compared to WebGL 1, the new WebGL 2 API provides essentially free API optimizations that are activated simply by targeting WebGL 2. This speedup comes from the fact that the WebGL 2 API was revised from the perspective of JavaScript bindings, and it is now possible to use WebGL without having to allocate temporary objects that would contribute to JS garbage collector pressure. These new entry points fit nicer together with asm.js and WebAssembly applications, and make the WebGL API a bit leaner to use. As a case study, updating Unreal Engine 4 to target WebGL 2, with no other engine modifications, yielded 7% faster throughput performance.</p>
 <p>Because of this source of free performance, it is heavily recommended that all developers migrate to target WebGL 2 even if no other WebGL 2 features are needed, if performance is a concern. WebGL 2 is available starting from Firefox 51 and Chrome 58 (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/pull/4945">#4945</a>). See also <a class="reference external" href="http://caniuse.com/#feat=webgl2">caniuse: WebGL 2</a> table. With a little care, it is possible to simultaneously target both WebGL 1 and WebGL 2 APIs, and leverage the best performance when available, but gracefully fall back on less compatible GPUs.</p>
 <p>When working with these two specifications, it is good to remember that <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/">WebGL 1</a> is based on the <a class="reference external" href="https://www.khronos.org/opengles/2_X/">OpenGL ES 2.0 specification</a>, and <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/latest/2.0/">WebGL 2</a> is based on the <a class="reference external" href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/">OpenGL ES 3.0 specification</a>.</p>
