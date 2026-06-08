@@ -1,69 +1,145 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html lang="en" data-accent-color="violet" data-content_root="../../../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EGL Support in Emscripten &mdash; Emscripten 6.0.1-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=6895f958" />
-
-  
-    <link rel="shortcut icon" href="../../../_static/emscripten.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=15bf575e"></script>
-      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="OpenGL support in Emscripten" href="OpenGL-support.html" />
-    <link rel="prev" title="Using WebGPU in Emscripten" href="WebGPU-support.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-<div class="grid-to-center-rtd-theme"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../../index.html">
-            <!-- <img src="../../..//_static/" alt="Logo"> -->
-            
-              <img src="../../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>EGL Support in Emscripten - Emscripten 6.0.1-git (dev) documentation</title><link rel="shortcut icon" href="../../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="OpenGL support in Emscripten" href="OpenGL-support.html" /><link rel="prev" title="Using WebGPU in Emscripten" href="WebGPU-support.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="EGL Support in Emscripten"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../../index.html">
+      <img class="light-logo" src="../../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
           </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../../getting_started/downloads.html">Downloads</a></li><li><a href="../../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../../contributing/contributing.html">Contributing</a></li><li><a href="../../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../introducing_emscripten/index.html">Introducing Emscripten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../compiling/index.html">Compiling and Running Projects</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Porting</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../guidelines/index.html">Code Portability and Limitations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../files/index.html">Files and File Systems</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">Multimedia and Graphics</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="WebGPU-support.html">Using WebGPU in Emscripten</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">EGL Support in Emscripten</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#what-egl-is-not">What EGL is not?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#how-to-create-a-webgl-context-using-egl">How to create a WebGL context using EGL?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#implementation-status-and-notes">Implementation status and notes</a></li>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../compiling/index.html">Compiling and Running Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../compiling/Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Porting</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Multimedia and Graphics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">EGL Support in Emscripten</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OpenGL-support.html">OpenGL support in Emscripten</a></li>
 </ul>
 </li>
@@ -78,13 +154,49 @@
 <li class="toctree-l2"><a class="reference internal" href="../../compiling/Building-Projects.html">Building Projects</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../api_reference/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tools_reference/index.html">Tools Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../building_from_source/index.html">Building Emscripten from Source</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../site/about.html">About this site</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
@@ -92,73 +204,92 @@
 
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <!-- <a href="../../../index.html">Emscripten</a> -->
-          <a href="../../../index.html"> <img src="../../../_static/Emscripten_logo_full.png" alt="Logo" /> </a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-        <!--begin hamishw addition -->
-
-        <!--Nav bar defined as a document followed by short version of nav text and long version
-            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-          displayed.   -->
-        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
-  
-        <div class="main-nav-bar" style="">   
-
-          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
-        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
-
-        <ul id="menu-options">
-             
-                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../../index.html">Documentation</a></li>
-             
-                   <li><a class="navlink-short" title="SDK" href="../../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../../getting_started/downloads.html">Downloads</a></li>
-             
-                   <li><a class="navlink-short" title="Help" href="../../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../../introducing_emscripten/community.html">Community</a></li>
-             
-                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../../index.html">GitHub</a><a class="navlink-long" title="" href="../../index.html"></a></li>
-                	
-          </ul>
-        <!-- <div style="clear:both;"></div> -->        
-          <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../../index.html">Home</a> 
-      
-          <a class="breadcrumb-box-item" href="../index.html">&raquo;&nbsp;Porting</a>
-      
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Multimedia and Graphics</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;EGL Support in Emscripten</div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#what-egl-is-not">What EGL is not?</a></li>
+<li><a class="reference internal" href="#how-to-create-a-webgl-context-using-egl">How to create a WebGL context using EGL?</a><ul>
+<li><a class="reference internal" href="#initialization">Initialization</a></li>
+<li><a class="reference internal" href="#cleanup">Cleanup</a></li>
+<li><a class="reference internal" href="#sample-code">Sample code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-status-and-notes">Implementation status and notes</a><ul>
+<li><a class="reference internal" href="#fully-implemented">Fully implemented</a></li>
+<li><a class="reference internal" href="#partially-implemented">Partially implemented</a></li>
+<li><a class="reference internal" href="#missing-functionality">Missing functionality</a></li>
+<li><a class="reference internal" href="#egl-extensions">EGL extensions</a></li>
+<li><a class="reference internal" href="#egl-related-bugs-and-todos">EGL-related bugs and todos</a></li>
+</ul>
+</li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/porting/multimedia_and_graphics/EGL-Support-in-Emscripten.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Porting</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Multimedia and Graphics</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">EGL Support in Emscripten</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
   </div>
- 
-</div>
-   </div>
-   <!--end hamishw addition -->		
-          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../../index.html">Home</a> 
-      
-          <a class="breadcrumb-box-item" href="../index.html">&raquo;&nbsp;Porting</a>
-      
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Multimedia and Graphics</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;EGL Support in Emscripten</div>
-  </div>
- 
-</div> -->
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="egl-support-in-emscripten">
-<span id="id1"></span><h1>EGL Support in Emscripten<a class="headerlink" href="#egl-support-in-emscripten" title="Link to this heading"></a></h1>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="egl-support-in-emscripten">
+<span id="id1"></span><h1>EGL Support in Emscripten<a class="headerlink" href="#egl-support-in-emscripten" title="Link to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This article is under construction.</p>
@@ -167,7 +298,7 @@
 <p>Currently, EGL is not very widely used across operating systems/graphics driver vendors. The most notable adoption is in the Android architecture, where EGL is the primary method for creating rendering contexts for OpenGL ES 1&amp;2 when using the Android NDK. Also, Mesa has an implementation of the EGL specification in its <a class="reference external" href="http://www.mesa3d.org/egl.html">graphics driver</a>.</p>
 <p>Emscripten also supplies an implementation of the EGL v1.4 specification. This allows C/C++ client code to use a (nearly) unified codebase for creating a GLES2 (WebGL) rendering context across Web, Linux (with Mesa) and Android NDK. The implementation of the EGL specification in Emscripten is not perfect, see the end of this page for a status chart.</p>
 <section id="what-egl-is-not">
-<h2>What EGL is not?<a class="headerlink" href="#what-egl-is-not" title="Link to this heading"></a></h2>
+<h2>What EGL is not?<a class="headerlink" href="#what-egl-is-not" title="Link to this heading">¶</a></h2>
 <p>Somewhat disappointingly, EGL is not a self-sufficient complete solution for initializing GLES2 graphics rendering (on any platform, not just Emscripten) and overseeing various associated tasks. The specification is limited in its scope and lacks some features. In particular, EGL cannot help with the following tasks:</p>
 <ul class="simple">
 <li><p>Creating a render window. The EGL specification does not specify how a target window is created to which to render to. One must use platform-specific native window system functions (X11, Win32 API, ANativeWindow) to first create a render window.</p></li>
@@ -177,11 +308,11 @@
 <p>Therefore, for each platform, including Emscripten, there exists platform-specific means to perform these tasks.</p>
 </section>
 <section id="how-to-create-a-webgl-context-using-egl">
-<h2>How to create a WebGL context using EGL?<a class="headerlink" href="#how-to-create-a-webgl-context-using-egl" title="Link to this heading"></a></h2>
+<h2>How to create a WebGL context using EGL?<a class="headerlink" href="#how-to-create-a-webgl-context-using-egl" title="Link to this heading">¶</a></h2>
 <p>In the web environment, WebGL is the technology used for 3D-accelerated rendering. WebGL is almost identical to GLES2, and because EGL does not apply at all for WebGL, for all purposes in this page, the terms WebGL and GLES2 are used interchangeably. Therefore to create a WebGL context,
 one uses EGL, and according to its wording, creates a GLES2 context.</p>
 <section id="initialization">
-<h3>Initialization<a class="headerlink" href="#initialization" title="Link to this heading"></a></h3>
+<h3>Initialization<a class="headerlink" href="#initialization" title="Link to this heading">¶</a></h3>
 <p>Perform the following steps to create a GLES2 context using EGL:</p>
 <ol class="arabic simple">
 <li><p>Obtain a handle to an <code class="docutils literal notranslate"><span class="pre">EGLDisplay</span></code> object by calling <code class="docutils literal notranslate"><span class="pre">eglGetDisplay</span></code>.</p></li>
@@ -194,7 +325,7 @@ one uses EGL, and according to its wording, creates a GLES2 context.</p>
 <p>After these steps, you have a set of EGL objects <code class="docutils literal notranslate"><span class="pre">EGLDisplay</span></code>, <code class="docutils literal notranslate"><span class="pre">EGLConfig</span></code>, <code class="docutils literal notranslate"><span class="pre">EGLSurface</span></code> and <code class="docutils literal notranslate"><span class="pre">EGLContext</span></code> that represent the main GLES2 rendering context.</p>
 </section>
 <section id="cleanup">
-<h3>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading"></a></h3>
+<h3>Cleanup<a class="headerlink" href="#cleanup" title="Link to this heading">¶</a></h3>
 <p>The sequence to clean up at de-initialization is as follows:</p>
 <ol class="arabic simple">
 <li><p>Free up the currently active rendering context by calling <code class="docutils literal notranslate"><span class="pre">eglMakeCurrent(display,</span> <span class="pre">EGL_NO_SURFACE,</span> <span class="pre">EGL_NO_SURFACE,</span> <span class="pre">EGL_NO_CONTEXT)</span></code>.</p></li>
@@ -205,15 +336,15 @@ one uses EGL, and according to its wording, creates a GLES2 context.</p>
 </ol>
 </section>
 <section id="sample-code">
-<h3>Sample code<a class="headerlink" href="#sample-code" title="Link to this heading"></a></h3>
+<h3>Sample code<a class="headerlink" href="#sample-code" title="Link to this heading">¶</a></h3>
 <p>Example code for using EGL to initialize a WebGL context can be found in the sample applications in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/test/third_party/glbook">emscripten/test/third_party/glbook</a> directory, more specifically in the file <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/third_party/glbook/Common/esUtil.c">esUtil.c</a>.</p>
 </section>
 </section>
 <section id="implementation-status-and-notes">
-<h2>Implementation status and notes<a class="headerlink" href="#implementation-status-and-notes" title="Link to this heading"></a></h2>
+<h2>Implementation status and notes<a class="headerlink" href="#implementation-status-and-notes" title="Link to this heading">¶</a></h2>
 <p>This section lists all EGL v1.4 functions and describes their current implementation status in Emscripten.</p>
 <section id="fully-implemented">
-<h3>Fully implemented<a class="headerlink" href="#fully-implemented" title="Link to this heading"></a></h3>
+<h3>Fully implemented<a class="headerlink" href="#fully-implemented" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">eglInitialize</span></code>, <code class="docutils literal notranslate"><span class="pre">eglGetConfigs</span></code>, <code class="docutils literal notranslate"><span class="pre">eglQueryContext</span></code>, <code class="docutils literal notranslate"><span class="pre">eglQueryString</span></code>, <code class="docutils literal notranslate"><span class="pre">eglQuerySurface</span></code>, <code class="docutils literal notranslate"><span class="pre">eglGetCurrentContext</span></code>, <code class="docutils literal notranslate"><span class="pre">glGetCurrentSurface</span></code>, <code class="docutils literal notranslate"><span class="pre">eglGetCurrentDisplay</span></code>, <code class="docutils literal notranslate"><span class="pre">eglReleaseThread</span></code>, <code class="docutils literal notranslate"><span class="pre">eglDestroySurface</span></code>, <code class="docutils literal notranslate"><span class="pre">eglDestroyContext</span></code>: Implemented and should work according to the EGL v1.4 specification.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">eglSwapBuffers</span></code>: Implemented, but this function cannot really control the swap behavior under WebGL. Calling this function is optional under Emscripten. In WebGL, the contents of the display are always presented to the screen only after the code yields its execution back to the browser, that is, when you return from the tick callback handler you passed to <a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>. The <code class="docutils literal notranslate"><span class="pre">eglSwapBuffers</span></code> function can however still be used to detect when a GL context loss event occurs.</p></li>
@@ -227,7 +358,7 @@ one uses EGL, and according to its wording, creates a GLES2 context.</p>
 </ul>
 </section>
 <section id="partially-implemented">
-<h3>Partially implemented<a class="headerlink" href="#partially-implemented" title="Link to this heading"></a></h3>
+<h3>Partially implemented<a class="headerlink" href="#partially-implemented" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">eglChooseConfig</span></code>: Implemented as a stub, but this function does not do searching/filtering, and is at the moment identical to <code class="docutils literal notranslate"><span class="pre">eglGetConfigs</span></code> (<a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/643">issue #643</a>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">eglGetConfigAttrib</span></code>: Implemented. Querying for the attributes <code class="docutils literal notranslate"><span class="pre">EGL_BUFFER_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">EGL_ALPHA_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">EGL_BLUE_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">EGL_GREEN_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">EGL_RED_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">EGL_DEPTH_SIZE</span></code> and <code class="docutils literal notranslate"><span class="pre">EGL_STENCIL_SIZE</span></code> currently return hardcoded default values (<a class="reference external" href="https://github.com/emscripten-core/emscripten/issues/644">issue #644</a>). The attributes <code class="docutils literal notranslate"><span class="pre">EGL_MIN_SWAP_INTERVAL</span></code> and <code class="docutils literal notranslate"><span class="pre">EGL_MAX_SWAP_INTERVAL</span></code> don’t currently have any function. Instead, call <a class="reference internal" href="../../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> to specify the main loop update rate.</p></li>
@@ -242,7 +373,7 @@ one uses EGL, and according to its wording, creates a GLES2 context.</p>
 </ul>
 </section>
 <section id="missing-functionality">
-<h3>Missing functionality<a class="headerlink" href="#missing-functionality" title="Link to this heading"></a></h3>
+<h3>Missing functionality<a class="headerlink" href="#missing-functionality" title="Link to this heading">¶</a></h3>
 <p>The following functions are currently not implemented:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">eglCreatePbufferSurface</span></code>, <code class="docutils literal notranslate"><span class="pre">eglCreatePixmapSurface</span></code>, <code class="docutils literal notranslate"><span class="pre">eglCreatePbufferFromClientBuffer</span></code>, <code class="docutils literal notranslate"><span class="pre">eglSurfaceAttrib</span></code>, <code class="docutils literal notranslate"><span class="pre">eglBindTexImage</span></code>, <code class="docutils literal notranslate"><span class="pre">eglReleaseTexImage</span></code>, <code class="docutils literal notranslate"><span class="pre">eglWaitGL</span></code>, <code class="docutils literal notranslate"><span class="pre">eglCopyBuffers</span></code>.</p></li>
@@ -253,125 +384,67 @@ one uses EGL, and according to its wording, creates a GLES2 context.</p>
 </div>
 </section>
 <section id="egl-extensions">
-<h3>EGL extensions<a class="headerlink" href="#egl-extensions" title="Link to this heading"></a></h3>
+<h3>EGL extensions<a class="headerlink" href="#egl-extensions" title="Link to this heading">¶</a></h3>
 <p>Currently, Emscripten does not implement any extensions in the <a class="reference external" href="http://www.khronos.org/registry/egl/">EGL Extension Registry</a>.</p>
 </section>
 <section id="egl-related-bugs-and-todos">
-<h3>EGL-related bugs and todos<a class="headerlink" href="#egl-related-bugs-and-todos" title="Link to this heading"></a></h3>
+<h3>EGL-related bugs and todos<a class="headerlink" href="#egl-related-bugs-and-todos" title="Link to this heading">¶</a></h3>
 <p>The <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?labels=EGL&amp;state=open">Emscripten issue tracker</a> lists EGL-related issues using the label EGL. Check that page to report or find issues in Emscripten related to EGL.</p>
 </section>
 </section>
 </section>
 
-
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="OpenGL-support.html" class="btn btn-neutral float-right" title="OpenGL support in Emscripten"/>Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="WebGPU-support.html" class="btn btn-neutral" title="Using WebGPU in Emscripten"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-     
-  <!--begin hamishw addition -->
-  
-    
-  
-  <!--  -->
-   
-   <!--Footer important links
-    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-	displayed.   -->
-
-	
-   <div class="footer-nav-bar" style="">
-     <div class="footer-options">
-   
-        
-              <a class="footer-navlink-short" title="Report Bug" href="../../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../../getting_started/bug_reports.html">Report Bug</a>
-        
-              <a class="footer-navlink-short" title="Licensing" href="../../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../../introducing_emscripten/emscripten_license.html">Licensing</a>
-        
-              <a class="footer-navlink-short" title="Contributing" href="../../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../../contributing/contributing.html">Contributing</a>
-         
-		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
-         
-		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
-        
-              <a class="footer-navlink-short" title="Release notes" href="../../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../../introducing_emscripten/release_notes.html">Release notes</a>
-        
-              <a class="footer-navlink-short" title="Blogs" href="../../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../../introducing_emscripten/community.html">Blogs</a>
-        
-              <a class="footer-navlink-short" title="Help" href="../../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../../introducing_emscripten/community.html">Contact</a>
-         
-				
-     </div>
-	 
-	
- 
-   </div>
-  
-    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../../index.html">Home</a> 
-      
-          <a class="breadcrumb-box-item" href="../index.html">&raquo;&nbsp;Porting</a>
-      
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Multimedia and Graphics</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;EGL Support in Emscripten</div>
-  </div>
- 
-</div> -->
-  
-    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
-   <!--end hamishw addition -->
-  
-  
-	  
-<!-- end section moved here by hamishw -->
-  <div role="contentinfo" class="copyright-box">
-    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
-  <ul class="wy-breadcrumbs">
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-
-	  <li class="wy-breadcrumbs-aside">
-         <a href="../../site/about.html">About site</a>
-      </li>
-	  
-	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:EGL%20Support%20in%20Emscripten%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../../docs/porting/multimedia_and_graphics/EGL-Support-in-Emscripten&labels=bug">Page bug</a>
-      </li>
-  </ul>
-  
-    <p>
-        <!-- &copy; Copyright 2015, . -->
-		&copy; Copyright 2015,  <a href="../../contributing/AUTHORS.html">Emscripten Contributors</a>.
-		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
-    </p>
-	
-  </div>
-  
-  
-</footer>
-        </div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="WebGPU-support.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Using WebGPU in Emscripten</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="OpenGL-support.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">OpenGL support in Emscripten</div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
 </div>
-</body>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=15bf575e"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/shibuya.js?v=50760d75"></script></body>
 </html>

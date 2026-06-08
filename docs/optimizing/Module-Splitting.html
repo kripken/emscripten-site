@@ -1,62 +1,202 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html lang="en" data-accent-color="violet" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module Splitting &mdash; Emscripten 6.0.1-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
-
-  
-    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-<div class="grid-to-center-rtd-theme"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../index.html">
-            <!-- <img src="../..//_static/" alt="Logo"> -->
-            
-              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Module Splitting - Emscripten 6.0.1-git (dev) documentation</title><link rel="shortcut icon" href="../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Module Splitting"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      <img class="light-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
           </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../getting_started/downloads.html">Downloads</a></li><li><a href="../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../contributing/contributing.html">Contributing</a></li><li><a href="../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a></li>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Audio.html">Audio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/pthreads.html">Pthreads support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/networking.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asynchronous Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Optimizing-Code.html">Optimizing Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Optimizing-WebGL.html">Optimizing WebGL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Profiling-Toolchain.html">Profiling the Toolchain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
@@ -64,65 +204,77 @@
 
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <!-- <a href="../../index.html">Emscripten</a> -->
-          <a href="../../index.html"> <img src="../../_static/Emscripten_logo_full.png" alt="Logo" /> </a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-        <!--begin hamishw addition -->
-
-        <!--Nav bar defined as a document followed by short version of nav text and long version
-            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-          displayed.   -->
-        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
-  
-        <div class="main-nav-bar" style="">   
-
-          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
-        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
-
-        <ul id="menu-options">
-             
-                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
-             
-                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
-             
-                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
-             
-                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
-                	
-          </ul>
-        <!-- <div style="clear:both;"></div> -->        
-          <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Module Splitting</div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#basic-example">Basic Example</a></li>
+<li><a class="reference internal" href="#profiling-multiple-workloads">Profiling Multiple Workloads</a></li>
+<li><a class="reference internal" href="#multithreaded-programs">Multithreaded Programs</a></li>
+<li><a class="reference internal" href="#running-on-the-web">Running on the Web</a></li>
+<li><a class="reference internal" href="#usage-with-dynamic-linking">Usage with Dynamic Linking</a></li>
+<li><a class="reference internal" href="#custom-loading-of-the-secondary-module">Custom Loading of the Secondary Module</a></li>
+<li><a class="reference internal" href="#debugging">Debugging</a></li>
+<li><a class="reference internal" href="#upcoming-changes">Upcoming Changes</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/optimizing/Module-Splitting.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Module Splitting</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
   </div>
- 
-</div>
-   </div>
-   <!--end hamishw addition -->		
-          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Module Splitting</div>
-  </div>
- 
-</div> -->
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="module-splitting">
-<span id="id1"></span><h1>Module Splitting<a class="headerlink" href="#module-splitting" title="Link to this heading"></a></h1>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="module-splitting">
+<span id="id1"></span><h1>Module Splitting<a class="headerlink" href="#module-splitting" title="Link to this heading">¶</a></h1>
 <p><em>wasm-split and the SPLIT_MODULE Emscripten integration are both in active
 development and may change and gain new features frequently. This page will be
 kept up-to-date with the latest changes.</em></p>
@@ -167,46 +319,46 @@ workloads, collecting the profiles, and using the wasm-split tool to perform the
 splitting. After the module is split, everything will work correctly with no
 further changes to the JS produced by the initial compilation.</p>
 <section id="basic-example">
-<h2>Basic Example<a class="headerlink" href="#basic-example" title="Link to this heading"></a></h2>
+<h2>Basic Example<a class="headerlink" href="#basic-example" title="Link to this heading">¶</a></h2>
 <p>Let’s run through a basic example of using SPLIT_MODULE with Node. Later in the
 “Running on the Web” section we will discuss how to adapt the example to run on
 the Web as well.</p>
 <p>Here’s our application code:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">application</span><span class="o">.</span><span class="n">c</span>
-
-<span class="c1">#include &lt;stdio.h&gt;</span>
-<span class="c1">#include &lt;emscripten.h&gt;</span>
-
-<span class="n">void</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="n">void</span> <span class="n">bar</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;bar</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="n">void</span> <span class="n">unsupported</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> is not supported!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="n">EM_JS</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">get_number</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">typeof</span> <span class="n">prompt</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">prompt</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;prompt-sync&#39;</span><span class="p">)();</span>
-  <span class="p">}</span>
-  <span class="k">return</span> <span class="n">parseInt</span><span class="p">(</span><span class="n">prompt</span><span class="p">(</span><span class="s1">&#39;Give me 0 or 1: &#39;</span><span class="p">));</span>
-<span class="p">});</span>
-
-<span class="nb">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">get_number</span><span class="p">();</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">foo</span><span class="p">();</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">bar</span><span class="p">();</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="n">unsupported</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">//</span> <span class="n">application</span><span class="o">.</span><span class="n">c</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1">#include &lt;stdio.h&gt;</span>
+</span><span data-line="4"><span class="c1">#include &lt;emscripten.h&gt;</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">void</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span>
+</span><span data-line="7">  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span data-line="8"><span class="p">}</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">void</span> <span class="n">bar</span><span class="p">()</span> <span class="p">{</span>
+</span><span data-line="11">  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;bar</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span data-line="12"><span class="p">}</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">void</span> <span class="n">unsupported</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span data-line="15">  <span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> is not supported!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span data-line="16"><span class="p">}</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">EM_JS</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">get_number</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{</span>
+</span><span data-line="19">  <span class="k">if</span> <span class="p">(</span><span class="n">typeof</span> <span class="n">prompt</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span data-line="20">    <span class="n">prompt</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;prompt-sync&#39;</span><span class="p">)();</span>
+</span><span data-line="21">  <span class="p">}</span>
+</span><span data-line="22">  <span class="k">return</span> <span class="n">parseInt</span><span class="p">(</span><span class="n">prompt</span><span class="p">(</span><span class="s1">&#39;Give me 0 or 1: &#39;</span><span class="p">));</span>
+</span><span data-line="23"><span class="p">});</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="nb">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span data-line="26">  <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">get_number</span><span class="p">();</span>
+</span><span data-line="27">  <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span data-line="28">    <span class="n">foo</span><span class="p">();</span>
+</span><span data-line="29">  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span data-line="30">    <span class="n">bar</span><span class="p">();</span>
+</span><span data-line="31">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span data-line="32">    <span class="n">unsupported</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span><span data-line="33">  <span class="p">}</span>
+</span><span data-line="34"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>This application prompts the user for some input and executes different
 functions depending on what the user provides. It uses the prompt-sync npm
@@ -214,8 +366,8 @@ module to make the prompting behavior portable between Node and the Web. We will
 see that the input we provide during profiling will determine how our functions
 are split between the primary and secondary modules.</p>
 <p>We can compile our application with <code class="docutils literal notranslate"><span class="pre">-sSPLIT_MODULE</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ emcc application.c -o application.js -sSPLIT_MODULE
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ emcc application.c -o application.js -sSPLIT_MODULE
+</span></pre></div>
 </div>
 <p>In addition to the typical application.wasm and application.js files, this also
 produces an application.wasm.orig file. application.wasm.orig is the original,
@@ -231,40 +383,40 @@ the end of our main function here, but note that this will mean that any
 functions called after main, such as destructors for global objects, will not be
 included in the profile.</p>
 <p>Here’s the function to write the profile and our new main function:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>EM_JS(void, write_profile, (), {
-  var __write_profile = wasmExports.__write_profile;
-  if (!__write_profile) {
-    return;
-  }
-
-  // Get the size of the profile and allocate a buffer for it.
-  var len = __write_profile(0, 0);
-  var ptr = _malloc(len);
-
-  // Write the profile data to the buffer.
-  __write_profile(ptr, len);
-
-  // Write the profile file.
-  var profile_data = HEAPU8.subarray(ptr, ptr + len);
-  const fs = require(&quot;fs&quot;);
-  fs.writeFileSync(&#39;profile.data&#39;, profile_data);
-
-  // Free the buffer.
-  _free(ptr);
-});
-
-int main() {
-  int i = get_number();
-  if (i == 0) {
-    foo();
-  } else if (i == 1) {
-    bar();
-  } else {
-    unsupported(i);
-  }
-  write_profile();
-}
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">EM_JS(void, write_profile, (), {
+</span><span data-line="2">  var __write_profile = wasmExports.__write_profile;
+</span><span data-line="3">  if (!__write_profile) {
+</span><span data-line="4">    return;
+</span><span data-line="5">  }
+</span><span data-line="6">
+</span><span data-line="7">  // Get the size of the profile and allocate a buffer for it.
+</span><span data-line="8">  var len = __write_profile(0, 0);
+</span><span data-line="9">  var ptr = _malloc(len);
+</span><span data-line="10">
+</span><span data-line="11">  // Write the profile data to the buffer.
+</span><span data-line="12">  __write_profile(ptr, len);
+</span><span data-line="13">
+</span><span data-line="14">  // Write the profile file.
+</span><span data-line="15">  var profile_data = HEAPU8.subarray(ptr, ptr + len);
+</span><span data-line="16">  const fs = require(&quot;fs&quot;);
+</span><span data-line="17">  fs.writeFileSync(&#39;profile.data&#39;, profile_data);
+</span><span data-line="18">
+</span><span data-line="19">  // Free the buffer.
+</span><span data-line="20">  _free(ptr);
+</span><span data-line="21">});
+</span><span data-line="22">
+</span><span data-line="23">int main() {
+</span><span data-line="24">  int i = get_number();
+</span><span data-line="25">  if (i == 0) {
+</span><span data-line="26">    foo();
+</span><span data-line="27">  } else if (i == 1) {
+</span><span data-line="28">    bar();
+</span><span data-line="29">  } else {
+</span><span data-line="30">    unsupported(i);
+</span><span data-line="31">  }
+</span><span data-line="32">  write_profile();
+</span><span data-line="33">}
+</span></pre></div>
 </div>
 <p>Note that we only try to write the profile if the <code class="docutils literal notranslate"><span class="pre">__write_profile</span></code> export
 exists. This is important because only the instrumented, unsplit module exports
@@ -272,14 +424,14 @@ exists. This is important because only the instrumented, unsplit module exports
 instrumentation or this export.</p>
 <p>Our new write_profile function depends on malloc and free being available to JS,
 so we need to explicitly export them on the command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ emcc application.c -o application.js -sSPLIT_MODULE -sEXPORTED_FUNCTIONS=_malloc,_free,_main
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ emcc application.c -o application.js -sSPLIT_MODULE -sEXPORTED_FUNCTIONS=_malloc,_free,_main
+</span></pre></div>
 </div>
 <p>Now we can run our application, which produces a profile.data file. The next
 step is to use wasm-split and the profile to split the original module,
 application.wasm:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wasm-split --enable-mutable-globals --export-prefix=% application.wasm.orig -o1 application.wasm -o2 application.deferred.wasm --profile=profile.data
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ wasm-split --enable-mutable-globals --export-prefix=% application.wasm.orig -o1 application.wasm -o2 application.deferred.wasm --profile=profile.data
+</span></pre></div>
 </div>
 <p>Let’s break down what all those options are for.</p>
 <dl class="simple">
@@ -311,19 +463,19 @@ profiled workload, the application will print a console message about a
 placeholder function being called and the deferred module being loaded.</p>
 </section>
 <section id="profiling-multiple-workloads">
-<h2>Profiling Multiple Workloads<a class="headerlink" href="#profiling-multiple-workloads" title="Link to this heading"></a></h2>
+<h2>Profiling Multiple Workloads<a class="headerlink" href="#profiling-multiple-workloads" title="Link to this heading">¶</a></h2>
 <p>wasm-split supports merging profiles from multiple profiling workloads into a
 single profile to guide splitting. Any function that was run in any of the
 workloads will be kept in the primary module and all other functions will be
 split out into the secondary module.</p>
 <p>This command will merge any number of profiles (here just profile1.data and
 profile2.data) into a single profile:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ wasm-split --merge-profiles profile1.data profile2.data -o profile.data
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ wasm-split --merge-profiles profile1.data profile2.data -o profile.data
+</span></pre></div>
 </div>
 </section>
 <section id="multithreaded-programs">
-<h2>Multithreaded Programs<a class="headerlink" href="#multithreaded-programs" title="Link to this heading"></a></h2>
+<h2>Multithreaded Programs<a class="headerlink" href="#multithreaded-programs" title="Link to this heading">¶</a></h2>
 <p>By default, the data gathered by the wasm-split instrumentation is stored in
 Wasm globals, so it is thread local. But in a multithreaded program, it is
 important to collect profile information from all threads. To do so, you can
@@ -340,7 +492,7 @@ secondary module from workers will be serviced from the cache if the appropriate
 Cache-Control headers are set, but improving this is an area for future work.</p>
 </section>
 <section id="running-on-the-web">
-<h2>Running on the Web<a class="headerlink" href="#running-on-the-web" title="Link to this heading"></a></h2>
+<h2>Running on the Web<a class="headerlink" href="#running-on-the-web" title="Link to this heading">¶</a></h2>
 <p>One complication to keep in mind when using SPLIT_MODULE for Web applications is
 that the secondary module cannot be loaded both lazily and asynchronously, which
 means it cannot be loaded lazily on the main browser thread. The reason is that
@@ -368,27 +520,27 @@ written to a file from inside the browser. The data must instead be transmitted
 to developer machines some other way, such as posting it to the dev server or
 copying a base64 encoding of it from the console.</p>
 <p>Here’s code implementing the base64 solution:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">profile_data</span> <span class="o">=</span> <span class="n">HEAPU8</span><span class="o">.</span><span class="n">subarray</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ptr</span> <span class="o">+</span> <span class="nb">len</span><span class="p">);</span>
-<span class="n">var</span> <span class="n">binary</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-<span class="k">for</span> <span class="p">(</span><span class="n">var</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">profile_data</span><span class="o">.</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">binary</span> <span class="o">+=</span> <span class="n">String</span><span class="o">.</span><span class="n">fromCharCode</span><span class="p">(</span><span class="n">profile_data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-<span class="p">}</span>
-<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;===BEGIN===&quot;</span><span class="p">);</span>
-<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">btoa</span><span class="p">(</span><span class="n">binary</span><span class="p">));</span>
-<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;===END===&quot;</span><span class="p">);</span>
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">var</span> <span class="n">profile_data</span> <span class="o">=</span> <span class="n">HEAPU8</span><span class="o">.</span><span class="n">subarray</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ptr</span> <span class="o">+</span> <span class="nb">len</span><span class="p">);</span>
+</span><span data-line="2"><span class="n">var</span> <span class="n">binary</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span data-line="3"><span class="k">for</span> <span class="p">(</span><span class="n">var</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">profile_data</span><span class="o">.</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span data-line="4">    <span class="n">binary</span> <span class="o">+=</span> <span class="n">String</span><span class="o">.</span><span class="n">fromCharCode</span><span class="p">(</span><span class="n">profile_data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span data-line="5"><span class="p">}</span>
+</span><span data-line="6"><span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;===BEGIN===&quot;</span><span class="p">);</span>
+</span><span data-line="7"><span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">btoa</span><span class="p">(</span><span class="n">binary</span><span class="p">));</span>
+</span><span data-line="8"><span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;===END===&quot;</span><span class="p">);</span>
+</span></pre></div>
 </div>
 <p>Then the profile file can be created by by running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ echo [pasted base64] | base64 --decode &gt; profile.data
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ echo [pasted base64] | base64 --decode &gt; profile.data
+</span></pre></div>
 </div>
 <p>or:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ base64 --decode [base64 file] &gt; profile.data
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ base64 --decode [base64 file] &gt; profile.data
+</span></pre></div>
 </div>
 </section>
 <section id="usage-with-dynamic-linking">
-<h2>Usage with Dynamic Linking<a class="headerlink" href="#usage-with-dynamic-linking" title="Link to this heading"></a></h2>
+<h2>Usage with Dynamic Linking<a class="headerlink" href="#usage-with-dynamic-linking" title="Link to this heading">¶</a></h2>
 <p>Module splitting can be used in conjunction with dynamic linking, but making the
 two features work correctly together requires some developer intervention.
 wasm-split often needs to grow the table to make space for placeholder
@@ -408,7 +560,7 @@ until it is large enough. Besides taking up extra space at runtime, there is no
 downside to specifying a table size that is larger than necessary.</p>
 </section>
 <section id="custom-loading-of-the-secondary-module">
-<h2>Custom Loading of the Secondary Module<a class="headerlink" href="#custom-loading-of-the-secondary-module" title="Link to this heading"></a></h2>
+<h2>Custom Loading of the Secondary Module<a class="headerlink" href="#custom-loading-of-the-secondary-module" title="Link to this heading">¶</a></h2>
 <p>The default logic for lazily loading the secondary module can be overridden by
 implementing the “loadSplitModule” custom hook function. The hook is called from
 placeholder functions and is responsible for returning the [instance, module]
@@ -417,13 +569,13 @@ to load (e.g. “my_program.deferred.wasm”), the imports object to instantiate
 module with, and the property corresponding to the called placeholder function.
 Here is an example implementation that does the same thing as the default
 implementation with some extra logging:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Module</span><span class="p">[</span><span class="s2">&quot;loadSplitModule&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">deferred</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Custom handler for loading split module.&#39;</span><span class="p">);</span>
-    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Called with placeholder &#39;</span><span class="p">,</span> <span class="n">prop</span><span class="p">);</span>
-
-    <span class="k">return</span> <span class="n">instantiateSync</span><span class="p">(</span><span class="n">deferred</span><span class="p">,</span> <span class="n">imports</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">Module</span><span class="p">[</span><span class="s2">&quot;loadSplitModule&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">deferred</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="p">{</span>
+</span><span data-line="2">    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Custom handler for loading split module.&#39;</span><span class="p">);</span>
+</span><span data-line="3">    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Called with placeholder &#39;</span><span class="p">,</span> <span class="n">prop</span><span class="p">);</span>
+</span><span data-line="4">
+</span><span data-line="5">    <span class="k">return</span> <span class="n">instantiateSync</span><span class="p">(</span><span class="n">deferred</span><span class="p">,</span> <span class="n">imports</span><span class="p">);</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>If the module was eagerly loaded, then this hook could simply instantiate the
 module rather than fetching and compiling it as well. However, if the eagerly
@@ -431,12 +583,12 @@ loaded module is instantiated eagerly as well, the placeholder functions will be
 patched out and never called in the first place, so this custom hook will never
 be called either.</p>
 <p>When eagerly instantiating the secondary module, the imports object should be:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="n">wasmExports</span><span class="p">}</span>
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="s1">&#39;primary&#39;</span><span class="p">:</span> <span class="n">wasmExports</span><span class="p">}</span>
+</span></pre></div>
 </div>
 </section>
 <section id="debugging">
-<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h2>
 <p>wasm-split has several options to make debugging split modules easier.</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">-v</span></code></dt><dd><p>When splitting, print the primary and secondary functions. When merging
@@ -461,7 +613,7 @@ the secondary module to be loaded.</p>
 </dl>
 </section>
 <section id="upcoming-changes">
-<h2>Upcoming Changes<a class="headerlink" href="#upcoming-changes" title="Link to this heading"></a></h2>
+<h2>Upcoming Changes<a class="headerlink" href="#upcoming-changes" title="Link to this heading">¶</a></h2>
 <p><em>A list of changes and new features that have not yet been incorporated into
 this documentation.</em></p>
 <p>Work is planned on an integration with the Asyncify instrumentation that will
@@ -470,102 +622,43 @@ thread.</p>
 </section>
 </section>
 
-
-           </div>
-          </div>
-          <footer>
-  
-
-     
-  <!--begin hamishw addition -->
-  
-    
-  
-  <!--  -->
-   
-   <!--Footer important links
-    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-	displayed.   -->
-
-	
-   <div class="footer-nav-bar" style="">
-     <div class="footer-options">
-   
-        
-              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
-        
-              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
-        
-              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
-         
-		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
-         
-		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
-        
-              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
-        
-              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
-        
-              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
-         
-				
-     </div>
-	 
-	
- 
-   </div>
-  
-    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Module Splitting</div>
-  </div>
- 
-</div> -->
-  
-    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
-   <!--end hamishw addition -->
-  
-  
-	  
-<!-- end section moved here by hamishw -->
-  <div role="contentinfo" class="copyright-box">
-    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
-  <ul class="wy-breadcrumbs">
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-
-	  <li class="wy-breadcrumbs-aside">
-         <a href="../site/about.html">About site</a>
-      </li>
-	  
-	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Module%20Splitting%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/optimizing/Module-Splitting&labels=bug">Page bug</a>
-      </li>
-  </ul>
-  
-    <p>
-        <!-- &copy; Copyright 2015, . -->
-		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
-		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
-    </p>
-	
-  </div>
-  
-  
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
 </div>
-</body>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script></body>
 </html>

@@ -1,86 +1,202 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html lang="en" data-accent-color="violet" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Debugging with Sanitizers &mdash; Emscripten 6.0.1-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
-
-  
-    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html" />
-    <link rel="prev" title="Optimizing WebGL" href="../optimizing/Optimizing-WebGL.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-<div class="grid-to-center-rtd-theme"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../index.html">
-            <!-- <img src="../..//_static/" alt="Logo"> -->
-            
-              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Debugging with Sanitizers - Emscripten 6.0.1-git (dev) documentation</title><link rel="shortcut icon" href="../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Building Emscripten from Source" href="../building_from_source/index.html" /><link rel="prev" title="Optimizing WebGL" href="../optimizing/Optimizing-WebGL.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Debugging with Sanitizers"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      <img class="light-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
           </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../getting_started/downloads.html">Downloads</a></li><li><a href="../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../contributing/contributing.html">Contributing</a></li><li><a href="../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a></li>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Audio.html">Audio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/pthreads.html">Pthreads support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/networking.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asynchronous Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging with Sanitizers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#undefined-behaviour-sanitizer">Undefined Behaviour Sanitizer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#catching-null-dereference">Catching Null Dereference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#minimal-runtime">Minimal Runtime</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#address-sanitizer">Address Sanitizer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#buffer-overflow">Buffer Overflow</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#use-after-free">Use After Free</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#memory-leaks">Memory Leaks</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#use-after-return">Use After Return</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#comparison-to-safe-heap">Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
@@ -88,74 +204,98 @@
 
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <!-- <a href="../../index.html">Emscripten</a> -->
-          <a href="../../index.html"> <img src="../../_static/Emscripten_logo_full.png" alt="Logo" /> </a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-        <!--begin hamishw addition -->
-
-        <!--Nav bar defined as a document followed by short version of nav text and long version
-            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-          displayed.   -->
-        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
-  
-        <div class="main-nav-bar" style="">   
-
-          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
-        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
-
-        <ul id="menu-options">
-             
-                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
-             
-                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
-             
-                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
-             
-                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
-                	
-          </ul>
-        <!-- <div style="clear:both;"></div> -->        
-          <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging with Sanitizers</div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#undefined-behaviour-sanitizer">Undefined Behaviour Sanitizer</a><ul>
+<li><a class="reference internal" href="#catching-null-dereference">Catching Null Dereference</a></li>
+<li><a class="reference internal" href="#minimal-runtime">Minimal Runtime</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#address-sanitizer">Address Sanitizer</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#buffer-overflow">Buffer Overflow</a></li>
+<li><a class="reference internal" href="#use-after-free">Use After Free</a></li>
+<li><a class="reference internal" href="#memory-leaks">Memory Leaks</a></li>
+<li><a class="reference internal" href="#use-after-return">Use After Return</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#disabling-malloc-free-stack-traces">Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comparison-to-safe-heap">Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/debugging/Sanitizers.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Debugging with Sanitizers</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
   </div>
- 
-</div>
-   </div>
-   <!--end hamishw addition -->		
-          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging with Sanitizers</div>
-  </div>
- 
-</div> -->
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="debugging-with-sanitizers">
-<span id="sanitizers"></span><h1>Debugging with Sanitizers<a class="headerlink" href="#debugging-with-sanitizers" title="Link to this heading"></a></h1>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="debugging-with-sanitizers">
+<span id="sanitizers"></span><h1>Debugging with Sanitizers<a class="headerlink" href="#debugging-with-sanitizers" title="Link to this heading">¶</a></h1>
 <section id="undefined-behaviour-sanitizer">
-<span id="sanitizer-ubsan"></span><h2>Undefined Behaviour Sanitizer<a class="headerlink" href="#undefined-behaviour-sanitizer" title="Link to this heading"></a></h2>
+<span id="sanitizer-ubsan"></span><h2>Undefined Behaviour Sanitizer<a class="headerlink" href="#undefined-behaviour-sanitizer" title="Link to this heading">¶</a></h2>
 <p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html">undefined behavior sanitizer</a> (UBSan) is available for use with
 Emscripten. This makes it much easier to catch bugs in your code.</p>
 <p>To use UBSan, simply pass <code class="docutils literal notranslate"><span class="pre">-fsanitize=undefined</span></code> to <code class="docutils literal notranslate"><span class="pre">emcc</span></code> or <code class="docutils literal notranslate"><span class="pre">em++</span></code>. Note
 that you need to pass this at both the compile and link stages, as it affects
 both codegen and system libraries.</p>
 <section id="catching-null-dereference">
-<h3>Catching Null Dereference<a class="headerlink" href="#catching-null-dereference" title="Link to this heading"></a></h3>
+<h3>Catching Null Dereference<a class="headerlink" href="#catching-null-dereference" title="Link to this heading">¶</a></h3>
 <p>By default, with Emscripten, dereferencing a null pointer does not immediately
 cause a segmentation fault, unlike traditional platforms, as 0 is just a normal
 address in a WebAssembly memory. 0 is also a normal location in a
@@ -167,65 +307,65 @@ checked at the end of the program execution. That is, it will notify you if
 anything wrote to that location while the program ran. This only detects writes,
 not reads, and does not help to find where the bad write actually is.</p>
 <p>Consider the following program, <code class="docutils literal notranslate"><span class="pre">null-assign.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span data-line="3"><span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Without UBSan you get an error when the program exits:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>null-assign.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>null-assign.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
+</span></pre></div>
 </div>
 <p>With UBSan, you get the exact line number where this happened:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>undefined<span class="w"> </span>null-assign.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">null-assign.c:3:5: runtime error: store to null pointer of type &#39;int&#39;</span>
-<span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>undefined<span class="w"> </span>null-assign.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">null-assign.c:3:5: runtime error: store to null pointer of type &#39;int&#39;</span>
+</span><span data-line="4"><span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
+</span></pre></div>
 </div>
 <p>Consider the following program, <code class="docutils literal notranslate"><span class="pre">null-read.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
-<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+</span><span data-line="3"><span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Without UBSan there is no feedback:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>null-read.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="gp">$</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>null-read.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="gp">$</span>
+</span></pre></div>
 </div>
 <p>With UBSan, you get the exact line number where this happened:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>undefined<span class="w"> </span>null-assign.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">null-read.c:3:9: runtime error: load of null pointer of type &#39;int&#39;</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>undefined<span class="w"> </span>null-assign.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">null-read.c:3:9: runtime error: load of null pointer of type &#39;int&#39;</span>
+</span></pre></div>
 </div>
 </section>
 <section id="minimal-runtime">
-<h3>Minimal Runtime<a class="headerlink" href="#minimal-runtime" title="Link to this heading"></a></h3>
+<h3>Minimal Runtime<a class="headerlink" href="#minimal-runtime" title="Link to this heading">¶</a></h3>
 <p>UBSan’s runtime is non-trivial, and its use can unnecessarily increase the
 attack surface. For this reason, there is a minimal UBSan runtime that is
 designed for production uses.</p>
 <p>The minimal runtime is supported by Emscripten. To use it, pass the flag
 <code class="docutils literal notranslate"><span class="pre">-fsanitize-minimal-runtime</span></code> in addition to your <code class="docutils literal notranslate"><span class="pre">-fsanitize</span></code> flag.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>null<span class="w"> </span>-fsanitize-minimal-runtime<span class="w"> </span>null-read.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">ubsan: type-mismatch</span>
-<span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>null<span class="w"> </span>-fsanitize-minimal-runtime<span class="w"> </span>null-assign.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">ubsan: type-mismatch</span>
-<span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>null<span class="w"> </span>-fsanitize-minimal-runtime<span class="w"> </span>null-read.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">ubsan: type-mismatch</span>
+</span><span data-line="4"><span class="gp">$ </span>emcc<span class="w"> </span>-fsanitize<span class="o">=</span>null<span class="w"> </span>-fsanitize-minimal-runtime<span class="w"> </span>null-assign.c
+</span><span data-line="5"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="6"><span class="go">ubsan: type-mismatch</span>
+</span><span data-line="7"><span class="go">Runtime error: The application has corrupted its heap memory area (address zero)!</span>
+</span></pre></div>
 </div>
 </section>
 </section>
 <section id="address-sanitizer">
-<span id="sanitizer-asan"></span><h2>Address Sanitizer<a class="headerlink" href="#address-sanitizer" title="Link to this heading"></a></h2>
+<span id="sanitizer-asan"></span><h2>Address Sanitizer<a class="headerlink" href="#address-sanitizer" title="Link to this heading">¶</a></h2>
 <p>Clang’s <a class="reference external" href="https://clang.llvm.org/docs/AddressSanitizer.html">address sanitizer</a> (ASan) is also available for use with Emscripten.
 This makes it much easier to catch buffer overflows, memory leaks, and other
 related bugs in your code.</p>
@@ -246,130 +386,130 @@ compile with <code class="docutils literal notranslate"><span class="pre">-sABOR
 support code, that is, if JS tries to read from a memory address that is not
 valid, it will be caught, just like if that access happened from Wasm.</p>
 <section id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h3>
 <p>Here are some examples of how AddressSanitizer can be used to help find bugs.</p>
 <section id="buffer-overflow">
-<h4>Buffer Overflow<a class="headerlink" href="#buffer-overflow" title="Link to this heading"></a></h4>
+<h4>Buffer Overflow<a class="headerlink" href="#buffer-overflow" title="Link to this heading">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">buffer_overflow.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
-<span class="w">  </span><span class="n">memset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span><span data-line="5"><span class="w">  </span><span class="n">memset</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">);</span>
+</span><span data-line="6"><span class="p">}</span>
+</span></pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>buffer_overflow.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">=================================================================</span>
-<span class="go">==42==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x02965e5a at pc 0x000015f0 bp 0x02965a30 sp 0x02965a30</span>
-<span class="go">WRITE of size 11 at 0x02965e5a thread T0</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x15f0<span class="w"> </span><span class="k">in</span><span class="w"> </span>__asan_memset+0x15f0<span class="w"> </span><span class="o">(</span>a.out.wasm+0x15f0<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xc46<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>stack_buffer_overflow.c:5:3
-<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xcbc<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xcbc<span class="w"> </span><span class="o">(</span>a.out.wasm+0xcbc<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019bc<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6588:32
-<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001aeb<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6891:30
-<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b25<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6949:60
-<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b33<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6963:5
-<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ad6<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6870:29
-
-<span class="go">Address 0x02965e5a is located in stack of thread T0 at offset 26 in frame</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x11<span class="w">  </span><span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
-
-<span class="go">  This frame has 1 object(s):</span>
-<span class="go">    [16, 26) &#39;x&#39; (line 4) &lt;== Memory access at offset 26 overflows this variable</span>
-<span class="go">HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork</span>
-<span class="go">      (longjmp and C++ exceptions *are* supported)</span>
-<span class="go">SUMMARY: AddressSanitizer: stack-buffer-overflow (a.out.wasm+0x15ef)</span>
-<span class="go">...</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>buffer_overflow.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">=================================================================</span>
+</span><span data-line="4"><span class="go">==42==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x02965e5a at pc 0x000015f0 bp 0x02965a30 sp 0x02965a30</span>
+</span><span data-line="5"><span class="go">WRITE of size 11 at 0x02965e5a thread T0</span>
+</span><span data-line="6"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x15f0<span class="w"> </span><span class="k">in</span><span class="w"> </span>__asan_memset+0x15f0<span class="w"> </span><span class="o">(</span>a.out.wasm+0x15f0<span class="o">)</span>
+</span><span data-line="7"><span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xc46<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>stack_buffer_overflow.c:5:3
+</span><span data-line="8"><span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xcbc<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xcbc<span class="w"> </span><span class="o">(</span>a.out.wasm+0xcbc<span class="o">)</span>
+</span><span data-line="9"><span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019bc<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6588:32
+</span><span data-line="10"><span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001aeb<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6891:30
+</span><span data-line="11"><span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b25<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6949:60
+</span><span data-line="12"><span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b33<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6963:5
+</span><span data-line="13"><span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ad6<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6870:29
+</span><span data-line="14">
+</span><span data-line="15"><span class="go">Address 0x02965e5a is located in stack of thread T0 at offset 26 in frame</span>
+</span><span data-line="16"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x11<span class="w">  </span><span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="go">  This frame has 1 object(s):</span>
+</span><span data-line="19"><span class="go">    [16, 26) &#39;x&#39; (line 4) &lt;== Memory access at offset 26 overflows this variable</span>
+</span><span data-line="20"><span class="go">HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork</span>
+</span><span data-line="21"><span class="go">      (longjmp and C++ exceptions *are* supported)</span>
+</span><span data-line="22"><span class="go">SUMMARY: AddressSanitizer: stack-buffer-overflow (a.out.wasm+0x15ef)</span>
+</span><span data-line="23"><span class="go">...</span>
+</span></pre></div>
 </div>
 </section>
 <section id="use-after-free">
-<h4>Use After Free<a class="headerlink" href="#use-after-free" title="Link to this heading"></a></h4>
+<h4>Use After Free<a class="headerlink" href="#use-after-free" title="Link to this heading">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_free.cpp</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
-<span class="w">  </span><span class="k">delete</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="n">array</span><span class="p">;</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+</span><span data-line="3"><span class="w">  </span><span class="k">delete</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="n">array</span><span class="p">;</span>
+</span><span data-line="4"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span data-line="5"><span class="p">}</span>
+</span></pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>em++<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>use_after_free.cpp
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">=================================================================</span>
-<span class="go">==42==ERROR: AddressSanitizer: heap-use-after-free on address 0x03203e40 at pc 0x00000c1b bp 0x02965e70 sp 0x02965e7c</span>
-<span class="go">READ of size 4 at 0x03203e40 thread T0</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0xc1b<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:4:10
-<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
-
-<span class="go">0x03203e40 is located 0 bytes inside of 400-byte region [0x03203e40,0x03203fd0)</span>
-<span class="go">freed by thread T0 here:</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5fe8<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>delete<span class="o">[](</span>void*<span class="o">)</span>+0x5fe8<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5fe8<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb76<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:3:3
-<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b5<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6581:32
-<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ade<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6878:30
-<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b18<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6936:60
-<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b26<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6950:5
-<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ac9<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6857:29
-
-<span class="go">previously allocated by thread T0 here:</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5db4<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>new<span class="o">[](</span>unsigned<span class="w"> </span>long<span class="o">)</span>+0x5db4<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5db4<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb41<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:2:16
-<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b5<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6581:32
-<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ade<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6878:30
-<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b18<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6936:60
-<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b26<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6950:5
-<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ac9<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6857:29
-
-<span class="go">SUMMARY: AddressSanitizer: heap-use-after-free (a.out.wasm+0xc1a)</span>
-<span class="go">...</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>em++<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>use_after_free.cpp
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">=================================================================</span>
+</span><span data-line="4"><span class="go">==42==ERROR: AddressSanitizer: heap-use-after-free on address 0x03203e40 at pc 0x00000c1b bp 0x02965e70 sp 0x02965e7c</span>
+</span><span data-line="5"><span class="go">READ of size 4 at 0x03203e40 thread T0</span>
+</span><span data-line="6"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0xc1b<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:4:10
+</span><span data-line="7"><span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="go">0x03203e40 is located 0 bytes inside of 400-byte region [0x03203e40,0x03203fd0)</span>
+</span><span data-line="10"><span class="go">freed by thread T0 here:</span>
+</span><span data-line="11"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5fe8<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>delete<span class="o">[](</span>void*<span class="o">)</span>+0x5fe8<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5fe8<span class="o">)</span>
+</span><span data-line="12"><span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb76<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:3:3
+</span><span data-line="13"><span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+</span><span data-line="14"><span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b5<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6581:32
+</span><span data-line="15"><span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ade<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6878:30
+</span><span data-line="16"><span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b18<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6936:60
+</span><span data-line="17"><span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b26<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6950:5
+</span><span data-line="18"><span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ac9<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6857:29
+</span><span data-line="19">
+</span><span data-line="20"><span class="go">previously allocated by thread T0 here:</span>
+</span><span data-line="21"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5db4<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>new<span class="o">[](</span>unsigned<span class="w"> </span>long<span class="o">)</span>+0x5db4<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5db4<span class="o">)</span>
+</span><span data-line="22"><span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb41<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_free.cpp:2:16
+</span><span data-line="23"><span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xc48<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xc48<span class="w"> </span><span class="o">(</span>a.out.wasm+0xc48<span class="o">)</span>
+</span><span data-line="24"><span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b5<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6581:32
+</span><span data-line="25"><span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ade<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6878:30
+</span><span data-line="26"><span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b18<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6936:60
+</span><span data-line="27"><span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b26<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6950:5
+</span><span data-line="28"><span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001ac9<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6857:29
+</span><span data-line="29">
+</span><span data-line="30"><span class="go">SUMMARY: AddressSanitizer: heap-use-after-free (a.out.wasm+0xc1a)</span>
+</span><span data-line="31"><span class="go">...</span>
+</span></pre></div>
 </div>
 </section>
 <section id="memory-leaks">
-<h4>Memory Leaks<a class="headerlink" href="#memory-leaks" title="Link to this heading"></a></h4>
+<h4>Memory Leaks<a class="headerlink" href="#memory-leaks" title="Link to this heading">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">leak.cpp</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span><span data-line="3"><span class="p">}</span>
+</span></pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>em++<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>-sEXIT_RUNTIME<span class="w"> </span>leak.cpp
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-
-<span class="go">=================================================================</span>
-<span class="go">==42==ERROR: LeakSanitizer: detected memory leaks</span>
-
-<span class="go">Direct leak of 40 byte(s) in 1 object(s) allocated from:</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5ce5<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>new<span class="o">[](</span>unsigned<span class="w"> </span>long<span class="o">)</span>+0x5ce5<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5ce5<span class="o">)</span>
-<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb24<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>leak.cpp:2:3
-<span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xb3a<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xb3a<span class="w"> </span><span class="o">(</span>a.out.wasm+0xb3a<span class="o">)</span>
-<span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b8<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6584:32
-<span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ae1<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6881:30
-<span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b1b<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6939:60
-<span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b29<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6953:5
-<span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001acc<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6860:29
-
-<span class="go">SUMMARY: AddressSanitizer: 40 byte(s) leaked in 1 allocation(s).</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>em++<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>-sEXIT_RUNTIME<span class="w"> </span>leak.cpp
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3">
+</span><span data-line="4"><span class="go">=================================================================</span>
+</span><span data-line="5"><span class="go">==42==ERROR: LeakSanitizer: detected memory leaks</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="go">Direct leak of 40 byte(s) in 1 object(s) allocated from:</span>
+</span><span data-line="8"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x5ce5<span class="w"> </span><span class="k">in</span><span class="w"> </span>operator<span class="w"> </span>new<span class="o">[](</span>unsigned<span class="w"> </span>long<span class="o">)</span>+0x5ce5<span class="w"> </span><span class="o">(</span>a.out.wasm+0x5ce5<span class="o">)</span>
+</span><span data-line="9"><span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xb24<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>leak.cpp:2:3
+</span><span data-line="10"><span class="gp">    #</span><span class="m">2</span><span class="w"> </span>0xb3a<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xb3a<span class="w"> </span><span class="o">(</span>a.out.wasm+0xb3a<span class="o">)</span>
+</span><span data-line="11"><span class="gp">    #</span><span class="m">3</span><span class="w"> </span>0x800019b8<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.Module._main<span class="w"> </span>a.out.js:6584:32
+</span><span data-line="12"><span class="gp">    #</span><span class="m">4</span><span class="w"> </span>0x80001ae1<span class="w"> </span><span class="k">in</span><span class="w"> </span>Object.callMain<span class="w"> </span>a.out.js:6881:30
+</span><span data-line="13"><span class="gp">    #</span><span class="m">5</span><span class="w"> </span>0x80001b1b<span class="w"> </span><span class="k">in</span><span class="w"> </span>doRun<span class="w"> </span>a.out.js:6939:60
+</span><span data-line="14"><span class="gp">    #</span><span class="m">6</span><span class="w"> </span>0x80001b29<span class="w"> </span><span class="k">in</span><span class="w"> </span>run<span class="w"> </span>a.out.js:6953:5
+</span><span data-line="15"><span class="gp">    #</span><span class="m">7</span><span class="w"> </span>0x80001acc<span class="w"> </span><span class="k">in</span><span class="w"> </span>runCaller<span class="w"> </span>a.out.js:6860:29
+</span><span data-line="16">
+</span><span data-line="17"><span class="go">SUMMARY: AddressSanitizer: 40 byte(s) leaked in 1 allocation(s).</span>
+</span></pre></div>
 </div>
 <p>Note that since leak checks take place at program exit, you must use
 <code class="docutils literal notranslate"><span class="pre">-sEXIT_RUNTIME</span></code>, or invoke <code class="docutils literal notranslate"><span class="pre">__lsan_do_leak_check</span></code> or
 <code class="docutils literal notranslate"><span class="pre">__lsan_do_recoverable_leak_check</span></code> manually.</p>
 <p>You can detect that AddressSanitizer is enabled and run <code class="docutils literal notranslate"><span class="pre">__lsan_do_leak_check</span></code>
 by doing:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sanitizer/lsan_interface.h&gt;</span>
-
-<span class="cp">#if defined(__has_feature)</span>
-<span class="cp">#if __has_feature(address_sanitizer)</span>
-<span class="w">  </span><span class="c1">// code for ASan-enabled builds</span>
-<span class="w">  </span><span class="n">__lsan_do_leak_check</span><span class="p">();</span>
-<span class="cp">#endif</span>
-<span class="cp">#endif</span>
-</pre></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sanitizer/lsan_interface.h&gt;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="cp">#if defined(__has_feature)</span>
+</span><span data-line="4"><span class="cp">#if __has_feature(address_sanitizer)</span>
+</span><span data-line="5"><span class="w">  </span><span class="c1">// code for ASan-enabled builds</span>
+</span><span data-line="6"><span class="w">  </span><span class="n">__lsan_do_leak_check</span><span class="p">();</span>
+</span><span data-line="7"><span class="cp">#endif</span>
+</span><span data-line="8"><span class="cp">#endif</span>
+</span></pre></div>
 </div>
 <p>This will be fatal if there are memory leaks. To check for memory leaks
 and allow the process to continue running, use
@@ -380,23 +520,23 @@ does not instrument all memory accesses, and as a result is much faster than
 <code class="docutils literal notranslate"><span class="pre">-fsanitize=address</span></code>.</p>
 </section>
 <section id="use-after-return">
-<h4>Use After Return<a class="headerlink" href="#use-after-return" title="Link to this heading"></a></h4>
+<h4>Use After Return<a class="headerlink" href="#use-after-return" title="Link to this heading">¶</a></h4>
 <p>Consider <code class="docutils literal notranslate"><span class="pre">use_after_return.c</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-
-<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">__asan_default_options</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;detect_stack_use_after_return=1&quot;</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="o">*</span><span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">__asan_default_options</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;detect_stack_use_after_return=1&quot;</span><span class="p">;</span>
+</span><span data-line="5"><span class="p">}</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="nf">f</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="8"><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span><span data-line="9"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
+</span><span data-line="10"><span class="p">}</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="13"><span class="w">  </span><span class="o">*</span><span class="n">f</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span data-line="14"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Note that to do this check, you have to use the ASan option
 <code class="docutils literal notranslate"><span class="pre">detect_stack_use_after_return</span></code>. You may enable this option by declaring
@@ -406,32 +546,32 @@ generated JavaScript. <code class="docutils literal notranslate"><span class="pr
 <p>This option is fairly expensive because it converts stack allocations into
 heap allocations, and these allocations are not reused so that future accesses
 can cause traps. Hence, it is not enabled by default.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>emcc<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>use_after_return.c
-<span class="gp">$ </span>node<span class="w"> </span>a.out.js
-<span class="go">=================================================================</span>
-<span class="go">==42==ERROR: AddressSanitizer: stack-use-after-return on address 0x02a95010 at pc 0x00000d90 bp 0x02965f70 sp 0x02965f7c</span>
-<span class="go">WRITE of size 4 at 0x02a95010 thread T0</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0xd90<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_return.c:13:10
-<span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xe0a<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xe0a<span class="w"> </span><span class="o">(</span>a.out.wasm+0xe0a<span class="o">)</span>
-
-<span class="go">Address 0x02a95010 is located in stack of thread T0 at offset 16 in frame</span>
-<span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x11<span class="w">  </span><span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
-
-<span class="go">  This frame has 1 object(s):</span>
-<span class="go">    [16, 56) &#39;buf&#39; (line 8) &lt;== Memory access at offset 16 is inside this variable</span>
-<span class="go">HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork</span>
-<span class="go">      (longjmp and C++ exceptions *are* supported)</span>
-<span class="go">SUMMARY: AddressSanitizer: stack-use-after-return (a.out.wasm+0xd8f)</span>
-<span class="go">...</span>
-</pre></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">$ </span>emcc<span class="w"> </span>-gsource-map<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w"> </span>-sALLOW_MEMORY_GROWTH<span class="w"> </span>use_after_return.c
+</span><span data-line="2"><span class="gp">$ </span>node<span class="w"> </span>a.out.js
+</span><span data-line="3"><span class="go">=================================================================</span>
+</span><span data-line="4"><span class="go">==42==ERROR: AddressSanitizer: stack-use-after-return on address 0x02a95010 at pc 0x00000d90 bp 0x02965f70 sp 0x02965f7c</span>
+</span><span data-line="5"><span class="go">WRITE of size 4 at 0x02a95010 thread T0</span>
+</span><span data-line="6"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0xd90<span class="w"> </span><span class="k">in</span><span class="w"> </span>__original_main<span class="w"> </span>use_after_return.c:13:10
+</span><span data-line="7"><span class="gp">    #</span><span class="m">1</span><span class="w"> </span>0xe0a<span class="w"> </span><span class="k">in</span><span class="w"> </span>main+0xe0a<span class="w"> </span><span class="o">(</span>a.out.wasm+0xe0a<span class="o">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="go">Address 0x02a95010 is located in stack of thread T0 at offset 16 in frame</span>
+</span><span data-line="10"><span class="gp">    #</span><span class="m">0</span><span class="w"> </span>0x11<span class="w">  </span><span class="o">(</span>a.out.wasm+0x11<span class="o">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="go">  This frame has 1 object(s):</span>
+</span><span data-line="13"><span class="go">    [16, 56) &#39;buf&#39; (line 8) &lt;== Memory access at offset 16 is inside this variable</span>
+</span><span data-line="14"><span class="go">HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork</span>
+</span><span data-line="15"><span class="go">      (longjmp and C++ exceptions *are* supported)</span>
+</span><span data-line="16"><span class="go">SUMMARY: AddressSanitizer: stack-use-after-return (a.out.wasm+0xd8f)</span>
+</span><span data-line="17"><span class="go">...</span>
+</span></pre></div>
 </div>
 </section>
 </section>
 <section id="configuration">
-<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h3>
 <p>ASan can be configured via a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> file:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;option1=a:option2=b&#39;</span><span class="p">;</span>
-</pre></div>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;option1=a:option2=b&#39;</span><span class="p">;</span>
+</span></pre></div>
 </div>
 <p>For example, put the above snippet with your options into <code class="docutils literal notranslate"><span class="pre">asan_options.js</span></code>,
 and compile with <code class="docutils literal notranslate"><span class="pre">--pre-js</span> <span class="pre">asan_options.js</span></code>.</p>
@@ -440,14 +580,14 @@ and compile with <code class="docutils literal notranslate"><span class="pre">--
 Please be warned that most flag combinations are not tested and may or may not
 work.</p>
 <section id="disabling-malloc-free-stack-traces">
-<h4>Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces<a class="headerlink" href="#disabling-malloc-free-stack-traces" title="Link to this heading"></a></h4>
+<h4>Disabling <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> Stack Traces<a class="headerlink" href="#disabling-malloc-free-stack-traces" title="Link to this heading">¶</a></h4>
 <p>In a program that uses <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> (or their C++ equivalent,
 <code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">new</span></code>/<code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">delete</span></code>) very frequently, taking a stack trace at
 all invocations to <code class="docutils literal notranslate"><span class="pre">malloc</span></code>/<code class="docutils literal notranslate"><span class="pre">free</span></code> can be very expensive. As a result, if
 you find your program to be very slow when using ASan, you can try using the
 option <code class="docutils literal notranslate"><span class="pre">malloc_context_size=0</span></code>, like this:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;malloc_context_size=0&#39;</span><span class="p">;</span>
-</pre></div>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">Module</span><span class="p">.</span><span class="nx">ASAN_OPTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;malloc_context_size=0&#39;</span><span class="p">;</span>
+</span></pre></div>
 </div>
 <p>This prevents ASan from reporting the location of memory leaks or offering
 insight into where the memory for a heap-based memory error originated,
@@ -455,7 +595,7 @@ but may provide tremendous speed ups.</p>
 </section>
 </section>
 <section id="comparison-to-safe-heap">
-<h3>Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code><a class="headerlink" href="#comparison-to-safe-heap" title="Link to this heading"></a></h3>
+<h3>Comparison to <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code><a class="headerlink" href="#comparison-to-safe-heap" title="Link to this heading">¶</a></h3>
 <p>Emscripten provides a <code class="docutils literal notranslate"><span class="pre">SAFE_HEAP</span></code> mode, which can be activated by running
 <code class="docutils literal notranslate"><span class="pre">emcc</span></code> with <code class="docutils literal notranslate"><span class="pre">-sSAFE_HEAP</span></code>. This does several things, some of which overlap
 with sanitizers.</p>
@@ -505,111 +645,57 @@ optimizer is run after it adds those checks, which can remove some of them.</p>
 </section>
 </section>
 
-
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../building_from_source/index.html" class="btn btn-neutral float-right" title="Building Emscripten from Source"/>Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../optimizing/Optimizing-WebGL.html" class="btn btn-neutral" title="Optimizing WebGL"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-     
-  <!--begin hamishw addition -->
-  
-    
-  
-  <!--  -->
-   
-   <!--Footer important links
-    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-	displayed.   -->
-
-	
-   <div class="footer-nav-bar" style="">
-     <div class="footer-options">
-   
-        
-              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
-        
-              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
-        
-              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
-         
-		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
-         
-		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
-        
-              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
-        
-              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
-        
-              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
-         
-				
-     </div>
-	 
-	
- 
-   </div>
-  
-    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Debugging with Sanitizers</div>
-  </div>
- 
-</div> -->
-  
-    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
-   <!--end hamishw addition -->
-  
-  
-	  
-<!-- end section moved here by hamishw -->
-  <div role="contentinfo" class="copyright-box">
-    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
-  <ul class="wy-breadcrumbs">
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-
-	  <li class="wy-breadcrumbs-aside">
-         <a href="../site/about.html">About site</a>
-      </li>
-	  
-	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Debugging%20with%20Sanitizers%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/debugging/Sanitizers&labels=bug">Page bug</a>
-      </li>
-  </ul>
-  
-    <p>
-        <!-- &copy; Copyright 2015, . -->
-		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
-		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
-    </p>
-	
-  </div>
-  
-  
-</footer>
-        </div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="../optimizing/Optimizing-WebGL.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Optimizing WebGL</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../building_from_source/index.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Building Emscripten from Source</div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
 </div>
-</body>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script></body>
 </html>

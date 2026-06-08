@@ -1,75 +1,202 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html lang="en" data-accent-color="violet" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optimizing WebGL &mdash; Emscripten 6.0.1-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
-
-  
-    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Debugging with Sanitizers" href="../debugging/Sanitizers.html" />
-    <link rel="prev" title="Optimizing Code" href="Optimizing-Code.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-<div class="grid-to-center-rtd-theme"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../index.html">
-            <!-- <img src="../..//_static/" alt="Logo"> -->
-            
-              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Optimizing WebGL - Emscripten 6.0.1-git (dev) documentation</title><link rel="shortcut icon" href="../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Debugging with Sanitizers" href="../debugging/Sanitizers.html" /><link rel="prev" title="Optimizing Code" href="Optimizing-Code.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Optimizing WebGL"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      <img class="light-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
           </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../getting_started/downloads.html">Downloads</a></li><li><a href="../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../contributing/contributing.html">Contributing</a></li><li><a href="../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Optimizing-Code.html">Optimizing Code</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Optimizing WebGL</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#which-gl-mode-to-target">Which GL Mode To Target?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#how-to-profile-webgl">How To Profile WebGL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#avoid-redundant-calls">Avoid Redundant Calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#techniques-to-minimize-api-calls">Techniques To Minimize API Calls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#avoid-gpu-cpu-sync-points">Avoid GPU-CPU Sync Points</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gpu-driver-friendly-memory-access-behavior">GPU Driver Friendly Memory Access Behavior</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#when-the-gpu-is-the-bottleneck">When The GPU Is The Bottleneck</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#optimizing-load-times-and-other-best-practices">Optimizing Load Times and Other Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#migrating-to-webgl-2">Migrating To WebGL 2</a></li>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Audio.html">Audio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/pthreads.html">Pthreads support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/networking.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asynchronous Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optimizing WebGL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Profiling-Toolchain.html">Profiling the Toolchain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
@@ -77,71 +204,84 @@
 
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <!-- <a href="../../index.html">Emscripten</a> -->
-          <a href="../../index.html"> <img src="../../_static/Emscripten_logo_full.png" alt="Logo" /> </a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-        <!--begin hamishw addition -->
-
-        <!--Nav bar defined as a document followed by short version of nav text and long version
-            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-          displayed.   -->
-        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
-  
-        <div class="main-nav-bar" style="">   
-
-          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
-        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
-
-        <ul id="menu-options">
-             
-                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
-             
-                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
-             
-                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
-             
-                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
-                	
-          </ul>
-        <!-- <div style="clear:both;"></div> -->        
-          <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing WebGL</div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#which-gl-mode-to-target">Which GL Mode To Target?</a></li>
+<li><a class="reference internal" href="#how-to-profile-webgl">How To Profile WebGL</a></li>
+<li><a class="reference internal" href="#avoid-redundant-calls">Avoid Redundant Calls</a></li>
+<li><a class="reference internal" href="#techniques-to-minimize-api-calls">Techniques To Minimize API Calls</a></li>
+<li><a class="reference internal" href="#avoid-gpu-cpu-sync-points">Avoid GPU-CPU Sync Points</a></li>
+<li><a class="reference internal" href="#gpu-driver-friendly-memory-access-behavior">GPU Driver Friendly Memory Access Behavior</a></li>
+<li><a class="reference internal" href="#when-the-gpu-is-the-bottleneck">When The GPU Is The Bottleneck</a></li>
+<li><a class="reference internal" href="#optimizing-load-times-and-other-best-practices">Optimizing Load Times and Other Best Practices</a></li>
+<li><a class="reference internal" href="#migrating-to-webgl-2">Migrating To WebGL 2</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/optimizing/Optimizing-WebGL.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Optimizing WebGL</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
   </div>
- 
-</div>
-   </div>
-   <!--end hamishw addition -->		
-          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing WebGL</div>
-  </div>
- 
-</div> -->
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="optimizing-webgl">
-<span id="id1"></span><h1>Optimizing WebGL<a class="headerlink" href="#optimizing-webgl" title="Link to this heading"></a></h1>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="optimizing-webgl">
+<span id="id1"></span><h1>Optimizing WebGL<a class="headerlink" href="#optimizing-webgl" title="Link to this heading">¶</a></h1>
 <p>Due to the extra validation that WebGL needs to impose to ensure web security, the CPU side overhead of running WebGL applications is known to be higher in comparison to native OpenGL applications. Because of this, porting graphics heavy applications can become bottlenecked on the CPU side when interfacing with GL functions. Therefore for best performance, special care should be taken to profile and optimize GL API usage in applications that are expected to be WebGL heavy. This optimization guide focuses on different techniques that have been found useful for improving WebGL performance.</p>
 <p>There are so many GL hardware and driver vendors out there, as well as operating system combinations, such that generating a specific optimization guide is difficult. Some optimizations that are efficient on certain hardware/driver/OS combinations have been seen to not make much difference on drivers from another vendor. Fortunately it has been somewhat rare to find a conflicting scenario where certain optimization for one driver would have led to falling down a performance cliff on hardware from another GPU vendor. Most often when this happens it is due to a specific feature not being supported by a particular hardware, which causes the driver to resort to emulation. For example, in one case it was found that a native GL driver advertises having support for the ETC2 compressed texture format, even though the graphics hardware did not implement this, and in another case, it was found that using vertex shader primitive restart index would cause the GL driver to fall back to running vertex shaders in software. Unfortunately OpenGL specifications do not provide means for a driver to report these types of performance caveats, which is why being able to benchmark across a large variety of target hardware is almost necessary when optimizing GL. It is also useful to pay close attention to the web page console of the browser when running, since browsers can report extra performance warnings in the console logs.</p>
 <p>It should also be acknowledged that some detected performance issues have been due to inefficiencies or outright performance bugs in browsers and their utilized software libraries, and have nothing to do with the underlying GL drivers or web security in general. When initially working on optimizing Emscripten ported GL codebases, most browsers were found to be inefficient with their WebGL stacks, but this was to be expected, since before Emscripten and asm.js, it was not even possible to perform such precise GL performance comparisons between native versus the web, such that a large number of performance critical issues fell through the gaps. This aspect has steadily been improving as more people stress WebGL with large Emscripten codebases, so some of the items in this guide might not be relevant in the future. If reading this guide in the future you do find something that seems like a net loss in all cases, please do submit a doc PR to discuss. Likewise, if certain GL access pattern is orders of magnitude slower on the web compared to native, it is likely to be a performance bug.</p>
 <p>The following optimization tips list different situations that have been known to make an impact in practice, although it is advised to never perform an optimization blindly, but keep the profiler close at hand when experimenting.</p>
 <section id="which-gl-mode-to-target">
-<h2>Which GL Mode To Target?<a class="headerlink" href="#which-gl-mode-to-target" title="Link to this heading"></a></h2>
+<h2>Which GL Mode To Target?<a class="headerlink" href="#which-gl-mode-to-target" title="Link to this heading">¶</a></h2>
 <p>Emscripten allows targeting various different OpenGL and OpenGL ES API flavors with different linker flags.</p>
 <p>By default, if no special GL related linker flags are chosen, Emscripten targets the WebGL 1 API, which user code accesses by including OpenGL ES 2.0 headers in C/C++ code (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;GLES2/gl2.h&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;GLES2/gl2ext.h&gt;</span></code>). This mode works like GLES 2, with the exception that a number of WebGL specific changes and restrictions are applied. For a close to complete reference of differences between WebGL 1 and OpenGL ES 2, refer to <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/#6">WebGL 1 Specification: Differences Between WebGL and OpenGL ES 2.0</a>.</p>
 <ul class="simple">
@@ -152,7 +292,7 @@
 </ul>
 </section>
 <section id="how-to-profile-webgl">
-<h2>How To Profile WebGL<a class="headerlink" href="#how-to-profile-webgl" title="Link to this heading"></a></h2>
+<h2>How To Profile WebGL<a class="headerlink" href="#how-to-profile-webgl" title="Link to this heading">¶</a></h2>
 <p>A mix of tools are available for measuring GL performance. In general, here it is recommended that developers do not restrict the focus to only searching for web browser specific profiling tools, but in practice native profilers have been found to work equally well, if not even better. The only drawback when using a native profiler is that some intimate knowledge of how WebGL is implemented in the browser can be critical, or it might be difficult to understand the call streams going to the GPU otherwise.</p>
 <ul class="simple">
 <li><p>To get an overview of how much time is spent in different WebGL entry points, use Firefox with its <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Mozilla/Performance/Profiling_with_the_Built-in_Profiler">Gecko Profiler add-on</a>. This profiler tool is able to show timing data across the whole stack of executed code: handwritten JavaScript, asm.js/WebAssembly and native Firefox C/C++ browser code, which makes it very valuable compared to other profiling tools.</p></li>
@@ -161,7 +301,7 @@
 </ul>
 </section>
 <section id="avoid-redundant-calls">
-<h2>Avoid Redundant Calls<a class="headerlink" href="#avoid-redundant-calls" title="Link to this heading"></a></h2>
+<h2>Avoid Redundant Calls<a class="headerlink" href="#avoid-redundant-calls" title="Link to this heading">¶</a></h2>
 <p>In WebGL, every single GL function call has some amount of overhead, even those that are seemingly simple and do nearly nothing. This is because WebGL implementations need to validate each call since the underlying native OpenGL specifications provide no guarantees about security that could be relied upon on the web. Additionally in asm.js/WebAssembly side, each WebGL call generates an FFI transition (a jump between executing code in asm.js context and executing code in browser’s native C++ context), which has a slightly higher overhead than a regular function call inside asm.js/WebAssembly. Therefore on the web, it is generally best for CPU side performance to attempt to minimize the number of calls that is made to WebGL. The following tips can be applied here.</p>
 <ul>
 <li><p>Optimize the renderer and input assets at high level to avoid redundant calls. Refactor the design if needed so that the renderer is able to better reason what kind of state changes are relevant and which ones are not needed. The best kind of cache is one that is unnecessary, so if the high level renderer is able to keep the GL call stream lean, that will produce the fastest results. However, in cases when that is difficult to achieve, some types of lower level caching can be effective, discussed below.</p></li>
@@ -169,24 +309,24 @@
 <li><p>Avoid all types of renderer patterns which reset the GL to some specific “ground state” after certain operations. Commonly seen occurrences are to <code class="docutils literal notranslate"><span class="pre">glBindBuffer(GL_ARRAY_BUFFER,</span> <span class="pre">0)</span></code>, <code class="docutils literal notranslate"><span class="pre">glUseProgram(0)</span></code>, or <code class="docutils literal notranslate"><span class="pre">for(i</span> <span class="pre">in</span> <span class="pre">0</span> <span class="pre">-&gt;</span> <span class="pre">max_attributes)</span> <span class="pre">glDisableVertexAttribArray(i);</span></code> after issuing each draw call to revert to a known fixed configuration. Instead, lazily change only the GL state that is needed when transitioning from one draw call to another.</p></li>
 <li><p>Consider lazily setting GL state only when it needs to take effect. For example, in the following call stream</p>
 <blockquote>
-<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// First draw</span>
-<span class="n">glBindBuffer</span><span class="p">(...);</span>
-<span class="n">glVertexAttribPointer</span><span class="p">(...);</span>
-<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span>
-<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span>
-<span class="n">glDrawArrays</span><span class="p">(...);</span>
-
-<span class="c1">// Second draw (back-to-back)</span>
-<span class="n">glBindBuffer</span><span class="p">(...);</span>
-<span class="n">glVertexAttribPointer</span><span class="p">(...);</span>
-<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
-<span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
-<span class="n">glDrawArrays</span><span class="p">(...);</span>
-</pre></div>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1">// First draw</span>
+</span><span data-line="2"><span class="n">glBindBuffer</span><span class="p">(...);</span>
+</span><span data-line="3"><span class="n">glVertexAttribPointer</span><span class="p">(...);</span>
+</span><span data-line="4"><span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span data-line="5"><span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span>
+</span><span data-line="6"><span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span data-line="7"><span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span>
+</span><span data-line="8"><span class="n">glDrawArrays</span><span class="p">(...);</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1">// Second draw (back-to-back)</span>
+</span><span data-line="11"><span class="n">glBindBuffer</span><span class="p">(...);</span>
+</span><span data-line="12"><span class="n">glVertexAttribPointer</span><span class="p">(...);</span>
+</span><span data-line="13"><span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
+</span><span data-line="14"><span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
+</span><span data-line="15"><span class="n">glActiveTexture</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
+</span><span data-line="16"><span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture2</span><span class="p">);</span><span class="w"> </span><span class="c1">// (*)</span>
+</span><span data-line="17"><span class="n">glDrawArrays</span><span class="p">(...);</span>
+</span></pre></div>
 </div>
 </div></blockquote>
 </li>
@@ -195,7 +335,7 @@
 <p>A good rule of thumb is that a renderer that inherently avoids redundant state calls in the first place by high level design is generally more efficient than one that relies heavily on state caching at the low level.</p>
 </section>
 <section id="techniques-to-minimize-api-calls">
-<h2>Techniques To Minimize API Calls<a class="headerlink" href="#techniques-to-minimize-api-calls" title="Link to this heading"></a></h2>
+<h2>Techniques To Minimize API Calls<a class="headerlink" href="#techniques-to-minimize-api-calls" title="Link to this heading">¶</a></h2>
 <p>In addition to removing API calls that are outright redundant, it is good to also pay attention to how to minimize state changes using other techniques. The following checklist offers some possibilities.</p>
 <ul class="simple">
 <li><p>When rendering to offscreen render targets, use multiple FBOs so that switching render targets only requires a single glBindFramebuffer() call. This avoids having to perform multiple calls each frame to set FBO state.</p></li>
@@ -209,7 +349,7 @@
 </ul>
 </section>
 <section id="avoid-gpu-cpu-sync-points">
-<h2>Avoid GPU-CPU Sync Points<a class="headerlink" href="#avoid-gpu-cpu-sync-points" title="Link to this heading"></a></h2>
+<h2>Avoid GPU-CPU Sync Points<a class="headerlink" href="#avoid-gpu-cpu-sync-points" title="Link to this heading">¶</a></h2>
 <p>The most important aspect of efficient GPU usage is to make sure that the CPU will never need to block on the GPU during render time, and vice versa. These types of stalls create extremely costly CPU-GPU sync points, which lead to poor utilization of both resources. Generally a hint of this type of a scenario happening can be detected by observing overall GPU and CPU utilization rates. If a GPU profiler is claiming that the GPU is idle for large portions of the time, but a CPU profiler is claiming that the CPU in turn is idle, or that certain GL functions take a very long time to complete, it suggests that frames are not being efficiently submitted to the GPU, but GPU-CPU sync(s) occur somewhere during draw call submission. Unfortunately OpenGL specifications do not provide any performance guarantees of which GL calls may cause a stall, so look out for the following behavior and experiment by changing these and reprofiling the effects.</p>
 <blockquote>
 <div><ul class="simple">
@@ -223,7 +363,7 @@
 </div></blockquote>
 </section>
 <section id="gpu-driver-friendly-memory-access-behavior">
-<h2>GPU Driver Friendly Memory Access Behavior<a class="headerlink" href="#gpu-driver-friendly-memory-access-behavior" title="Link to this heading"></a></h2>
+<h2>GPU Driver Friendly Memory Access Behavior<a class="headerlink" href="#gpu-driver-friendly-memory-access-behavior" title="Link to this heading">¶</a></h2>
 <p>Transferring memory between the CPU and the GPU is a common source of GL performance issues. This is because creating new GL resources can be slow, and uploading or downloading data can block the CPU if the data is not ready, or if an old version of the data is still needed before being able to overwrite it with a new version.</p>
 <ul class="simple">
 <li><p>Prefer interleaved vertex data in a single VBO over multiple VBOs that contain planar attributes. This improves GPU vertex cache behavior, and avoids multiple redundant <code class="docutils literal notranslate"><span class="pre">glBindBuffer()</span></code> calls when setting up vertex attribute pointers for rendering.</p></li>
@@ -233,7 +373,7 @@
 </ul>
 </section>
 <section id="when-the-gpu-is-the-bottleneck">
-<h2>When The GPU Is The Bottleneck<a class="headerlink" href="#when-the-gpu-is-the-bottleneck" title="Link to this heading"></a></h2>
+<h2>When The GPU Is The Bottleneck<a class="headerlink" href="#when-the-gpu-is-the-bottleneck" title="Link to this heading">¶</a></h2>
 <p>After having verified that CPU-GPU pipeline sync bubbles do not occur, and rendering is still GPU bound, the following optimizations can be useful.</p>
 <ul class="simple">
 <li><p>Multiple additive lighting draw passes of geometry in a forward lighting renderer can be straightforward to implement, but the amount of GL API calls this generates can be too costly. In such cases, consider computing multiple light contributions in one shader pass, even if this would create no-op arithmetic operations in shaders when some objects are not affected by certain lights.</p></li>
@@ -243,7 +383,7 @@
 </ul>
 </section>
 <section id="optimizing-load-times-and-other-best-practices">
-<h2>Optimizing Load Times and Other Best Practices<a class="headerlink" href="#optimizing-load-times-and-other-best-practices" title="Link to this heading"></a></h2>
+<h2>Optimizing Load Times and Other Best Practices<a class="headerlink" href="#optimizing-load-times-and-other-best-practices" title="Link to this heading">¶</a></h2>
 <p>Finally, a number of miscellaneous optimizations have been proven to be effective.</p>
 <ul class="simple">
 <li><p>On the web one cannot generally expect which compressed texture formats will be available. Author textures to multiple compressed texture bundles, e.g. one per format, and download the appropriate one in at runtime to minimize excessive downloads. Store textures and other assets to IndexedDB to avoid having to redownload on subsequent runs. The Emscripten linker flag <code class="docutils literal notranslate"><span class="pre">-sGL_PREINITIALIZED_CONTEXT</span></code> can help in authoring a html shell page that performs such texture format checks up front.</p></li>
@@ -258,7 +398,7 @@
 </ul>
 </section>
 <section id="migrating-to-webgl-2">
-<h2>Migrating To WebGL 2<a class="headerlink" href="#migrating-to-webgl-2" title="Link to this heading"></a></h2>
+<h2>Migrating To WebGL 2<a class="headerlink" href="#migrating-to-webgl-2" title="Link to this heading">¶</a></h2>
 <p>Compared to WebGL 1, the new WebGL 2 API provides essentially free API optimizations that are activated simply by targeting WebGL 2. This speedup comes from the fact that the WebGL 2 API was revised from the perspective of JavaScript bindings, and it is now possible to use WebGL without having to allocate temporary objects that would contribute to JS garbage collector pressure. These new entry points fit nicer together with asm.js and WebAssembly applications, and make the WebGL API a bit leaner to use. As a case study, updating Unreal Engine 4 to target WebGL 2, with no other engine modifications, yielded 7% faster throughput performance.</p>
 <p>Because of this source of free performance, it is heavily recommended that all developers migrate to target WebGL 2 even if no other WebGL 2 features are needed, if performance is a concern. WebGL 2 is available starting from Firefox 51 and Chrome 58 (see <a class="reference external" href="https://github.com/emscripten-core/emscripten/pull/4945">#4945</a>). See also <a class="reference external" href="http://caniuse.com/#feat=webgl2">caniuse: WebGL 2</a> table. With a little care, it is possible to simultaneously target both WebGL 1 and WebGL 2 APIs, and leverage the best performance when available, but gracefully fall back on less compatible GPUs.</p>
 <p>When working with these two specifications, it is good to remember that <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/latest/1.0/">WebGL 1</a> is based on the <a class="reference external" href="https://www.khronos.org/opengles/2_X/">OpenGL ES 2.0 specification</a>, and <a class="reference external" href="https://www.khronos.org/registry/webgl/specs/latest/2.0/">WebGL 2</a> is based on the <a class="reference external" href="https://www.khronos.org/registry/OpenGL-Refpages/es3.0/">OpenGL ES 3.0 specification</a>.</p>
@@ -269,22 +409,22 @@
 <li><p>A side effect of the above is that when the functionality was merged to core, the specific function names to call for the feature has changed, i.e. on WebGL1/GLES 2 contexts, one would call the function <code class="docutils literal notranslate"><span class="pre">glDrawBuffersEXT()</span></code>, but with WebGL2/GLES 3.0, one should call the unsuffixed function <code class="docutils literal notranslate"><span class="pre">glDrawBuffers()</span></code> instead.</p></li>
 <li><p>The full list of WebGL 1 extensions that were adopted to the core WebGL 2 specification is:</p>
 <blockquote>
-<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ANGLE_instanced_arrays</span>
-<span class="n">EXT_blend_minmax</span>
-<span class="n">EXT_color_buffer_half_float</span>
-<span class="n">EXT_frag_depth</span>
-<span class="n">EXT_sRGB</span>
-<span class="n">EXT_shader_texture_lod</span>
-<span class="n">OES_element_index_uint</span>
-<span class="n">OES_standard_derivatives</span>
-<span class="n">OES_texture_float</span>
-<span class="n">OES_texture_half_float</span>
-<span class="n">OES_texture_half_float_linear</span>
-<span class="n">OES_vertex_array_object</span>
-<span class="n">WEBGL_color_buffer_float</span>
-<span class="n">WEBGL_depth_texture</span>
-<span class="n">WEBGL_draw_buffers</span>
-</pre></div>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">ANGLE_instanced_arrays</span>
+</span><span data-line="2"><span class="n">EXT_blend_minmax</span>
+</span><span data-line="3"><span class="n">EXT_color_buffer_half_float</span>
+</span><span data-line="4"><span class="n">EXT_frag_depth</span>
+</span><span data-line="5"><span class="n">EXT_sRGB</span>
+</span><span data-line="6"><span class="n">EXT_shader_texture_lod</span>
+</span><span data-line="7"><span class="n">OES_element_index_uint</span>
+</span><span data-line="8"><span class="n">OES_standard_derivatives</span>
+</span><span data-line="9"><span class="n">OES_texture_float</span>
+</span><span data-line="10"><span class="n">OES_texture_half_float</span>
+</span><span data-line="11"><span class="n">OES_texture_half_float_linear</span>
+</span><span data-line="12"><span class="n">OES_vertex_array_object</span>
+</span><span data-line="13"><span class="n">WEBGL_color_buffer_float</span>
+</span><span data-line="14"><span class="n">WEBGL_depth_texture</span>
+</span><span data-line="15"><span class="n">WEBGL_draw_buffers</span>
+</span></pre></div>
 </div>
 </div></blockquote>
 </li>
@@ -301,111 +441,57 @@
 </section>
 </section>
 
-
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../debugging/Sanitizers.html" class="btn btn-neutral float-right" title="Debugging with Sanitizers"/>Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="Optimizing-Code.html" class="btn btn-neutral" title="Optimizing Code"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-     
-  <!--begin hamishw addition -->
-  
-    
-  
-  <!--  -->
-   
-   <!--Footer important links
-    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-	displayed.   -->
-
-	
-   <div class="footer-nav-bar" style="">
-     <div class="footer-options">
-   
-        
-              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
-        
-              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
-        
-              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
-         
-		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
-         
-		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
-        
-              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
-        
-              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
-        
-              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
-         
-				
-     </div>
-	 
-	
- 
-   </div>
-  
-    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Optimizing WebGL</div>
-  </div>
- 
-</div> -->
-  
-    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
-   <!--end hamishw addition -->
-  
-  
-	  
-<!-- end section moved here by hamishw -->
-  <div role="contentinfo" class="copyright-box">
-    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
-  <ul class="wy-breadcrumbs">
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-
-	  <li class="wy-breadcrumbs-aside">
-         <a href="../site/about.html">About site</a>
-      </li>
-	  
-	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Optimizing%20WebGL%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/optimizing/Optimizing-WebGL&labels=bug">Page bug</a>
-      </li>
-  </ul>
-  
-    <p>
-        <!-- &copy; Copyright 2015, . -->
-		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
-		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
-    </p>
-	
-  </div>
-  
-  
-</footer>
-        </div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="Optimizing-Code.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Optimizing Code</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../debugging/Sanitizers.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Debugging with Sanitizers</div>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
 </div>
-</body>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script></body>
 </html>
