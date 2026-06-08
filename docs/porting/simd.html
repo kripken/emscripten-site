@@ -1,88 +1,202 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html lang="en" data-accent-color="violet" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Using SIMD with WebAssembly &mdash; Emscripten 6.0.1-git (dev) documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=6895f958" />
-
-  
-    <link rel="shortcut icon" href="../../_static/emscripten.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="C++ Exceptions Support" href="exceptions.html" />
-    <link rel="prev" title="Networking" href="networking.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-<div class="grid-to-center-rtd-theme"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../index.html">
-            <!-- <img src="../..//_static/" alt="Logo"> -->
-            
-              <img src="../../_static/Emscripten_logo_full.png" class="logo" alt="Logo"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Using SIMD with WebAssembly - Emscripten 6.0.1-git (dev) documentation</title><link rel="shortcut icon" href="../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="C++ Exceptions Support" href="exceptions.html" /><link rel="prev" title="Networking" href="networking.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Using SIMD with WebAssembly"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      <img class="light-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/Emscripten_logo_full.png" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
           </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../getting_started/downloads.html">Downloads</a></li><li><a href="../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../contributing/contributing.html">Contributing</a></li><li><a href="../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a></li>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../compiling/index.html">Compiling and Running Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Porting</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="guidelines/index.html">Code Portability and Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a></li>
-<li class="toctree-l2"><a class="reference internal" href="files/index.html">Files and File Systems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multimedia_and_graphics/index.html">Multimedia and Graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="Audio.html">Audio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Debugging.html">Debugging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pthreads.html">Pthreads support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="networking.html">Networking</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Using SIMD with WebAssembly</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#optimization-considerations">Optimization considerations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using SIMD with WebAssembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">C++ Exceptions Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asyncify.html">Asynchronous Code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Building-Projects.html">Building Projects</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
@@ -90,69 +204,79 @@
 
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <!-- <a href="../../index.html">Emscripten</a> -->
-          <a href="../../index.html"> <img src="../../_static/Emscripten_logo_full.png" alt="Logo" /> </a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-        <!--begin hamishw addition -->
-
-        <!--Nav bar defined as a document followed by short version of nav text and long version
-            If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-          displayed.   -->
-        <a href="https://github.com/emscripten-core/emscripten"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" data-canonical-src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png"></a>
-  
-        <div class="main-nav-bar" style="">   
-
-          <!-- the layout of the menu options - centered with left and right alignment of the first and last loop items respectively.
-        This is VERY UGLY as I'm adding to the CSS in the code to force the alignment. Would be better just to have the elements here and have the CSS in the CSS file. This could be done with a CSS selector, but not worked out how yet. -->
-
-        <ul id="menu-options">
-             
-                   <li style="text-align:left;"><a class="navlink-short" title="Docs" href="../index.html">Docs</a><a class="navlink-long" title="Documentation" href="../index.html">Documentation</a></li>
-             
-                   <li><a class="navlink-short" title="SDK" href="../getting_started/downloads.html">SDK</a><a class="navlink-long" title="Downloads" href="../getting_started/downloads.html">Downloads</a></li>
-             
-                   <li><a class="navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="navlink-long" title="Community" href="../introducing_emscripten/community.html">Community</a></li>
-             
-                   <li style="text-align:right;"><a class="navlink-short" title="GitHub" href="../index.html">GitHub</a><a class="navlink-long" title="" href="../index.html"></a></li>
-                	
-          </ul>
-        <!-- <div style="clear:both;"></div> -->        
-          <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Using SIMD with WebAssembly</div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#gcc-clang-simd-vector-extensions">GCC/Clang SIMD Vector Extensions</a></li>
+<li><a class="reference internal" href="#webassembly-simd-intrinsics">WebAssembly SIMD Intrinsics</a></li>
+<li><a class="reference internal" href="#limitations-and-behavioral-differences">Limitations and behavioral differences</a></li>
+<li><a class="reference internal" href="#optimization-considerations">Optimization considerations</a></li>
+<li><a class="reference internal" href="#compiling-simd-code-targeting-x86-sse-instruction-sets">Compiling SIMD code targeting x86 SSE* instruction sets</a></li>
+<li><a class="reference internal" href="#compiling-simd-code-targeting-arm-neon-instruction-set">Compiling SIMD code targeting ARM NEON instruction set</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/porting/simd.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Porting</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Using SIMD with WebAssembly</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
   </div>
- 
-</div>
-   </div>
-   <!--end hamishw addition -->		
-          <!--HamishW move <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Using SIMD with WebAssembly</div>
-  </div>
- 
-</div> -->
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="using-simd-with-webassembly">
-<span id="porting-simd-code"></span><h1>Using SIMD with WebAssembly<a class="headerlink" href="#using-simd-with-webassembly" title="Link to this heading"></a></h1>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="using-simd-with-webassembly">
+<span id="porting-simd-code"></span><h1>Using SIMD with WebAssembly<a class="headerlink" href="#using-simd-with-webassembly" title="Link to this heading">¶</a></h1>
 <p>Emscripten supports the <a class="reference external" href="https://github.com/webassembly/simd/">WebAssembly SIMD</a> feature. There are five different ways to leverage WebAssembly SIMD in your C/C++ programs:</p>
 <ol class="arabic simple">
 <li><p>Enable LLVM/Clang SIMD autovectorizer to automatically target WebAssembly SIMD, without requiring changes to C/C++ source code.</p></li>
@@ -173,31 +297,31 @@
 <p>See <a class="reference external" href="https://webassembly.org/roadmap/">WebAssembly Roadmap</a> for details about other VMs.</p>
 <p>An upcoming <a class="reference external" href="https://github.com/WebAssembly/relaxed-simd/tree/main/proposals/relaxed-simd">Relaxed SIMD proposal</a> will add more SIMD instructions to WebAssembly.</p>
 <section id="gcc-clang-simd-vector-extensions">
-<h2>GCC/Clang SIMD Vector Extensions<a class="headerlink" href="#gcc-clang-simd-vector-extensions" title="Link to this heading"></a></h2>
+<h2>GCC/Clang SIMD Vector Extensions<a class="headerlink" href="#gcc-clang-simd-vector-extensions" title="Link to this heading">¶</a></h2>
 <p>At the source level, the GCC/Clang <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html">SIMD Vector Extensions</a> can be used and will be lowered to WebAssembly SIMD instructions where possible.</p>
 <p>This enables developers to create custom wide vector types via typedefs, and use arithmetic operators (+,-,*,/) on the vectorized types, as well as allow individual lane access via the vector[i] notation. However, the <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc/x86-Built-in-Functions.html">GCC vector built-in functions</a> are not available. Instead, use the WebAssembly SIMD Intrinsics functions below.</p>
 </section>
 <section id="webassembly-simd-intrinsics">
-<h2>WebAssembly SIMD Intrinsics<a class="headerlink" href="#webassembly-simd-intrinsics" title="Link to this heading"></a></h2>
+<h2>WebAssembly SIMD Intrinsics<a class="headerlink" href="#webassembly-simd-intrinsics" title="Link to this heading">¶</a></h2>
 <p>LLVM maintains a WebAssembly SIMD Intrinsics header file that is provided with Emscripten, and adds type definitions for the different supported vector types.</p>
 <blockquote>
-<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wasm_simd128.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-
-<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="cp">#ifdef __wasm_simd128__</span>
-<span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">1.2f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.4f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.6f</span><span class="p">,</span><span class="w"> </span><span class="mf">7.8f</span><span class="p">);</span>
-<span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">2.1f</span><span class="p">,</span><span class="w"> </span><span class="mf">4.3f</span><span class="p">,</span><span class="w"> </span><span class="mf">6.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">8.7f</span><span class="p">);</span>
-<span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_add</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">// Prints &quot;v3: [3.3, 7.7, 12.1, 16.5]&quot;</span>
-<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v3: [%.1f, %.1f, %.1f, %.1f]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
-<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
-<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
-<span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">));</span>
-<span class="cp">#endif</span>
-<span class="p">}</span>
-</pre></div>
+<div><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;wasm_simd128.h&gt;</span>
+</span><span data-line="2"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="5"><span class="cp">#ifdef __wasm_simd128__</span>
+</span><span data-line="6"><span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">1.2f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.4f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.6f</span><span class="p">,</span><span class="w"> </span><span class="mf">7.8f</span><span class="p">);</span>
+</span><span data-line="7"><span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_make</span><span class="p">(</span><span class="mf">2.1f</span><span class="p">,</span><span class="w"> </span><span class="mf">4.3f</span><span class="p">,</span><span class="w"> </span><span class="mf">6.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">8.7f</span><span class="p">);</span>
+</span><span data-line="8"><span class="w">  </span><span class="n">v128_t</span><span class="w"> </span><span class="n">v3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wasm_f32x4_add</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">v2</span><span class="p">);</span>
+</span><span data-line="9"><span class="w">  </span><span class="c1">// Prints &quot;v3: [3.3, 7.7, 12.1, 16.5]&quot;</span>
+</span><span data-line="10"><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v3: [%.1f, %.1f, %.1f, %.1f]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+</span><span data-line="12"><span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+</span><span data-line="13"><span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+</span><span data-line="14"><span class="w">         </span><span class="n">wasm_f32x4_extract_lane</span><span class="p">(</span><span class="n">v3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">));</span>
+</span><span data-line="15"><span class="cp">#endif</span>
+</span><span data-line="16"><span class="p">}</span>
+</span></pre></div>
 </div>
 </div></blockquote>
 <p>The Wasm SIMD header can be browsed online at <a class="reference external" href="https://github.com/llvm/llvm-project/blob/main/clang/lib/Headers/wasm_simd128.h">wasm_simd128.h</a>.</p>
@@ -205,7 +329,7 @@
 <p>Pass <code class="docutils literal notranslate"><span class="pre">-mrelaxed-simd</span></code> to target WebAssembly Relaxed SIMD Intrinsics. C/C++ code can use the built-in preprocessor define <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__wasm_relaxed_simd__</span></code> to detect when this target is active.</p>
 </section>
 <section id="limitations-and-behavioral-differences">
-<h2>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Link to this heading"></a></h2>
+<h2>Limitations and behavioral differences<a class="headerlink" href="#limitations-and-behavioral-differences" title="Link to this heading">¶</a></h2>
 <p>When porting native SIMD code, it should be noted that because of portability concerns, the WebAssembly SIMD specification does not expose access to all of the native x86/ARM SIMD instructions. In particular the following changes exist:</p>
 <blockquote>
 <div><ul class="simple">
@@ -218,10 +342,11 @@
 <p>SIMD-related bug reports are tracked in the <a class="reference external" href="https://github.com/emscripten-core/emscripten/issues?q=is%3Aopen+is%3Aissue+label%3ASIMD">Emscripten bug tracker with the label SIMD</a>.</p>
 </section>
 <section id="optimization-considerations">
-<h2>Optimization considerations<a class="headerlink" href="#optimization-considerations" title="Link to this heading"></a></h2>
+<h2>Optimization considerations<a class="headerlink" href="#optimization-considerations" title="Link to this heading">¶</a></h2>
 <p>When developing SIMD code to use WebAssembly SIMD, implementors should be aware of semantic differences between the host hardware and WebAssembly semantics; as acknowledged in the WebAssembly design documentation, “<a class="reference external" href="https://github.com/WebAssembly/design/blob/master/Portability.md#assumptions-for-efficient-execution">this sometimes will lead to poor performance</a>.” The following list outlines some WebAssembly SIMD instructions to look out for when performance tuning:</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id5">
 <table class="wrap-table-content docutils align-default" id="id5">
-<caption><span class="caption-text">WebAssembly SIMD instructions with performance implications</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<caption><span class="caption-text">WebAssembly SIMD instructions with performance implications</span><a class="headerlink" href="#id5" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 20.0%" />
 <col style="width: 20.0%" />
@@ -272,9 +397,10 @@
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 <section id="compiling-simd-code-targeting-x86-sse-instruction-sets">
-<h2>Compiling SIMD code targeting x86 SSE* instruction sets<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-sets" title="Link to this heading"></a></h2>
+<h2>Compiling SIMD code targeting x86 SSE* instruction sets<a class="headerlink" href="#compiling-simd-code-targeting-x86-sse-instruction-sets" title="Link to this heading">¶</a></h2>
 <p>Emscripten supports compiling existing codebases that use x86 SSE instructions by passing the <code class="docutils literal notranslate"><span class="pre">-msimd128</span></code> flag, and additionally one of the following:</p>
 <ul class="simple">
 <li><p><strong>SSE</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;xmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE__</span></code> to gate code.</p></li>
@@ -304,8 +430,9 @@
 </dl>
 <p>Certain intrinsics in the table below are marked “virtual”. This means that there does not actually exist a native x86 SSE instruction set opcode to implement them, but native compilers offer the function as a convenience. Different compilers might generate a different instruction sequence for these.</p>
 <p>In addition to consulting the tables below, you can turn on diagnostics for slow, emulated functions by defining the macro <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">WASM_SIMD_COMPAT_SLOW</span></code>. This will print out warnings if you attempt to use any of the slow paths (corresponding to ❌ or 💣 in the legend).</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id6">
 <table class="wrap-table-content docutils align-default" id="id6">
-<caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt; and -msse</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 SSE intrinsics available via #include &lt;xmmintrin.h&gt; and -msse</span><a class="headerlink" href="#id6" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -648,6 +775,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="simple">
 <dt>⚫ The following extensions that SSE1 instruction set brought to 64-bit wide MMX registers are not available:</dt><dd><ul class="simple">
 <li><p>_mm_avg_pu8, _mm_avg_pu16, _mm_cvt_pi2ps, _mm_cvt_ps2pi, _mm_cvt_pi16_ps, _mm_cvt_pi32_ps, _mm_cvt_pi32x2_ps, _mm_cvt_pi8_ps, _mm_cvt_ps_pi16, _mm_cvt_ps_pi32, _mm_cvt_ps_pi8, _mm_cvt_pu16_ps, _mm_cvt_pu8_ps, _mm_cvtt_ps2pi, _mm_cvtt_pi16_ps, _mm_cvttps_pi32, _mm_extract_pi16, _mm_insert_pi16, _mm_maskmove_si64, _m_maskmovq, _mm_max_pi16, _mm_max_pu8, _mm_min_pi16, _mm_min_pu8, _mm_movemask_pi8, _mm_mulhi_pu16, _m_pavgb, _m_pavgw, _m_pextrw, _m_pinsrw, _m_pmaxsw, _m_pmaxub, _m_pminsw, _m_pminub, _m_pmovmskb, _m_pmulhuw, _m_psadbw, _m_pshufw, _mm_sad_pu8, _mm_shuffle_pi16 and _mm_stream_pi.</p></li>
@@ -656,8 +784,9 @@
 </dl>
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different SSE2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE2">Intel Intrinsics Guide on SSE2</a>.</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id7">
 <table class="wrap-table-content docutils align-default" id="id7">
-<caption><span class="caption-text">x86 SSE2 intrinsics available via #include &lt;emmintrin.h&gt; and -msse2</span><a class="headerlink" href="#id7" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 SSE2 intrinsics available via #include &lt;emmintrin.h&gt; and -msse2</span><a class="headerlink" href="#id7" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1327,6 +1456,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="simple">
 <dt>⚫ The following extensions that SSE2 instruction set brought to 64-bit wide MMX registers are not available:</dt><dd><ul class="simple">
 <li><p>_mm_add_si64, _mm_movepi64_pi64, _mm_movpi64_epi64, _mm_mul_su32, _mm_sub_si64, _mm_cvtpd_pi32, _mm_cvtpi32_pd, _mm_cvttpd_pi32</p></li>
@@ -1335,8 +1465,9 @@
 </dl>
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different SSE3 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE3">Intel Intrinsics Guide on SSE3</a>.</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id8">
 <table class="wrap-table-content docutils align-default" id="id8">
-<caption><span class="caption-text">x86 SSE3 intrinsics available via #include &lt;pmmintrin.h&gt; and -msse3</span><a class="headerlink" href="#id8" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 SSE3 intrinsics available via #include &lt;pmmintrin.h&gt; and -msse3</span><a class="headerlink" href="#id8" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1394,9 +1525,11 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>The following table highlights the availability and expected performance of different SSSE3 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSSE3">Intel Intrinsics Guide on SSSE3</a>.</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id9">
 <table class="wrap-table-content docutils align-default" id="id9">
-<caption><span class="caption-text">x86 SSSE3 intrinsics available via #include &lt;tmmintrin.h&gt; and -mssse3</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 SSSE3 intrinsics available via #include &lt;tmmintrin.h&gt; and -mssse3</span><a class="headerlink" href="#id9" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1457,6 +1590,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="simple">
 <dt>⚫ The SSSE3 functions that deal with 64-bit wide MMX registers are not available:</dt><dd><ul class="simple">
 <li><p>_mm_abs_pi8, _mm_abs_pi16, _mm_abs_pi32, _mm_alignr_pi8, _mm_hadd_pi16, _mm_hadd_pi32, _mm_hadds_pi16, _mm_hsub_pi16, _mm_hsub_pi32, _mm_hsubs_pi16, _mm_maddubs_pi16, _mm_mulhrs_pi16, _mm_shuffle_pi8, _mm_sign_pi8, _mm_sign_pi16 and _mm_sign_pi32</p></li>
@@ -1465,8 +1599,9 @@
 </dl>
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different SSE4.1 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_1">Intel Intrinsics Guide on SSE4.1</a>.</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id10">
 <table class="wrap-table-content docutils align-default" id="id10">
-<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt; and -msse4.1</span><a class="headerlink" href="#id10" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 SSE4.1 intrinsics available via #include &lt;smmintrin.h&gt; and -msse4.1</span><a class="headerlink" href="#id10" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1662,9 +1797,11 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>The following table highlights the availability and expected performance of different SSE4.2 intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE4_2">Intel Intrinsics Guide on SSE4.2</a>.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id11">
 <table class="docutils align-default" id="id11">
-<caption><span class="caption-text">x86 SSE4.2 intrinsics available via #include &lt;nmmintrin.h&gt; and -msse4.2</span><a class="headerlink" href="#id11" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 SSE4.2 intrinsics available via #include &lt;nmmintrin.h&gt; and -msse4.2</span><a class="headerlink" href="#id11" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1680,6 +1817,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="simple">
 <dt>⚫ The SSE4.2 functions that deal with string comparisons and CRC calculations are not available:</dt><dd><ul class="simple">
 <li><p>_mm_cmpestra, _mm_cmpestrc, _mm_cmpestri, _mm_cmpestrm, _mm_cmpestro, _mm_cmpestrs, _mm_cmpestrz, _mm_cmpistra, _mm_cmpistrc, _mm_cmpistri, _mm_cmpistrm, _mm_cmpistro, _mm_cmpistrs, _mm_cmpistrz, _mm_crc32_u16, _mm_crc32_u32, _mm_crc32_u64, _mm_crc32_u8</p></li>
@@ -1688,8 +1826,9 @@
 </dl>
 <p>Any code referencing these intrinsics will not compile.</p>
 <p>The following table highlights the availability and expected performance of different AVX intrinsics. Refer to <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=AVX">Intel Intrinsics Guide on AVX</a>.</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id12">
 <table class="wrap-table-content docutils align-default" id="id12">
-<caption><span class="caption-text">x86 AVX intrinsics available via #include &lt;immintrin.h&gt; and -mavx</span><a class="headerlink" href="#id12" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 AVX intrinsics available via #include &lt;immintrin.h&gt; and -mavx</span><a class="headerlink" href="#id12" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1759,10 +1898,12 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>Only the 128-bit wide instructions from AVX instruction set are listed. The 256-bit wide AVX instructions are emulated by two 128-bit wide instructions.</p>
 <p>The following table highlights the availability and expected performance of different AVX2 intrinsics. Refer to <a class="reference external" href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#avxnewtechs=AVX2">Intel Intrinsics Guide on AVX2</a>.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id13">
 <table class="docutils align-default" id="id13">
-<caption><span class="caption-text">x86 AVX2 intrinsics available via #include &lt;immintrin.h&gt; and -mavx2</span><a class="headerlink" href="#id13" title="Link to this table"></a></caption>
+<caption><span class="caption-text">x86 AVX2 intrinsics available via #include &lt;immintrin.h&gt; and -mavx2</span><a class="headerlink" href="#id13" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -1883,12 +2024,13 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>All the 128-bit wide instructions from AVX2 instruction set are listed.
 Only a small part of the 256-bit AVX2 instruction set are listed, most of the
 256-bit wide AVX2 instructions are emulated by two 128-bit wide instructions.</p>
 </section>
 <section id="compiling-simd-code-targeting-arm-neon-instruction-set">
-<h2>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Link to this heading"></a></h2>
+<h2>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Link to this heading">¶</a></h2>
 <p>Emscripten supports compiling existing codebases that use ARM NEON by
 passing the <cite>-mfpu=neon</cite> directive to the compiler, and including the
 header <cite>&lt;arm_neon.h&gt;</cite>.</p>
@@ -1913,8 +2055,9 @@ wide intrinsics.</p>
 <p>For detailed information on each intrinsic function, refer to <a class="reference external" href="https://developer.arm.com/architectures/instruction-sets/simd-isas/neon/intrinsics">NEON Intrinsics Reference</a>.</p>
 <p>For the latest NEON intrinsics implementation status, refer to the <a class="reference external" href="https://github.com/simd-everywhere/implementation-status/blob/main/neon.md">SIMDe implementation
 status</a>.</p>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id14">
 <table class="wrap-table-content docutils align-default" id="id14">
-<caption><span class="caption-text">NEON Intrinsics</span><a class="headerlink" href="#id14" title="Link to this table"></a></caption>
+<caption><span class="caption-text">NEON Intrinsics</span><a class="headerlink" href="#id14" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
@@ -2446,116 +2589,61 @@ status</a>.</p>
 </tr>
 </tbody>
 </table>
-</section>
-</section>
-
-
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="exceptions.html" class="btn btn-neutral float-right" title="C++ Exceptions Support"/>Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="networking.html" class="btn btn-neutral" title="Networking"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-     
-  <!--begin hamishw addition -->
-  
-    
-  
-  <!--  -->
-   
-   <!--Footer important links
-    If no such page exists then nav item is not created. CSS defines which of the long or short version is 
-	displayed.   -->
-
-	
-   <div class="footer-nav-bar" style="">
-     <div class="footer-options">
-   
-        
-              <a class="footer-navlink-short" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a><a class="footer-navlink-long" title="Report Bug" href="../getting_started/bug_reports.html">Report Bug</a>
-        
-              <a class="footer-navlink-short" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a><a class="footer-navlink-long" title="Licensing" href="../introducing_emscripten/emscripten_license.html">Licensing</a>
-        
-              <a class="footer-navlink-short" title="Contributing" href="../contributing/contributing.html">Contributing</a><a class="footer-navlink-long" title="Contributing" href="../contributing/contributing.html">Contributing</a>
-         
-		      <a class="footer-navlink-short external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a><a class="footer-navlink-long external" href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing list</a>
-         
-		      <a class="footer-navlink-short external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a><a class="footer-navlink-long external" href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a>
-        
-              <a class="footer-navlink-short" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a><a class="footer-navlink-long" title="Release notes" href="../introducing_emscripten/release_notes.html">Release notes</a>
-        
-              <a class="footer-navlink-short" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a><a class="footer-navlink-long" title="Blogs" href="../introducing_emscripten/community.html">Blogs</a>
-        
-              <a class="footer-navlink-short" title="Help" href="../introducing_emscripten/community.html">Help</a><a class="footer-navlink-long" title="Contact" href="../introducing_emscripten/community.html">Contact</a>
-         
-				
-     </div>
-	 
-	
- 
-   </div>
-  
-    <!-- <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <div class="breadcrumb-box">
-     <a class="breadcrumb-box-item" href="../../index.html">Home</a> 
-      
-          <a class="breadcrumb-box-item" href="index.html">&raquo;&nbsp;Porting</a>
-      
-    <div class="breadcrumb-box-item">&raquo;&nbsp;Using SIMD with WebAssembly</div>
-  </div>
- 
-</div> -->
-  
-    <!-- <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a> --.
-   <!--end hamishw addition -->
-  
-  
-	  
-<!-- end section moved here by hamishw -->
-  <div role="contentinfo" class="copyright-box">
-    <!-- section moved here by hamishw - needs tidying, which is why it is still in breadcrumbs mode --> 
-  <ul class="wy-breadcrumbs">
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-
-	  <li class="wy-breadcrumbs-aside">
-         <a href="../site/about.html">About site</a>
-      </li>
-	  
-	  <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/emscripten-core/emscripten/issues/new?title=Bug%20in%20page:Using%20SIMD%20with%20WebAssembly%20&body=REPLACE%20THIS%20TEXT%20WITH%20BUG%20DESCRIPTION%20%0A%0AURL:%20../../docs/porting/simd&labels=bug">Page bug</a>
-      </li>
-  </ul>
-  
-    <p>
-        <!-- &copy; Copyright 2015, . -->
-		&copy; Copyright 2015,  <a href="../contributing/AUTHORS.html">Emscripten Contributors</a>.
-		<!-- update theme to remove the translation stuff here - it was breaking due to link to AUTHORS file. This is a cludge to allow specific link to my authors file -->
-    </p>
-	
-  </div>
-  
-  
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
 </div>
-</body>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="networking.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Networking</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="exceptions.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">C++ Exceptions Support</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script></body>
 </html>
