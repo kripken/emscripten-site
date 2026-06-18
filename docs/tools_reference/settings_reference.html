@@ -114,6 +114,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/GitLab.html">Building and Deploying on GitLab</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compiling/Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compiling/CrossOriginStorage.html">Cross-Origin Storage (COS)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
@@ -437,6 +438,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#js-base64-api">JS_BASE64_API</a></li>
 <li><a class="reference internal" href="#growable-arraybuffers">GROWABLE_ARRAYBUFFERS</a></li>
 <li><a class="reference internal" href="#cross-origin">CROSS_ORIGIN</a></li>
+<li><a class="reference internal" href="#cross-origin-storage">CROSS_ORIGIN_STORAGE</a></li>
+<li><a class="reference internal" href="#cross-origin-storage-origins">CROSS_ORIGIN_STORAGE_ORIGINS</a></li>
 <li><a class="reference internal" href="#fake-dylibs">FAKE_DYLIBS</a></li>
 <li><a class="reference internal" href="#executable">EXECUTABLE</a></li>
 </ul>
@@ -3019,8 +3022,41 @@ CROSS_ORIGIN uses an inline worker to instead load the worker script
 indirectly using <cite>importScripts</cite></p>
 <p>Default value: false</p>
 </section>
+<section id="cross-origin-storage">
+<span id="id225"></span><h2>CROSS_ORIGIN_STORAGE<a class="headerlink" href="#cross-origin-storage" title="Link to this heading">¶</a></h2>
+<p>Enables Cross-Origin Storage (COS) API support for Wasm loading on the
+Web target. At link time Emscripten computes the SHA-256 hash of the
+final <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> binary and embeds it in the generated JS. At runtime the
+COS API is used as a progressive enhancement: the binary is fetched from
+the shared cross-origin cache on a hit, or stored there after a network
+fetch on a miss; when the API is absent or errors the runtime falls
+through to the standard fetch path.</p>
+<p>Requires the Web environment; using it without <code class="docutils literal notranslate"><span class="pre">-sENVIRONMENT=web</span></code> is a
+hard link-time error. Incompatible with SINGLE_FILE and
+WASM_ASYNC_COMPILATION=0 (both produce hard link-time errors).</p>
+<p>See <a class="reference internal" href="../compiling/CrossOriginStorage.html#crossoriginstorage"><span class="std std-ref">Cross-Origin Storage (COS)</span></a> for the full guide.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an experimental setting</p>
+</div>
+<p>Default value: false</p>
+</section>
+<section id="cross-origin-storage-origins">
+<span id="id226"></span><h2>CROSS_ORIGIN_STORAGE_ORIGINS<a class="headerlink" href="#cross-origin-storage-origins" title="Link to this heading">¶</a></h2>
+<p>Controls which origins may read the Wasm binary from the COS cache. Only
+meaningful when <code class="docutils literal notranslate"><span class="pre">-sCROSS_ORIGIN_STORAGE</span></code> is set. Applied only during the
+write (cache-miss) path, not the read (cache-hit) path.</p>
+<p><code class="docutils literal notranslate"><span class="pre">['*']</span></code> (default) — any origin can retrieve the file.
+Explicit HTTPS origin list — restricted to those origins only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">-</span><span class="n">sCROSS_ORIGIN_STORAGE_ORIGINS</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">app</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="p">,</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">api</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">[]</span></code> — same-site only (omits the <code class="docutils literal notranslate"><span class="pre">origins</span></code> field entirely).</p>
+<p>Mixing <code class="docutils literal notranslate"><span class="pre">'*'</span></code> with explicit origins is a link-time error.</p>
+<p>Default value: [‘*’]</p>
+</section>
 <section id="fake-dylibs">
-<span id="id225"></span><h2>FAKE_DYLIBS<a class="headerlink" href="#fake-dylibs" title="Link to this heading">¶</a></h2>
+<span id="id227"></span><h2>FAKE_DYLIBS<a class="headerlink" href="#fake-dylibs" title="Link to this heading">¶</a></h2>
 <p>This setting changes the behaviour of the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag.  When set to true
 you get the old emscripten behaviour where the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag actually
 produces a normal object file (i.e. <code class="docutils literal notranslate"><span class="pre">ld</span> <span class="pre">-r</span></code>).  When set to true (the
@@ -3029,7 +3065,7 @@ produce a Wasn dynamic library.</p>
 <p>Default value: false</p>
 </section>
 <section id="executable">
-<span id="id226"></span><h2>EXECUTABLE<a class="headerlink" href="#executable" title="Link to this heading">¶</a></h2>
+<span id="id228"></span><h2>EXECUTABLE<a class="headerlink" href="#executable" title="Link to this heading">¶</a></h2>
 <p>Add a #! line to generated JS file and make it executable.  This is useful
 for building command line tools that run under node.
 This setting can also be set to a string value, in which case that string
@@ -3038,7 +3074,7 @@ will be used as the #! command to embed in the generated file.</p>
 </section>
 </section>
 <section id="deprecated-settings">
-<span id="id227"></span><h1>Deprecated Settings<a class="headerlink" href="#deprecated-settings" title="Link to this heading">¶</a></h1>
+<span id="id229"></span><h1>Deprecated Settings<a class="headerlink" href="#deprecated-settings" title="Link to this heading">¶</a></h1>
 <p>The following settings have been proposed for removal from emscripten.  These settings
 still function but may be removed in a future version.  If your project is using one of
 these settings please open a bug (or reply to one of the existing bugs).</p>
@@ -3057,7 +3093,7 @@ these settings please open a bug (or reply to one of the existing bugs).</p>
 </div></blockquote>
 </section>
 <section id="legacy-settings">
-<span id="id228"></span><h1>Legacy Settings<a class="headerlink" href="#legacy-settings" title="Link to this heading">¶</a></h1>
+<span id="id230"></span><h1>Legacy Settings<a class="headerlink" href="#legacy-settings" title="Link to this heading">¶</a></h1>
 <p>The following settings no longer have any effect but are still accepted by emscripten
 for backwards compatibility with older versions:</p>
 <blockquote>
