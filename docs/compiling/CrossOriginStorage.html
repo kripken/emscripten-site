@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Cross-Origin Storage (COS) - Emscripten 6.0.1-git (dev) documentation</title><link rel="shortcut icon" href="../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Porting" href="../porting/index.html" /><link rel="prev" title="Emscripten Contrib Ports" href="Contrib-Ports.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Cross-Origin Storage (COS)"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      <img class="light-logo" src="../../_static/emscripten_logo_full.svg" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/emscripten_logo_full.svg" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../getting_started/downloads.html">Downloads</a></li><li><a href="../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../contributing/contributing.html">Contributing</a></li><li><a href="../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Cross-Origin Storage (COS)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Audio.html">Audio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/pthreads.html">Pthreads support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/networking.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asynchronous Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#when-to-use-this-flag">When to use this flag</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#controlling-which-origins-can-read-the-cached-file">Controlling which origins can read the cached file</a></li>
+<li><a class="reference internal" href="#requirements-and-restrictions">Requirements and restrictions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-it-works">How it works</a><ul>
+<li><a class="reference internal" href="#build-time">Build time</a></li>
+<li><a class="reference internal" href="#runtime-web-only">Runtime (web only)</a></li>
+<li><a class="reference internal" href="#instrumentation-callbacks">Instrumentation callbacks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-with-the-extension-polyfill">Testing with the extension polyfill</a><ul>
+<li><a class="reference internal" href="#manual-testing">Manual testing</a></li>
+<li><a class="reference internal" href="#automated-browser-testing">Automated browser testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#verifying-the-embedded-hash">Verifying the embedded hash</a></li>
+<li><a class="reference internal" href="#custom-module-instantiatewasm-implementations">Custom <code class="docutils literal notranslate"><span class="pre">Module['instantiateWasm']</span></code> implementations</a></li>
+<li><a class="reference internal" href="#relationship-to-other-caching-mechanisms">Relationship to other caching mechanisms</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/compiling/CrossOriginStorage.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Compiling and Running Projects</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Cross-Origin Storage (COS)</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="cross-origin-storage-cos">
+<span id="crossoriginstorage"></span><h1>Cross-Origin Storage (COS)<a class="headerlink" href="#cross-origin-storage-cos" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This feature is <strong>experimental</strong>. The underlying <a class="reference external" href="https://github.com/WICG/cross-origin-storage">Cross-Origin Storage
+browser API</a> is a WICG
+proposal that has not yet shipped in any browser. Emscripten’s support is
+provided as a progressive enhancement — the runtime falls back to the
+standard <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> path automatically when the browser does not expose
+the API.</p>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The <strong>Cross-Origin Storage (COS)</strong> API is a proposed browser standard that
+allows web applications on different origins to share large cached files,
+identified by their cryptographic hashes. A file stored in COS by one site
+can be retrieved by any other site using the same hash, eliminating redundant
+downloads.</p>
+<p>Emscripten’s <a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage"><span class="std std-ref">CROSS_ORIGIN_STORAGE</span></a> flag integrates this into the
+standard Wasm loading path. At build time, Emscripten computes the SHA-256
+hash of the final <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> binary. At runtime, the generated JavaScript
+tries to retrieve the compiled Wasm module from COS before falling back to
+a normal network fetch. If the module is not yet in COS it is stored there
+after download, making it available to other origins immediately.</p>
+<section id="when-to-use-this-flag">
+<h3>When to use this flag<a class="headerlink" href="#when-to-use-this-flag" title="Link to this heading">¶</a></h3>
+<p>COS only delivers a benefit when the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> binary is <strong>byte-identical
+across many different origins</strong> — that is, a popular library whose compiled
+binary is loaded by many independent sites. If every visitor to every site
+downloads the exact same bytes, COS means they only download it once, ever.</p>
+<p>Good candidates are libraries or toolkits that are:</p>
+<ul class="simple">
+<li><p>popular enough that many independent sites load the same binary,</p></li>
+<li><p>distributed as a stable, version-pinned <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file, and</p></li>
+<li><p>a <strong>single primary</strong> <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file (COS only covers the binary that
+Emscripten compiles; any additional Wasm files loaded at runtime are not
+covered).</p></li>
+</ul>
+<p><strong>Do not</strong> enable this flag for application-specific Wasm code built for
+your own site. That binary is unique to you; no other origin will ever have
+the same hash, so it will never get a COS cache hit. The normal HTTP cache
+already handles per-origin caching efficiently.</p>
+<p>The exception is a Wasm binary that you deploy across <strong>multiple origins you
+own</strong> — for example, the same library shared between <code class="docutils literal notranslate"><span class="pre">https://app.example.com</span></code>
+and <code class="docutils literal notranslate"><span class="pre">https://api.example.com</span></code>. In that case COS can eliminate the redundant
+download between your own origins. Use <a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage-origins"><span class="std std-ref">CROSS_ORIGIN_STORAGE_ORIGINS</span></a> to
+restrict access to only those origins rather than opening the cache entry to
+the world.</p>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>Pass <a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage"><span class="std std-ref">CROSS_ORIGIN_STORAGE</span></a> at link time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">emcc</span> <span class="n">hello</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello</span><span class="o">.</span><span class="n">js</span> <span class="o">-</span><span class="n">sCROSS_ORIGIN_STORAGE</span>
+</span></pre></div>
+</div>
+<section id="controlling-which-origins-can-read-the-cached-file">
+<h3>Controlling which origins can read the cached file<a class="headerlink" href="#controlling-which-origins-can-read-the-cached-file" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage-origins"><span class="std std-ref">CROSS_ORIGIN_STORAGE_ORIGINS</span></a> setting controls the <code class="docutils literal notranslate"><span class="pre">origins</span></code> field
+passed to <code class="docutils literal notranslate"><span class="pre">requestFileHandles()</span></code> on the write (cache-miss) path.  It has no
+effect on the read (cache-hit) path.  Three modes are available:</p>
+<p><strong>Globally available</strong> (default, no explicit setting needed) — any origin
+can retrieve the file.  This is applied automatically when
+<a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage"><span class="std std-ref">CROSS_ORIGIN_STORAGE</span></a> is used without specifying
+<a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage-origins"><span class="std std-ref">CROSS_ORIGIN_STORAGE_ORIGINS</span></a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">emcc<span class="w"> </span>hello.cpp<span class="w"> </span>-o<span class="w"> </span>hello.js<span class="w"> </span>-sCROSS_ORIGIN_STORAGE
+</span></pre></div>
+</div>
+<p>Use this for popular binaries loaded by many independent origins.  This is
+the recommended mode for resources where global COS cache hits are expected.</p>
+<p><strong>Restricted to a specific set of origins</strong> — only the listed origins can
+retrieve the file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">emcc<span class="w"> </span>hello.cpp<span class="w"> </span>-o<span class="w"> </span>hello.js<span class="w"> </span><span class="se">\</span>
+</span><span data-line="2"><span class="w">    </span>-sCROSS_ORIGIN_STORAGE<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">    </span>-sCROSS_ORIGIN_STORAGE_ORIGINS<span class="o">=</span>https://app.example.com,https://api.example.com
+</span></pre></div>
+</div>
+<p>Use this for proprietary resources shared across a controlled set of related
+sites.  Each entry must be a valid serialized HTTPS origin (scheme + host +
+optional port, no path).  Mixing <code class="docutils literal notranslate"><span class="pre">'*'</span></code> with explicit origins is a
+<strong>link-time error</strong>.</p>
+<p><strong>Same-site only</strong> — pass an explicit empty list to omit the <code class="docutils literal notranslate"><span class="pre">origins</span></code>
+field, making the file available only to same-site origins:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">emcc<span class="w"> </span>hello.cpp<span class="w"> </span>-o<span class="w"> </span>hello.js<span class="w"> </span><span class="se">\</span>
+</span><span data-line="2"><span class="w">    </span>-sCROSS_ORIGIN_STORAGE<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">    </span>-sCROSS_ORIGIN_STORAGE_ORIGINS<span class="o">=[]</span>
+</span></pre></div>
+</div>
+<p>Use this for resources that should be shared across subdomains of a single
+site but not beyond.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The COS spec defines a <strong>visibility upgrade</strong> rule: a resource’s
+availability can be widened but never narrowed.  If a resource is already
+stored as globally available (<code class="docutils literal notranslate"><span class="pre">'*'</span></code>), any subsequent attempt to store it
+with a more restrictive <code class="docutils literal notranslate"><span class="pre">origins</span></code> list is ignored by the browser.</p>
+<p>This rule also has a security implication: because storing always requires
+writing the actual bytes of the resource, no third party can probe the
+cache to determine whether a restricted-origin entry was previously stored
+by another origin.  A cache hit is only possible after an explicit write
+that provided the content, so COS cannot be used as a timing oracle to
+detect the presence of a resource that the probing origin cannot access.</p>
+</div>
+</section>
+<section id="requirements-and-restrictions">
+<h3>Requirements and restrictions<a class="headerlink" href="#requirements-and-restrictions" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The flag emits a <strong>warning</strong> when the target environment does not include
+the web (<code class="docutils literal notranslate"><span class="pre">-sENVIRONMENT=node</span></code>, <code class="docutils literal notranslate"><span class="pre">-sENVIRONMENT=shell</span></code>):
+<code class="docutils literal notranslate"><span class="pre">navigator.crossOriginStorage</span></code> is a browser API and is never available
+in those environments.</p></li>
+<li><p>It produces a <strong>hard link-time error</strong> in <strong>SINGLE_FILE</strong> mode
+(<code class="docutils literal notranslate"><span class="pre">-sSINGLE_FILE</span></code>): the Wasm binary is embedded directly into the JS
+output and has no standalone <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file or fetchable URL to key the
+hash on.</p></li>
+<li><p>It produces a <strong>hard link-time error</strong> with <code class="docutils literal notranslate"><span class="pre">-sWASM_ASYNC_COMPILATION=0</span></code>:
+the synchronous instantiation path bypasses <code class="docutils literal notranslate"><span class="pre">instantiateAsync()</span></code> entirely,
+so the COS code can never be reached.</p></li>
+<li><p>It covers <strong>only the primary ``.wasm`` file</strong>. Secondary files produced by
+<code class="docutils literal notranslate"><span class="pre">-sSPLIT_MODULE</span></code> (<code class="docutils literal notranslate"><span class="pre">.deferred.wasm</span></code>) and side modules loaded at runtime
+via <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in <code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE</span></code> builds are fetched through the normal
+network path and are not stored in or retrieved from COS. A warning is
+emitted for both of these combinations.</p></li>
+<li><p>The COS API is a progressive enhancement. Browsers without the API
+continue to load the Wasm module via the normal <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">WebAssembly.instantiateStreaming()</span></code> path without any error.</p></li>
+</ul>
+</section>
+</section>
+<section id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
+<section id="build-time">
+<h3>Build time<a class="headerlink" href="#build-time" title="Link to this heading">¶</a></h3>
+<p>After all optimizations — including any <code class="docutils literal notranslate"><span class="pre">wasm-opt</span></code> passes run by Binaryen
+— Emscripten reads the final <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> binary and hashes it. The hash
+object is embedded in the generated JavaScript glue as a build-time
+constant (currently SHA-256):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">Module</span><span class="p">[</span><span class="s1">&#39;wasmHash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="n">algorithm</span><span class="p">:</span> <span class="s1">&#39;SHA-256&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">&#39;a3f2...c9d1&#39;</span> <span class="p">};</span>
+</span></pre></div>
+</div>
+<p>No extra files are produced; the hash is part of the regular <code class="docutils literal notranslate"><span class="pre">.js</span></code> output.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The hash is computed over the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> binary <strong>as emcc produces it</strong>,
+after emcc’s own internal Binaryen/<code class="docutils literal notranslate"><span class="pre">wasm-opt</span></code> pass.  If your build
+pipeline runs additional wasm post-processing tools <em>after</em> emcc exits —
+for example, an external <code class="docutils literal notranslate"><span class="pre">wasm-strip</span></code> or <code class="docutils literal notranslate"><span class="pre">wasm-opt</span></code> invocation in a
+Makefile or CI script — those tools change the binary and <strong>invalidate the
+embedded hash</strong>.</p>
+<p>In that case you must recompute the hash of the final <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> and
+patch the value string in the generated <code class="docutils literal notranslate"><span class="pre">.js</span></code> yourself before shipping.
+A minimal shell snippet for doing so (SHA-256):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># After all post-processing is complete:</span>
+</span><span data-line="2"><span class="nv">final_hash</span><span class="o">=</span><span class="k">$(</span>sha256sum<span class="w"> </span>hello.wasm<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+</span><span data-line="3">sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s/&#39;[0-9a-f]\{64\}&#39;/&#39;</span><span class="si">${</span><span class="nv">final_hash</span><span class="si">}</span><span class="s2">&#39;/g&quot;</span><span class="w"> </span>hello.js
+</span></pre></div>
+</div>
+<p>On macOS, use <code class="docutils literal notranslate"><span class="pre">shasum</span> <span class="pre">-a</span> <span class="pre">256</span></code> in place of <code class="docutils literal notranslate"><span class="pre">sha256sum</span></code>, and install
+GNU sed (<code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">gnu-sed</span></code>) or adapt the <code class="docutils literal notranslate"><span class="pre">sed</span></code> command for BSD
+sed syntax.</p>
+</div>
+</section>
+<section id="runtime-web-only">
+<h3>Runtime (web only)<a class="headerlink" href="#runtime-web-only" title="Link to this heading">¶</a></h3>
+<p>When the page loads, the generated JavaScript follows this logic:</p>
+<ol class="arabic simple">
+<li><p><strong>Feature detection</strong> — check <code class="docutils literal notranslate"><span class="pre">'crossOriginStorage'</span> <span class="pre">in</span> <span class="pre">navigator</span></code>.
+If the API is absent, skip to the normal fetch path immediately.</p></li>
+<li><p><strong>Cache hit</strong> — call
+<code class="docutils literal notranslate"><span class="pre">navigator.crossOriginStorage.requestFileHandles([cosHash])</span></code>.
+If the handle is returned (the module is already in COS), read it with
+<code class="docutils literal notranslate"><span class="pre">handle.getFile()</span></code> → <code class="docutils literal notranslate"><span class="pre">.arrayBuffer()</span></code> and pass the bytes to
+<code class="docutils literal notranslate"><span class="pre">WebAssembly.instantiate()</span></code>.
+Then invoke <code class="docutils literal notranslate"><span class="pre">Module['onCOSCacheHit'](hash)</span></code> if defined.</p></li>
+<li><p><strong>Cache miss</strong> — if a <code class="docutils literal notranslate"><span class="pre">NotFoundError</span></code> is thrown, fetch the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code>
+over the network as usual, invoke <code class="docutils literal notranslate"><span class="pre">Module['onCOSCacheMiss'](hash,</span> <span class="pre">url)</span></code> if
+defined, call <code class="docutils literal notranslate"><span class="pre">WebAssembly.instantiate()</span></code> immediately so the page loads
+without delay, and then write the bytes into COS in the background
+(fire-and-forget) using the <code class="docutils literal notranslate"><span class="pre">origins</span></code> value controlled by
+<a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage-origins"><span class="std std-ref">CROSS_ORIGIN_STORAGE_ORIGINS</span></a> (<code class="docutils literal notranslate"><span class="pre">'*'</span></code> by default).
+Once the write completes, invoke <code class="docutils literal notranslate"><span class="pre">Module['onCOSStore'](hash)</span></code> if defined.</p></li>
+<li><p><strong>Fallback</strong> — any unexpected error (<code class="docutils literal notranslate"><span class="pre">NotAllowedError</span></code> from the browser,
+network failure during the miss path, etc.) is logged with <code class="docutils literal notranslate"><span class="pre">err()</span></code> and
+the runtime falls through to the standard streaming-instantiation path
+below. The page always loads.</p></li>
+</ol>
+</section>
+<section id="instrumentation-callbacks">
+<h3>Instrumentation callbacks<a class="headerlink" href="#instrumentation-callbacks" title="Link to this heading">¶</a></h3>
+<p>Three optional <code class="docutils literal notranslate"><span class="pre">Module</span></code> properties let you observe COS events at runtime.
+They are <strong>opt-in</strong>: to include the callback code in the output, list them in
+<code class="docutils literal notranslate"><span class="pre">INCOMING_MODULE_JS_API</span></code> at link time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">emcc</span> <span class="n">hello</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello</span><span class="o">.</span><span class="n">js</span> <span class="o">-</span><span class="n">sCROSS_ORIGIN_STORAGE</span> \
+</span><span data-line="2">    <span class="o">-</span><span class="n">sINCOMING_MODULE_JS_API</span><span class="o">=</span><span class="n">onCOSCacheHit</span><span class="p">,</span><span class="n">onCOSCacheMiss</span><span class="p">,</span><span class="n">onCOSStore</span>
+</span></pre></div>
+</div>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kd">var</span><span class="w"> </span><span class="nx">Module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="c1">// Called when the Wasm binary was served from the cross-origin cache.</span>
+</span><span data-line="3"><span class="w">  </span><span class="nx">onCOSCacheHit</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">hash</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Cache hit, SHA-256:&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">hash</span><span class="p">);</span>
+</span><span data-line="5"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="w">  </span><span class="c1">// Called when the Wasm binary was not in COS and was fetched over the</span>
+</span><span data-line="8"><span class="w">  </span><span class="c1">// network.  |hash| is the hash that missed; |url| is the fallback URL.</span>
+</span><span data-line="9"><span class="w">  </span><span class="nx">onCOSCacheMiss</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">hash</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="10"><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Cache miss, SHA-256:&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">hash</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;fetched from:&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="p">);</span>
+</span><span data-line="11"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="w">  </span><span class="c1">// Called after the Wasm binary has been successfully written to COS.</span>
+</span><span data-line="14"><span class="w">  </span><span class="nx">onCOSStore</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">hash</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="15"><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Stored in COS, SHA-256:&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">hash</span><span class="p">);</span>
+</span><span data-line="16"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="17"><span class="p">};</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="testing-with-the-extension-polyfill">
+<h2>Testing with the extension polyfill<a class="headerlink" href="#testing-with-the-extension-polyfill" title="Link to this heading">¶</a></h2>
+<p>Because no browser ships the COS API natively yet, you can experiment using
+the <a class="reference external" href="https://chromewebstore.google.com/detail/cross-origin-storage/denpnpcgjgikjpoglpjefakmdcbmlgih">Cross-Origin Storage extension</a>,
+which injects a <code class="docutils literal notranslate"><span class="pre">navigator.crossOriginStorage</span></code> polyfill on every page.</p>
+<section id="manual-testing">
+<h3>Manual testing<a class="headerlink" href="#manual-testing" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Install the extension in Chrome.</p></li>
+<li><p>Build your project with <code class="docutils literal notranslate"><span class="pre">-sCROSS_ORIGIN_STORAGE</span> <span class="pre">-sENVIRONMENT=web</span></code>.</p></li>
+<li><p>Serve the output over HTTP (e.g. with <code class="docutils literal notranslate"><span class="pre">emrun</span></code> or <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">http.server</span></code>).</p></li>
+<li><p>Open the page — on the first load the Wasm binary is fetched and stored in
+COS. Open the same page in a second tab or from a different origin: the
+module is loaded from COS without a network request.</p></li>
+</ol>
+</section>
+<section id="automated-browser-testing">
+<h3>Automated browser testing<a class="headerlink" href="#automated-browser-testing" title="Link to this heading">¶</a></h3>
+<p>The Emscripten browser test suite includes COS tests that run against the
+polyfill extension.  The extension must be available as an <strong>unpacked</strong>
+directory (containing <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>).  A helper script downloads and
+unpacks it automatically:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">python3</span> <span class="n">test</span><span class="o">/</span><span class="n">setup_cos_extension</span><span class="o">.</span><span class="n">py</span>
+</span></pre></div>
+</div>
+<p>Then run the tests, passing the printed path as <code class="docutils literal notranslate"><span class="pre">EMTEST_COS_EXTENSION_PATH</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">EMTEST_COS_EXTENSION_PATH=$(python3 test/setup_cos_extension.py --quiet) \
+</span><span data-line="2">  python3 test/runner.py \
+</span><span data-line="3">      browser.test_cross_origin_storage_fallback \
+</span><span data-line="4">      browser.test_cross_origin_storage_miss_then_hit
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">test_cross_origin_storage_fallback</span></code> does not require the extension and
+verifies that a <code class="docutils literal notranslate"><span class="pre">-sCROSS_ORIGIN_STORAGE</span></code> build loads correctly on browsers
+where the COS API is absent.  <code class="docutils literal notranslate"><span class="pre">test_cross_origin_storage_miss_then_hit</span></code>
+requires the extension and exercises both the cache-miss store and cache-hit
+paths in sequence.</p>
+</section>
+</section>
+<section id="verifying-the-embedded-hash">
+<h2>Verifying the embedded hash<a class="headerlink" href="#verifying-the-embedded-hash" title="Link to this heading">¶</a></h2>
+<p>You can confirm that the hash embedded in the <code class="docutils literal notranslate"><span class="pre">.js</span></code> output matches the
+actual <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> file using standard tools:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># SHA-256 of the wasm file</span>
+</span><span data-line="2">sha256sum<span class="w"> </span>hello.wasm
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Extract the hash embedded in the JS</span>
+</span><span data-line="5">grep<span class="w"> </span>-oP<span class="w"> </span><span class="s2">&quot;value: &#39;\K[0-9a-f]{64}&quot;</span><span class="w"> </span>hello.js
+</span></pre></div>
+</div>
+<p>Both values must be identical. The Emscripten test suite checks this
+automatically via <code class="docutils literal notranslate"><span class="pre">test_cross_origin_storage_js_output</span></code> in
+<code class="docutils literal notranslate"><span class="pre">test/test_other.py</span></code>.</p>
+</section>
+<section id="custom-module-instantiatewasm-implementations">
+<h2>Custom <code class="docutils literal notranslate"><span class="pre">Module['instantiateWasm']</span></code> implementations<a class="headerlink" href="#custom-module-instantiatewasm-implementations" title="Link to this heading">¶</a></h2>
+<p>The COS fetch logic described above lives inside <code class="docutils literal notranslate"><span class="pre">instantiateAsync()</span></code>, which
+is the standard Emscripten wasm loading path.  When a program provides its own
+<code class="docutils literal notranslate"><span class="pre">Module['instantiateWasm']</span></code> callback, Emscripten calls that callback directly
+and <strong>skips</strong> <code class="docutils literal notranslate"><span class="pre">instantiateAsync()</span></code> entirely, so the built-in COS code is never
+reached.</p>
+<p>To support COS in a custom loader, Emscripten exposes the build-time SHA-256
+hash as a named Module property:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;wasmHash&#39;</span><span class="p">]</span><span class="w">  </span><span class="c1">// { algorithm: &#39;SHA-256&#39;, value: &#39;&lt;64 hex chars&gt;&#39; }</span>
+</span></pre></div>
+</div>
+<p>This property is set by the generated JavaScript before
+<code class="docutils literal notranslate"><span class="pre">Module['instantiateWasm']</span></code> is called, so it is always available inside the
+callback.  <code class="docutils literal notranslate"><span class="pre">Module</span></code> in this context is the config object passed to the module
+factory — whatever variable you use when calling <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Module(config)</span></code> or the
+equivalent factory function.  A custom loader can read <code class="docutils literal notranslate"><span class="pre">Module['wasmHash']</span></code>
+via a reference to that config object:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kd">var</span><span class="w"> </span><span class="nx">Module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nx">instantiateWasm</span><span class="p">(</span><span class="nx">imports</span><span class="p">,</span><span class="w"> </span><span class="nx">onSuccess</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="3"><span class="w">    </span><span class="c1">// `this` inside the callback is Emscripten&#39;s internal Module object;</span>
+</span><span data-line="4"><span class="w">    </span><span class="c1">// read the hash via the outer Module reference instead.</span>
+</span><span data-line="5"><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">cosHash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;wasmHash&#39;</span><span class="p">];</span>
+</span><span data-line="6"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">cosHash</span><span class="o">?</span><span class="p">.</span><span class="nx">value</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">globalThis</span><span class="p">.</span><span class="nx">navigator</span><span class="o">?</span><span class="p">.</span><span class="nx">crossOriginStorage</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="7"><span class="w">      </span><span class="nx">navigator</span><span class="p">.</span><span class="nx">crossOriginStorage</span><span class="p">.</span><span class="nx">requestFileHandles</span><span class="p">([</span><span class="nx">cosHash</span><span class="p">])</span>
+</span><span data-line="8"><span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">handles</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">handles</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">getFile</span><span class="p">())</span>
+</span><span data-line="9"><span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">arrayBuffer</span><span class="p">())</span>
+</span><span data-line="10"><span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">bytes</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">instantiate</span><span class="p">(</span><span class="nx">bytes</span><span class="p">,</span><span class="w"> </span><span class="nx">imports</span><span class="p">))</span>
+</span><span data-line="11"><span class="w">        </span><span class="p">.</span><span class="nx">then</span><span class="p">(({</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">onSuccess</span><span class="p">(</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">))</span>
+</span><span data-line="12"><span class="w">        </span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="13"><span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">&#39;NotFoundError&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="nx">err</span><span class="p">;</span>
+</span><span data-line="14"><span class="w">          </span><span class="c1">// cache miss — fetch normally and store in the background</span>
+</span><span data-line="15"><span class="w">          </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;hello.wasm&#39;</span><span class="p">)</span>
+</span><span data-line="16"><span class="w">            </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">arrayBuffer</span><span class="p">())</span>
+</span><span data-line="17"><span class="w">            </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">bytes</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="18"><span class="w">              </span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">instantiate</span><span class="p">(</span><span class="nx">bytes</span><span class="p">,</span><span class="w"> </span><span class="nx">imports</span><span class="p">)</span>
+</span><span data-line="19"><span class="w">                </span><span class="p">.</span><span class="nx">then</span><span class="p">(({</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">onSuccess</span><span class="p">(</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">));</span>
+</span><span data-line="20"><span class="w">              </span><span class="c1">// fire-and-forget store</span>
+</span><span data-line="21"><span class="w">              </span><span class="nx">navigator</span><span class="p">.</span><span class="nx">crossOriginStorage</span>
+</span><span data-line="22"><span class="w">                </span><span class="p">.</span><span class="nx">requestFileHandles</span><span class="p">([</span><span class="nx">cosHash</span><span class="p">],</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">create</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nx">origins</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w"> </span><span class="p">})</span>
+</span><span data-line="23"><span class="w">                </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">wh</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">wh</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">createWritable</span><span class="p">())</span>
+</span><span data-line="24"><span class="w">                </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">w</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Blob</span><span class="p">([</span><span class="nx">bytes</span><span class="p">],</span><span class="w"> </span><span class="p">{</span><span class="nx">type</span><span class="o">:</span><span class="s1">&#39;application/wasm&#39;</span><span class="p">}))</span>
+</span><span data-line="25"><span class="w">                            </span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">close</span><span class="p">()));</span>
+</span><span data-line="26"><span class="w">            </span><span class="p">});</span>
+</span><span data-line="27"><span class="w">        </span><span class="p">});</span>
+</span><span data-line="28"><span class="w">      </span><span class="k">return</span><span class="p">;</span><span class="w">  </span><span class="c1">// async; onSuccess called above</span>
+</span><span data-line="29"><span class="w">    </span><span class="p">}</span>
+</span><span data-line="30"><span class="w">    </span><span class="c1">// fallback — normal streaming instantiation</span>
+</span><span data-line="31"><span class="w">    </span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">instantiateStreaming</span><span class="p">(</span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;hello.wasm&#39;</span><span class="p">),</span><span class="w"> </span><span class="nx">imports</span><span class="p">)</span>
+</span><span data-line="32"><span class="w">      </span><span class="p">.</span><span class="nx">then</span><span class="p">(({</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">onSuccess</span><span class="p">(</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">));</span>
+</span><span data-line="33"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="34"><span class="p">};</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Module['wasmHash']</span></code> is only present in builds compiled with
+<a class="reference internal" href="../tools_reference/settings_reference.html#cross-origin-storage"><span class="std std-ref">CROSS_ORIGIN_STORAGE</span></a>.  Always guard on its truthiness before using it,
+as shown above, so the same loader code works in builds compiled without the
+flag.</p>
+</section>
+<section id="relationship-to-other-caching-mechanisms">
+<h2>Relationship to other caching mechanisms<a class="headerlink" href="#relationship-to-other-caching-mechanisms" title="Link to this heading">¶</a></h2>
+<p>COS is a complement to, not a replacement for, existing browser caches:</p>
+<ul class="simple">
+<li><p><strong>HTTP cache / Service Worker cache</strong> — still used for per-origin caching.
+COS adds cross-origin sharing on top.</p></li>
+<li><p><strong>``NODE_CODE_CACHING``</strong> — a Node.js-specific V8 bytecode cache; unrelated
+to COS.</p></li>
+<li><p><strong>IndexedDB / OPFS</strong> — per-origin storage; COS shares across origins.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/WICG/cross-origin-storage">WICG Cross-Origin Storage explainer</a></p></li>
+<li><p><a class="reference external" href="https://chromewebstore.google.com/detail/cross-origin-storage/denpnpcgjgikjpoglpjefakmdcbmlgih">COS browser extension (Chrome Web Store)</a></p></li>
+<li><p><a class="reference external" href="https://github.com/web-ai-community/cross-origin-storage-extension">COS browser extension (source code)</a></p></li>
+<li><p><a class="reference internal" href="../tools_reference/settings_reference.html#settings-reference"><span class="std std-ref">Emscripten Compiler Settings</span></a> — <code class="docutils literal notranslate"><span class="pre">CROSS_ORIGIN_STORAGE</span></code> entry</p></li>
+<li><p><a class="reference internal" href="WebAssembly.html#webassembly"><span class="std std-ref">Building to WebAssembly</span></a> — general guide to building Wasm with Emscripten</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="Contrib-Ports.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Emscripten Contrib Ports</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../porting/index.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Porting</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=15bf575e"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script></body>
+</html>
