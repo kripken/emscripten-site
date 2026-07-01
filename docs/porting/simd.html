@@ -283,7 +283,7 @@ data-aria-dark="Switch to auto color mode">
 <li><p>Enable LLVM/Clang SIMD autovectorizer to automatically target WebAssembly SIMD, without requiring changes to C/C++ source code.</p></li>
 <li><p>Write SIMD code using the GCC/Clang SIMD Vector Extensions (<code class="docutils literal notranslate"><span class="pre">__attribute__((vector_size(16)))</span></code>)</p></li>
 <li><p>Write SIMD code using the WebAssembly SIMD intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;wasm_simd128.h&gt;</span></code>)</p></li>
-<li><p>Compile existing SIMD code that uses the x86 SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, AVX or AVX2 intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;*mmintrin.h&gt;</span></code>)</p></li>
+<li><p>Compile existing SIMD code that uses the x86 SSE, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, AVX, AVX2, or FMA intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;*mmintrin.h&gt;</span></code>)</p></li>
 <li><p>Compile existing SIMD code that uses the ARM NEON intrinsics (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;arm_neon.h&gt;</span></code>)</p></li>
 </ol>
 <p>These techniques can be freely combined in a single program.</p>
@@ -412,8 +412,9 @@ data-aria-dark="Switch to auto color mode">
 <li><p><strong>SSE4.2</strong>: pass <code class="docutils literal notranslate"><span class="pre">-msse4.2</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;nmmintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__SSE4_2__</span></code> to gate code.</p></li>
 <li><p><strong>AVX</strong>: pass <code class="docutils literal notranslate"><span class="pre">-mavx</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;immintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__AVX__</span></code> to gate code.</p></li>
 <li><p><strong>AVX2</strong>: pass <code class="docutils literal notranslate"><span class="pre">-mavx2</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;immintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__AVX2__</span></code> to gate code.</p></li>
+<li><p><strong>FMA</strong>: pass <code class="docutils literal notranslate"><span class="pre">-mfma</span></code> and <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;immintrin.h&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">__FMA__</span></code> to gate code. Also pass <code class="docutils literal notranslate"><span class="pre">-mrelaxed-simd</span></code> to enable Wasm relaxed SIMD FMA.</p></li>
 </ul>
-<p>Currently only the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, and AVX instruction sets are supported. Each of these instruction sets add on top of the previous ones, so e.g. when targeting SSE3, the instruction sets SSE1 and SSE2 are also available.</p>
+<p>Currently the SSE1, SSE2, SSE3, SSSE3, SSE4.1, SSE4.2, AVX, AVX2, and FMA instruction sets are supported. Each of these instruction sets add on top of the previous ones, so e.g. when targeting SSE3, the instruction sets SSE1 and SSE2 are also available.</p>
 <p>The following tables highlight the availability and expected performance of different SSE* intrinsics. This can be useful for understanding the performance limitations that the Wasm SIMD specification has when running on x86 hardware.</p>
 <p>For detailed information on each SSE intrinsic function, visit the excellent <a class="reference external" href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE">Intel Intrinsics Guide on SSE1</a>.</p>
 <dl class="simple">
@@ -2029,6 +2030,84 @@ data-aria-dark="Switch to auto color mode">
 <p>All the 128-bit wide instructions from AVX2 instruction set are listed.
 Only a small part of the 256-bit AVX2 instruction set are listed, most of the
 256-bit wide AVX2 instructions are emulated by two 128-bit wide instructions.</p>
+<p>The following table highlights the availability and expected performance of different FMA intrinsics. Refer to <a class="reference external" href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#avxnewtechs=FMA">Intel Intrinsics Guide on FMA</a>.</p>
+<div class="table-wrapper colwidths-given docutils container" id="id14">
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">x86 FMA intrinsics available via #include &lt;immintrin.h&gt; and -mfma</span><a class="headerlink" href="#id14" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Intrinsic name</p></th>
+<th class="head"><p>WebAssembly SIMD support</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>_mm_fmadd_ps</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fmadd_pd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fmadd_ss</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fmadd_sd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fmsub_ps</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fmsub_pd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fmsub_ss</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fmsub_sd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fnmadd_ps</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fnmadd_pd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fnmadd_ss</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fnmadd_sd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fnmsub_ps</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fnmsub_pd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fnmsub_ss</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fnmsub_sd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+sub</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fmaddsub_ps</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add+blend</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fmaddsub_pd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add+blend</p></td>
+</tr>
+<tr class="row-even"><td><p>_mm_fmsubadd_ps</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add+blend</p></td>
+</tr>
+<tr class="row-odd"><td><p>_mm_fmsubadd_pd</p></td>
+<td><p>✅ wasm relaxed SIMD fma / 💡 emulated with mul+add+blend</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All 128-bit FMA intrinsics are listed above. The 256-bit FMA variants (<code class="docutils literal notranslate"><span class="pre">_mm256_fmadd_ps</span></code>, <code class="docutils literal notranslate"><span class="pre">_mm256_fmadd_pd</span></code>, etc.) are emulated by applying the 128-bit operation to each half of the 256-bit vector. With <code class="docutils literal notranslate"><span class="pre">-mrelaxed-simd</span></code>, the 128-bit operations use Wasm relaxed SIMD FMA; with <code class="docutils literal notranslate"><span class="pre">-msimd128</span></code> only, they use separate multiply and add/subtract.</p>
 </section>
 <section id="compiling-simd-code-targeting-arm-neon-instruction-set">
 <h2>Compiling SIMD code targeting ARM NEON instruction set<a class="headerlink" href="#compiling-simd-code-targeting-arm-neon-instruction-set" title="Link to this heading">¶</a></h2>
@@ -2056,9 +2135,9 @@ wide intrinsics.</p>
 <p>For detailed information on each intrinsic function, refer to <a class="reference external" href="https://developer.arm.com/architectures/instruction-sets/simd-isas/neon/intrinsics">NEON Intrinsics Reference</a>.</p>
 <p>For the latest NEON intrinsics implementation status, refer to the <a class="reference external" href="https://github.com/simd-everywhere/implementation-status/blob/main/neon.md">SIMDe implementation
 status</a>.</p>
-<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id14">
-<table class="wrap-table-content docutils align-default" id="id14">
-<caption><span class="caption-text">NEON Intrinsics</span><a class="headerlink" href="#id14" title="Link to this table">¶</a></caption>
+<div class="table-wrapper colwidths-given wrap-table-content docutils container" id="id15">
+<table class="wrap-table-content docutils align-default" id="id15">
+<caption><span class="caption-text">NEON Intrinsics</span><a class="headerlink" href="#id15" title="Link to this table">¶</a></caption>
 <colgroup>
 <col style="width: 40.0%" />
 <col style="width: 60.0%" />
