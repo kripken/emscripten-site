@@ -315,13 +315,34 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue" role="main">
           <section id="preamble-js">
 <span id="id1"></span><h1>preamble.js<a class="headerlink" href="#preamble-js" title="Link to this heading">¶</a></h1>
-<p>The JavaScript APIs in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/preamble.js">preamble.js</a> provide programmatic access for interacting with the compiled C code, including: calling compiled C functions, accessing memory, converting pointers to JavaScript <code class="docutils literal notranslate"><span class="pre">Strings</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings</span></code> to pointers (with different encodings/formats), and other convenience functions.</p>
-<p>We call this “<code class="docutils literal notranslate"><span class="pre">preamble.js</span></code>” because Emscripten’s output JS, at a high level, contains the preamble (from <code class="docutils literal notranslate"><span class="pre">src/preamble.js</span></code>), then the compiled code, then the postamble. (In slightly more detail, the preamble contains utility functions and setup, while the postamble connects things and handles running the application.)</p>
-<p>The preamble code is included in the output JS, which is then optimized all together by the compiler, together with any <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> and <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> files you added and code from any JavaScript libraries (<code class="docutils literal notranslate"><span class="pre">--js-library</span></code>). That means that you can call methods from the preamble directly, and the compiler will see that you need them, and not remove them as being unused.</p>
-<p>If you want to call preamble methods from somewhere the compiler can’t see, like another script tag on the HTML, you need to <strong>export</strong> them. To do so, add them to <code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code> (for example, <code class="docutils literal notranslate"><span class="pre">-sEXPORTED_RUNTIME_METHODS=ccall,cwrap</span></code> will export <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code>). Once exported, you can access them on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object (as <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code>, for example).</p>
+<p>The JavaScript APIs in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/src/preamble.js">preamble.js</a>
+provide programmatic access for interacting with the compiled C code, including:
+calling compiled C functions, accessing memory, converting pointers to
+JavaScript <code class="docutils literal notranslate"><span class="pre">Strings</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings</span></code> to pointers (with different
+encodings/formats), and other convenience functions.</p>
+<p>We call this “<code class="docutils literal notranslate"><span class="pre">preamble.js</span></code>” because Emscripten’s output JS, at a high level,
+contains the preamble (from <code class="docutils literal notranslate"><span class="pre">src/preamble.js</span></code>), then the compiled code, then
+the postamble. (In slightly more detail, the preamble contains utility functions
+and setup, while the postamble connects things and handles running the
+application.)</p>
+<p>The preamble code is included in the output JS, which is then optimized all
+together by the compiler, together with any <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> and <code class="docutils literal notranslate"><span class="pre">--post-js</span></code> files
+you added and code from any JavaScript libraries (<code class="docutils literal notranslate"><span class="pre">--js-library</span></code>). That means
+that you can call methods from the preamble directly, and the compiler will see
+that you need them, and not remove them as being unused.</p>
+<p>If you want to call preamble methods from somewhere the compiler can’t see, like
+another script tag on the HTML, you need to <strong>export</strong> them. To do so, add them
+to <code class="docutils literal notranslate"><span class="pre">EXPORTED_RUNTIME_METHODS</span></code> (for example,
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_RUNTIME_METHODS=ccall,cwrap</span></code> will export <code class="docutils literal notranslate"><span class="pre">ccall</span></code> and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code>).
+Once exported, you can access them on the <code class="docutils literal notranslate"><span class="pre">Module</span></code> object (as
+<code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code>, for example).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you try to use <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code> or another runtime method without exporting it, you will get an error. In a build with <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code>, the compiler emits code to show you a useful error message, which will explain that you need to export it. In general, if you see something odd, it’s useful to build with assertions.</p>
+<p>If you try to use <code class="docutils literal notranslate"><span class="pre">Module.ccall</span></code> or another runtime method without
+exporting it, you will get an error. In a build with <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code>, the
+compiler emits code to show you a useful error message, which will explain
+that you need to export it. In general, if you see something odd, it’s useful
+to build with assertions.</p>
 </div>
 <nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
@@ -340,8 +361,21 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object js" id="ccall">
 <span class="sig-name descname"><span class="n"><span class="pre">ccall</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccall" title="Link to this definition">¶</a></dt>
 <dd><p>Call a compiled C function from JavaScript.</p>
-<p>The function executes a compiled C function from JavaScript and returns the result. C++ name mangling means that “normal” C++ functions cannot be called; the function must either be defined in a <strong>.c</strong> file or be a C++ function defined with <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">returnType</span></code> and <code class="docutils literal notranslate"><span class="pre">argTypes</span></code> let you specify the types of parameters and the return value. The possible types are <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code>, which correspond to the appropriate JavaScript types. Use <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code> for any numeric type or C pointer, <code class="docutils literal notranslate"><span class="pre">string</span></code> for C <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represent strings, <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code> for a boolean type, <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code> for JavaScript arrays and typed arrays, containing 8-bit integer data - that is, the data is written into a C array of 8-bit integers; and in particular if you provide a typed array here, it must be a Uint8Array or Int8Array. If you want to receive an array of another type of data, you can manually allocate memory and write to it, then provide a pointer here (as a <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, as pointers are just numbers).</p>
+<p>The function executes a compiled C function from JavaScript and returns the
+result. C++ name mangling means that “normal” C++ functions cannot be called;
+the function must either be defined in a <strong>.c</strong> file or be a C++ function
+defined with <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">returnType</span></code> and <code class="docutils literal notranslate"><span class="pre">argTypes</span></code> let you specify the types of parameters and
+the return value. The possible types are <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code>, which correspond to the appropriate JavaScript
+types. Use <code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code> for any numeric type or C pointer, <code class="docutils literal notranslate"><span class="pre">string</span></code> for C
+<code class="docutils literal notranslate"><span class="pre">char*</span></code> that represent strings, <code class="docutils literal notranslate"><span class="pre">&quot;boolean&quot;</span></code> for a boolean type,
+<code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code> for JavaScript arrays and typed arrays, containing 8-bit integer
+data - that is, the data is written into a C array of 8-bit integers; and in
+particular if you provide a typed array here, it must be a Uint8Array or
+Int8Array. If you want to receive an array of another type of data, you can
+manually allocate memory and write to it, then provide a pointer here (as a
+<code class="docutils literal notranslate"><span class="pre">&quot;number&quot;</span></code>, as pointers are just numbers).</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1">// Call C from JavaScript</span>
 </span><span data-line="2"><span class="kd">var</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">ccall</span><span class="p">(</span><span class="s1">&#39;c_add&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// name of C function</span>
 </span><span data-line="3"><span class="w">  </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span>
@@ -354,9 +388,17 @@ data-aria-dark="Switch to auto color mode">
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">ccall</span></code> uses the C stack for temporary values. If you pass a string then it is only “alive” until the call is complete. If the code being called saves the pointer to be used later, it may point to invalid data.</p></li>
-<li><p>If you need a string to live forever, you can create it, for example, using <code class="docutils literal notranslate"><span class="pre">_malloc</span></code> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><code class="xref js js-func docutils literal notranslate"><span class="pre">stringToUTF8()</span></code></a>. However, you must later delete it manually!</p></li>
-<li><p>LLVM optimizations can inline and remove functions, after which you will not be able to call them. Similarly, function names minified by the <em>Closure Compiler</em> are inaccessible. In either case, the solution is to add the functions to the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list when you invoke <em>emcc</em>:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">ccall</span></code> uses the C stack for temporary values. If you pass a string then
+it is only “alive” until the call is complete. If the code being called
+saves the pointer to be used later, it may point to invalid data.</p></li>
+<li><p>If you need a string to live forever, you can create it, for example,
+using <code class="docutils literal notranslate"><span class="pre">_malloc</span></code> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><code class="xref js js-func docutils literal notranslate"><span class="pre">stringToUTF8()</span></code></a>. However, you must later
+delete it manually!</p></li>
+<li><p>LLVM optimizations can inline and remove functions, after which you will
+not be able to call them. Similarly, function names minified by the
+<em>Closure Compiler</em> are inaccessible. In either case, the solution is to
+add the functions to the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list when you invoke
+<em>emcc</em>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span data-line="1">-sEXPORTED_FUNCTIONS=_main,_myfunc&quot;
 </span></pre></div>
 </div>
@@ -406,7 +448,10 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object js" id="cwrap">
 <span class="sig-name descname"><span class="n"><span class="pre">cwrap</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returnType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argTypes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cwrap" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a native JavaScript wrapper for a C function.</p>
-<p>This is similar to <a class="reference internal" href="#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a>, but returns a JavaScript function that can be reused as many times as needed. The C function can be defined in a C file, or be a C-compatible C++ function defined using <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> (to prevent name mangling).</p>
+<p>This is similar to <a class="reference internal" href="#ccall" title="ccall"><code class="xref js js-func docutils literal notranslate"><span class="pre">ccall()</span></code></a>, but returns a JavaScript function that
+can be reused as many times as needed. The C function can be defined in a C
+file, or be a C-compatible C++ function defined using <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> (to
+prevent name mangling).</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1">// Call C from JavaScript</span>
 </span><span data-line="2"><span class="kd">var</span><span class="w"> </span><span class="nx">c_javascript_add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Module</span><span class="p">.</span><span class="nx">cwrap</span><span class="p">(</span><span class="s1">&#39;c_add&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// name of C function</span>
 </span><span data-line="3"><span class="w">  </span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="c1">// return type</span>
@@ -420,9 +465,25 @@ data-aria-dark="Switch to auto color mode">
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">cwrap</span></code> uses the C stack for temporary values. If you pass a string then it is only “alive” until the call is complete. If the code being called saves the pointer to be used later, it may point to invalid data. If you need a string to live forever, you can create it, for example, using <code class="docutils literal notranslate"><span class="pre">_malloc</span></code> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><code class="xref js js-func docutils literal notranslate"><span class="pre">stringToUTF8()</span></code></a>. However, you must later delete it manually!</p></li>
-<li><p>To wrap a function it must be exported by adding it to the <code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list when you invoke <em>emcc</em>. If a function is not exported, optimizations may remove it, and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> will not be able to find it at runtime. (In builds with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> enabled, <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> will show an error in such a situation; in release builds without assertions, trying to wrap a non-existent function will error, either by returning <cite>undefined</cite> or by returning a function that will error when actually called, depending on how <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> optimizes.)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cwrap</span></code> does not actually call compiled code (only calling the wrapper it returns does that). That means that it is safe to call <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> early, before the runtime is fully initialized (but calling the returned wrapped function must wait for the runtime, of course, like calling compiled code in general).</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">cwrap</span></code> uses the C stack for temporary values. If you pass a string then
+it is only “alive” until the call is complete. If the code being called
+saves the pointer to be used later, it may point to invalid data. If you
+need a string to live forever, you can create it, for example, using
+<code class="docutils literal notranslate"><span class="pre">_malloc</span></code> and <a class="reference internal" href="#stringToUTF8" title="stringToUTF8"><code class="xref js js-func docutils literal notranslate"><span class="pre">stringToUTF8()</span></code></a>. However, you must later delete it
+manually!</p></li>
+<li><p>To wrap a function it must be exported by adding it to the
+<code class="docutils literal notranslate"><span class="pre">EXPORTED_FUNCTIONS</span></code> list when you invoke <em>emcc</em>. If a function is not
+exported, optimizations may remove it, and <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> will not be able to
+find it at runtime. (In builds with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> enabled, <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> will
+show an error in such a situation; in release builds without assertions,
+trying to wrap a non-existent function will error, either by returning
+<cite>undefined</cite> or by returning a function that will error when actually
+called, depending on how <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> optimizes.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cwrap</span></code> does not actually call compiled code (only calling the wrapper
+it returns does that). That means that it is safe to call <code class="docutils literal notranslate"><span class="pre">cwrap</span></code> early,
+before the runtime is fully initialized (but calling the returned wrapped
+function must wait for the runtime, of course, like calling compiled code
+in general).</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span data-line="1">-sEXPORTED_FUNCTIONS=_main,_myfunc
 </span></pre></div>
 </div>
@@ -675,7 +736,8 @@ data-aria-dark="Switch to auto color mode">
 </section>
 <section id="run-dependencies">
 <h2><a class="toc-backref" href="#id6" role="doc-backlink">Run dependencies</a><a class="headerlink" href="#run-dependencies" title="Link to this heading">¶</a></h2>
-<p>Note that generally run dependencies are managed by the file packager and other parts of the system. It is rare for developers to use this API directly.</p>
+<p>Note that generally run dependencies are managed by the file packager and other
+parts of the system. It is rare for developers to use this API directly.</p>
 <dl class="js function">
 <dt class="sig sig-object js" id="addRunDependency">
 <span class="sig-name descname"><span class="n"><span class="pre">addRunDependency</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#addRunDependency" title="Link to this definition">¶</a></dt>
@@ -726,7 +788,9 @@ data-aria-dark="Switch to auto color mode">
 </section>
 <section id="type-accessors-for-the-memory-model">
 <h2><a class="toc-backref" href="#id8" role="doc-backlink">Type accessors for the memory model</a><a class="headerlink" href="#type-accessors-for-the-memory-model" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-memory-model"><span class="std std-ref">Emscripten memory representation</span></a> uses a typed array buffer (<code class="docutils literal notranslate"><span class="pre">ArrayBuffer</span></code>) to represent memory, with different views into it giving access to the different types. The views for accessing different types of memory are listed below.</p>
+<p>The <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-memory-model"><span class="std std-ref">Emscripten memory representation</span></a> uses a typed array buffer (<code class="docutils literal notranslate"><span class="pre">ArrayBuffer</span></code>)
+to represent memory, with different views into it giving access to the different
+types. The views for accessing different types of memory are listed below.</p>
 <dl class="js data">
 <dt class="sig sig-object js" id="HEAP8">
 <span class="sig-name descname"><span class="n"><span class="pre">HEAP8</span></span></span><a class="headerlink" href="#HEAP8" title="Link to this definition">¶</a></dt>

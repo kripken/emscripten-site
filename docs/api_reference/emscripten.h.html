@@ -324,7 +324,9 @@ data-aria-dark="Switch to auto color mode">
           <section id="emscripten-h">
 <span id="id1"></span><h1>emscripten.h<a class="headerlink" href="#emscripten-h" title="Link to this heading">¶</a></h1>
 <p>This page documents the public C++ APIs provided by <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/system/include/emscripten/emscripten.h">emscripten.h</a>.</p>
-<p>Emscripten uses existing/familiar APIs where possible (for example: <a class="reference internal" href="../site/glossary.html#term-SDL"><span class="xref std std-term">SDL</span></a>). This API provides C++ support for capabilities that are specific to JavaScript or the browser environment, or for which there is no existing API.</p>
+<p>Emscripten uses existing/familiar APIs where possible (for example:
+<a class="reference internal" href="../site/glossary.html#term-SDL"><span class="xref std std-term">SDL</span></a>). This API provides C++ support for capabilities that are specific
+to JavaScript or the browser environment, or for which there is no existing API.</p>
 <nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
@@ -345,7 +347,8 @@ data-aria-dark="Switch to auto color mode">
 </nav>
 <section id="inline-assembly-javascript">
 <h2><a class="toc-backref" href="#id13" role="doc-backlink">Inline assembly/JavaScript</a><a class="headerlink" href="#inline-assembly-javascript" title="Link to this heading">¶</a></h2>
-<p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Calling JavaScript from C/C++</span></a>.</p>
+<p>Guide material for the following APIs can be found in
+<a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Calling JavaScript from C/C++</span></a>.</p>
 <section id="defines">
 <h3>Defines<a class="headerlink" href="#defines" title="Link to this heading">¶</a></h3>
 <dl class="c macro">
@@ -442,22 +445,31 @@ about memory management.</p>
 <dt class="sig sig-object c" id="c.EM_ASM">
 <span class="sig-name descname"><span class="n"><span class="pre">EM_ASM</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.EM_ASM" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Convenient syntax for inline assembly/JavaScript.</p>
-<p>This allows you to declare JavaScript in your C code “inline”, which is then executed when your compiled code is run in the browser. For example, the following C code would display two alerts if it was compiled with Emscripten and run in the browser:</p>
+<p>This allows you to declare JavaScript in your C code “inline”, which is then
+executed when your compiled code is run in the browser. For example, the
+following C code would display two alerts if it was compiled with Emscripten
+and run in the browser:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span data-line="1">EM_ASM(alert(&#39;hai&#39;); alert(&#39;bai&#39;));
 </span></pre></div>
 </div>
-<p>Arguments can be passed inside the JavaScript code block, where they arrive as variables <code class="docutils literal notranslate"><span class="pre">$0</span></code>, <code class="docutils literal notranslate"><span class="pre">$1</span></code> etc. These arguments can either be of type <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> or <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p>
+<p>Arguments can be passed inside the JavaScript code block, where they arrive as
+variables <code class="docutils literal notranslate"><span class="pre">$0</span></code>, <code class="docutils literal notranslate"><span class="pre">$1</span></code> etc. These arguments can either be of type
+<code class="docutils literal notranslate"><span class="pre">int32_t</span></code> or <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span data-line="1">EM_ASM({
 </span><span data-line="2">  console.log(&#39;I received: &#39; + [$0, $1]);
 </span><span data-line="3">}, 100, 35.5);
 </span></pre></div>
 </div>
 <p>Note the <code class="docutils literal notranslate"><span class="pre">{</span></code> and <code class="docutils literal notranslate"><span class="pre">}</span></code>.</p>
-<p>Null-terminated C strings can also be passed into <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> blocks, but to operate on them, they need to be copied out from the heap to convert to high-level JavaScript strings.</p>
+<p>Null-terminated C strings can also be passed into <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> blocks, but to
+operate on them, they need to be copied out from the heap to convert to
+high-level JavaScript strings.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span data-line="1">EM_ASM(console.log(&#39;hello &#39; + UTF8ToString($0)), &quot;world!&quot;);
 </span></pre></div>
 </div>
-<p>In the same manner, pointers to any type (including <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">*</span></code>) can be passed inside <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code, where they appear as integers like <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> pointers above did. Accessing the data can be managed by reading the heap directly.</p>
+<p>In the same manner, pointers to any type (including <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">*</span></code>) can be passed
+inside <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code, where they appear as integers like <code class="docutils literal notranslate"><span class="pre">char</span> <span class="pre">*</span></code> pointers
+above did. Accessing the data can be managed by reading the heap directly.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span><span data-line="1">int arr[2] = { 30, 45 };
 </span><span data-line="2">EM_ASM({
 </span><span data-line="3">  console.log(&#39;Data: &#39; + HEAP32[$0&gt;&gt;2] + &#39;, &#39; + HEAP32[($0+4)&gt;&gt;2]);
@@ -467,8 +479,16 @@ about memory management.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>As of Emscripten <code class="docutils literal notranslate"><span class="pre">1.30.4</span></code>, the contents of <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code blocks appear inside the normal JS file, and as result, Closure compiler and other JavaScript minifiers will be able to operate on them. You may need to use safety quotes in some places (<code class="docutils literal notranslate"><span class="pre">a['b']</span></code> instead of <code class="docutils literal notranslate"><span class="pre">a.b</span></code>) to avoid minification from occurring.</p></li>
-<li><p>The C preprocessor does not have an understanding of JavaScript tokens, and as a result, if the <code class="docutils literal notranslate"><span class="pre">code</span></code> block contains a comma character <code class="docutils literal notranslate"><span class="pre">,</span></code>, it may be necessary to wrap the code block inside parentheses. For example, code <code class="docutils literal notranslate"><span class="pre">EM_ASM(return</span> <span class="pre">[1,2,3].length);</span></code> will not compile, but <code class="docutils literal notranslate"><span class="pre">EM_ASM((return</span> <span class="pre">[1,2,3].length));</span></code> does.</p></li>
+<li><p>As of Emscripten <code class="docutils literal notranslate"><span class="pre">1.30.4</span></code>, the contents of <code class="docutils literal notranslate"><span class="pre">EM_ASM</span></code> code blocks appear
+inside the normal JS file, and as result, Closure compiler and other
+JavaScript minifiers will be able to operate on them. You may need to use
+safety quotes in some places (<code class="docutils literal notranslate"><span class="pre">a['b']</span></code> instead of <code class="docutils literal notranslate"><span class="pre">a.b</span></code>) to avoid
+minification from occurring.</p></li>
+<li><p>The C preprocessor does not have an understanding of JavaScript tokens,
+and as a result, if the <code class="docutils literal notranslate"><span class="pre">code</span></code> block contains a comma character <code class="docutils literal notranslate"><span class="pre">,</span></code>,
+it may be necessary to wrap the code block inside parentheses. For
+example, code <code class="docutils literal notranslate"><span class="pre">EM_ASM(return</span> <span class="pre">[1,2,3].length);</span></code> will not compile, but
+<code class="docutils literal notranslate"><span class="pre">EM_ASM((return</span> <span class="pre">[1,2,3].length));</span></code> does.</p></li>
 </ul>
 </div>
 </dd></dl>
@@ -559,10 +579,12 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 </section>
 <section id="calling-javascript-from-c-c">
 <h2><a class="toc-backref" href="#id14" role="doc-backlink">Calling JavaScript From C/C++</a><a class="headerlink" href="#calling-javascript-from-c-c" title="Link to this heading">¶</a></h2>
-<p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Calling JavaScript from C/C++</span></a>.</p>
+<p>Guide material for the following APIs can be found in
+<a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native"><span class="std std-ref">Calling JavaScript from C/C++</span></a>.</p>
 <section id="function-pointer-types-for-callbacks">
 <h3>Function pointer types for callbacks<a class="headerlink" href="#function-pointer-types-for-callbacks" title="Link to this heading">¶</a></h3>
-<p>The following types are used to define function callback signatures used in a number of functions in this file.</p>
+<p>The following types are used to define function callback signatures used in a
+number of functions in this file.</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_callback_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_callback_func</span></span></span><a class="headerlink" href="#c.em_callback_func" title="Link to this definition">¶</a><br /></dt>
@@ -577,7 +599,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.em_arg_callback_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_arg_callback_func</span></span></span><a class="headerlink" href="#c.em_arg_callback_func" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Generic function pointer type for use in callbacks with a single <code class="docutils literal notranslate"><span class="pre">void*</span></code> parameter.</p>
-<p>This type is used to define function callbacks that need to pass arbitrary data. For example, <a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> sets user-defined data, and passes it to a callback of this type on completion.</p>
+<p>This type is used to define function callbacks that need to pass arbitrary
+data. For example, <a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> sets user-defined
+data, and passes it to a callback of this type on completion.</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_arg_callback_func</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">)</span>
 </span></pre></div>
@@ -587,8 +611,11 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_str_callback_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_str_callback_func</span></span></span><a class="headerlink" href="#c.em_str_callback_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>General function pointer type for use in callbacks with a C string (<code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*</span></code>) parameter.</p>
-<p>This type is used for function callbacks that need to be passed a C string. For example, it is used in <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget()</span></code></a> to pass the name of a file that has been asynchronously loaded.</p>
+<dd><p>General function pointer type for use in callbacks with a C string
+(<code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*</span></code>) parameter.</p>
+<p>This type is used for function callbacks that need to be passed a C string.
+For example, it is used in <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget()</span></code></a> to pass the name of
+a file that has been asynchronously loaded.</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_str_callback_func</span><span class="p">)(</span><span class="n">const</span> <span class="n">char</span> <span class="o">*</span><span class="p">)</span>
 </span></pre></div>
@@ -601,8 +628,13 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_run_script">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_run_script</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">script</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_run_script" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Interface to the underlying JavaScript engine. This function will <code class="docutils literal notranslate"><span class="pre">eval()</span></code> the given script. Note: If <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> is set, this function will not be available.</p>
-<p>This function can be called from a pthread, and it is executed in the scope of the Web Worker that is hosting the pthread. To evaluate a function in the scope of the main runtime thread, see the function emscripten_sync_run_in_main_runtime_thread().</p>
+<dd><p>Interface to the underlying JavaScript engine. This function will <code class="docutils literal notranslate"><span class="pre">eval()</span></code>
+the given script. Note: If <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> is set, this function
+will not be available.</p>
+<p>This function can be called from a pthread, and it is executed in the scope of
+the Web Worker that is hosting the pthread. To evaluate a function in the
+scope of the main runtime thread, see the function
+emscripten_sync_run_in_main_runtime_thread().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -618,8 +650,13 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_run_script_int">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_run_script_int</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">script</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_run_script_int" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Interface to the underlying JavaScript engine. This function will <code class="docutils literal notranslate"><span class="pre">eval()</span></code> the given script. Note: If <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> is set, this function will not be available.</p>
-<p>This function can be called from a pthread, and it is executed in the scope of the Web Worker that is hosting the pthread. To evaluate a function in the scope of the main runtime thread, see the function emscripten_sync_run_in_main_runtime_thread().</p>
+<dd><p>Interface to the underlying JavaScript engine. This function will <code class="docutils literal notranslate"><span class="pre">eval()</span></code>
+the given script. Note: If <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> is set, this function
+will not be available.</p>
+<p>This function can be called from a pthread, and it is executed in the scope of
+the Web Worker that is hosting the pthread. To evaluate a function in the
+scope of the main runtime thread, see the function
+emscripten_sync_run_in_main_runtime_thread().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -638,8 +675,14 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_run_script_string">
 <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_run_script_string</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">script</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_run_script_string" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Interface to the underlying JavaScript engine. This function will <code class="docutils literal notranslate"><span class="pre">eval()</span></code> the given script. Note that this overload uses a single buffer shared between calls. Note: If <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> is set, this function will not be available.</p>
-<p>This function can be called from a pthread, and it is executed in the scope of the Web Worker that is hosting the pthread. To evaluate a function in the scope of the main runtime thread, see the function emscripten_sync_run_in_main_runtime_thread().</p>
+<dd><p>Interface to the underlying JavaScript engine. This function will <code class="docutils literal notranslate"><span class="pre">eval()</span></code>
+the given script. Note that this overload uses a single buffer shared between
+calls. Note: If <code class="docutils literal notranslate"><span class="pre">-sDYNAMIC_EXECUTION=0</span></code> is set, this function will not be
+available.</p>
+<p>This function can be called from a pthread, and it is executed in the scope of
+the Web Worker that is hosting the pthread. To evaluate a function in the
+scope of the main runtime thread, see the function
+emscripten_sync_run_in_main_runtime_thread().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -659,7 +702,10 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_async_run_script">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_run_script</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">script</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">millis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_run_script" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Asynchronously run a script, after a specified amount of time.</p>
-<p>This function can be called from a pthread, and it is executed in the scope of the Web Worker that is hosting the pthread. To evaluate a function in the scope of the main runtime thread, see the function emscripten_sync_run_in_main_runtime_thread().</p>
+<p>This function can be called from a pthread, and it is executed in the scope of
+the Web Worker that is hosting the pthread. To evaluate a function in the
+scope of the main runtime thread, see the function
+emscripten_sync_run_in_main_runtime_thread().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -677,8 +723,14 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_async_load_script">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_load_script</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">script</span></span>, <a class="reference internal" href="#c.em_callback_func" title="em_callback_func"><span class="n"><span class="pre">em_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_callback_func" title="em_callback_func"><span class="n"><span class="pre">em_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_load_script" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Asynchronously loads a script from a URL.</p>
-<p>This integrates with the run dependencies system, so your script can call <code class="docutils literal notranslate"><span class="pre">addRunDependency</span></code> multiple times, prepare various asynchronous tasks, and call <code class="docutils literal notranslate"><span class="pre">removeRunDependency</span></code> on them; when all are complete (or if there were no run dependencies to begin with), <code class="docutils literal notranslate"><span class="pre">onload</span></code> is called. An example use for this is to load an asset module, that is, the output of the file packager.</p>
-<p>This function is currently only available in main browser thread, and it will immediately fail by calling the supplied onerror() handler if called in a pthread.</p>
+<p>This integrates with the run dependencies system, so your script can call
+<code class="docutils literal notranslate"><span class="pre">addRunDependency</span></code> multiple times, prepare various asynchronous tasks, and
+call <code class="docutils literal notranslate"><span class="pre">removeRunDependency</span></code> on them; when all are complete (or if there were
+no run dependencies to begin with), <code class="docutils literal notranslate"><span class="pre">onload</span></code> is called. An example use for
+this is to load an asset module, that is, the output of the file packager.</p>
+<p>This function is currently only available in main browser thread, and it will
+immediately fail by calling the supplied onerror() handler if called in a
+pthread.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -697,33 +749,76 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 </section>
 <section id="browser-execution-environment">
 <span id="emscripten-h-browser-execution-environment"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">Browser Execution Environment</a><a class="headerlink" href="#browser-execution-environment" title="Link to this heading">¶</a></h2>
-<p>Guide material for the following APIs can be found in <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-runtime-environment"><span class="std std-ref">Emscripten Runtime Environment</span></a>.</p>
+<p>Guide material for the following APIs can be found in
+<a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-runtime-environment"><span class="std std-ref">Emscripten Runtime Environment</span></a>.</p>
 <section id="id3">
 <h3>Functions<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_set_main_loop">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_set_main_loop</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.em_callback_func" title="em_callback_func"><span class="n"><span class="pre">em_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">func</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">fps</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n"><span class="pre">simulate_infinite_loop</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Set a C function as the main event loop for the calling thread.</p>
-<p>If the main loop function needs to receive user-defined data, use <a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> instead.</p>
-<p>The JavaScript environment will call that function at a specified number of frames per second. If called on the main browser thread, setting 0 or a negative value as the <code class="docutils literal notranslate"><span class="pre">fps</span></code> will use the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism to call the main loop function. This is <strong>HIGHLY</strong> recommended if you are doing rendering, as the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> will make sure you render at a proper smooth rate that lines up properly with the browser and monitor. If you do not render at all in your application, then you should pick a specific frame rate that makes sense for your code.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> is true, the function will throw an exception in order to stop execution of the caller. This will lead to the main loop being entered instead of code after the call to <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> being run, which is the closest we can get to simulating an infinite loop (we do something similar in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/system/include/GL/freeglut_std.h#L400">glutMainLoop</a> in <a class="reference external" href="http://www.opengl.org/resources/libraries/glut/">GLUT</a>). If this parameter is <code class="docutils literal notranslate"><span class="pre">false</span></code>, then the behavior is the same as it was before this parameter was added to the API, which is that execution continues normally. Note that in both cases we do not run global destructors, <code class="docutils literal notranslate"><span class="pre">atexit</span></code>, etc., since we know the main loop will still be running, but if we do not simulate an infinite loop then the stack will be unwound. That means that if <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> is <code class="docutils literal notranslate"><span class="pre">false</span></code>, and you created an object on the stack, it will be cleaned up before the main loop is called for the first time.</p>
-<p>This function can be called in a pthread, in which case the callback loop will be set up to be called in the context of the calling thread. In order for the loop to work, the calling thread must regularly “yield back” to the browser by exiting from its pthread main function, since the callback will be able to execute only when the calling thread is not executing any other code. This means that running a synchronously blocking main loop is not compatible with the emscripten_set_main_loop() function.</p>
-<p>Since <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code> API is not available in web workers, when called <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code> in a pthread with <code class="docutils literal notranslate"><span class="pre">fps</span></code> &lt;= 0, the effect of syncing up to the display’s refresh rate is emulated, and generally will not precisely line up with vsync intervals.</p>
+<p>If the main loop function needs to receive user-defined data, use
+<a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> instead.</p>
+<p>The JavaScript environment will call that function at a specified number of
+frames per second. If called on the main browser thread, setting 0 or a
+negative value as the <code class="docutils literal notranslate"><span class="pre">fps</span></code> will use the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code>
+mechanism to call the main loop function. This is <strong>HIGHLY</strong> recommended if
+you are doing rendering, as the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> will make
+sure you render at a proper smooth rate that lines up properly with the
+browser and monitor. If you do not render at all in your application, then you
+should pick a specific frame rate that makes sense for your code.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> is true, the function will throw an exception in
+order to stop execution of the caller. This will lead to the main loop being
+entered instead of code after the call to <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>
+being run, which is the closest we can get to simulating an infinite loop (we
+do something similar in <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/1.29.12/system/include/GL/freeglut_std.h#L400">glutMainLoop</a>
+in <a class="reference external" href="http://www.opengl.org/resources/libraries/glut/">GLUT</a>). If this
+parameter is <code class="docutils literal notranslate"><span class="pre">false</span></code>, then the behavior is the same as it was before this
+parameter was added to the API, which is that execution continues normally.
+Note that in both cases we do not run global destructors, <code class="docutils literal notranslate"><span class="pre">atexit</span></code>, etc.,
+since we know the main loop will still be running, but if we do not simulate
+an infinite loop then the stack will be unwound. That means that if
+<code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> is <code class="docutils literal notranslate"><span class="pre">false</span></code>, and you created an object on the
+stack, it will be cleaned up before the main loop is called for the first
+time.</p>
+<p>This function can be called in a pthread, in which case the callback loop will
+be set up to be called in the context of the calling thread. In order for the
+loop to work, the calling thread must regularly “yield back” to the browser by
+exiting from its pthread main function, since the callback will be able to
+execute only when the calling thread is not executing any other code. This
+means that running a synchronously blocking main loop is not compatible with
+the emscripten_set_main_loop() function.</p>
+<p>Since <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame()</span></code> API is not available in web workers, when
+called <code class="docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code> in a pthread with <code class="docutils literal notranslate"><span class="pre">fps</span></code> &lt;= 0, the
+effect of syncing up to the display’s refresh rate is emulated, and generally
+will not precisely line up with vsync intervals.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>There can be only <em>one</em> main loop function at a time, per thread. To change the main loop function, first <a class="reference internal" href="#c.emscripten_cancel_main_loop" title="emscripten_cancel_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">cancel</span></code></a> the current loop, and then call this function to set another.</p>
+<p>There can be only <em>one</em> main loop function at a time, per thread. To
+change the main loop function, first <a class="reference internal" href="#c.emscripten_cancel_main_loop" title="emscripten_cancel_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">cancel</span></code></a> the current loop, and then call this function
+to set another.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>See <a class="reference internal" href="#c.emscripten_set_main_loop_expected_blockers" title="emscripten_set_main_loop_expected_blockers"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_expected_blockers()</span></code></a>, <a class="reference internal" href="#c.emscripten_pause_main_loop" title="emscripten_pause_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_pause_main_loop()</span></code></a>, <a class="reference internal" href="#c.emscripten_resume_main_loop" title="emscripten_resume_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_resume_main_loop()</span></code></a> and <a class="reference internal" href="#c.emscripten_cancel_main_loop" title="emscripten_cancel_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_cancel_main_loop()</span></code></a> for information about blocking, pausing, and resuming the main loop of the calling thread.</p>
+<p>See <a class="reference internal" href="#c.emscripten_set_main_loop_expected_blockers" title="emscripten_set_main_loop_expected_blockers"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_expected_blockers()</span></code></a>,
+<a class="reference internal" href="#c.emscripten_pause_main_loop" title="emscripten_pause_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_pause_main_loop()</span></code></a>, <a class="reference internal" href="#c.emscripten_resume_main_loop" title="emscripten_resume_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_resume_main_loop()</span></code></a>
+and <a class="reference internal" href="#c.emscripten_cancel_main_loop" title="emscripten_cancel_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_cancel_main_loop()</span></code></a> for information about blocking,
+pausing, and resuming the main loop of the calling thread.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Calling this function overrides the effect of any previous calls to <a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a> in the calling thread by applying the timing mode specified by the parameter <code class="docutils literal notranslate"><span class="pre">fps</span></code>. To specify a different timing mode for the current thread, call the function <a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a> after setting up the main loop.</p>
+<p>Calling this function overrides the effect of any previous calls to
+<a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a> in the calling thread by applying
+the timing mode specified by the parameter <code class="docutils literal notranslate"><span class="pre">fps</span></code>. To specify a different
+timing mode for the current thread, call the function
+<a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a> after setting up the main loop.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Currently, using <a class="reference external" href="https://emscripten.org/docs/porting/exceptions.html#webassembly-exception-handling-proposal">the new Wasm exception handling</a> and <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> == true at the same time does not work yet in C++ projects that have objects with destructors on the stack at the time of the call.</p>
+<p>Currently, using <a class="reference external" href="https://emscripten.org/docs/porting/exceptions.html#webassembly-exception-handling-proposal">the new Wasm exception handling</a>
+and <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> == true at the same time does not work yet in
+C++ projects that have objects with destructors on the stack at the time of
+the call.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -762,12 +857,19 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_push_uncounted_main_loop_blocker">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_push_uncounted_main_loop_blocker</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">func</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_push_uncounted_main_loop_blocker" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Add a function that <strong>blocks</strong> the main loop for the calling thread.</p>
-<p>The function is added to the back of a queue of events to be blocked; the main loop will not run until all blockers in the queue complete.</p>
-<p>In the “counted” version, blockers are counted (internally) and <code class="docutils literal notranslate"><span class="pre">Module.setStatus</span></code> is called with some text to report progress (<code class="docutils literal notranslate"><span class="pre">setStatus</span></code> is a general hook that a program can define in order to show processing updates).</p>
+<p>The function is added to the back of a queue of events to be blocked; the main
+loop will not run until all blockers in the queue complete.</p>
+<p>In the “counted” version, blockers are counted (internally) and
+<code class="docutils literal notranslate"><span class="pre">Module.setStatus</span></code> is called with some text to report progress
+(<code class="docutils literal notranslate"><span class="pre">setStatus</span></code> is a general hook that a program can define in order to show
+processing updates).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Main loop blockers block the main loop from running, and can be counted to show progress. In contrast, <a class="reference internal" href="#c.emscripten_async_call" title="emscripten_async_call"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_call()</span></code></a> is not counted, does not block the main loop, and can fire at a specific time in the future.</p></li>
+<li><p>Main loop blockers block the main loop from running, and can be counted to
+show progress. In contrast, <a class="reference internal" href="#c.emscripten_async_call" title="emscripten_async_call"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_call()</span></code></a> is not
+counted, does not block the main loop, and can fire at a specific time in
+the future.</p></li>
 </ul>
 </div>
 <dl class="field-list simple">
@@ -789,7 +891,11 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_resume_main_loop">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_resume_main_loop</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_resume_main_loop" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Pause and resume the main loop for the calling thread.</p>
-<p>Pausing and resuming the main loop is useful if your app needs to perform some synchronous operation, for example to load a file from the network. It might be wrong to run the main loop before that finishes (the original code assumes that), so you can break the code up into asynchronous callbacks, but you must pause the main loop until they complete.</p>
+<p>Pausing and resuming the main loop is useful if your app needs to perform some
+synchronous operation, for example to load a file from the network. It might
+be wrong to run the main loop before that finishes (the original code assumes
+that), so you can break the code up into asynchronous callbacks, but you must
+pause the main loop until they complete.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>These are fairly low-level functions. <a class="reference internal" href="#c.emscripten_push_main_loop_blocker" title="emscripten_push_main_loop_blocker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_push_main_loop_blocker()</span></code></a> (and friends) provide more convenient alternatives.</p>
@@ -800,10 +906,20 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_cancel_main_loop">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_cancel_main_loop</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_cancel_main_loop" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Cancels the main event loop for the calling thread.</p>
-<p>See also <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> and <a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> for information about setting and using the main loop.</p>
+<p>See also <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a> and
+<a class="reference internal" href="#c.emscripten_set_main_loop_arg" title="emscripten_set_main_loop_arg"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_arg()</span></code></a> for information about setting and using
+the main loop.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This function cancels the main loop, which means that it will no longer be called. No other changes occur to control flow. In particular, if you started the main loop with the <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> option, you can still cancel the main loop, but execution will not continue in the code right after setting the main loop (we do not actually run an infinite loop there - that’s not possible in JavaScript, so to simulate an infinite loop we halt execution at that stage, and then the next thing that runs is the main loop itself, so it seems like an infinite loop has begun there; canceling the main loop sort of breaks the metaphor).</p>
+<p>This function cancels the main loop, which means that it will no
+longer be called. No other changes occur to control flow. In particular, if
+you started the main loop with the <code class="docutils literal notranslate"><span class="pre">simulate_infinite_loop</span></code> option, you can
+still cancel the main loop, but execution will not continue in the code right
+after setting the main loop (we do not actually run an infinite loop there -
+that’s not possible in JavaScript, so to simulate an infinite loop we halt
+execution at that stage, and then the next thing that runs is the main loop
+itself, so it seems like an infinite loop has begun there; canceling the main
+loop sort of breaks the metaphor).</p>
 </div>
 </dd></dl>
 
@@ -811,7 +927,13 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_set_main_loop_timing">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_set_main_loop_timing</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">mode</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop_timing" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Specifies the scheduling mode that the main loop tick function of the calling thread will be called with.</p>
-<p>This function can be used to interactively control the rate at which Emscripten runtime drives the main loop specified by calling the function <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>. In native development, this corresponds with the “swap interval” or the “presentation interval” for 3D rendering. The new tick interval specified by this function takes effect immediately on the existing main loop, and this function must be called only after setting up a main loop via <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>.</p>
+<p>This function can be used to interactively control the rate at which
+Emscripten runtime drives the main loop specified by calling the function
+<a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>. In native development, this corresponds
+with the “swap interval” or the “presentation interval” for 3D rendering. The
+new tick interval specified by this function takes effect immediately on the
+existing main loop, and this function must be called only after setting up a
+main loop via <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>.</p>
 <blockquote>
 <div><dl class="field-list simple">
 <dt class="field-odd">param int mode<span class="colon">:</span></dt>
@@ -824,9 +946,29 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></span>) – <p>The timing value to activate for the main loop. This value interpreted differently according to the <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter:</p>
 <ul>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is EM_TIMING_SETTIMEOUT, then <code class="docutils literal notranslate"><span class="pre">value</span></code> specifies the number of milliseconds to wait between subsequent ticks to the main loop and updates occur independent of the vsync rate of the display (vsync off). This method uses the JavaScript <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> function to drive the animation.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is EM_TIMING_RAF, then updates are performed using the <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> function (with vsync enabled), and this value is interpreted as a “swap interval” rate for the main loop. The value of <code class="docutils literal notranslate"><span class="pre">1</span></code> specifies the runtime that it should render at every vsync (typically 60fps), whereas the value <code class="docutils literal notranslate"><span class="pre">2</span></code> means that the main loop callback should be called only every second vsync (30fps). As a general formula, the value <code class="docutils literal notranslate"><span class="pre">n</span></code> means that the main loop is updated at every n’th vsync, or at a rate of <code class="docutils literal notranslate"><span class="pre">60/n</span></code> for 60Hz displays, and <code class="docutils literal notranslate"><span class="pre">120/n</span></code> for 120Hz displays.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is EM_TIMING_SETIMMEDIATE, then updates are performed using the <code class="docutils literal notranslate"><span class="pre">setImmediate</span></code> function, or if not available, emulated via <code class="docutils literal notranslate"><span class="pre">postMessage</span></code>. See <cite>setImmediate on MDN &lt;https://developer.mozilla.org/en-US/docs/Web/API/Window/setImmediate&gt;</cite> for more information. Note that this mode is <strong>strongly not recommended</strong> to be used when deploying Emscripten output to the web, since it depends on an unstable web extension that is in draft status, browsers other than IE do not currently support it, and its implementation has been considered controversial in review.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is EM_TIMING_SETTIMEOUT, then <code class="docutils literal notranslate"><span class="pre">value</span></code> specifies the number
+of milliseconds to wait between subsequent ticks to the main loop and
+updates occur independent of the vsync rate of the display (vsync off).
+This method uses the JavaScript <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> function to drive the
+animation.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is EM_TIMING_RAF, then updates are performed using the
+<code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> function (with vsync enabled), and this value
+is interpreted as a “swap interval” rate for the main loop. The value of
+<code class="docutils literal notranslate"><span class="pre">1</span></code> specifies the runtime that it should render at every vsync
+(typically 60fps), whereas the value <code class="docutils literal notranslate"><span class="pre">2</span></code> means that the main loop
+callback should be called only every second vsync (30fps). As a general
+formula, the value <code class="docutils literal notranslate"><span class="pre">n</span></code> means that the main loop is updated at every
+n’th vsync, or at a rate of <code class="docutils literal notranslate"><span class="pre">60/n</span></code> for 60Hz displays, and <code class="docutils literal notranslate"><span class="pre">120/n</span></code> for
+120Hz displays.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">mode</span></code> is EM_TIMING_SETIMMEDIATE, then updates are performed using
+the <code class="docutils literal notranslate"><span class="pre">setImmediate</span></code> function, or if not available, emulated via
+<code class="docutils literal notranslate"><span class="pre">postMessage</span></code>. See <cite>setImmediate on MDN
+&lt;https://developer.mozilla.org/en-US/docs/Web/API/Window/setImmediate&gt;</cite>
+for more information. Note that this mode is <strong>strongly not recommended</strong>
+to be used when deploying Emscripten output to the web, since it depends
+on an unstable web extension that is in draft status, browsers other than
+IE do not currently support it, and its implementation has been
+considered controversial in review.</p></li>
 </ul>
 </p></li>
 </ul>
@@ -851,7 +993,11 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_get_main_loop_timing">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_get_main_loop_timing</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mode</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_get_main_loop_timing" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Returns the current main loop timing mode that is in effect. For interpretation of the values, see the documentation of the function <a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a>. The timing mode is controlled by calling the functions <a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a> and <a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>.</p>
+<dd><p>Returns the current main loop timing mode that is in effect. For
+interpretation of the values, see the documentation of the function
+<a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a>. The timing mode is controlled by
+calling the functions <a class="reference internal" href="#c.emscripten_set_main_loop_timing" title="emscripten_set_main_loop_timing"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop_timing()</span></code></a> and
+<a class="reference internal" href="#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>.</p>
 <blockquote>
 <div><dl class="field-list simple">
 <dt class="field-odd">param mode<span class="colon">:</span></dt>
@@ -874,8 +1020,12 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_set_main_loop_expected_blockers">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_set_main_loop_expected_blockers</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">num</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_set_main_loop_expected_blockers" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Sets the number of blockers that are about to be pushed.</p>
-<p>The number is used for reporting the <em>relative progress</em> through a set of blockers, after which the main loop will continue.</p>
-<p>For example, a game might have to run 10 blockers before starting a new level. The operation would first set this value as ‘10’ and then push the 10 blockers. When the 3<sup>rd</sup> blocker (say) completes, progress is displayed as 3/10.</p>
+<p>The number is used for reporting the <em>relative progress</em> through a set of
+blockers, after which the main loop will continue.</p>
+<p>For example, a game might have to run 10 blockers before starting a new level.
+The operation would first set this value as ‘10’ and then push the 10
+blockers. When the 3<sup>rd</sup> blocker (say) completes, progress is displayed
+as 3/10.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -888,10 +1038,14 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_async_call">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_call</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">func</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">millis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_call" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Call a C function asynchronously, that is, after returning control to the JavaScript event loop.</p>
+<dd><p>Call a C function asynchronously, that is, after returning control to the
+JavaScript event loop.</p>
 <p>This is done by a <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code>.</p>
-<p>When building natively this becomes a simple direct call, after <code class="docutils literal notranslate"><span class="pre">SDL_Delay</span></code> (you must include <strong>SDL.h</strong> for that).</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">millis</span></code> is negative, the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism is used. (Note that 0 means that <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> is still used, which basically means “run asynchronously as soon as possible”.)</p>
+<p>When building natively this becomes a simple direct call, after <code class="docutils literal notranslate"><span class="pre">SDL_Delay</span></code>
+(you must include <strong>SDL.h</strong> for that).</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">millis</span></code> is negative, the browser’s <code class="docutils literal notranslate"><span class="pre">requestAnimationFrame</span></code> mechanism
+is used. (Note that 0 means that <code class="docutils literal notranslate"><span class="pre">setTimeout</span></code> is still used, which basically
+means “run asynchronously as soon as possible”.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -906,16 +1060,27 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_exit_with_live_runtime">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_exit_with_live_runtime</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_exit_with_live_runtime" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Stops the current thread of execution, but leaves the runtime alive so that you can continue to run code later (so global destructors etc., are not run). Note that the runtime is kept alive automatically when you do an asynchronous operation like <a class="reference internal" href="#c.emscripten_async_call" title="emscripten_async_call"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_call()</span></code></a>, so you don’t need to call this function for those cases.</p>
-<p>In a multithreaded application, this just exits the current thread (and allows running code later in the Web Worker in which it runs).</p>
+<dd><p>Stops the current thread of execution, but leaves the runtime alive so that
+you can continue to run code later (so global destructors etc., are not run).
+Note that the runtime is kept alive automatically when you do an asynchronous
+operation like <a class="reference internal" href="#c.emscripten_async_call" title="emscripten_async_call"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_call()</span></code></a>, so you don’t need to call this
+function for those cases.</p>
+<p>In a multithreaded application, this just exits the current thread (and allows
+running code later in the Web Worker in which it runs).</p>
 </dd></dl>
 
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_force_exit">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_force_exit</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">status</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_force_exit" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Shuts down the runtime and exits (terminates) the program, as if you called <code class="docutils literal notranslate"><span class="pre">exit()</span></code>.</p>
-<p>The difference is that <code class="docutils literal notranslate"><span class="pre">emscripten_force_exit</span></code> will shut down the runtime even if you previously called <a class="reference internal" href="#c.emscripten_exit_with_live_runtime" title="emscripten_exit_with_live_runtime"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_exit_with_live_runtime()</span></code></a> or otherwise kept the runtime alive. In other words, this method gives you the option to completely shut down the runtime after it was kept alive beyond the completion of <code class="docutils literal notranslate"><span class="pre">main()</span></code>.</p>
-<p>Note that if <code class="docutils literal notranslate"><span class="pre">EXIT_RUNTIME</span></code> is not set (which is the case by default) then the runtime cannot be shut down, as we do not include the code to do so. Build with <code class="docutils literal notranslate"><span class="pre">-sEXIT_RUNTIME</span></code> if you want to be able to exit the runtime.</p>
+<p>The difference is that <code class="docutils literal notranslate"><span class="pre">emscripten_force_exit</span></code> will shut down the runtime
+even if you previously called <a class="reference internal" href="#c.emscripten_exit_with_live_runtime" title="emscripten_exit_with_live_runtime"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_exit_with_live_runtime()</span></code></a> or
+otherwise kept the runtime alive. In other words, this method gives you the
+option to completely shut down the runtime after it was kept alive beyond the
+completion of <code class="docutils literal notranslate"><span class="pre">main()</span></code>.</p>
+<p>Note that if <code class="docutils literal notranslate"><span class="pre">EXIT_RUNTIME</span></code> is not set (which is the case by default) then
+the runtime cannot be shut down, as we do not include the code to do so. Build
+with <code class="docutils literal notranslate"><span class="pre">-sEXIT_RUNTIME</span></code> if you want to be able to exit the runtime.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -962,14 +1127,19 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_hide_mouse">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_hide_mouse</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_hide_mouse" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Hide the OS mouse cursor over the canvas.</p>
-<p>Note that SDL’s <code class="docutils literal notranslate"><span class="pre">SDL_ShowCursor</span></code> command shows and hides the SDL cursor, not the OS one. This command is useful to hide the OS cursor if your app draws its own cursor.</p>
+<p>Note that SDL’s <code class="docutils literal notranslate"><span class="pre">SDL_ShowCursor</span></code> command shows and hides the SDL cursor, not
+the OS one. This command is useful to hide the OS cursor if your app draws its
+own cursor.</p>
 </dd></dl>
 
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_get_now">
 <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_get_now</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_get_now" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Returns the highest-precision representation of the current time that the browser provides.</p>
-<p>This uses either <code class="docutils literal notranslate"><span class="pre">Date.now</span></code> or <code class="docutils literal notranslate"><span class="pre">performance.now</span></code>. The result is not an absolute time, and is only meaningful in comparison to other calls to this function.</p>
+<dd><p>Returns the highest-precision representation of the current time that the
+browser provides.</p>
+<p>This uses either <code class="docutils literal notranslate"><span class="pre">Date.now</span></code> or <code class="docutils literal notranslate"><span class="pre">performance.now</span></code>. The result is not an
+absolute time, and is only meaningful in comparison to other calls to this
+function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>double</p>
@@ -1003,7 +1173,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_async_wget_onload_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_async_wget_onload_func</span></span></span><a class="headerlink" href="#c.em_async_wget_onload_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of <a class="reference internal" href="#c.emscripten_async_wget_data" title="emscripten_async_wget_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget_data()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of
+<a class="reference internal" href="#c.emscripten_async_wget_data" title="emscripten_async_wget_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget_data()</span></code></a> (specific values of the parameters
+documented in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_wget_onload_func</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </span></pre></div>
@@ -1013,7 +1185,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_async_wget2_onload_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_async_wget2_onload_func</span></span></span><a class="headerlink" href="#c.em_async_wget2_onload_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of <a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of
+<a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2()</span></code></a> (specific values of the parameters documented
+in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_wget2_onload_func</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">char</span><span class="o">*</span><span class="p">)</span>
 </span></pre></div>
@@ -1023,7 +1197,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_async_wget2_onstatus_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_async_wget2_onstatus_func</span></span></span><a class="headerlink" href="#c.em_async_wget2_onstatus_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onerror</span></code> and <code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callbacks of <a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onerror</span></code> and <code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callbacks of
+<a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2()</span></code></a> (specific values of the parameters documented
+in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_wget2_onstatus_func</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </span></pre></div>
@@ -1033,7 +1209,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_async_wget2_data_onload_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_async_wget2_data_onload_func</span></span></span><a class="headerlink" href="#c.em_async_wget2_data_onload_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of <a class="reference internal" href="#c.emscripten_async_wget2_data" title="emscripten_async_wget2_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2_data()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of
+<a class="reference internal" href="#c.emscripten_async_wget2_data" title="emscripten_async_wget2_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2_data()</span></code></a> (specific values of the parameters
+documented in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_wget2_data_onload_func</span><span class="p">)(</span><span class="n">unsigned</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="n">void</span> <span class="o">*</span><span class="p">,</span> <span class="n">unsigned</span><span class="p">)</span>
 </span></pre></div>
@@ -1043,7 +1221,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_async_wget2_data_onerror_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_async_wget2_data_onerror_func</span></span></span><a class="headerlink" href="#c.em_async_wget2_data_onerror_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onerror</span></code> callback of <a class="reference internal" href="#c.emscripten_async_wget2_data" title="emscripten_async_wget2_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2_data()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onerror</span></code> callback of
+<a class="reference internal" href="#c.emscripten_async_wget2_data" title="emscripten_async_wget2_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2_data()</span></code></a> (specific values of the parameters
+documented in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_wget2_data_onerror_func</span><span class="p">)(</span><span class="n">unsigned</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">const</span> <span class="n">char</span><span class="o">*</span><span class="p">)</span>
 </span></pre></div>
@@ -1053,7 +1233,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_async_wget2_data_onprogress_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_async_wget2_data_onprogress_func</span></span></span><a class="headerlink" href="#c.em_async_wget2_data_onprogress_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callback of <a class="reference internal" href="#c.emscripten_async_wget2_data" title="emscripten_async_wget2_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2_data()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callback of
+<a class="reference internal" href="#c.emscripten_async_wget2_data" title="emscripten_async_wget2_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2_data()</span></code></a> (specific values of the parameters
+documented in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_async_wget2_data_onprogress_func</span><span class="p">)(</span><span class="n">unsigned</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 </span></pre></div>
@@ -1063,7 +1245,9 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_run_preload_plugins_data_onload_func">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_run_preload_plugins_data_onload_func</span></span></span><a class="headerlink" href="#c.em_run_preload_plugins_data_onload_func" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of <a class="reference internal" href="#c.emscripten_run_preload_plugins_data" title="emscripten_run_preload_plugins_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins_data()</span></code></a> (specific values of the parameters documented in that method).</p>
+<dd><p>Function pointer type for the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback of
+<a class="reference internal" href="#c.emscripten_run_preload_plugins_data" title="emscripten_run_preload_plugins_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins_data()</span></code></a> (specific values of the
+parameters documented in that method).</p>
 <p>Defined as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">typedef</span> <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">em_run_preload_plugins_data_onload_func</span><span class="p">)(</span><span class="n">void</span><span class="o">*</span><span class="p">,</span> <span class="n">const</span> <span class="n">char</span><span class="o">*</span><span class="p">)</span>
 </span></pre></div>
@@ -1077,8 +1261,13 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_async_wget">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_wget</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file</span></span>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><span class="n"><span class="pre">em_str_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><span class="n"><span class="pre">em_str_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_wget" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Loads a file from a URL asynchronously.</p>
-<p>In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (we asynchronously do the work to make the browser decode the image or audio etc.).  See <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preloading files.</p>
-<p>When the file is ready the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error occurs <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called. The callbacks are called with the file as their argument.</p>
+<p>In addition to fetching the URL from the network, preload plugins are executed
+so that the data is usable in <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (we asynchronously do
+the work to make the browser decode the image or audio etc.).  See
+<a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preloading files.</p>
+<p>When the file is ready the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error
+occurs <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called. The callbacks are called with the file as
+their argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1104,8 +1293,12 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_wget_data</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_async_wget_onload_func" title="em_async_wget_onload_func"><span class="n"><span class="pre">em_async_wget_onload_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_wget_data" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Loads a buffer from a URL asynchronously.</p>
 <p>This is the “data” version of <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget()</span></code></a>.</p>
-<p>Instead of writing to a file, this function writes to a buffer directly in memory. This avoids the overhead of using the emulated file system; note however that since files are not used, it cannot run preload plugins to set things up for <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (<code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> etc. work on files).</p>
-<p>When the file is ready then the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<p>Instead of writing to a file, this function writes to a buffer directly in
+memory. This avoids the overhead of using the emulated file system; note
+however that since files are not used, it cannot run preload plugins to set
+things up for <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (<code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> etc. work on files).</p>
+<p>When the file is ready then the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any
+error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1133,8 +1326,13 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_wget2</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">requesttype</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">param</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_async_wget2_onload_func" title="em_async_wget2_onload_func"><span class="n"><span class="pre">em_async_wget2_onload_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_async_wget2_onstatus_func" title="em_async_wget2_onstatus_func"><span class="n"><span class="pre">em_async_wget2_onstatus_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span>, <a class="reference internal" href="#c.em_async_wget2_onstatus_func" title="em_async_wget2_onstatus_func"><span class="n"><span class="pre">em_async_wget2_onstatus_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onprogress</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_wget2" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Loads a file from a URL asynchronously.</p>
 <p>This is an <strong>experimental</strong> “more feature-complete” version of <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget()</span></code></a>.</p>
-<p>Preload plug-ins are at this time <em>not</em> executed on the downloaded data. You may want to call <a class="reference internal" href="#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins()</span></code></a> in the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback if you want to be able to use the downloaded file with <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and such.</p>
-<p>When the file is ready the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called with the object pointers given in <code class="docutils literal notranslate"><span class="pre">arg</span></code> and <code class="docutils literal notranslate"><span class="pre">file</span></code>. During the download the <code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callback is called.</p>
+<p>Preload plug-ins are at this time <em>not</em> executed on the downloaded data. You
+may want to call <a class="reference internal" href="#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins()</span></code></a> in the <code class="docutils literal notranslate"><span class="pre">onload</span></code>
+callback if you want to be able to use the downloaded file with <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code>
+and such.</p>
+<p>When the file is ready the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called with the object
+pointers given in <code class="docutils literal notranslate"><span class="pre">arg</span></code> and <code class="docutils literal notranslate"><span class="pre">file</span></code>. During the download the <code class="docutils literal notranslate"><span class="pre">onprogress</span></code>
+callback is called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1173,9 +1371,19 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dt class="sig sig-object c" id="c.emscripten_async_wget2_data">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_async_wget2_data</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">requesttype</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">param</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">free</span></span>, <a class="reference internal" href="#c.em_async_wget2_data_onload_func" title="em_async_wget2_data_onload_func"><span class="n"><span class="pre">em_async_wget2_data_onload_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_async_wget2_data_onerror_func" title="em_async_wget2_data_onerror_func"><span class="n"><span class="pre">em_async_wget2_data_onerror_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span>, <a class="reference internal" href="#c.em_async_wget2_data_onprogress_func" title="em_async_wget2_data_onprogress_func"><span class="n"><span class="pre">em_async_wget2_data_onprogress_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onprogress</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_async_wget2_data" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Loads a buffer from a URL asynchronously.</p>
-<p>This is the “data” version of <a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2()</span></code></a>. It is an <strong>experimental</strong> “more feature complete” version of <a class="reference internal" href="#c.emscripten_async_wget_data" title="emscripten_async_wget_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget_data()</span></code></a>.</p>
-<p>Instead of writing to a file, this function writes to a buffer directly in memory. This avoids the overhead of using the emulated file system; note however that since files are not used, it cannot run preload plugins to set things up for <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (<code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> etc. work on files).</p>
-<p>When the file is ready the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called with the object pointers given in <code class="docutils literal notranslate"><span class="pre">arg</span></code>, a pointer to the buffer in memory, and an unsigned integer containing the size of the buffer. During the download the <code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callback is called with progress information. If an error occurs, <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called with the HTTP status code and a string containing the status description.</p>
+<p>This is the “data” version of <a class="reference internal" href="#c.emscripten_async_wget2" title="emscripten_async_wget2"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget2()</span></code></a>. It is an
+<strong>experimental</strong> “more feature complete” version of
+<a class="reference internal" href="#c.emscripten_async_wget_data" title="emscripten_async_wget_data"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget_data()</span></code></a>.</p>
+<p>Instead of writing to a file, this function writes to a buffer directly in
+memory. This avoids the overhead of using the emulated file system; note
+however that since files are not used, it cannot run preload plugins to set
+things up for <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (<code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> etc. work on files).</p>
+<p>When the file is ready the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called with the object
+pointers given in <code class="docutils literal notranslate"><span class="pre">arg</span></code>, a pointer to the buffer in memory, and an unsigned
+integer containing the size of the buffer. During the download the
+<code class="docutils literal notranslate"><span class="pre">onprogress</span></code> callback is called with progress information. If an error
+occurs, <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called with the HTTP status code and a string
+containing the status description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1232,9 +1440,18 @@ proxy, and the JS is executed immediately and synchronously.)</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_run_preload_plugins_data">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_run_preload_plugins_data</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">suffix</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_run_preload_plugins_data_onload_func" title="em_run_preload_plugins_data_onload_func"><span class="n"><span class="pre">em_run_preload_plugins_data_onload_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_run_preload_plugins_data" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Runs preload plugins on a buffer of data asynchronously. This is a “data” version of <a class="reference internal" href="#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins()</span></code></a>, which receives raw data as input instead of a filename (this can prevent the need to write data to a file first). See <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preload plugins.</p>
-<p>When file is loaded then the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error occurs <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
-<p><code class="docutils literal notranslate"><span class="pre">onload</span></code> also receives a second parameter, which is a ‘fake’ filename which you can pass into <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> (it is not an actual file, but it identifies this image for <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> to be able to process it). Note that the user of this API is responsible for <code class="docutils literal notranslate"><span class="pre">free()</span></code> ing the memory allocated for the fake filename.</p>
+<dd><p>Runs preload plugins on a buffer of data asynchronously. This is a “data”
+version of <a class="reference internal" href="#c.emscripten_run_preload_plugins" title="emscripten_run_preload_plugins"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_run_preload_plugins()</span></code></a>, which receives raw data
+as input instead of a filename (this can prevent the need to write data to a
+file first). See <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preload
+plugins.</p>
+<p>When file is loaded then the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error
+occurs <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<p><code class="docutils literal notranslate"><span class="pre">onload</span></code> also receives a second parameter, which is a ‘fake’ filename which
+you can pass into <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> (it is not an actual file, but it identifies
+this image for <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> to be able to process it). Note that the user of
+this API is responsible for <code class="docutils literal notranslate"><span class="pre">free()</span></code> ing the memory allocated for the fake
+filename.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1284,13 +1501,20 @@ same as those used in the normal <code class="docutils literal notranslate"><spa
 <section id="asynchronous-indexeddb-api">
 <h2><a class="toc-backref" href="#id17" role="doc-backlink">Asynchronous IndexedDB API</a><a class="headerlink" href="#asynchronous-indexeddb-api" title="Link to this heading">¶</a></h2>
 <blockquote>
-<div><p>IndexedDB is a browser API that lets you store data persistently, that is, you can save data there and load it later when the user re-visits the web page. IDBFS provides one way to use IndexedDB, through the Emscripten filesystem layer. The <code class="docutils literal notranslate"><span class="pre">emscripten_idb_*</span></code> methods listed here provide an alternative API, directly to IndexedDB, thereby avoiding the overhead of the filesystem layer.</p>
+<div><p>IndexedDB is a browser API that lets you store data persistently, that is, you
+can save data there and load it later when the user re-visits the web page.
+IDBFS provides one way to use IndexedDB, through the Emscripten filesystem
+layer. The <code class="docutils literal notranslate"><span class="pre">emscripten_idb_*</span></code> methods listed here provide an alternative
+API, directly to IndexedDB, thereby avoiding the overhead of the filesystem
+layer.</p>
 </div></blockquote>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_idb_async_load">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_idb_async_load</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">db_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_id</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_async_wget_onload_func" title="em_async_wget_onload_func"><span class="n"><span class="pre">em_async_wget_onload_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_idb_async_load" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Loads data from local IndexedDB storage asynchronously. This allows use of persistent data, without the overhead of the filesystem layer.</p>
-<p>When the data is ready then the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<dd><p>Loads data from local IndexedDB storage asynchronously. This allows use of
+persistent data, without the overhead of the filesystem layer.</p>
+<p>When the data is ready then the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any
+error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1317,8 +1541,10 @@ same as those used in the normal <code class="docutils literal notranslate"><spa
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_idb_async_store">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_idb_async_store</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">db_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_id</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ptr</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">num</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onstore</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><span class="p"><span class="pre">;</span></span><a class="headerlink" href="#c.emscripten_idb_async_store" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Stores data to local IndexedDB storage asynchronously. This allows use of persistent data, without the overhead of the filesystem layer.</p>
-<p>When the data has been stored then the <code class="docutils literal notranslate"><span class="pre">onstore</span></code> callback will be called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<dd><p>Stores data to local IndexedDB storage asynchronously. This allows use of
+persistent data, without the overhead of the filesystem layer.</p>
+<p>When the data has been stored then the <code class="docutils literal notranslate"><span class="pre">onstore</span></code> callback will be called. If
+any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1346,7 +1572,8 @@ same as those used in the normal <code class="docutils literal notranslate"><spa
 <dt class="sig sig-object c" id="c.emscripten_idb_async_delete">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_idb_async_delete</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">db_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_id</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">ondelete</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_idb_async_delete" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Deletes data from local IndexedDB storage asynchronously.</p>
-<p>When the data has been deleted then the <code class="docutils literal notranslate"><span class="pre">ondelete</span></code> callback will be called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<p>When the data has been deleted then the <code class="docutils literal notranslate"><span class="pre">ondelete</span></code> callback will be called.
+If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1371,8 +1598,10 @@ same as those used in the normal <code class="docutils literal notranslate"><spa
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_idb_async_exists">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_idb_async_exists</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">db_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_id</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <span class="n"><span class="pre">em_idb_exists_func</span></span><span class="w"> </span><span class="n"><span class="pre">oncheck</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_idb_async_exists" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Checks if data with a certain ID exists in the local IndexedDB storage asynchronously.</p>
-<p>When the data has been checked then the <code class="docutils literal notranslate"><span class="pre">oncheck</span></code> callback will be called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<dd><p>Checks if data with a certain ID exists in the local IndexedDB storage
+asynchronously.</p>
+<p>When the data has been checked then the <code class="docutils literal notranslate"><span class="pre">oncheck</span></code> callback will be called.
+If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1399,7 +1628,8 @@ same as those used in the normal <code class="docutils literal notranslate"><spa
 <dt class="sig sig-object c" id="c.emscripten_idb_async_clear">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_idb_async_clear</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">db_name</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onclear</span></span>, <a class="reference internal" href="#c.em_arg_callback_func" title="em_arg_callback_func"><span class="n"><span class="pre">em_arg_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_idb_async_clear" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Clears all data from local IndexedDB storage asynchronously.</p>
-<p>When the storage has been cleared then the <code class="docutils literal notranslate"><span class="pre">onclear</span></code> callback will be called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
+<p>When the storage has been cleared then the <code class="docutils literal notranslate"><span class="pre">onclear</span></code> callback will be
+called. If any error occurred <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1423,8 +1653,14 @@ same as those used in the normal <code class="docutils literal notranslate"><spa
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_run_preload_plugins">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_run_preload_plugins</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file</span></span>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><span class="n"><span class="pre">em_str_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onload</span></span>, <a class="reference internal" href="#c.em_str_callback_func" title="em_str_callback_func"><span class="n"><span class="pre">em_str_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">onerror</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_run_preload_plugins" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Runs preload plugins on a file asynchronously. It works on file data already present and performs any required asynchronous operations available as preload plugins, such as decoding images for use in <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code>, or decoding audio for use in <code class="docutils literal notranslate"><span class="pre">Mix_LoadWAV</span></code>. See <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preloading plugins.</p>
-<p>Once the operations are complete, the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If any error occurs <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called. The callbacks are called with the file as their argument.</p>
+<dd><p>Runs preload plugins on a file asynchronously. It works on file data already
+present and performs any required asynchronous operations available as preload
+plugins, such as decoding images for use in <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code>, or decoding audio
+for use in <code class="docutils literal notranslate"><span class="pre">Mix_LoadWAV</span></code>. See <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information
+on preloading plugins.</p>
+<p>Once the operations are complete, the <code class="docutils literal notranslate"><span class="pre">onload</span></code> callback will be called. If
+any error occurs <code class="docutils literal notranslate"><span class="pre">onerror</span></code> will be called. The callbacks are called with the
+file as their argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1479,7 +1715,10 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="sig sig-object c" id="c.worker_handle">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">worker_handle</span></span></span><a class="headerlink" href="#c.worker_handle" title="Link to this definition">¶</a><br /></dt>
 <dd><p>A wrapper around web workers that lets you create workers and communicate with them.</p>
-<p>Note that the current API is mainly focused on a main thread that sends jobs to workers and waits for responses, i.e., in an asymmetrical manner, there is no current API to send a message without being asked for it from a worker to the main thread.</p>
+<p>Note that the current API is mainly focused on a main thread that sends jobs
+to workers and waits for responses, i.e., in an asymmetrical manner, there is
+no current API to send a message without being asked for it from a worker to
+the main thread.</p>
 </dd></dl>
 
 <dl class="c type">
@@ -1499,8 +1738,10 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="sig sig-object c" id="c.emscripten_create_worker">
 <a class="reference internal" href="#c.worker_handle" title="worker_handle"><span class="n"><span class="pre">worker_handle</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_create_worker</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_create_worker" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Creates a worker.</p>
-<p>A worker must be compiled separately from the main program, and with the <code class="docutils literal notranslate"><span class="pre">BUILD_AS_WORKER</span></code> flag set to 1.</p>
-<p>That worker must not be compiled with the <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> flag as the POSIX threads implementation and this Worker API are incompatible.</p>
+<p>A worker must be compiled separately from the main program, and with the
+<code class="docutils literal notranslate"><span class="pre">BUILD_AS_WORKER</span></code> flag set to 1.</p>
+<p>That worker must not be compiled with the <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> flag as the POSIX
+threads implementation and this Worker API are incompatible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1533,8 +1774,18 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="sig sig-object c" id="c.emscripten_call_worker">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_call_worker</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.worker_handle" title="worker_handle"><span class="n"><span class="pre">worker_handle</span></span></a><span class="w"> </span><span class="n"><span class="pre">worker</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">funcname</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span>, <a class="reference internal" href="#c.em_worker_callback_func" title="em_worker_callback_func"><span class="n"><span class="pre">em_worker_callback_func</span></span></a><span class="w"> </span><span class="n"><span class="pre">callback</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_call_worker" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Asynchronously calls a worker.</p>
-<p>The worker function will be called with two parameters: a data pointer, and a size. The data block defined by the pointer and size exists only during the callback: <strong>it cannot be relied upon afterwards</strong>. If you need to keep some of that information outside the callback, then it needs to be copied to a safe location.</p>
-<p>The called worker function can return data, by calling <a class="reference internal" href="#c.emscripten_worker_respond" title="emscripten_worker_respond"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_worker_respond()</span></code></a>. When the worker is called, if a callback was given it will be called with three arguments: a data pointer, a size, and an argument that was provided when calling <a class="reference internal" href="#c.emscripten_call_worker" title="emscripten_call_worker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_call_worker()</span></code></a> (to more easily associate callbacks to calls). The data block defined by the data pointer and size behave like the data block in the worker function — it exists only during the callback.</p>
+<p>The worker function will be called with two parameters: a data pointer, and a
+size. The data block defined by the pointer and size exists only during the
+callback: <strong>it cannot be relied upon afterwards</strong>. If you need to keep some of
+that information outside the callback, then it needs to be copied to a safe
+location.</p>
+<p>The called worker function can return data, by calling
+<a class="reference internal" href="#c.emscripten_worker_respond" title="emscripten_worker_respond"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_worker_respond()</span></code></a>. When the worker is called, if a callback
+was given it will be called with three arguments: a data pointer, a size, and
+an argument that was provided when calling <a class="reference internal" href="#c.emscripten_call_worker" title="emscripten_call_worker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_call_worker()</span></code></a>
+(to more easily associate callbacks to calls). The data block defined by the
+data pointer and size behave like the data block in the worker function — it
+exists only during the callback.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1560,8 +1811,14 @@ to work around this limitation is to use the <code class="docutils literal notra
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_worker_respond</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_worker_respond" title="Link to this definition">¶</a><br /></dt>
 <dt class="sig sig-object c" id="c.emscripten_worker_respond_provisionally">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_worker_respond_provisionally</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_worker_respond_provisionally" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Sends a response when in a worker call (that is, when called by the main thread using <a class="reference internal" href="#c.emscripten_call_worker" title="emscripten_call_worker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_call_worker()</span></code></a>).</p>
-<p>Both functions post a message back to the thread which called the worker. The <a class="reference internal" href="#c.emscripten_worker_respond_provisionally" title="emscripten_worker_respond_provisionally"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_worker_respond_provisionally()</span></code></a> variant can be invoked multiple times, which will queue up messages to be posted to the worker’s creator. Eventually, the _respond variant must be invoked, which will disallow further messages and free framework resources previously allocated for this worker call.</p>
+<dd><p>Sends a response when in a worker call (that is, when called by the main
+thread using <a class="reference internal" href="#c.emscripten_call_worker" title="emscripten_call_worker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_call_worker()</span></code></a>).</p>
+<p>Both functions post a message back to the thread which called the worker. The
+<a class="reference internal" href="#c.emscripten_worker_respond_provisionally" title="emscripten_worker_respond_provisionally"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_worker_respond_provisionally()</span></code></a> variant can be invoked
+multiple times, which will queue up messages to be posted to the worker’s
+creator. Eventually, the _respond variant must be invoked, which will disallow
+further messages and free framework resources previously allocated for this
+worker call.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Calling the provisional version is optional, but you must call the non-provisional version to avoid leaks.</p>
@@ -1580,7 +1837,10 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="sig sig-object c" id="c.emscripten_get_worker_queue_size">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_get_worker_queue_size</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.worker_handle" title="worker_handle"><span class="n"><span class="pre">worker_handle</span></span></a><span class="w"> </span><span class="n"><span class="pre">worker</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_get_worker_queue_size" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Checks how many responses are being waited for from a worker.</p>
-<p>This only counts calls to <a class="reference internal" href="#c.emscripten_call_worker" title="emscripten_call_worker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_call_worker()</span></code></a> that had a callback (calls with null callbacks are ignored), and where the response has not yet been received. It is a simple way to check on the status of the worker to see how busy it is, and do basic decisions about throttling.</p>
+<p>This only counts calls to <a class="reference internal" href="#c.emscripten_call_worker" title="emscripten_call_worker"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_call_worker()</span></code></a> that had a callback
+(calls with null callbacks are ignored), and where the response has not yet
+been received. It is a simple way to check on the status of the worker to see
+how busy it is, and do basic decisions about throttling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1605,7 +1865,8 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dl class="c macro">
 <dt class="sig sig-object c" id="c.EM_LOG_CONSOLE">
 <span class="sig-name descname"><span class="n"><span class="pre">EM_LOG_CONSOLE</span></span></span><a class="headerlink" href="#c.EM_LOG_CONSOLE" title="Link to this definition">¶</a><br /></dt>
-<dd><p>If specified, logs directly to the browser console/inspector window. If not specified, logs via the application Module.</p>
+<dd><p>If specified, logs directly to the browser console/inspector window. If not
+specified, logs via the application Module.</p>
 </dd></dl>
 
 <dl class="c macro">
@@ -1635,13 +1896,17 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dl class="c macro">
 <dt class="sig sig-object c" id="c.EM_LOG_C_STACK">
 <span class="sig-name descname"><span class="n"><span class="pre">EM_LOG_C_STACK</span></span></span><a class="headerlink" href="#c.EM_LOG_C_STACK" title="Link to this definition">¶</a><br /></dt>
-<dd><p>If specified, prints a call stack that contains file names referring to original C sources using source map information.</p>
+<dd><p>If specified, prints a call stack that contains file names referring to
+original C sources using source map information.</p>
 </dd></dl>
 
 <dl class="c macro">
 <dt class="sig sig-object c" id="c.EM_LOG_JS_STACK">
 <span class="sig-name descname"><span class="n"><span class="pre">EM_LOG_JS_STACK</span></span></span><a class="headerlink" href="#c.EM_LOG_JS_STACK" title="Link to this definition">¶</a><br /></dt>
-<dd><p>If specified, prints a call stack that contains file names referring to lines in the built .js/.html file along with the message. The flags <a class="reference internal" href="#c.EM_LOG_C_STACK" title="EM_LOG_C_STACK"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_C_STACK</span></code></a> and <a class="reference internal" href="#c.EM_LOG_JS_STACK" title="EM_LOG_JS_STACK"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_JS_STACK</span></code></a> can be combined to output both untranslated and translated file and line information.</p>
+<dd><p>If specified, prints a call stack that contains file names referring to lines
+in the built .js/.html file along with the message. The flags
+<a class="reference internal" href="#c.EM_LOG_C_STACK" title="EM_LOG_C_STACK"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_C_STACK</span></code></a> and <a class="reference internal" href="#c.EM_LOG_JS_STACK" title="EM_LOG_JS_STACK"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_JS_STACK</span></code></a> can be combined to
+output both untranslated and translated file and line information.</p>
 </dd></dl>
 
 <dl class="c macro">
@@ -1661,9 +1926,13 @@ to work around this limitation is to use the <code class="docutils literal notra
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">emscripten_get_compiler_setting</span><span class="p">(</span><span class="s2">&quot;INITIAL_MEMORY&quot;</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p>For values containing anything other than an integer, a string is returned (you will need to cast the <code class="docutils literal notranslate"><span class="pre">long</span></code> return value to a <code class="docutils literal notranslate"><span class="pre">char*</span></code>).</p>
-<p>Some useful things this can do is provide the version of Emscripten (“EMSCRIPTEN_VERSION”), the optimization level (“OPT_LEVEL”), debug level (“DEBUG_LEVEL”), etc.</p>
-<p>For this command to work, you must build with the following compiler option (as we do not want to increase the build size with this metadata):</p>
+<p>For values containing anything other than an integer, a string is returned
+(you will need to cast the <code class="docutils literal notranslate"><span class="pre">long</span></code> return value to a <code class="docutils literal notranslate"><span class="pre">char*</span></code>).</p>
+<p>Some useful things this can do is provide the version of Emscripten
+(“EMSCRIPTEN_VERSION”), the optimization level (“OPT_LEVEL”), debug level
+(“DEBUG_LEVEL”), etc.</p>
+<p>For this command to work, you must build with the following compiler option
+(as we do not want to increase the build size with this metadata):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">-</span><span class="n">sRETAIN_COMPILER_SETTINGS</span>
 </span></pre></div>
 </div>
@@ -1722,17 +1991,32 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="sig sig-object c" id="c.emscripten_get_callstack">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_get_callstack</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">flags</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">maxbytes</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_get_callstack" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Programmatically obtains the current callstack.</p>
-<p>To query the amount of bytes needed for a callstack without writing it, pass 0 to <code class="docutils literal notranslate"><span class="pre">out</span></code> and <code class="docutils literal notranslate"><span class="pre">maxbytes</span></code>, in which case the function will return the number of bytes (including the terminating zero) that will be needed to hold the full callstack. Note that this might be fully accurate since subsequent calls will carry different line numbers, so it is best to allocate a few bytes extra to be safe.</p>
+<p>To query the amount of bytes needed for a callstack without writing it, pass 0
+to <code class="docutils literal notranslate"><span class="pre">out</span></code> and <code class="docutils literal notranslate"><span class="pre">maxbytes</span></code>, in which case the function will return the number
+of bytes (including the terminating zero) that will be needed to hold the full
+callstack. Note that this might be fully accurate since subsequent calls will
+carry different line numbers, so it is best to allocate a few bytes extra to
+be safe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>flags</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></span>) – A binary OR of items from the list of <a class="reference internal" href="#c.EM_LOG_CONSOLE" title="EM_LOG_CONSOLE"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_xxx</span></code></a> flags that specify printing options. The flags <a class="reference internal" href="#c.EM_LOG_CONSOLE" title="EM_LOG_CONSOLE"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_CONSOLE</span></code></a>, <a class="reference internal" href="#c.EM_LOG_WARN" title="EM_LOG_WARN"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_WARN</span></code></a> and <a class="reference internal" href="#c.EM_LOG_ERROR" title="EM_LOG_ERROR"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_ERROR</span></code></a> do not apply in this function and are ignored.</p></li>
-<li><p><strong>out</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">char</span><span class="p">*</span></span></span>) – A pointer to a memory region where the callstack string will be written to. The string outputted by this function will always be null-terminated.</p></li>
-<li><p><strong>maxbytes</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></span>) – The maximum number of bytes that this function can write to the memory pointed to by <code class="docutils literal notranslate"><span class="pre">out</span></code>. If there is not enough space, the output will be truncated (but always null-terminated).</p></li>
+<li><p><strong>flags</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></span>) – A binary OR of items from the list of <a class="reference internal" href="#c.EM_LOG_CONSOLE" title="EM_LOG_CONSOLE"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_xxx</span></code></a>
+flags that specify printing options. The flags
+<a class="reference internal" href="#c.EM_LOG_CONSOLE" title="EM_LOG_CONSOLE"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_CONSOLE</span></code></a>, <a class="reference internal" href="#c.EM_LOG_WARN" title="EM_LOG_WARN"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_WARN</span></code></a> and
+<a class="reference internal" href="#c.EM_LOG_ERROR" title="EM_LOG_ERROR"><code class="xref c c-data docutils literal notranslate"><span class="pre">EM_LOG_ERROR</span></code></a> do not apply in this function and are
+ignored.</p></li>
+<li><p><strong>out</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">char</span><span class="p">*</span></span></span>) – A pointer to a memory region where the callstack string will
+be written to. The string outputted by this function will always be
+null-terminated.</p></li>
+<li><p><strong>maxbytes</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></span>) – The maximum number of bytes that this function can write
+to the memory pointed to by <code class="docutils literal notranslate"><span class="pre">out</span></code>. If there is not
+enough space, the output will be truncated (but always
+null-terminated).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The number of bytes written (not number of characters, so this will also include the terminating zero).</p>
+<dd class="field-even"><p>The number of bytes written (not number of characters, so this will
+also include the terminating zero).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -1786,17 +2070,24 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_print_double">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_print_double</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n"><span class="pre">x</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">to</span></span>, <span class="kt"><span class="pre">signed</span></span><span class="w"> </span><span class="n"><span class="pre">max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_print_double" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Prints a double as a string, including a null terminator. This is useful because JS engines have good support for printing out a double in a way that takes the least possible size, but preserves all the information in the double, i.e., it can then be parsed back in a perfectly reversible manner (snprintf etc. do not do so, sadly).</p>
+<dd><p>Prints a double as a string, including a null terminator. This is useful
+because JS engines have good support for printing out a double in a way that
+takes the least possible size, but preserves all the information in the
+double, i.e., it can then be parsed back in a perfectly reversible manner
+(snprintf etc. do not do so, sadly).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">double</span></span></span>) – The double.</p></li>
-<li><p><strong>to</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">char</span><span class="p">*</span></span></span>) – A pre-allocated buffer of sufficient size, or NULL if no output is requested (useful to get the necessary size).</p></li>
-<li><p><strong>max</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">signed</span></span></span>) – The maximum number of bytes that can be written to the output pointer ‘to’ (including the null terminator).</p></li>
+<li><p><strong>to</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">char</span><span class="p">*</span></span></span>) – A pre-allocated buffer of sufficient size, or NULL if no
+output is requested (useful to get the necessary size).</p></li>
+<li><p><strong>max</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">signed</span></span></span>) – The maximum number of bytes that can be written to the
+output pointer ‘to’ (including the null terminator).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>The number of necessary bytes, not including the null terminator (actually written, if <code class="docutils literal notranslate"><span class="pre">to</span></code> is not NULL).</p>
+<dd class="field-even"><p>The number of necessary bytes, not including the null terminator
+(actually written, if <code class="docutils literal notranslate"><span class="pre">to</span></code> is not NULL).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1805,10 +2096,29 @@ to work around this limitation is to use the <code class="docutils literal notra
 </section>
 <section id="socket-event-registration">
 <span id="emscripten-api-reference-sockets"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink">Socket event registration</a><a class="headerlink" href="#socket-event-registration" title="Link to this heading">¶</a></h2>
-<p>The functions in this section register callback functions for receiving socket events. These events are analogous to <a class="reference external" href="https://developer.mozilla.org/en/docs/WebSockets">WebSocket</a> events but are emitted <em>after</em> the internal Emscripten socket processing has occurred. This means, for example, that the message callback will be triggered after the data has been added to the <em>recv_queue</em>, so that an application receiving this callback can simply read the data using the file descriptor passed as a parameter to the callback. All of the callbacks are passed a file descriptor (<code class="docutils literal notranslate"><span class="pre">fd</span></code>) representing the socket that the notified activity took place on. The error callback also takes an <code class="docutils literal notranslate"><span class="pre">int</span></code> representing the socket error number (<code class="docutils literal notranslate"><span class="pre">errno</span></code>) and a <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represents the error message (<code class="docutils literal notranslate"><span class="pre">msg</span></code>).</p>
-<p>Only a single callback function may be registered to handle any given event, so calling a given registration function more than once will cause the first callback to be replaced. Similarly, passing a <code class="docutils literal notranslate"><span class="pre">NULL</span></code> callback function to any <code class="docutils literal notranslate"><span class="pre">emscripten_set_socket_*_callback</span></code> call will de-register the callback registered for that event.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">userData</span></code> pointer allows arbitrary data specified during event registration to be passed to the callback, this is particularly useful for passing <code class="docutils literal notranslate"><span class="pre">this</span></code> pointers around in Object Oriented code.</p>
-<p>In addition to being able to register network callbacks from C it is also possible for native JavaScript code to directly use the underlying mechanism used to implement the callback registration. For example, the following code shows simple logging callbacks that are registered by default when <code class="docutils literal notranslate"><span class="pre">SOCKET_DEBUG</span></code> is enabled:</p>
+<p>The functions in this section register callback functions for receiving socket
+events. These events are analogous to <a class="reference external" href="https://developer.mozilla.org/en/docs/WebSockets">WebSocket</a> events but are emitted
+<em>after</em> the internal Emscripten socket processing has occurred. This means, for
+example, that the message callback will be triggered after the data has been
+added to the <em>recv_queue</em>, so that an application receiving this callback can
+simply read the data using the file descriptor passed as a parameter to the
+callback. All of the callbacks are passed a file descriptor (<code class="docutils literal notranslate"><span class="pre">fd</span></code>)
+representing the socket that the notified activity took place on. The error
+callback also takes an <code class="docutils literal notranslate"><span class="pre">int</span></code> representing the socket error number (<code class="docutils literal notranslate"><span class="pre">errno</span></code>)
+and a <code class="docutils literal notranslate"><span class="pre">char*</span></code> that represents the error message (<code class="docutils literal notranslate"><span class="pre">msg</span></code>).</p>
+<p>Only a single callback function may be registered to handle any given event, so
+calling a given registration function more than once will cause the first
+callback to be replaced. Similarly, passing a <code class="docutils literal notranslate"><span class="pre">NULL</span></code> callback function to any
+<code class="docutils literal notranslate"><span class="pre">emscripten_set_socket_*_callback</span></code> call will de-register the callback
+registered for that event.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">userData</span></code> pointer allows arbitrary data specified during event
+registration to be passed to the callback, this is particularly useful for
+passing <code class="docutils literal notranslate"><span class="pre">this</span></code> pointers around in Object Oriented code.</p>
+<p>In addition to being able to register network callbacks from C it is also
+possible for native JavaScript code to directly use the underlying mechanism
+used to implement the callback registration. For example, the following code
+shows simple logging callbacks that are registered by default when
+<code class="docutils literal notranslate"><span class="pre">SOCKET_DEBUG</span></code> is enabled:</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;error&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket error &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">error</span><span class="p">);});</span>
 </span><span data-line="2"><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket open fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span>
 </span><span data-line="3"><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;listen&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket listen fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span>
@@ -1817,17 +2127,26 @@ to work around this limitation is to use the <code class="docutils literal notra
 </span><span data-line="6"><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;websocket&#39;</span><span class="p">][</span><span class="s1">&#39;on&#39;</span><span class="p">](</span><span class="s1">&#39;close&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">fd</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Socket close fd = &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">fd</span><span class="p">);});</span>
 </span></pre></div>
 </div>
-<p>Most of the JavaScript callback functions above get passed the file descriptor of the socket that triggered the callback, the on error callback however gets passed an <em>array</em> that contains the file descriptor, the error code and an error message.</p>
+<p>Most of the JavaScript callback functions above get passed the file descriptor
+of the socket that triggered the callback, the on error callback however gets
+passed an <em>array</em> that contains the file descriptor, the error code and an error
+message.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The underlying JavaScript implementation doesn’t pass <code class="docutils literal notranslate"><span class="pre">userData</span></code>. This is mostly of use to C/C++ code and the <code class="docutils literal notranslate"><span class="pre">emscripten_set_socket_*_callback</span></code> calls simply create a closure containing the <code class="docutils literal notranslate"><span class="pre">userData</span></code> and pass that as the callback to the underlying JavaScript event registration mechanism.</p>
+<p>The underlying JavaScript implementation doesn’t pass <code class="docutils literal notranslate"><span class="pre">userData</span></code>.
+This is mostly of use to C/C++ code and the
+<code class="docutils literal notranslate"><span class="pre">emscripten_set_socket_*_callback</span></code> calls simply create a closure containing
+the <code class="docutils literal notranslate"><span class="pre">userData</span></code> and pass that as the callback to the underlying JavaScript
+event registration mechanism.</p>
 </div>
 <section id="callback-functions">
 <h3>Callback functions<a class="headerlink" href="#callback-functions" title="Link to this heading">¶</a></h3>
 <dl class="c type">
 <dt class="sig sig-object c" id="c.em_socket_callback">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">em_socket_callback</span></span></span><a class="headerlink" href="#c.em_socket_callback" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Function pointer for <a class="reference internal" href="#c.emscripten_set_socket_open_callback" title="emscripten_set_socket_open_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_socket_open_callback()</span></code></a>, and the other socket functions (except <a class="reference internal" href="#c.emscripten_set_socket_error_callback" title="emscripten_set_socket_error_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_socket_error_callback()</span></code></a>). This is defined as:</p>
+<dd><p>Function pointer for <a class="reference internal" href="#c.emscripten_set_socket_open_callback" title="emscripten_set_socket_open_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_socket_open_callback()</span></code></a>, and the
+other socket functions (except
+<a class="reference internal" href="#c.emscripten_set_socket_error_callback" title="emscripten_set_socket_error_callback"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_socket_error_callback()</span></code></a>). This is defined as:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">em_socket_callback</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">userData</span><span class="p">);</span>
 </span></pre></div>
 </div>
@@ -1936,7 +2255,10 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">void</span><span class="p">*</span></span></span>) – Arbitrary user data to be passed to the callback.</p></li>
-<li><p><strong>callback</strong> (<span><span class="c-expr sig sig-inline c"><a class="reference internal" href="#c.em_socket_callback" title="em_socket_callback"><span class="n">em_socket_callback</span></a></span></span>) – Pointer to a callback function. The callback returns a file descriptor and the arbitrary <code class="docutils literal notranslate"><span class="pre">userData</span></code> passed to this function.</p></li>
+<li><p><strong>callback</strong> (<span><span class="c-expr sig sig-inline c"><a class="reference internal" href="#c.em_socket_callback" title="em_socket_callback"><span class="n">em_socket_callback</span></a></span></span>) – Pointer to a callback function. The
+callback returns a file descriptor and the
+arbitrary <code class="docutils literal notranslate"><span class="pre">userData</span></code> passed to this
+function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1951,7 +2273,9 @@ to work around this limitation is to use the <code class="docutils literal notra
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>userData</strong> (<span><span class="c-expr sig sig-inline c"><span class="kt">void</span><span class="p">*</span></span></span>) – Arbitrary user data to be passed to the callback.</p></li>
-<li><p><strong>callback</strong> (<span><span class="c-expr sig sig-inline c"><a class="reference internal" href="#c.em_socket_callback" title="em_socket_callback"><span class="n">em_socket_callback</span></a></span></span>) – Pointer to a callback function. The callback returns a file descriptor and the arbitrary <code class="docutils literal notranslate"><span class="pre">userData</span></code> passed to this function.</p></li>
+<li><p><strong>callback</strong> (<span><span class="c-expr sig sig-inline c"><a class="reference internal" href="#c.em_socket_callback" title="em_socket_callback"><span class="n">em_socket_callback</span></a></span></span>) – Pointer to a callback function. The
+callback returns a file descriptor and the
+arbitrary <code class="docutils literal notranslate"><span class="pre">userData</span></code> passed to this function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1980,11 +2304,13 @@ to work around this limitation is to use the <code class="docutils literal notra
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_align2_double</span></span></span><a class="headerlink" href="#c.emscripten_align2_double" title="Link to this definition">¶</a><br /></dt>
 <dt class="sig sig-object c" id="c.emscripten_align1_double">
 <span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_align1_double</span></span></span><a class="headerlink" href="#c.emscripten_align1_double" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Unaligned types. These may be used to force LLVM to emit unaligned loads/stores in places in your code where <a class="reference internal" href="../porting/Debugging.html#debugging-safe-heap"><span class="std std-ref">SAFE_HEAP</span></a> found an unaligned operation.</p>
+<dd><p>Unaligned types. These may be used to force LLVM to emit unaligned
+loads/stores in places in your code where <a class="reference internal" href="../porting/Debugging.html#debugging-safe-heap"><span class="std std-ref">SAFE_HEAP</span></a> found an unaligned operation.</p>
 <p>For usage examples see <a class="reference external" href="https://github.com/emscripten-core/emscripten/blob/main/test/core/test_set_align.c">test/core/test_set_align.c</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is better to avoid unaligned operations, but if you are reading from a packed stream of bytes or such, these types may be useful!</p>
+<p>It is better to avoid unaligned operations, but if you are reading
+from a packed stream of bytes or such, these types may be useful!</p>
 </div>
 </dd></dl>
 
@@ -1992,7 +2318,8 @@ to work around this limitation is to use the <code class="docutils literal notra
 </section>
 <section id="pseudo-synchronous-functions">
 <h2><a class="toc-backref" href="#id23" role="doc-backlink">Pseudo-synchronous functions</a><a class="headerlink" href="#pseudo-synchronous-functions" title="Link to this heading">¶</a></h2>
-<p>These functions require Asyncify (<code class="docutils literal notranslate"><span class="pre">-sASYNCIFY</span></code>). These functions are asynchronous but appear synchronous in C. See <a class="reference external" href="https://emscripten.org/docs/porting/asyncify.html">Asyncify</a> for more details.</p>
+<p>These functions require Asyncify (<code class="docutils literal notranslate"><span class="pre">-sASYNCIFY</span></code>). These functions are
+asynchronous but appear synchronous in C. See <a class="reference external" href="https://emscripten.org/docs/porting/asyncify.html">Asyncify</a> for more details.</p>
 <section id="sleeping">
 <h3>Sleeping<a class="headerlink" href="#sleeping" title="Link to this heading">¶</a></h3>
 <dl class="c function">
@@ -2011,14 +2338,25 @@ manner on the Web), which means that other async events may happen.</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_wget">
 <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_wget</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.emscripten_wget" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Load file from url in <em>synchronously</em>. For the asynchronous version, see the <a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget()</span></code></a>.</p>
-<p>In addition to fetching the URL from the network, preload plugins are executed so that the data is usable in <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (we synchronously do the work to make the browser decode the image or audio etc.).  See <a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preloading files.</p>
-<p>This function is blocking; it won’t return until all operations are finished. You can then open and read the file if it succeeded.</p>
+<dd><p>Load file from url in <em>synchronously</em>. For the asynchronous version, see the
+<a class="reference internal" href="#c.emscripten_async_wget" title="emscripten_async_wget"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_async_wget()</span></code></a>.</p>
+<p>In addition to fetching the URL from the network, preload plugins are executed
+so that the data is usable in <code class="docutils literal notranslate"><span class="pre">IMG_Load</span></code> and so forth (we synchronously do
+the work to make the browser decode the image or audio etc.).  See
+<a class="reference internal" href="../porting/files/packaging_files.html#preloading-files"><span class="std std-ref">Preloading files</span></a> for more information on preloading files.</p>
+<p>This function is blocking; it won’t return until all operations are finished.
+You can then open and read the file if it succeeded.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<span><span class="c-expr sig sig-inline c"><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="p">*</span></span></span>) – The URL to load.</p></li>
-<li><p><strong>file</strong> (<span><span class="c-expr sig sig-inline c"><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="p">*</span></span></span>) – The name of the file created and loaded from the URL. If the file already exists it will be overwritten. If the destination directory for the file does not exist on the filesystem, it will be created. A relative pathname may be passed, which will be interpreted relative to the current working directory at the time of the call to this function.</p></li>
+<li><p><strong>file</strong> (<span><span class="c-expr sig sig-inline c"><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="p">*</span></span></span>) – The name of the file created and loaded from the URL.
+If the file already exists it will be overwritten. If
+the destination directory for the file does not exist
+on the filesystem, it will be created. A relative
+pathname may be passed, which will be interpreted
+relative to the current working directory at the time
+of the call to this function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2030,14 +2368,20 @@ manner on the Web), which means that other async events may happen.</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_wget_data">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_wget_data</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">url</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pbuffer</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pnum</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">perror</span></span><span class="sig-paren">)</span><span class="p"><span class="pre">;</span></span><a class="headerlink" href="#c.emscripten_wget_data" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Synchronously fetches data off the network, and stores it to a buffer in memory, which is allocated for you. <strong>You must free the buffer, or it will leak!</strong></p>
+<dd><p>Synchronously fetches data off the network, and stores it to a buffer in
+memory, which is allocated for you. <strong>You must free the buffer, or it will
+leak!</strong></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> – The URL to fetch from</p></li>
-<li><p><strong>pbuffer</strong> – An out parameter that will be filled with a pointer to a buffer containing the data that is downloaded. This space has been malloced for you, <strong>and you must free it, or it will leak!</strong></p></li>
-<li><p><strong>pnum</strong> – An out parameter that will be filled with the size of the downloaded data.</p></li>
-<li><p><strong>perror</strong> – An out parameter that will be filled with a non-zero value if an error occurred.</p></li>
+<li><p><strong>pbuffer</strong> – An out parameter that will be filled with a pointer to a
+buffer containing the data that is downloaded. This space has
+been malloced for you, <strong>and you must free it, or it will leak!</strong></p></li>
+<li><p><strong>pnum</strong> – An out parameter that will be filled with the size of the
+downloaded data.</p></li>
+<li><p><strong>perror</strong> – An out parameter that will be filled with a non-zero value if
+an error occurred.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2049,13 +2393,17 @@ manner on the Web), which means that other async events may happen.</p>
 <dl class="c function">
 <dt class="sig sig-object c" id="c.emscripten_idb_load">
 <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emscripten_idb_load</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">db_name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">file_id</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pbuffer</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pnum</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">perror</span></span><span class="sig-paren">)</span><span class="p"><span class="pre">;</span></span><a class="headerlink" href="#c.emscripten_idb_load" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Synchronously fetches data from IndexedDB, and stores it to a buffer in memory, which is allocated for you. <strong>You must free the buffer, or it will leak!</strong></p>
+<dd><p>Synchronously fetches data from IndexedDB, and stores it to a buffer in
+memory, which is allocated for you. <strong>You must free the buffer, or it will
+leak!</strong></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>db_name</strong> – The name of the database to load from</p></li>
 <li><p><strong>file_id</strong> – The name of the file to load</p></li>
-<li><p><strong>pbuffer</strong> – An out parameter that will be filled with a pointer to a buffer containing the data that is downloaded. This space has been malloced for you, <strong>and you must free it, or it will leak!</strong></p></li>
+<li><p><strong>pbuffer</strong> – An out parameter that will be filled with a pointer to a
+buffer containing the data that is downloaded. This space has
+been malloced for you, <strong>and you must free it, or it will leak!</strong></p></li>
 <li><p><strong>pnum</strong> – An out parameter that will be filled with the size of the downloaded data.</p></li>
 <li><p><strong>perror</strong> – An out parameter that will be filled with a non-zero value if an error occurred.</p></li>
 </ul>
