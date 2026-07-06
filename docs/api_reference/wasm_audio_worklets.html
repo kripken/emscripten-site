@@ -430,14 +430,30 @@ which resumes the audio context when the user clicks on the DOM Canvas element t
 </section>
 <section id="synchronizing-audio-thread-with-the-main-thread">
 <h2>Synchronizing audio thread with the main thread<a class="headerlink" href="#synchronizing-audio-thread-with-the-main-thread" title="Link to this heading">¶</a></h2>
-<p>Wasm Audio Worklets API builds on top of the Emscripten Wasm Workers feature. This means that the Wasm Audio Worklet thread is modeled as if it was a Wasm Worker thread.</p>
-<p>To synchronize information between an Audio Worklet Node and other threads in the application, there are three options:</p>
+<p>Wasm Audio Worklets API builds on top of the Emscripten Wasm Workers feature.
+This means that the Wasm Audio Worklet thread is modeled as if it was a Wasm
+Worker thread.</p>
+<p>To synchronize information between an Audio Worklet Node and other threads in
+the application, there are three options:</p>
 <ol class="arabic">
-<li><p>Leverage the Web Audio “AudioParams” model. Each Audio Worklet Processor type is instantiated with a custom defined set of audio parameters that can affect the audio computation at sample precise accuracy. These parameters are passed in the <code class="docutils literal notranslate"><span class="pre">params</span></code> array into the audio processing function.</p>
-<p>The main browser thread that created the Web Audio context can adjust the values of these parameters whenever desired. See <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setValueAtTime">MDN function: setValueAtTime</a>.</p>
+<li><p>Leverage the Web Audio “AudioParams” model. Each Audio Worklet Processor type
+is instantiated with a custom defined set of audio parameters that can affect
+the audio computation at sample precise accuracy. These parameters are passed
+in the <code class="docutils literal notranslate"><span class="pre">params</span></code> array into the audio processing function.</p>
+<p>The main browser thread that created the Web Audio context can adjust the
+values of these parameters whenever desired. See <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setValueAtTime">MDN function:
+setValueAtTime</a>.</p>
 </li>
-<li><p>Data can be shared with the Audio Worklet thread using GCC/Clang lock-free atomics operations, Emscripten atomics operations and the Wasm Worker API thread synchronization primitives. See <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-workers"><span class="std std-ref">WASM_WORKERS</span></a> for more information.</p></li>
-<li><p>Utilize the <code class="docutils literal notranslate"><span class="pre">emscripten_audio_worklet_post_function_*()</span></code> family of event passing functions. These functions operate similar to the <code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_post_function_*()</span></code> functions. They enable a <code class="docutils literal notranslate"><span class="pre">postMessage()</span></code> style of communication, where the audio worklet thread and the main browser thread can send messages (function call dispatches) to each other.</p></li>
+<li><p>Data can be shared with the Audio Worklet thread using GCC/Clang lock-free
+atomics operations, Emscripten atomics operations and the Wasm Worker API
+thread synchronization primitives. See <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-workers"><span class="std std-ref">WASM_WORKERS</span></a> for more
+information.</p></li>
+<li><p>Utilize the <code class="docutils literal notranslate"><span class="pre">emscripten_audio_worklet_post_function_*()</span></code> family of event
+passing functions. These functions operate similar to the
+<code class="docutils literal notranslate"><span class="pre">emscripten_wasm_worker_post_function_*()</span></code> functions. They enable a
+<code class="docutils literal notranslate"><span class="pre">postMessage()</span></code> style of communication, where the audio worklet thread and
+the main browser thread can send messages (function call dispatches) to each
+other.</p></li>
 </ol>
 </section>
 <section id="more-examples">
