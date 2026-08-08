@@ -611,27 +611,27 @@ perform the WebAssembly instantiation action. The callback function will be
 called with two parameters, <code class="docutils literal notranslate"><span class="pre">imports</span></code> and <code class="docutils literal notranslate"><span class="pre">successCallback</span></code>. <code class="docutils literal notranslate"><span class="pre">imports</span></code>
 is a JS object which contains all the function imports that need to be passed
 to the WebAssembly Module when instantiating, and once instantiated, this
-callback function should call <code class="docutils literal notranslate"><span class="pre">successCallback()</span></code> with the generated
-WebAssembly Instance object.</p>
-<p>The instantiation can be performed either synchronously or asynchronously. The
-return value of this function should contain the <code class="docutils literal notranslate"><span class="pre">exports</span></code> object of the
-instantiated WebAssembly Module, or an empty dictionary object <code class="docutils literal notranslate"><span class="pre">{}</span></code> if the
-instantiation is performed asynchronously, or <code class="docutils literal notranslate"><span class="pre">false</span></code> if instantiation
-failed.</p>
+callback function should call <code class="docutils literal notranslate"><span class="pre">successCallback(instance,</span> <span class="pre">module)</span></code> with the
+generated WebAssembly Instance object and WebAssembly Module object.</p>
 <p>Overriding the WebAssembly instantiation procedure via this function is useful
 when you have other custom asynchronous startup actions or downloads that can
 be performed in parallel to WebAssembly compilation. Implementing this
-callback allows performing all of these in parallel. See the file
-<code class="docutils literal notranslate"><span class="pre">test/manual_wasm_instantiate.html</span></code> and the test
+callback allows performing all of these in parallel.</p>
+<p>It is easiest to provide <code class="docutils literal notranslate"><span class="pre">instantiateWasm</span></code> from inside of a <cite>–pre-js</cite> file.
+Inside a <code class="docutils literal notranslate"><span class="pre">--pre-js</span></code> file, the default behavior can usually be achieved as
+follows:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">Module</span><span class="p">[</span><span class="s1">&#39;instantiateWasm&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">imports</span><span class="p">,</span><span class="w"> </span><span class="nx">successCallback</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nx">wasmBinaryFile</span><span class="w"> </span><span class="o">??=</span><span class="w"> </span><span class="nx">findWasmBinary</span><span class="p">();</span>
+</span><span data-line="3"><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">instantiateArrayBuffer</span><span class="p">(</span><span class="nx">wasmBinaryFile</span><span class="p">,</span><span class="w"> </span><span class="nx">imports</span><span class="p">);</span>
+</span><span data-line="4"><span class="w">  </span><span class="nx">successCallback</span><span class="p">(</span><span class="nx">instance</span><span class="p">,</span><span class="w"> </span><span class="nx">module</span><span class="p">);</span>
+</span><span data-line="5"><span class="p">}</span>
+</span></pre></div>
+</div>
+<p>This won’t work with <code class="docutils literal notranslate"><span class="pre">-sWASM_ASYNC_COMPILATION=0</span></code> or with pthreads but in
+other cases this results in the default loading behavior.</p>
+<p>See the file <code class="docutils literal notranslate"><span class="pre">test/manual_wasm_instantiate.html</span></code> and the test
 <code class="docutils literal notranslate"><span class="pre">browser.test_manual_wasm_instantiate</span></code> for an example of how this construct
 works in action.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Source maps are currently not supported if overriding
-WebAssembly instantiation with Module.instantiateWasm. Providing
-Module.instantiateWasm when source maps are enabled can prevent
-WebAssembly instantiation from finishing.</p>
-</div>
 </dd></dl>
 
 <dl class="js function">
