@@ -374,24 +374,11 @@ or by selecting which version of browsers Emscripten should target.</p>
 <ul class="simple">
 <li><p>Exception handling (see <a class="reference internal" href="../porting/exceptions.html#exceptions"><span class="std std-ref">C++ Exceptions Support</span></a> for details).</p></li>
 <li><p>SIMD (see <a class="reference internal" href="../porting/simd.html#porting-simd-code"><span class="std std-ref">Using SIMD with WebAssembly</span></a> for details).</p></li>
-<li><p>Nontrapping float-to-int conversion (enabled by default, use
-<code class="docutils literal notranslate"><span class="pre">-mno-nontrapping-fptoint</span></code> to disable).
-Clang will generate nontrapping (saturating) float-to-int conversion instructions for
-C typecasts. This should have no effect on programs that do not have
-undefined behavior but if the casted floating-point value is outside the range
-of the target integer type, the result will be a number of the max or min value
-instead of a trap. This also results in a small code size improvement because
-of details of the LLVM IR semantics.</p></li>
-<li><p>Bulk memory operations (enabled by default, use
-<code class="docutils literal notranslate"><span class="pre">-mno-bulk-memory-opt</span> <span class="pre">-mno-bulk-memory</span></code> to disable). <code class="docutils literal notranslate"><span class="pre">memory.copy</span></code>
-and <code class="docutils literal notranslate"><span class="pre">memory.fill</span></code> instructions are used in the implementation of C
-<code class="docutils literal notranslate"><span class="pre">memcpy</span></code> and <code class="docutils literal notranslate"><span class="pre">memset</span></code>, and Clang may generate them elsewhere.</p></li>
 <li><p>JS BigInt integration (enabled by default, use the
 <code class="docutils literal notranslate"><span class="pre">-sWASM_BIGINT=0</span></code> <a class="reference internal" href="../tools_reference/settings_reference.html#wasm-bigint"><span class="std std-ref">setting</span></a>
 to disable). This has the effect that Wasm i64 values are passed and returned
 between Wasm and JS as BigInt values rather than being split by Binaryen into
 pairs of Numbers.</p></li>
-<li><p>Sign-extension operators (enabled by default)</p></li>
 </ul>
 <p>For the features that are enabled by default (or will be when sufficient
 browser support exists), it’s also possible to control them by specifying
@@ -406,6 +393,14 @@ can be used such as COEP headers). These are not controlled by the browser
 version flags and must be enabled explicitly.
 See the <a class="reference internal" href="../tools_reference/settings_reference.html#min-firefox-version"><span class="std std-ref">settings</span></a> page for details of the default
 browser versions Emscripten targets.</p>
+<p>Some features are available even in the oldest supported browser versions, and are
+enabled by default.  They can be turned of for specific compilation units using
+standard clang flags, but since they are present in the system libraries they
+will almost always be used in the final binary:</p>
+<ul class="simple">
+<li><p>Nontrapping float-to-int conversion (<code class="docutils literal notranslate"><span class="pre">-mno-nontrapping-fptoint</span></code> to disable)</p></li>
+<li><p>Bulk memory operations. (<code class="docutils literal notranslate"><span class="pre">-mno-bulk-memory</span></code> to disable)</p></li>
+</ul>
 </section>
 <section id="wasm-files-and-compilation">
 <h2><code class="docutils literal notranslate"><span class="pre">.wasm</span></code> files and compilation<a class="headerlink" href="#wasm-files-and-compilation" title="Link to this heading">¶</a></h2>
