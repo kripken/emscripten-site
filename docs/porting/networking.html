@@ -215,6 +215,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#emscripten-websockets-api">Emscripten WebSockets API</a></li>
 <li><a class="reference internal" href="#emulated-posix-tcp-sockets-over-websockets">Emulated POSIX TCP Sockets over WebSockets</a></li>
+<li><a class="reference internal" href="#posix-sockets-on-node-js">POSIX Sockets on Node.js</a></li>
 <li><a class="reference internal" href="#full-posix-sockets-over-websocket-proxy-server">Full POSIX Sockets over WebSocket Proxy Server</a></li>
 <li><a class="reference internal" href="#xmlhttprequests-and-fetch-api">XmlHttpRequests and Fetch API</a></li>
 <li><a class="reference internal" href="#webrtc-and-udp">WebRTC and UDP</a></li>
@@ -318,6 +319,23 @@ emulation provides.</p>
 to connect to, and the linker flag <code class="docutils literal notranslate"><span class="pre">-sWEBSOCKET_SUBPROTOCOL</span></code> or
 <code class="docutils literal notranslate"><span class="pre">Module['websocket']['subprotocol']</span></code> to control the connection type
 (<code class="docutils literal notranslate"><span class="pre">'binary'</span></code> or <code class="docutils literal notranslate"><span class="pre">'text'</span></code>).</p>
+</section>
+<section id="posix-sockets-on-node-js">
+<h2>POSIX Sockets on Node.js<a class="headerlink" href="#posix-sockets-on-node-js" title="Link to this heading">¶</a></h2>
+<p>When targeting Node.js, the linker flag <code class="docutils literal notranslate"><span class="pre">-sNODERAWSOCKETS</span></code> backs the POSIX
+sockets API with real host TCP, UDP and <code class="docutils literal notranslate"><span class="pre">AF_UNIX</span></code> stream sockets (see
+<a class="reference internal" href="../tools_reference/settings_reference.html#noderawsockets"><span class="std std-ref">NODERAWSOCKETS</span></a>).</p>
+<p>Non-blocking sockets (<code class="docutils literal notranslate"><span class="pre">SOCK_NONBLOCK</span></code>, <code class="docutils literal notranslate"><span class="pre">fcntl(F_SETFL,</span> <span class="pre">O_NONBLOCK)</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ioctl(FIONBIO)</span></code>) behave as on Linux.</p>
+<p>Blocking sockets cannot actually block. An operation on a blocking socket that
+would need to wait (<code class="docutils literal notranslate"><span class="pre">accept()</span></code>, <code class="docutils literal notranslate"><span class="pre">recv()</span></code>/<code class="docutils literal notranslate"><span class="pre">read()</span></code>) fails with <code class="docutils literal notranslate"><span class="pre">EAGAIN</span></code>
+instead, a blocking <code class="docutils literal notranslate"><span class="pre">connect()</span></code> returns <code class="docutils literal notranslate"><span class="pre">0</span></code> before the connection has
+completed, and a blocking <code class="docutils literal notranslate"><span class="pre">send()</span></code> never waits: it buffers without limit
+(only a non-blocking socket is bounded by the write buffer’s high-water mark
+and reports <code class="docutils literal notranslate"><span class="pre">EAGAIN</span></code>). Builds with <code class="docutils literal notranslate"><span class="pre">ASSERTIONS</span></code> print a warning the first
+time a blocking socket returns <code class="docutils literal notranslate"><span class="pre">EAGAIN</span></code>. Applications should use non-blocking
+sockets together with <code class="docutils literal notranslate"><span class="pre">poll()</span></code> or <code class="docutils literal notranslate"><span class="pre">epoll</span></code>, which can wait when called from
+a pthread, or when using <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify"><span class="std std-ref">ASYNCIFY</span></a>.</p>
 </section>
 <section id="full-posix-sockets-over-websocket-proxy-server">
 <h2>Full POSIX Sockets over WebSocket Proxy Server<a class="headerlink" href="#full-posix-sockets-over-websocket-proxy-server" title="Link to this heading">¶</a></h2>
