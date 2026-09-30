@@ -387,10 +387,10 @@ that is a subclass of <code class="docutils literal notranslate"><span class="pr
 <code class="docutils literal notranslate"><span class="pre">-sASSERTIONS</span></code> or <code class="docutils literal notranslate"><span class="pre">-sEXCEPTION_STACK_TRACES</span></code> is set, which are by default
 true at <code class="docutils literal notranslate"><span class="pre">-O0</span></code>.  At <code class="docutils literal notranslate"><span class="pre">-O1</span></code> or above, you can export it separately by
 <code class="docutils literal notranslate"><span class="pre">-sEXPORTED_RUNTIME_METHODS=getExceptionMessage,decrementExceptionRefcount</span></code>.</p>
-<p>If the stack pointer has been moved due to stack allocations within the Wasm
-function before an exception is thrown, you can use <code class="docutils literal notranslate"><span class="pre">stackSave()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">stackRestore()</span></code> to restore the stack pointer so that no stack memory is
-leaked.</p>
+<p>Emscripten does not automatically restore the shadow stack pointer during
+exception unwinding.  Therefore, whenever you catch an exception in JavaScript
+and intend to continue using the module, you should use <code class="docutils literal notranslate"><span class="pre">stackSave()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">stackRestore()</span></code> around the call to prevent stack memory from leaking.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you catch a Wasm exception and do not rethrow it, you need to free
