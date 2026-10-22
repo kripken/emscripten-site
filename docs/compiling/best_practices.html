@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Best Practices - Emscripten 6.0.14-git (dev) documentation</title><link rel="shortcut icon" href="../../_static/emscripten.ico"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Building Projects" href="Building-Projects.html" /><link rel="prev" title="Compiling and Running Projects" href="index.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=182acb26" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Best Practices"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      <img class="light-logo" src="../../_static/emscripten_logo_full.svg" alt="Emscripten" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/emscripten_logo_full.svg" alt="Emscripten" height="28" loading="lazy" />
+      <strong>Emscripten</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul>
+      <li class="link"><a class="js-menu" href="../index.html" id="nav-trigger-1" aria-controls="nav-children-1">
+            <span>Documentation</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="../getting_started/downloads.html">Downloads</a></li><li><a href="../getting_started/bug_reports.html">Report Bug</a></li><li><a href="../introducing_emscripten/emscripten_license.html">Licensing</a></li><li><a href="../contributing/contributing.html">Contributing</a></li><li><a href="../introducing_emscripten/release_notes.html">Release Notes</a></li></ul>
+      </li>
+      <li class="link"><a class="js-menu" href="../introducing_emscripten/community.html" id="nav-trigger-2" aria-controls="nav-children-2">
+            <span>Community</span>
+            <i class="i-lucide chevron-down"></i>
+          </a>
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://groups.google.com/forum/#!forum/emscripten-discuss">Mailing List</a></li><li><a href="https://github.com/emscripten-core/emscripten/wiki">Wiki</a></li></ul>
+      </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a>
+  <a href="https://discord.gg/53u3EKq" aria-label="Discord">
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/emscripten-core/emscripten/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introducing_emscripten/index.html">Introducing Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/about_emscripten.html">About Emscripten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/community.html">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/emscripten_license.html">Open Source License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/release_notes.html">Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../introducing_emscripten/Talks-and-Publications.html">Talks and Publications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/downloads.html">Download and install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/Tutorial.html">Emscripten Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/test-suite.html">Emscripten Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/bug_reports.html">Bug Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/FAQ.html">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Compiling and Running Projects</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WebAssembly.html">Building to WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Modularized-Output.html">Modularized Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Dynamic-Linking.html">Dynamic Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Running-html-files-with-emrun.html">Running HTML files with emrun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Deploying-Pages.html">Deploying Emscripten Compiled Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GitLab.html">Building and Deploying on GitLab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Contrib-Ports.html">Emscripten Contrib Ports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CrossOriginStorage.html">Cross-Origin Storage (COS)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../porting/index.html">Porting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../porting/guidelines/index.html">Code Portability and Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/portability_guidelines.html">Portability Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/api_limitations.html">API Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/function_pointer_issues.html">Function Pointer Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/guidelines/browser_limitations.html">Specific Browser Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/emscripten-runtime-environment.html">Emscripten Runtime Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/index.html">Connecting C++ and JavaScript</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/Interacting-with-code.html">Interacting with code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/embind.html">Embind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/connecting_cpp_and_javascript/WebIDL-Binder.html">WebIDL Binder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/files/index.html">Files and File Systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/file_systems_overview.html">File System Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/packaging_files.html">Packaging Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/files/Synchronous-Virtual-XHR-Backed-File-System-Usage.html">Synchronous Virtual XHR Backed File System Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/multimedia_and_graphics/index.html">Multimedia and Graphics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/WebGPU-support.html">Using WebGPU in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/EGL-Support-in-Emscripten.html">EGL Support in Emscripten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../porting/multimedia_and_graphics/OpenGL-support.html">OpenGL support in Emscripten</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Audio.html">Audio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/Debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/pthreads.html">Pthreads support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/networking.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/simd.html">Using SIMD with WebAssembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/exceptions.html">C++ Exceptions Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/setjmp-longjmp.html">C setjmp-longjmp Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../porting/asyncify.html">Asynchronous Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Building-Projects.html">Building Projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/emscripten.h.html">emscripten.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/html5.h.html">html5.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/console.h.html">console.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/preamble.js.html">preamble.js</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/Filesystem-API.html">File System API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fetch.html">Fetch API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/module.html">Module object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/val.h.html">val.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/bind.h.html">bind.h (under-construction)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/trace.h.html">trace.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/fiber.h.html">fiber.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/proxying.h.html">proxying.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/stack.h.html">stack.h</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_workers.html">Wasm Workers API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/wasm_audio_worklets.html">Wasm Audio Worklets API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference/advanced-apis.html">Advanced APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tools_reference/index.html">Tools Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emsdk.html">Emscripten SDK (emsdk)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcc.html">Emscripten Compiler Frontend (emcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/emcmdprompt.html">Emscripten Windows Command Prompt (emcmdprompt.bat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html">Emscripten Compiler Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#deprecated-settings">Deprecated Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tools_reference/settings_reference.html#legacy-settings">Legacy Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-Code.html">Optimizing Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Optimizing-WebGL.html">Optimizing WebGL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/Sanitizers.html">Debugging with Sanitizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_from_source/index.html">Building Emscripten from Source</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/toolchain_what_is_needed.html">Emscripten Toolchain Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/configuring_emscripten_settings.html">Configuring Emscripten Settings when Manually Building from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building_from_source/verify_emscripten_environment.html">Verifying the Emscripten Development Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing to Emscripten</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/contributing.html">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/developers_guide.html">Developer’s Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing/AUTHORS.html">AUTHORS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizing/Profiling-Toolchain.html">Profiling the Toolchain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../site/about.html">About this site</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#general-recommendations">General Recommendations</a></li>
+<li><a class="reference internal" href="#command-line-style">Command-Line Style</a></li>
+<li><a class="reference internal" href="#recommended-flags">Recommended Flags</a><ul>
+<li><a class="reference internal" href="#debug-vs-release-profiles">Debug vs. Release Profiles</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a class="reference internal" href="#asynchronous-code-execution-and-main-thread-blocking">Asynchronous Code Execution and Main Thread Blocking</a></li>
+</ul>
+</li>
+</ul>
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/emscripten-core/emscripten"
+  data-type="github" data-user="emscripten-core" data-repo="emscripten">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </span>
+  <span class="flex-grow px-2 break-all">
+    
+    
+      <span>emscripten</span>
+    
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <iconify-icon icon="lucide:star"></iconify-icon>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/emscripten-core/emscripten/blob/main/site/source/docs/compiling/best_practices.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Emscripten</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Compiling and Running Projects</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Best Practices</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="best-practices">
+<span id="id1"></span><h1>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">¶</a></h1>
+<p>This guide provides recommendations and best practices for compiling C and C++
+to the modern web using WebAssembly and Emscripten.</p>
+<p>Following this guide when reporting bugs can also help speed up diagnosing and
+fixing issues since you will be on the well-trodden path.</p>
+<p>In some cases, Emscripten will guide you towards these best practices by
+emitting warnings, but that is not always possible.</p>
+<section id="general-recommendations">
+<h2>General Recommendations<a class="headerlink" href="#general-recommendations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Avoid high-frequency calls between WebAssembly and JavaScript</strong>; for
+example, avoid per-pixel or per-sample calls in favor of operations that
+process entire memory regions or buffers.</p></li>
+<li><p><strong>Avoid shipping debug information in production</strong>; see below for recommended
+release build flags.</p></li>
+</ul>
+</section>
+<section id="command-line-style">
+<h2>Command-Line Style<a class="headerlink" href="#command-line-style" title="Link to this heading">¶</a></h2>
+<p>Keeping the command line flag usage minimal and consistent helps with codebase
+understanding and avoids deviating from the well-lit path.</p>
+<ul class="simple">
+<li><p><strong>Don’t pass settings that are enabled by default.</strong> To keep command lines
+clean and concise, omit redundant options that are already default in modern
+Emscripten (such as <code class="docutils literal notranslate"><span class="pre">-sWASM=1</span></code>).</p></li>
+<li><p><strong>Prefer standard compiler flags</strong> over Emscripten-specific ones where
+possible (for example, prefer <code class="docutils literal notranslate"><span class="pre">-pthread</span></code> over <code class="docutils literal notranslate"><span class="pre">-sUSE_PTHREADS</span></code> and
+<code class="docutils literal notranslate"><span class="pre">-m64</span></code> over <code class="docutils literal notranslate"><span class="pre">-sMEMORY64</span></code>).</p></li>
+<li><p><strong>Use simple comma-separated lists</strong> for list-based settings (for example,
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_FUNCTIONS=_main,_malloc</span></code> rather than JSON arrays like
+<code class="docutils literal notranslate"><span class="pre">-sEXPORTED_FUNCTIONS=['_main','_malloc']</span></code>).</p></li>
+<li><p><strong>Avoid long lists on the command line</strong>; use a response file (<code class="docutils literal notranslate"><span class="pre">&#64;filename</span></code>)
+instead (for example, <code class="docutils literal notranslate"><span class="pre">-sEXPORTED_FUNCTIONS=&#64;exported_funcs.txt</span></code>).</p></li>
+<li><p><strong>Don’t include the “=1” suffix for boolean flags.</strong> For example, write
+<code class="docutils literal notranslate"><span class="pre">-sSTRICT</span></code> and <code class="docutils literal notranslate"><span class="pre">-sALLOW_MEMORY_GROWTH</span></code> rather than <code class="docutils literal notranslate"><span class="pre">-sSTRICT=1</span></code> or
+<code class="docutils literal notranslate"><span class="pre">-sALLOW_MEMORY_GROWTH=1</span></code>.</p></li>
+<li><p><strong>Use separate compilation</strong> by compiling <code class="docutils literal notranslate"><span class="pre">.cpp</span></code> sources to <code class="docutils literal notranslate"><span class="pre">.o</span></code> object
+files before linking rather than combining everything into a single monolithic
+compiler invocation.</p></li>
+</ul>
+</section>
+<section id="recommended-flags">
+<h2>Recommended Flags<a class="headerlink" href="#recommended-flags" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-sSTRICT</span></code>: Opt into strict modern Emscripten behavior, disabling
+deprecated or legacy compatibility features.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-sEXPORT_ES6</span></code>: Output a modern ES6 module (<code class="docutils literal notranslate"><span class="pre">module.mjs</span></code>). This option
+implies <code class="docutils literal notranslate"><span class="pre">-sMODULARIZE</span></code> so the generated code will be encapsulated and not
+impact the global namespace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-sENVIRONMENT=web</span></code>: Limit the runtime support to only the environments you
+are targeting. This reduces code size by, for example, omitting Node.js and
+compatibility code.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-Werror</span> <span class="pre">-Wall</span></code>: Treat warnings as errors to catch C++ bugs and invalid
+compiler settings early.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-O3</span></code>, <code class="docutils literal notranslate"><span class="pre">-Os</span></code>, or <code class="docutils literal notranslate"><span class="pre">-Oz</span></code>: For release builds, choose <code class="docutils literal notranslate"><span class="pre">-O3</span></code> when runtime
+performance is most critical, or <code class="docutils literal notranslate"><span class="pre">-Os</span></code> / <code class="docutils literal notranslate"><span class="pre">-Oz</span></code> when minimizing binary
+payload size is the priority.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-flto</span></code>: Enable Link-Time Optimization (LTO) during both the compilation and
+linking steps of release builds for maximum runtime performance and size
+reduction.</p></li>
+</ul>
+<section id="debug-vs-release-profiles">
+<h3>Debug vs. Release Profiles<a class="headerlink" href="#debug-vs-release-profiles" title="Link to this heading">¶</a></h3>
+<p>When configuring build profiles, keep compile and link flags consistent within
+each configuration:</p>
+<ul class="simple">
+<li><p><strong>Release Builds:</strong> Use <code class="docutils literal notranslate"><span class="pre">-Oz</span></code>, <code class="docutils literal notranslate"><span class="pre">-Os</span></code> or <code class="docutils literal notranslate"><span class="pre">-O3</span></code> combined with <code class="docutils literal notranslate"><span class="pre">-flto</span></code>.
+Add <code class="docutils literal notranslate"><span class="pre">--closure=1</span></code> to get minified JavaScript too, unless you plan to minify
+with an external tool.</p></li>
+<li><p><strong>Debug Builds:</strong> Use <code class="docutils literal notranslate"><span class="pre">-g</span></code> when compiling and either <code class="docutils literal notranslate"><span class="pre">-g</span></code>,
+<code class="docutils literal notranslate"><span class="pre">-gline-tables-only</span></code>, or <code class="docutils literal notranslate"><span class="pre">-gsource-map</span></code> when linking. Avoid optimization
+flags (such as <code class="docutils literal notranslate"><span class="pre">-O2</span></code> or <code class="docutils literal notranslate"><span class="pre">-O3</span></code>) or <code class="docutils literal notranslate"><span class="pre">-flto</span></code> during debug builds for
+faster compilation and accurate debugging.</p></li>
+</ul>
+</section>
+</section>
+<section id="common-pitfalls">
+<h2>Common Pitfalls<a class="headerlink" href="#common-pitfalls" title="Link to this heading">¶</a></h2>
+<section id="asynchronous-code-execution-and-main-thread-blocking">
+<h3>Asynchronous Code Execution and Main Thread Blocking<a class="headerlink" href="#asynchronous-code-execution-and-main-thread-blocking" title="Link to this heading">¶</a></h3>
+<p><strong>Don’t run long synchronous loops on the browser main thread.</strong> The browser
+uses cooperative multitasking; blocking the main UI thread prevents rendering
+and freezes the web page.</p>
+<ul class="simple">
+<li><p>Restructure infinite loops to yield to the event loop using
+<a class="reference internal" href="../api_reference/emscripten.h.html#c.emscripten_set_main_loop" title="emscripten_set_main_loop"><code class="xref c c-func docutils literal notranslate"><span class="pre">emscripten_set_main_loop()</span></code></a>
+(see <a class="reference internal" href="../porting/emscripten-runtime-environment.html#emscripten-runtime-environment-howto-main-loop"><span class="std std-ref">Implementing an asynchronous main loop in C/C++</span></a>).</p></li>
+<li><p>For synchronous-looking C++ code that must pause (or interact with
+asynchronous JavaScript APIs such as <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> or Web Promises) without
+refactoring into callbacks, use <a class="reference internal" href="../porting/asyncify.html#yielding-to-main-loop"><span class="std std-ref">Asyncify</span></a>
+(<code class="docutils literal notranslate"><span class="pre">-sASYNCIFY</span></code>) or JavaScript Promise Integration (<code class="docutils literal notranslate"><span class="pre">-sJSPI</span></code>).</p></li>
+<li><p>Offload heavy compute or blocking operations to background workers using
+<a class="reference internal" href="../porting/pthreads.html"><span class="doc">multithreading and pthreads</span></a> (<code class="docutils literal notranslate"><span class="pre">-pthread</span></code>).</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="index.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Compiling and Running Projects</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="Building-Projects.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Building Projects</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>Copyright &copy; 2015, Emscripten Contributors.</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/emscripten-core/emscripten" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a>
+<a href="https://discord.gg/53u3EKq" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=9fce925a"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script></body>
+</html>
