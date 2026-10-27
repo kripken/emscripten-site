@@ -386,8 +386,7 @@ before your application starts to run.</p>
 <li><p>Build one part of your code as the main module, linking it using
 <code class="docutils literal notranslate"><span class="pre">-sMAIN_MODULE</span></code> (See <a class="reference internal" href="../tools_reference/settings_reference.html#main-module"><span class="std std-ref">MAIN_MODULE</span></a>).</p></li>
 <li><p>Build other parts of your code as side modules, linking it using
-<code class="docutils literal notranslate"><span class="pre">-shared</span></code>.  You can also use the emscripten-specific <a class="reference internal" href="../tools_reference/settings_reference.html#side-module"><span class="std std-ref">SIDE_MODULE</span></a>
-setting which does the same thing by default.</p></li>
+<code class="docutils literal notranslate"><span class="pre">-shared</span></code> (or the emscripten-specific <a class="reference internal" href="../tools_reference/settings_reference.html#side-module"><span class="std std-ref">SIDE_MODULE</span></a> setting).</p></li>
 </ul>
 <p>For the main module the output suffix should be <code class="docutils literal notranslate"><span class="pre">.js</span></code> (the WebAssembly
 file will be generated alongside it just like normal).  For the side
@@ -420,15 +419,27 @@ then use <code class="docutils literal notranslate"><span class="pre">dlopen(),<
 </section>
 <section id="building-dynamic-libraries-using-shared">
 <h2>Building Dynamic Libraries using <code class="docutils literal notranslate"><span class="pre">-shared</span></code><a class="headerlink" href="#building-dynamic-libraries-using-shared" title="Link to this heading">¶</a></h2>
-<p>In traditional toolchains the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag is used to generated dynamic
+<p>In traditional toolchains the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag is used to generate dynamic
 libraries.  Historically, due to early limitations, Emscripten would produce a
 fake dynamic library (along with a warning) when the <code class="docutils literal notranslate"><span class="pre">-shared</span></code> flag was used.
-When your main program is linked against these fake dynamic library they would
-be linked into your main program like regular static other object files.</p>
-<p>These days Emscripten will produce real dynamic libraries by default and
-<code class="docutils literal notranslate"><span class="pre">-shared</span></code> is essentially the same as <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code>.</p>
-<p>This behaviour can be controlled using the <a class="reference internal" href="../tools_reference/settings_reference.html#fake-dylibs"><span class="std std-ref">FAKE_DYLIBS</span></a> settings.  If you
-prefer the older behaviour with fake dynamic libraryies you can enable this
+When your main program is linked against these fake dynamic libraries they would
+be linked into your main program like regular static object files.</p>
+<p>These days Emscripten will produce real dynamic libraries by default when
+<code class="docutils literal notranslate"><span class="pre">-shared</span></code> is used.  Note that <code class="docutils literal notranslate"><span class="pre">-shared</span></code> differs slightly from both
+<code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE=1</span></code> and <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE=2</span></code> in order to match native linker
+behaviour:</p>
+<ul class="simple">
+<li><p>Unlike <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE=1</span></code>, static archives (<code class="docutils literal notranslate"><span class="pre">.a</span></code> files) are not wrapped in
+<code class="docutils literal notranslate"><span class="pre">--whole-archive</span></code>, so only referenced archive members are linked in.</p></li>
+<li><p>Unlike <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE=2</span></code>, <code class="docutils literal notranslate"><span class="pre">--no-export-dynamic</span></code> is not passed to the
+linker, so all default-visibility symbols in linked object files are exported
+automatically without needing <code class="docutils literal notranslate"><span class="pre">EMSCRIPTEN_KEEPALIVE</span></code> or
+<a class="reference internal" href="../tools_reference/settings_reference.html#exported-functions"><span class="std std-ref">EXPORTED_FUNCTIONS</span></a>.</p></li>
+</ul>
+<p>If both <code class="docutils literal notranslate"><span class="pre">-shared</span></code> and <code class="docutils literal notranslate"><span class="pre">-sSIDE_MODULE</span></code> are specified on the command line,
+the explicit <code class="docutils literal notranslate"><span class="pre">SIDE_MODULE</span></code> setting takes precedence.</p>
+<p>This behaviour can be controlled using the <a class="reference internal" href="../tools_reference/settings_reference.html#fake-dylibs"><span class="std std-ref">FAKE_DYLIBS</span></a> setting.  If you
+prefer the older behaviour with fake dynamic libraries you can enable this
 setting.</p>
 </section>
 <section id="code-size">
