@@ -434,7 +434,7 @@ completed.</p>
 <p>If you mark a JS library function as async using the <code class="docutils literal notranslate"><span class="pre">__async</span></code> decorator then
 the compiler will take a care of all the details of using the <code class="docutils literal notranslate"><span class="pre">Asyncify</span></code> API
 for you.  The function will also automatically be included in
-<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>.  All you need to do is write normal async JS function
+<a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a>.  All you need to do is write a normal async JS function
 (either using the explict <code class="docutils literal notranslate"><span class="pre">async</span></code> JS keyword or returning a <code class="docutils literal notranslate"><span class="pre">Promise</span></code>
 object).  For example:</p>
 <div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">addToLibrary</span><span class="p">({</span>
@@ -462,6 +462,28 @@ resulting promise resolves.</p>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">__async:</span> <span class="pre">1</span></code> if you just want to include the function in
 <a class="reference internal" href="../tools_reference/settings_reference.html#asyncify-imports"><span class="std std-ref">ASYNCIFY_IMPORTS</span></a> or <code class="docutils literal notranslate"><span class="pre">__async:</span> <span class="pre">'auto'</span></code> if you also want the function to
 wrapper in <code class="docutils literal notranslate"><span class="pre">Asyncify.handleAsync</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">__async:</span> <span class="pre">'auto'</span></code> allows the same function to work synchronously without
+<code class="docutils literal notranslate"><span class="pre">ASYNCIFY</span></code>.  A function whose last parameter is named <code class="docutils literal notranslate"><span class="pre">sync</span></code> is told there
+whether it must return synchronously.  This is <code class="docutils literal notranslate"><span class="pre">false</span></code> under
+<code class="docutils literal notranslate"><span class="pre">ASYNCIFY</span></code>/JSPI, and when called from a pthread with <code class="docutils literal notranslate"><span class="pre">__proxy:</span> <span class="pre">'sync'</span></code> (the
+main thread awaits the result on its behalf); it is <code class="docutils literal notranslate"><span class="pre">true</span></code> otherwise, where a
+returned <code class="docutils literal notranslate"><span class="pre">Promise</span></code> could not be waited for:</p>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nx">addToLibrary</span><span class="p">({</span>
+</span><span data-line="2"><span class="w">  </span><span class="nx">lookup__sig</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;pp&#39;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nx">lookup__async</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nx">lookup__proxy</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;sync&#39;</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">  </span><span class="nx">lookup</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">sync</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="6"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">sync</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="nx">EAGAIN</span><span class="p">;</span>
+</span><span data-line="7"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">fetchSomething</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span><span class="w">  </span><span class="c1">// returns a Promise</span>
+</span><span data-line="8"><span class="w">  </span><span class="p">},</span>
+</span><span data-line="9"><span class="p">});</span>
+</span></pre></div>
+</div>
+<p>In the above example, the same <code class="docutils literal notranslate"><span class="pre">lookup</span></code> supports the async promise-returning
+path for <code class="docutils literal notranslate"><span class="pre">ASYNCIFY</span></code> and a pthread, while returning the <code class="docutils literal notranslate"><span class="pre">EAGAIN</span></code> error when
+called synchronously.  As <code class="docutils literal notranslate"><span class="pre">sync</span></code> is always <code class="docutils literal notranslate"><span class="pre">false</span></code> under <code class="docutils literal notranslate"><span class="pre">ASYNCIFY</span></code>/JSPI,
+the function must then be called from a stack that can suspend, as with any
+other async import (under JSPI, within one of the <a class="reference internal" href="../tools_reference/settings_reference.html#jspi-exports"><span class="std std-ref">JSPI_EXPORTS</span></a>).</p>
 </section>
 <section id="ways-to-use-asyncify-apis-in-older-engines">
 <h2>Ways to use Asyncify APIs in older engines<a class="headerlink" href="#ways-to-use-asyncify-apis-in-older-engines" title="Link to this heading">¶</a></h2>
