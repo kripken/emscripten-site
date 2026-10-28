@@ -839,16 +839,15 @@ a function,</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>JavaScript libraries can declare dependencies (<code class="docutils literal notranslate"><span class="pre">__deps</span></code>), however
-those are only for other JavaScript libraries. See examples in
-<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/src">/src</a>
-with the name format <strong>library_*.js</strong></p></li>
-<li><p>You can add dependencies for all your methods using
-<code class="docutils literal notranslate"><span class="pre">autoAddDeps(myLibrary,</span> <span class="pre">name)</span></code> where myLibrary is the object with
-all your methods, and <code class="docutils literal notranslate"><span class="pre">name</span></code> is the thing they all depend upon.
-This is useful when all the implemented methods use a JavaScript
-singleton containing helper methods. See <code class="docutils literal notranslate"><span class="pre">library_webgl.js</span></code> for
-an example.</p></li>
+<li><p>Direct dependencies between JavaScript library symbols are detected
+automatically by the compiler. Explicit dependency declarations
+(<code class="docutils literal notranslate"><span class="pre">__deps</span></code>) are only needed for compiled C/C++ functions or indirect
+dependencies that are not referenced directly in the symbol’s body (such
+as <code class="docutils literal notranslate"><span class="pre">$method_support</span></code> above). See examples in
+<a class="reference external" href="https://github.com/emscripten-core/emscripten/tree/main/src/lib">/src/lib</a>.</p></li>
+<li><p>You can add an explicit dependency to all methods in a library using
+<code class="docutils literal notranslate"><span class="pre">autoAddDeps(myLibrary,</span> <span class="pre">name)</span></code>, where <code class="docutils literal notranslate"><span class="pre">myLibrary</span></code> is the object with
+all your methods and <code class="docutils literal notranslate"><span class="pre">name</span></code> is the symbol they all depend upon.</p></li>
 <li><p>The keys passed into <cite>addToLibrary</cite> generate functions that are prefixed
 by <code class="docutils literal notranslate"><span class="pre">_</span></code>. In other words <code class="docutils literal notranslate"><span class="pre">my_func:</span> <span class="pre">function()</span> <span class="pre">{},</span></code> becomes
 <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">_my_func()</span> <span class="pre">{}</span></code>, as all C methods in emscripten have a <code class="docutils literal notranslate"><span class="pre">_</span></code> prefix. Keys starting with <code class="docutils literal notranslate"><span class="pre">$</span></code> have the <code class="docutils literal notranslate"><span class="pre">$</span></code>
