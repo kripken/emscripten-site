@@ -217,6 +217,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#sleeping-yielding-to-the-event-loop">Sleeping / yielding to the event loop</a></li>
 <li><a class="reference internal" href="#making-async-web-apis-behave-as-if-they-were-synchronous">Making async Web APIs behave as if they were synchronous</a></li>
 <li><a class="reference internal" href="#marking-js-library-functions-as-async">Marking JS library functions as async</a></li>
+<li><a class="reference internal" href="#async-auto-call-variants">Async auto call variants</a></li>
 <li><a class="reference internal" href="#ways-to-use-asyncify-apis-in-older-engines">Ways to use Asyncify APIs in older engines</a></li>
 <li><a class="reference internal" href="#more-on-asyncify-imports">More on <code class="docutils literal notranslate"><span class="pre">ASYNCIFY_IMPORTS</span></code></a></li>
 <li><a class="reference internal" href="#asyncify-with-dynamic-linking">Asyncify with Dynamic Linking</a></li>
@@ -484,6 +485,32 @@ path for <code class="docutils literal notranslate"><span class="pre">ASYNCIFY</
 called synchronously.  As <code class="docutils literal notranslate"><span class="pre">sync</span></code> is always <code class="docutils literal notranslate"><span class="pre">false</span></code> under <code class="docutils literal notranslate"><span class="pre">ASYNCIFY</span></code>/JSPI,
 the function must then be called from a stack that can suspend, as with any
 other async import (under JSPI, within one of the <a class="reference internal" href="../tools_reference/settings_reference.html#jspi-exports"><span class="std std-ref">JSPI_EXPORTS</span></a>).</p>
+</section>
+<section id="async-auto-call-variants">
+<span id="id1"></span><h2>Async auto call variants<a class="headerlink" href="#async-auto-call-variants" title="Link to this heading">¶</a></h2>
+<p>Instead of <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, <code class="docutils literal notranslate"><span class="pre">__async</span></code> can be given a list of the forms in which
+the function waits.  <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> is the function itself, behaving as <code class="docutils literal notranslate"><span class="pre">__async:</span>
+<span class="pre">'auto'</span></code>; the other entries are call variants generated alongside it.  The
+<code class="docutils literal notranslate"><span class="pre">'promise'</span></code> variant is the function called with a <code class="docutils literal notranslate"><span class="pre">_promise</span></code> suffix,
+obtaining the promise value directly without suspending, so it can be called
+from any stack.</p>
+<p>Changing the <code class="docutils literal notranslate"><span class="pre">lookup</span></code> definition from the example in the previous section
+above to <code class="docutils literal notranslate"><span class="pre">lookup__async:</span> <span class="pre">['auto',</span> <span class="pre">'promise']</span></code> defines both C variants:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">intptr_t</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+</span><span data-line="2"><span class="n">em_promise_t</span><span class="w"> </span><span class="nf">lookup_promise</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+</span></pre></div>
+</div>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">lookup_promise()</span></code> runs the same body (with <code class="docutils literal notranslate"><span class="pre">sync</span></code> always
+<code class="docutils literal notranslate"><span class="pre">false</span></code>) and returns a promise handle (<code class="docutils literal notranslate"><span class="pre">em_promise_t</span></code>, see
+<code class="docutils literal notranslate"><span class="pre">&lt;emscripten/promise.h&gt;</span></code>) on the calling thread, fulfilled with the result or
+rejected with <code class="docutils literal notranslate"><span class="pre">NULL</span></code>.  The function may also return <code class="docutils literal notranslate"><span class="pre">void</span></code>, in which case
+the result is <code class="docutils literal notranslate"><span class="pre">NULL</span></code>.  These variants are only generated when explicitly used.</p>
+<p>Without <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> in the list, as <code class="docutils literal notranslate"><span class="pre">lookup__async:</span> <span class="pre">['promise']</span></code>, <code class="docutils literal notranslate"><span class="pre">lookup</span></code>
+itself never suspends: it stays a plain import under <code class="docutils literal notranslate"><span class="pre">ASYNCIFY</span></code>/JSPI, where
+<code class="docutils literal notranslate"><span class="pre">sync</span></code> is then <code class="docutils literal notranslate"><span class="pre">true</span></code> as well (<code class="docutils literal notranslate"><span class="pre">false</span></code> only when proxied from a pthread),
+and <code class="docutils literal notranslate"><span class="pre">lookup_promise</span></code> is the way to wait for it.  This suits functions that
+must stay callable from stacks that cannot suspend, where a suspending import
+would trap under JSPI.</p>
 </section>
 <section id="ways-to-use-asyncify-apis-in-older-engines">
 <h2>Ways to use Asyncify APIs in older engines<a class="headerlink" href="#ways-to-use-asyncify-apis-in-older-engines" title="Link to this heading">¶</a></h2>
