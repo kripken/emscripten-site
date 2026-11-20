@@ -1279,8 +1279,24 @@ underlying object is modified or deallocated.</p>
 </span><span data-line="4"><span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">myUint8Array</span><span class="p">);</span>
 </span></pre></div>
 </div>
-<p>The typed array view will be of the appropriate matching type, such as Uint8Array
+<p>The typed array view will be of the appropriate matching type, such as <code class="docutils literal notranslate"><span class="pre">Uint8Array</span></code>
 for an <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code> array or pointer.</p>
+<p>To expose an unsigned byte buffer as a <code class="docutils literal notranslate"><span class="pre">Uint8ClampedArray</span></code> (for example, to
+pass pixel data directly to <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">ImageData(clampedView,</span> <span class="pre">width,</span> <span class="pre">height)</span></code>
+without copying), use <code class="docutils literal notranslate"><span class="pre">clamped_memory_view</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">val</span><span class="w"> </span><span class="nf">getClampedBytes</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">val</span><span class="p">(</span><span class="n">clamped_memory_view</span><span class="p">(</span><span class="n">bufferLength</span><span class="p">,</span><span class="w"> </span><span class="n">byteBuffer</span><span class="p">));</span>
+</span><span data-line="3"><span class="p">}</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When building with pthreads (<code class="docutils literal notranslate"><span class="pre">-pthread</span></code> / <code class="docutils literal notranslate"><span class="pre">SharedArrayBuffer</span></code>), the HTML
+specification forbids constructing <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">ImageData(clampedArray,</span> <span class="pre">width,</span> <span class="pre">height)</span></code>
+from a <code class="docutils literal notranslate"><span class="pre">Uint8ClampedArray</span></code> backed by a <code class="docutils literal notranslate"><span class="pre">SharedArrayBuffer</span></code>. In pthreads
+builds, reuse an existing <code class="docutils literal notranslate"><span class="pre">ImageData</span></code> and copy pixels into it with
+<code class="docutils literal notranslate"><span class="pre">imageData.data.set(clampedView)</span></code>.</p>
+</div>
 </section>
 <section id="using-val-to-transliterate-javascript-to-c">
 <span id="embind-val-guide"></span><h2>Using <code class="docutils literal notranslate"><span class="pre">val</span></code> to transliterate JavaScript to C++<a class="headerlink" href="#using-val-to-transliterate-javascript-to-c" title="Link to this heading">¶</a></h2>
